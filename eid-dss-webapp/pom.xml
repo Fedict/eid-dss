@@ -7,10 +7,10 @@
 		<artifactId>eid-dss</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<name>FedICT eID Digital Signature Service Portal Webapp</name>
-	<description>Web Application for eID Digital Signature Service Portal</description>
+	<name>FedICT eID Digital Signature Service Webapp</name>
+	<description>Web Application for eID Digital Signature Service</description>
 	<groupId>be.fedict.eid-dss</groupId>
-	<artifactId>eid-dss-portal-webapp</artifactId>
+	<artifactId>eid-dss-webapp</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<build>
@@ -44,7 +44,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-portal-model</artifactId>
+			<artifactId>eid-dss-model</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<type>ejb-client</type>
 			<scope>provided</scope>
