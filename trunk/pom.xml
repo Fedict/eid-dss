@@ -23,6 +23,7 @@
 	</scm>
 	<modules>
 		<module>eid-dss-model</module>
+		<module>eid-dss-webapp</module>
 		<module>eid-dss-portal-model</module>
 		<module>eid-dss-portal-webapp</module>
 		<module>eid-dss-deploy</module>
