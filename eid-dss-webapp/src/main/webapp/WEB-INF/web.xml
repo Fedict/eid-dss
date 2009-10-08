@@ -3,6 +3,8 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5">
 
+	<display-name>eID Digital Signature Service Web Application</display-name>
+
 	<!-- JBoss Seam -->
 	<listener>
 		<listener-class>org.jboss.seam.servlet.SeamListener</listener-class>
@@ -60,7 +62,7 @@
 	<!-- eID DSS Browser POST Profile landing page -->
 	<servlet>
 		<servlet-name>SignatureRequestProcessor</servlet-name>
-		<servlet-class>be.fedict.eid.dss.portal.SignatureRequestProcessorServlet</servlet-class>
+		<servlet-class>be.fedict.eid.dss.webapp.SignatureRequestProcessorServlet</servlet-class>
 		<init-param>
 			<param-name>NextPage</param-name>
 			<param-value>view-xml.seam</param-value>
@@ -71,14 +73,28 @@
 		<url-pattern>/dss-post-entry</url-pattern>
 	</servlet-mapping>
 
+	<!-- Document viewer servlet -->
+	<servlet>
+		<servlet-name>DocumentViewer</servlet-name>
+		<servlet-class>be.fedict.eid.dss.webapp.DocumentViewerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DocumentViewer</servlet-name>
+		<url-pattern>/document.xml</url-pattern>
+	</servlet-mapping>
+
 	<!-- eID Applet -->
 	<servlet>
 		<servlet-name>AppletServiceServlet</servlet-name>
 		<servlet-class>be.fedict.eid.applet.service.AppletServiceServlet</servlet-class>
+		<init-param>
+			<param-name>SignatureService</param-name>
+			<param-value>fedict/eid/dss/XMLSignatureServiceBean</param-value>
+		</init-param>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>AppletServiceServlet</servlet-name>
-		<url-pattern>/applet-service</url-pattern>
+		<url-pattern>/applet-xml-service</url-pattern>
 	</servlet-mapping>
 
 </web-app>

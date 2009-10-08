@@ -40,32 +40,20 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class SignatureRequestProcessorServlet extends HttpServlet {
+public class SignatureResponseProcessorServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String SIGNATURE_REQUEST_PARAMETER = "SignatureRequest";
+	private static final Log LOG = LogFactory
+			.getLog(SignatureResponseProcessorServlet.class);
 
-	public static final String TARGET_PARAMETER = "target";
-
-	public static final String LANGUAGE_PARAMETER = "language";
-
-	public static final String TARGET_SESSION_ATTRIBUTE = SignatureRequestProcessorServlet.class
-			.getName()
-			+ ".target";
-
-	public static final String LANGUAGE_SESSION_ATTRIBUTE = SignatureRequestProcessorServlet.class
-			.getName()
-			+ ".language";
-
-	public static final String DOCUMENT_ATTRIBUTE = SignatureRequestProcessorServlet.class
-			.getName()
-			+ ".document";
+	public static final String SIGNATURE_RESPONSE_PARAMETER = "SignatureResponse";
 
 	public static final String NEXT_PAGE_INIT_PARAM = "NextPage";
 
-	private static final Log LOG = LogFactory
-			.getLog(SignatureRequestProcessorServlet.class);
+	public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE = SignatureResponseProcessorServlet.class
+			.getName()
+			+ ".signedDocument";
 
 	private String nextPage;
 
@@ -81,72 +69,47 @@ public class SignatureRequestProcessorServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		LOG.debug("doGet");
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-		out.println("<html>");
-		out
-				.println("<head><title>eID DSS Signature Request Processor</title></head>");
-		out.println("<body>");
-		out.println("<h1>eID DSS Signature Request Processor</h1>");
-		out
-				.println("<p>The Signature Processor should not be accessed directly.</p>");
-		out.println("</body></html>");
-		out.close();
-	}
-
-	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		LOG.debug("doPost");
-		String signatureRequest = request
-				.getParameter(SIGNATURE_REQUEST_PARAMETER);
-		if (null == signatureRequest) {
-			String msg = SIGNATURE_REQUEST_PARAMETER + " parameter not present";
+		String signatureResponse = request
+				.getParameter(SIGNATURE_RESPONSE_PARAMETER);
+		if (null == signatureResponse) {
+			String msg = SIGNATURE_RESPONSE_PARAMETER
+					+ " parameter not present";
 			LOG.error(msg);
 			showErrorPage(msg, response);
 			return;
 		}
-		byte[] decodedSignatureRequest = Base64.decode(signatureRequest);
-		LOG.debug("decoded signature request: "
-				+ new String(decodedSignatureRequest));
+		byte[] decodedSignatureResponse = Base64.decode(signatureResponse);
+		LOG.debug("decoded signature response: "
+				+ new String(decodedSignatureResponse));
 		try {
-			loadDocument(new ByteArrayInputStream(decodedSignatureRequest));
+			loadDocument(new ByteArrayInputStream(decodedSignatureResponse));
 		} catch (Exception e) {
-			String msg = SIGNATURE_REQUEST_PARAMETER
+			String msg = SIGNATURE_RESPONSE_PARAMETER
 					+ " is not an XML document";
 			LOG.error(msg);
 			showErrorPage(msg, response);
 			return;
 		}
+
 		HttpSession httpSession = request.getSession();
-		setDocument(new String(decodedSignatureRequest), httpSession);
-
-		String target = request.getParameter(TARGET_PARAMETER);
-		if (null != target) {
-			setTarget(target, httpSession);
-		}
-
-		String language = request.getParameter(LANGUAGE_PARAMETER);
-		if (null != language) {
-			setLanguage(language, httpSession);
-		}
+		setSignedDocument(new String(decodedSignatureResponse), httpSession);
 
 		response.sendRedirect(this.nextPage);
 	}
 
-	private void setTarget(String target, HttpSession httpSession) {
-		httpSession.setAttribute(TARGET_SESSION_ATTRIBUTE, target);
+	private void setSignedDocument(String signedDocument,
+			HttpSession httpSession) {
+		httpSession.setAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE,
+				signedDocument);
 	}
 
-	private void setLanguage(String language, HttpSession httpSession) {
-		httpSession.setAttribute(LANGUAGE_SESSION_ATTRIBUTE, language);
-	}
-
-	private void setDocument(String document, HttpSession httpSession) {
-		httpSession.setAttribute(DOCUMENT_ATTRIBUTE, document);
+	public static String getSignedDocument(HttpSession httpSession) {
+		String signedDocument = (String) httpSession
+				.getAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE);
+		return signedDocument;
 	}
 
 	private Document loadDocument(InputStream documentInputStream)
@@ -168,9 +131,9 @@ public class SignatureRequestProcessorServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		out.println("<html>");
 		out
-				.println("<head><title>eID DSS Signature Request Processor</title></head>");
+				.println("<head><title>eID DSS Signature Response Processor</title></head>");
 		out.println("<body>");
-		out.println("<h1>eID DSS Signature Request Processor</h1>");
+		out.println("<h1>eID DSS Signature Response Processor</h1>");
 		out.println("<p>ERROR: " + message + "</p>");
 		out.println("</body></html>");
 		out.close();

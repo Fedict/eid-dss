@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package test.unit.be.fedict.eid.dss.portal;
+package test.unit.be.fedict.eid.dss.webapp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.testing.ServletTester;
 
-import be.fedict.eid.dss.portal.SignatureRequestProcessorServlet;
+import be.fedict.eid.dss.webapp.SignatureRequestProcessorServlet;
 
 public class SignatureRequestProcessorServletTest {
 

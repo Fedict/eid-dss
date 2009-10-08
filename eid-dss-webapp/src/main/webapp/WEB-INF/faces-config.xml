@@ -9,4 +9,12 @@
 		<view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
 	</application>
 
+	<navigation-rule>
+		<from-view-id>/view-xml.xhtml</from-view-id>
+		<navigation-case>
+			<from-action>sign</from-action>
+			<to-view-id>/sign-xml.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+
 </faces-config>
