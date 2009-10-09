@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC 
+	"-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<article lang="en">
+	<articleinfo>
+		<title>FedICT eID Digital Signature Service Developer's Guide</title>
+		<subtitle>
+			Integrating the eID Digital Signature Service within your
+			web applications.
+		</subtitle>
+		<copyright>
+			<year>2009</year>
+			<holder>FedICT</holder>
+		</copyright>
+		<releaseinfo>draft 9 Oct 2009</releaseinfo>
+		<authorgroup>
+			<author>
+				<firstname>Frank</firstname>
+				<surname>Cornelis</surname>
+				<email>frank.cornelis@fedict.be</email>
+			</author>
+		</authorgroup>
+		<abstract>
+			<para>
+				This developer's guide serves as an entry point for integrating
+				the eID Digital Signature Service in your web applications. The
+				target audience is web developers and web application architects.
+			</para>
+		</abstract>
+	</articleinfo>
+	<section>
+		<title>Introduction</title>
+		<para>
+			The FedICT eID Digital Signature Service is a web service that
+			can be used by web applications to integrate the creation of eID
+			based digital signature in the business work-flows. The eID Digital
+			Signature Service offers different signature profiles and
+			protocols.
+			The following sections will highlight the different supported
+			signature profiles and protocols.
+		</para>
+	</section>
+	<section>
+		<title>eID DSS Browser POST Profile</title>
+		<para>The eID Digital Signature Service Browser POST Profile can be
+			used to sign XML based transactions and forms. The service offers
+			basic visualization of the XML data, and creation of the XMLDSig
+			based XML signature. The protocol is very lightweight to ease
+			integration within your web applications.</para>
+		<section>
+			<title>Signature Request</title>
+			<para>
+				The web application sends a signature request to the eID DSS
+				web
+				service using a HTTP POST via the web browser of the client.
+				The
+				following POST parameters are mandatory:
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						The
+						<code>SignatureRequest</code>
+						POST parameter should contain the base-64 encoded XML document to
+						be
+						signed.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The
+						<code>target</code>
+						POST parameter should contain the URL of the web application to
+						which to send the signed XML document.
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section>
+			<title>Signature Response</title>
+			<para>The eID DSS responds to the web application using a HTTP POST
+				via the web browser of the client. The following POST parameters
+				are
+				available.</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						The
+						<code>SignatureStatus</code>
+						parameter contains the result code of the signature operation.
+						This can be:
+						<itemizedlist>
+							<listitem>
+								<para>
+									<code>OK</code>
+									in case the signature ceremony was successfully completed. Only
+									in this case
+									<code>SignatureResponse</code>
+									and
+									<code>SignatureCertificate</code>
+									will
+									also be available.
+								</para>
+							</listitem>
+							<listitem>
+								<para>
+									<code>FILE_FORMAT</code>
+									in case the incoming file was not XML.
+								</para>
+							</listitem>
+							<listitem>
+								<para>
+									<code>USER_CANCELLED</code>
+									in case the user cancelled the signature ceremony.
+								</para>
+							</listitem>
+						</itemizedlist>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<code>SignatureResponse</code>
+						contains the base-64 encoded signed XML document.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<code>SignatureCertificate</code>
+						contains the validated base-64 encoded X509 certificate of the
+						signatory.
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+	<appendix>
+		<title>eID Digital Signature Service Developer's Guide License</title>
+		<para>
+			<mediaobject>
+				<imageobject>
+					<imagedata format="PNG" fileref="cc.logo.large.png"
+						scale="100" />
+				</imageobject>
+			</mediaobject>
+			This document has been released under the Creative Commons license.
+			<mediaobject>
+				<imageobject>
+					<imagedata format="PNG" fileref="share.large.png" scale="20" />
+				</imageobject>
+			</mediaobject>
+			You are free to Share — to copy, distribute and transmit the work.
+			<mediaobject>
+				<imageobject>
+					<imagedata format="PNG" fileref="by.large.png" scale="20" />
+				</imageobject>
+			</mediaobject>
+			You must attribute the work in the manner specified by the author or
+			licensor (but not in any way that suggests that they endorse you or
+			your use of the work).
+			<mediaobject>
+				<imageobject>
+					<imagedata format="PNG" fileref="nc.large.png" scale="20" />
+				</imageobject>
+			</mediaobject>
+			You may not use this work for commercial purposes.
+			<mediaobject>
+				<imageobject>
+					<imagedata format="PNG" fileref="nd.large.png" scale="20" />
+				</imageobject>
+			</mediaobject>
+			You may not alter, transform, or build upon this work.
+		</para>
+		<para>
+			More information about the Creative Commons license conditions can be
+			found at
+			<ulink url="http://creativecommons.org/">Creative Commons organization</ulink>
+			.
+		</para>
+	</appendix>
+	<appendix>
+		<title>eID Digital Signature Service License</title>
+		<para>
+			The eID Digital Signature Service source code has been released
+			under the GNU LGPL version 3.0.
+			</para>
+		<para>
+			<code>
+				This is free software; you can redistribute it and/or modify it
+				under the terms of the GNU Lesser General Public License version
+				3.0
+				as published by the Free Software Foundation.
+
+				This software is
+				distributed in the hope that it will be useful,
+				but WITHOUT ANY
+				WARRANTY; without even the implied warranty of
+				MERCHANTABILITY or
+				FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+				Lesser General Public
+				License for more details.
+
+				You should have received a copy of the GNU
+				Lesser General Public
+				License along with this software; if not, see
+				http://www.gnu.org/licenses/.</code>
+		</para>
+	</appendix>
+	<appendix>
+		<title>Revision history</title>
+		<table>
+			<title>Revision history</title>
+			<tgroup cols="2">
+				<colspec colwidth="1*" />
+				<colspec colwidth="1*" />
+				<colspec colwidth="2*" />
+				<thead>
+					<row>
+						<entry>Date</entry>
+						<entry>Author</entry>
+						<entry>Description</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>9 Oct 2009</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>Initial version.</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+	</appendix>
+</article>
