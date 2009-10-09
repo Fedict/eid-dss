@@ -18,30 +18,25 @@
 
 package be.fedict.eid.dss;
 
-import javax.ejb.Local;
-import javax.ejb.Remove;
+import javax.ejb.Stateless;
+import javax.servlet.http.HttpSession;
 
-@Local
-public interface XMLResponse {
+import org.jboss.ejb3.annotation.LocalBinding;
+import org.jboss.seam.annotations.Name;
 
-	// accessors
-	String getTarget();
+import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 
-	void setTarget(String target);
+@Stateless
+@Name("xmlView")
+@LocalBinding(jndiBinding = "fedict/eid/dss/XMLViewBean")
+public class XMLViewBean implements XMLView {
 
-	String getEncodedSignatureResponse();
-
-	void setEncodedSignatureResponse(String encodedSignatureResponse);
-
-	String getSignatureStatus();
-
-	void setSignatureStatus(String signatureStatus);
-
-	void setEncodedSignatureCertificate(String encodedSignatureCertificate);
-
-	String getEncodedSignatureCertificate();
-
-	// lifecycle
-	@Remove
-	void destroy();
+	public String cancel() {
+		HttpSession httpSession = HttpSessionTemporaryDataStorage
+				.getHttpSession();
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+		documentRepository.setSignatureStatus(SignatureStatus.USER_CANCELLED);
+		return "cancel";
+	}
 }

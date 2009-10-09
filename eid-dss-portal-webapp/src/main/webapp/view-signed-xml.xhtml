@@ -1,7 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:h="http://java.sun.com/jsf/html">
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich">
 <body>
 <ui:composition template="/WEB-INF/template.xhtml">
 	<ui:param name="activeMenu" value="sign" />
@@ -11,9 +12,21 @@
 		<p><a
 			href="#{facesContext.externalContext.requestContextPath}/signed-document.xml">Click
 		here to download the signed XML document.</a></p>
-		<iframe src="signed-document.xml" width="100%" height="300">
-		<p>Your browser does not support iframes.</p>
-		</iframe>
+		<p><a
+			href="#{facesContext.externalContext.requestContextPath}/input-xml.seam">Click
+		here to sign another XML document.</a></p>
+		<rich:tabPanel switchType="client">
+			<rich:tab label="Signed XML Document">
+				<iframe src="signed-document.xml" width="100%" height="300">
+				<p>Your browser does not support iframes.</p>
+				</iframe>
+			</rich:tab>
+			<rich:tab label="Signer">
+				<div style="overflow: auto; width: 600px; height: 200px;"><pre>
+					#{signatureCertificate}
+				</pre></div>
+			</rich:tab>
+		</rich:tabPanel>
 	</ui:define>
 </ui:composition>
 </body>

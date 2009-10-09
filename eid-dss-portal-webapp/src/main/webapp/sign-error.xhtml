@@ -4,13 +4,16 @@
 	xmlns:h="http://java.sun.com/jsf/html">
 <body>
 <ui:composition template="/WEB-INF/template.xhtml">
+	<ui:param name="activeMenu" value="sign" />
 	<ui:define name="body">
-		<h2>Welcome</h2>
-		<p>Welcome to the eID Digital Signature Service.</p>
-		<p>This service cannot be accessed directly using a web browser.</p>
-		<p>This service implements the eID DSS Browser POST Profile.</p>
-		<p>The eID DSS Browser POST Profile is documented in the eID DSS
-		Developer's Guide.</p>
+		<h2>Signature Error</h2>
+		<p style="color: red;">An error occurred while signing the XML
+		document.</p>
+		<p style="color: red;">Error code: <h:outputText
+			value="#{SignatureStatus}" /></p>
+		<p><a
+			href="#{facesContext.externalContext.requestContextPath}/input-xml.seam">Click
+		here to sign another XML document.</a></p>
 	</ui:define>
 </ui:composition>
 </body>

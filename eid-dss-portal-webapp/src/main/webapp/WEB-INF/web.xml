@@ -67,6 +67,10 @@
 			<param-name>NextPage</param-name>
 			<param-value>view-signed-xml.seam</param-value>
 		</init-param>
+		<init-param>
+			<param-name>ErrorPage</param-name>
+			<param-value>sign-error.seam</param-value>
+		</init-param>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SignatureResponseProcessor</servlet-name>

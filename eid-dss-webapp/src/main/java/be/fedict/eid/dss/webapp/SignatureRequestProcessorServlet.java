@@ -41,6 +41,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import be.fedict.eid.dss.DocumentRepository;
+import be.fedict.eid.dss.SignatureStatus;
 
 public class SignatureRequestProcessorServlet extends HttpServlet {
 
@@ -58,10 +59,14 @@ public class SignatureRequestProcessorServlet extends HttpServlet {
 
 	public static final String NEXT_PAGE_INIT_PARAM = "NextPage";
 
+	public static final String FINISH_PAGE_INIT_PARAM = "FinishPage";
+
 	private static final Log LOG = LogFactory
 			.getLog(SignatureRequestProcessorServlet.class);
 
 	private String nextPage;
+
+	private String finishPage;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -72,6 +77,12 @@ public class SignatureRequestProcessorServlet extends HttpServlet {
 					+ NEXT_PAGE_INIT_PARAM);
 		}
 		LOG.debug("next page: " + this.nextPage);
+		this.finishPage = config.getInitParameter(FINISH_PAGE_INIT_PARAM);
+		if (null == this.finishPage) {
+			throw new ServletException("missing init-param: "
+					+ FINISH_PAGE_INIT_PARAM);
+		}
+		LOG.debug("finish page: " + this.finishPage);
 	}
 
 	@Override
@@ -95,6 +106,15 @@ public class SignatureRequestProcessorServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		LOG.debug("doPost");
+		String target = request.getParameter(TARGET_PARAMETER);
+		HttpSession httpSession = request.getSession();
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+		if (null != target) {
+			LOG.debug("target: " + target);
+			documentRepository.setTarget(target);
+		}
+
 		String signatureRequest = request
 				.getParameter(SIGNATURE_REQUEST_PARAMETER);
 		if (null == signatureRequest) {
@@ -109,22 +129,11 @@ public class SignatureRequestProcessorServlet extends HttpServlet {
 		try {
 			loadDocument(new ByteArrayInputStream(decodedSignatureRequest));
 		} catch (Exception e) {
-			String msg = SIGNATURE_REQUEST_PARAMETER
-					+ " is not an XML document";
-			LOG.error(msg);
-			showErrorPage(msg, response);
+			documentRepository.setSignatureStatus(SignatureStatus.FILE_FORMAT);
+			response.sendRedirect(this.finishPage);
 			return;
 		}
-		HttpSession httpSession = request.getSession();
-		DocumentRepository documentRepository = new DocumentRepository(
-				httpSession);
 		documentRepository.setDocument(new String(decodedSignatureRequest));
-
-		String target = request.getParameter(TARGET_PARAMETER);
-		if (null != target) {
-			LOG.debug("target: " + target);
-			documentRepository.setTarget(target);
-		}
 
 		String language = request.getParameter(LANGUAGE_PARAMETER);
 		if (null != language) {

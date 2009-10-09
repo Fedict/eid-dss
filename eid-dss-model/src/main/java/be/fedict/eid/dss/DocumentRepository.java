@@ -18,6 +18,8 @@
 
 package be.fedict.eid.dss;
 
+import java.security.cert.X509Certificate;
+
 import javax.servlet.http.HttpSession;
 
 /**
@@ -39,6 +41,14 @@ public class DocumentRepository {
 	public static final String TARGET_SESSION_ATTRIBUTE = DocumentRepository.class
 			.getName()
 			+ ".target";
+
+	public static final String SIGNATURE_STATUS_SESSION_ATTRIBUTE = DocumentRepository.class
+			.getName()
+			+ ".status";
+
+	public static final String SIGNER_CERTIFICATE_SESSION_ATTRIBUTE = DocumentRepository.class
+			.getName()
+			+ ".certificate";
 
 	public final HttpSession httpSession;
 
@@ -75,5 +85,27 @@ public class DocumentRepository {
 		String target = (String) this.httpSession
 				.getAttribute(TARGET_SESSION_ATTRIBUTE);
 		return target;
+	}
+
+	public void setSignatureStatus(SignatureStatus signatureStatus) {
+		this.httpSession.setAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE,
+				signatureStatus);
+	}
+
+	public SignatureStatus getSignatureStatus() {
+		SignatureStatus signatureStatus = (SignatureStatus) this.httpSession
+				.getAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE);
+		return signatureStatus;
+	}
+
+	public void setSignerCertificate(X509Certificate signerCertificate) {
+		this.httpSession.setAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE,
+				signerCertificate);
+	}
+
+	public X509Certificate getSignerCertificate() {
+		X509Certificate signerCertificate = (X509Certificate) this.httpSession
+				.getAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE);
+		return signerCertificate;
 	}
 }

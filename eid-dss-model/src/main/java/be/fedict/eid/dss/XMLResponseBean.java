@@ -18,6 +18,9 @@
 
 package be.fedict.eid.dss;
 
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+
 import javax.annotation.PostConstruct;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
@@ -44,6 +47,10 @@ public class XMLResponseBean implements XMLResponse {
 
 	private String target;
 
+	private String signatureStatus;
+
+	private String encodedSignatureCertificate;
+
 	@Remove
 	@Destroy
 	public void destroy() {
@@ -59,9 +66,28 @@ public class XMLResponseBean implements XMLResponse {
 				httpSession);
 		this.target = documentRepository.getTarget();
 		this.log.debug("target: " + target);
+		this.signatureStatus = documentRepository.getSignatureStatus()
+				.getStatus();
+
 		String signedDocument = documentRepository.getSignedDocument();
-		this.encodedSignatureResponse = new String(Base64.encode(signedDocument
-				.getBytes()));
+		if (null != signedDocument) {
+			this.encodedSignatureResponse = new String(Base64
+					.encode(signedDocument.getBytes()));
+		}
+
+		X509Certificate signerCertificate = documentRepository
+				.getSignerCertificate();
+		if (null != signerCertificate) {
+			try {
+				this.encodedSignatureCertificate = new String(Base64
+						.encode(signerCertificate.getEncoded()));
+			} catch (CertificateEncodingException e) {
+				this.log.error("certificate encoding error: " + e.getMessage(),
+						e);
+			}
+		} else {
+			this.log.error("signer certificate is null");
+		}
 	}
 
 	public String getEncodedSignatureResponse() {
@@ -78,5 +104,22 @@ public class XMLResponseBean implements XMLResponse {
 
 	public void setTarget(String target) {
 		this.target = target;
+	}
+
+	public String getSignatureStatus() {
+		return this.signatureStatus;
+	}
+
+	public void setSignatureStatus(String signatureStatus) {
+		this.signatureStatus = signatureStatus;
+	}
+
+	public String getEncodedSignatureCertificate() {
+		return this.encodedSignatureCertificate;
+	}
+
+	public void setEncodedSignatureCertificate(
+			String encodedSignatureCertificate) {
+		this.encodedSignatureCertificate = encodedSignatureCertificate;
 	}
 }
