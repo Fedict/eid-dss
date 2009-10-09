@@ -22,6 +22,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -49,13 +52,23 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 
 	public static final String SIGNATURE_RESPONSE_PARAMETER = "SignatureResponse";
 
+	public static final String SIGNATURE_STATUS_PARAMETER = "SignatureStatus";
+
+	public static final String SIGNATURE_CERTIFICATE_PARAMETER = "SignatureCertificate";
+
 	public static final String NEXT_PAGE_INIT_PARAM = "NextPage";
+
+	public static final String ERROR_PAGE_INIT_PARAM = "ErrorPage";
+
+	public static final String SIGNATURE_STATUS_SESSION_ATTRIBUTE = "SignatureStatus";
 
 	public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE = SignatureResponseProcessorServlet.class
 			.getName()
 			+ ".signedDocument";
 
 	private String nextPage;
+
+	private String errorPage;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -66,12 +79,36 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 					+ NEXT_PAGE_INIT_PARAM);
 		}
 		LOG.debug("next page: " + this.nextPage);
+		this.errorPage = config.getInitParameter(ERROR_PAGE_INIT_PARAM);
+		if (null == this.errorPage) {
+			throw new ServletException("missing init-param: "
+					+ ERROR_PAGE_INIT_PARAM);
+		}
+		LOG.debug("error page: " + this.errorPage);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		LOG.debug("doPost");
+		String signatureStatus = request
+				.getParameter(SIGNATURE_STATUS_PARAMETER);
+		if (null == signatureStatus) {
+			String msg = SIGNATURE_RESPONSE_PARAMETER
+					+ " parameter not present";
+			LOG.error(msg);
+			showErrorPage(msg, response);
+			return;
+		}
+		HttpSession httpSession = request.getSession();
+		if (false == "OK".equals(signatureStatus)) {
+			// signature status is used by the error page.
+			httpSession.setAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE,
+					signatureStatus);
+			response.sendRedirect(this.errorPage);
+			return;
+		}
+
 		String signatureResponse = request
 				.getParameter(SIGNATURE_RESPONSE_PARAMETER);
 		if (null == signatureResponse) {
@@ -93,9 +130,29 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 			showErrorPage(msg, response);
 			return;
 		}
-
-		HttpSession httpSession = request.getSession();
 		setSignedDocument(new String(decodedSignatureResponse), httpSession);
+
+		String encodedSignatureCertificate = (String) request
+				.getParameter(SIGNATURE_CERTIFICATE_PARAMETER);
+		if (null == encodedSignatureCertificate) {
+			String msg = SIGNATURE_CERTIFICATE_PARAMETER
+					+ " parameter not present";
+			LOG.error(msg);
+			showErrorPage(msg, response);
+			return;
+		}
+		byte[] decodedSignatureCertificate = Base64
+				.decode(encodedSignatureCertificate);
+		try {
+			CertificateFactory certificateFactory = CertificateFactory
+					.getInstance("X.509");
+			X509Certificate signatureCertificate = (X509Certificate) certificateFactory
+					.generateCertificate(new ByteArrayInputStream(
+							decodedSignatureCertificate));
+			httpSession.setAttribute("signatureCertificate",
+					signatureCertificate);
+		} catch (CertificateException e) {
+		}
 
 		response.sendRedirect(this.nextPage);
 	}

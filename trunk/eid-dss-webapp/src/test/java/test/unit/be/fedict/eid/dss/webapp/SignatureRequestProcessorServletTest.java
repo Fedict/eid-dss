@@ -53,6 +53,7 @@ public class SignatureRequestProcessorServletTest {
 		ServletHolder servletHolder = this.servletTester.addServlet(
 				SignatureRequestProcessorServlet.class, "/");
 		servletHolder.setInitParameter("NextPage", "next-page.html");
+		servletHolder.setInitParameter("FinishPage", "finish-page.html");
 		this.servletTester.start();
 		this.location = this.servletTester.createSocketConnector(true);
 	}
@@ -108,9 +109,12 @@ public class SignatureRequestProcessorServletTest {
 		int result = httpClient.executeMethod(postMethod);
 
 		// verify
-		assertEquals(HttpServletResponse.SC_BAD_REQUEST, result);
+		assertEquals(HttpServletResponse.SC_MOVED_TEMPORARILY, result);
 		String responseBody = postMethod.getResponseBodyAsString();
 		LOG.debug("Response body: " + responseBody);
+		String location = postMethod.getResponseHeader("Location").getValue();
+		LOG.debug("location: " + location);
+		assertTrue(location.endsWith("/finish-page.html"));
 	}
 
 	@Test

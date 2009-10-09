@@ -18,30 +18,19 @@
 
 package be.fedict.eid.dss;
 
-import javax.ejb.Local;
-import javax.ejb.Remove;
+public enum SignatureStatus {
 
-@Local
-public interface XMLResponse {
+	OK("OK"), USER_CANCELLED("USER_CANCELLED"), CERTIFICATE_INVALID(
+			"CERTIFICATE_INVALID"), FILE_FORMAT("FILE_FORMAT"), FILE_SIZE(
+			"FILE_SIZE");
 
-	// accessors
-	String getTarget();
+	private final String status;
 
-	void setTarget(String target);
+	private SignatureStatus(String status) {
+		this.status = status;
+	}
 
-	String getEncodedSignatureResponse();
-
-	void setEncodedSignatureResponse(String encodedSignatureResponse);
-
-	String getSignatureStatus();
-
-	void setSignatureStatus(String signatureStatus);
-
-	void setEncodedSignatureCertificate(String encodedSignatureCertificate);
-
-	String getEncodedSignatureCertificate();
-
-	// lifecycle
-	@Remove
-	void destroy();
+	public String getStatus() {
+		return this.status;
+	}
 }

@@ -23,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.Key;
-import java.security.KeyException;
 import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +37,6 @@ import javax.xml.crypto.dsig.XMLSignContext;
 import javax.xml.crypto.dsig.dom.DOMSignContext;
 import javax.xml.crypto.dsig.keyinfo.KeyInfo;
 import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -92,6 +90,7 @@ public class XMLSignatureServiceBean extends AbstractXmlSignatureService {
 			DocumentRepository documentRepository = new DocumentRepository(
 					httpSession);
 			documentRepository.setSignedDocument(signedDocument);
+			documentRepository.setSignatureStatus(SignatureStatus.OK);
 		}
 	}
 
@@ -114,6 +113,9 @@ public class XMLSignatureServiceBean extends AbstractXmlSignatureService {
 	@Override
 	protected Document getEnvelopingDocument()
 			throws ParserConfigurationException, IOException, SAXException {
+		/*
+		 * We use the document that was sent to us via the POST request.
+		 */
 		HttpSession httpSession = HttpSessionTemporaryDataStorage
 				.getHttpSession();
 		DocumentRepository documentRepository = new DocumentRepository(
@@ -146,21 +148,22 @@ public class XMLSignatureServiceBean extends AbstractXmlSignatureService {
 		KeyInfoFactory keyInfoFactory = KeyInfoFactory.getInstance();
 		List<Object> x509DataObjects = new LinkedList<Object>();
 
-		X509Certificate signingCertificate = signingCertificateChain.get(0);
-		KeyValue keyValue;
-		try {
-			keyValue = keyInfoFactory.newKeyValue(signingCertificate
-					.getPublicKey());
-		} catch (KeyException e) {
-			throw new RuntimeException("key exception: " + e.getMessage(), e);
-		}
+		/*
+		 * Push the signer certificate in the session as it is required for the
+		 * response.
+		 */
+		HttpSession httpSession = HttpSessionTemporaryDataStorage
+				.getHttpSession();
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+		X509Certificate signerCertificate = signingCertificateChain.get(0);
+		documentRepository.setSignerCertificate(signerCertificate);
 
 		for (X509Certificate certificate : signingCertificateChain) {
 			x509DataObjects.add(certificate);
 		}
 		X509Data x509Data = keyInfoFactory.newX509Data(x509DataObjects);
 		List<Object> keyInfoContent = new LinkedList<Object>();
-		keyInfoContent.add(keyValue);
 		keyInfoContent.add(x509Data);
 		KeyInfo keyInfo = keyInfoFactory.newKeyInfo(keyInfoContent);
 		DOMKeyInfo domKeyInfo = (DOMKeyInfo) keyInfo;
@@ -183,7 +186,6 @@ public class XMLSignatureServiceBean extends AbstractXmlSignatureService {
 				signatureElement);
 		DOMCryptoContext domCryptoContext = (DOMCryptoContext) xmlSignContext;
 		String dsPrefix = null;
-		// String dsPrefix = "ds";
 		try {
 			domKeyInfo.marshal(signatureElement, nextSibling, dsPrefix,
 					domCryptoContext);

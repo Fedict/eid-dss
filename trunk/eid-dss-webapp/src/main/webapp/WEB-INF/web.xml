@@ -67,6 +67,10 @@
 			<param-name>NextPage</param-name>
 			<param-value>view-xml.seam</param-value>
 		</init-param>
+		<init-param>
+			<param-name>FinishPage</param-name>
+			<param-value>post-response.seam</param-value>
+		</init-param>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SignatureRequestProcessor</servlet-name>
