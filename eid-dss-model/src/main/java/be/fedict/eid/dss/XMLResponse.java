@@ -19,7 +19,6 @@
 package be.fedict.eid.dss;
 
 import javax.ejb.Local;
-import javax.ejb.Remove;
 
 @Local
 public interface XMLResponse {
@@ -40,8 +39,4 @@ public interface XMLResponse {
 	void setEncodedSignatureCertificate(String encodedSignatureCertificate);
 
 	String getEncodedSignatureCertificate();
-
-	// lifecycle
-	@Remove
-	void destroy();
 }
