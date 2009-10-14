@@ -21,21 +21,24 @@ package be.fedict.eid.dss;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 import javax.servlet.http.HttpSession;
 
 import org.bouncycastle.util.encoders.Base64;
 import org.jboss.ejb3.annotation.LocalBinding;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.log.Log;
 
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 
-@Stateful
+/**
+ * XML Response bean. Used by the post-response.xhtml page.
+ * 
+ * @author fcorneli
+ * 
+ */
+@Stateless
 @Name("xmlResponse")
 @LocalBinding(jndiBinding = "fedict/eid/dss/XMLResponseBean")
 public class XMLResponseBean implements XMLResponse {
@@ -51,29 +54,59 @@ public class XMLResponseBean implements XMLResponse {
 
 	private String encodedSignatureCertificate;
 
-	@Remove
-	@Destroy
-	public void destroy() {
-		this.log.debug("destroy");
-	}
-
-	@PostConstruct
-	public void postConstruct() {
-		this.log.debug("postConstruct");
+	public String getEncodedSignatureResponse() {
 		HttpSession httpSession = HttpSessionTemporaryDataStorage
 				.getHttpSession();
 		DocumentRepository documentRepository = new DocumentRepository(
 				httpSession);
-		this.target = documentRepository.getTarget();
-		this.log.debug("target: " + target);
-		this.signatureStatus = documentRepository.getSignatureStatus()
-				.getStatus();
 
 		String signedDocument = documentRepository.getSignedDocument();
 		if (null != signedDocument) {
 			this.encodedSignatureResponse = new String(Base64
 					.encode(signedDocument.getBytes()));
 		}
+
+		return this.encodedSignatureResponse;
+	}
+
+	public String getTarget() {
+		HttpSession httpSession = HttpSessionTemporaryDataStorage
+				.getHttpSession();
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+		this.target = documentRepository.getTarget();
+		this.log.debug("target: " + target);
+		return this.target;
+	}
+
+	public void setEncodedSignatureResponse(String encodedSignatureResponse) {
+		this.encodedSignatureResponse = encodedSignatureResponse;
+	}
+
+	public void setTarget(String target) {
+		this.target = target;
+	}
+
+	public String getSignatureStatus() {
+		HttpSession httpSession = HttpSessionTemporaryDataStorage
+				.getHttpSession();
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+		this.signatureStatus = documentRepository.getSignatureStatus()
+				.getStatus();
+		this.log.debug("signature status: " + this.signatureStatus);
+		return this.signatureStatus;
+	}
+
+	public void setSignatureStatus(String signatureStatus) {
+		this.signatureStatus = signatureStatus;
+	}
+
+	public String getEncodedSignatureCertificate() {
+		HttpSession httpSession = HttpSessionTemporaryDataStorage
+				.getHttpSession();
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
 
 		X509Certificate signerCertificate = documentRepository
 				.getSignerCertificate();
@@ -88,33 +121,6 @@ public class XMLResponseBean implements XMLResponse {
 		} else {
 			this.log.error("signer certificate is null");
 		}
-	}
-
-	public String getEncodedSignatureResponse() {
-		return this.encodedSignatureResponse;
-	}
-
-	public String getTarget() {
-		return this.target;
-	}
-
-	public void setEncodedSignatureResponse(String encodedSignatureResponse) {
-		this.encodedSignatureResponse = encodedSignatureResponse;
-	}
-
-	public void setTarget(String target) {
-		this.target = target;
-	}
-
-	public String getSignatureStatus() {
-		return this.signatureStatus;
-	}
-
-	public void setSignatureStatus(String signatureStatus) {
-		this.signatureStatus = signatureStatus;
-	}
-
-	public String getEncodedSignatureCertificate() {
 		return this.encodedSignatureCertificate;
 	}
 

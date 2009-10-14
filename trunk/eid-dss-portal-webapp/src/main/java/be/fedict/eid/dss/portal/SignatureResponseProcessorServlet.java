@@ -100,6 +100,7 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 			showErrorPage(msg, response);
 			return;
 		}
+		LOG.debug("signature status: " + signatureStatus);
 		HttpSession httpSession = request.getSession();
 		if (false == "OK".equals(signatureStatus)) {
 			// signature status is used by the error page.
