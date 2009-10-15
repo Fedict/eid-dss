@@ -60,9 +60,10 @@ public class SignerCertificateSignatureFacet implements SignatureFacet {
 	}
 
 	public void preSign(XMLSignatureFactory signatureFactory,
-			Document document, String signatureId, List<Reference> references,
-			List<XMLObject> objects) throws NoSuchAlgorithmException,
-			InvalidAlgorithmParameterException {
+			Document document, String signatureId,
+			List<X509Certificate> signingCertificateChain,
+			List<Reference> references, List<XMLObject> objects)
+			throws NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 		// empty
 	}
 }
