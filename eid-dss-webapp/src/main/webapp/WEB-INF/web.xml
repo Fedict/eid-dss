@@ -95,6 +95,10 @@
 			<param-name>SignatureService</param-name>
 			<param-value>fedict/eid/dss/XMLSignatureServiceBean</param-value>
 		</init-param>
+		<init-param>
+			<param-name>IncludeCertificates</param-name>
+			<param-value>true</param-value>
+		</init-param>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>AppletServiceServlet</servlet-name>

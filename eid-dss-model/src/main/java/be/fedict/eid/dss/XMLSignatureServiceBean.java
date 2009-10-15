@@ -35,9 +35,11 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import be.fedict.eid.applet.service.signer.AbstractXmlSignatureService;
+import be.fedict.eid.applet.service.signer.EnvelopedSignatureFacet;
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.KeyInfoSignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
+import be.fedict.eid.applet.service.signer.XAdESSignatureFacet;
 import be.fedict.eid.applet.service.spi.SignatureService;
 
 @Stateless
@@ -51,6 +53,7 @@ public class XMLSignatureServiceBean extends AbstractXmlSignatureService {
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		addSignatureFacet(new EnvelopedSignatureFacet());
 		addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
+		addSignatureFacet(new XAdESSignatureFacet());
 		addSignatureFacet(new SignerCertificateSignatureFacet());
 	}
 

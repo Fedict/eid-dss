@@ -45,9 +45,9 @@
 		<para>The eID Digital Signature Service Browser POST Profile can be
 			used to sign XML based transactions and forms as part of web
 			application work-flows. The service offers basic visualization of the
-			XML data, and creation of the XMLDSig based XML signature. The
-			protocol is very lightweight to ease integration within your web
-			applications.</para>
+			XML data, and creation of the XMLDSig based XML signature with
+			XAdES-BES v1.3.2 extension. The protocol is very lightweight to ease
+			integration within your web applications.</para>
 		<section>
 			<title>Signature Request</title>
 			<para>
@@ -97,9 +97,11 @@
 				screen visualizes the incoming XML document. Here the end-user can
 				choose to either sign the XML document, or to cancel the signature
 				process. The next screen loads an eID Applet to have the XML
-				document signed according to the W3C XMLDSig specification. At last
-				the end-user's web browser is redirected to the originating web
-				application where the signed XML document can be processed further.
+				document signed according to the W3C XMLDSig specification. The XML
+				signature also contains a XAdES-BES v1.3.2 extension in accordance
+				with the Service Directive. At last the end-user's web browser is
+				redirected to the originating web application where the signed XML
+				document can be processed further.
 			</para>
 		</section>
 		<section>
