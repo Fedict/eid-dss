@@ -155,11 +155,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>bouncycastle</groupId>
-			<artifactId>bcprov-jdk16</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>javax.jms</groupId>
 			<artifactId>jms</artifactId>
 			<scope>provided</scope>
@@ -185,12 +180,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>bouncycastle</groupId>
+			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk16</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>bouncycastle</groupId>
+			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcmail-jdk16</artifactId>
 			<scope>provided</scope>
 		</dependency>
