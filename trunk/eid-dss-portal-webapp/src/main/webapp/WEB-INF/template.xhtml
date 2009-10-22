@@ -44,11 +44,24 @@
 			<c:choose>
 				<c:when test="#{activeMenu == 'sign'}">
 					<li class="selected"><a
-						href="#{facesContext.externalContext.requestContextPath}/input-xml.seam">Sign</a></li>
+						href="#{facesContext.externalContext.requestContextPath}/input-xml.seam">Sign
+					XML</a></li>
 				</c:when>
 				<c:otherwise>
 					<li><a
-						href="#{facesContext.externalContext.requestContextPath}/input-xml.seam">Sign</a></li>
+						href="#{facesContext.externalContext.requestContextPath}/input-xml.seam">Sign
+					XML</a></li>
+				</c:otherwise>
+			</c:choose>
+
+			<c:choose>
+				<c:when test="#{activeMenu == 'csr'}">
+					<li class="selected"><a
+						href="#{facesContext.externalContext.requestContextPath}/csr-start.seam">CSR</a></li>
+				</c:when>
+				<c:otherwise>
+					<li><a
+						href="#{facesContext.externalContext.requestContextPath}/csr-start.seam">CSR</a></li>
 				</c:otherwise>
 			</c:choose>
 		</ul>

@@ -87,4 +87,14 @@
 		<url-pattern>/signed-document.xml</url-pattern>
 	</servlet-mapping>
 
+	<!-- eID Applet Identification service -->
+	<servlet>
+		<servlet-name>AppletIdentificationServiceServlet</servlet-name>
+		<servlet-class>be.fedict.eid.applet.service.AppletServiceServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AppletIdentificationServiceServlet</servlet-name>
+		<url-pattern>/applet-identification-service</url-pattern>
+	</servlet-mapping>
+
 </web-app>
