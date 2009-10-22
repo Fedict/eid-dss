@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:be:fedict:eid:dss:demo:cert:request:1.0"
+	xmlns:tns="urn:be:fedict:eid:dss:demo:cert:request:1.0"
+	elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	attributeFormDefault="unqualified">
+	<element name="CertificateRequest" type="tns:CertificateRequestType" />
+	<complexType name="CertificateRequestType">
+		<sequence>
+			<element name="DistinguishedName" type="xsd:string" />
+			<element name="CertificateType" type="tns:CertificateTypeType" />
+			<element name="CSR" type="xsd:base64Binary" />
+			<element name="Description" type="xsd:string" />
+			<element name="TechnicalOperator" type="tns:EntityType"
+				minOccurs="0" />
+			<element name="FederalCivilServant" type="tns:EntityType" />
+			<element name="FedictResponsible" type="tns:EntityType"
+				minOccurs="0" />
+			<element name="FedictOperator" type="tns:EntityType"
+				minOccurs="0" />
+		</sequence>
+	</complexType>
+	<simpleType name="CertificateTypeType">
+		<restriction base="xsd:string">
+			<enumeration value="Server" />
+			<enumeration value="Client" />
+			<enumeration value="Code" />
+		</restriction>
+	</simpleType>
+	<complexType name="EntityType">
+		<sequence>
+			<element name="Name" type="xsd:string" />
+			<element name="Function" type="xsd:string" />
+			<element name="Phone" type="xsd:string" />
+			<element name="Email" type="xsd:string" />
+		</sequence>
+	</complexType>
+</schema>

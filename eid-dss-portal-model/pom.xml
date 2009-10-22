@@ -31,6 +31,24 @@
 					<generateClient>true</generateClient>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaIncludes>
+								<schemaInclude>cert-request-demo-form.xsd</schemaInclude>
+							</schemaIncludes>
+							<debug>true</debug>
+							<verbose>true</verbose>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
