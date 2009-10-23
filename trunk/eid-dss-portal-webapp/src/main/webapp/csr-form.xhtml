@@ -30,6 +30,17 @@
 					<h:message for="type" style="color: red;" />
 				</h:panelGroup>
 
+				<h:outputLabel value="Validity Period (year)" for="validityPeriod" />
+				<h:panelGroup>
+					<h:selectOneMenu id="validityPeriod"
+						value="#{csrForm.validityPeriod}" required="true">
+						<f:selectItem itemLabel="1" itemValue="1" />
+						<f:selectItem itemLabel="2" itemValue="2" />
+						<f:selectItem itemLabel="5" itemValue="5" />
+					</h:selectOneMenu>
+					<h:message for="validityPeriod" style="color: red;" />
+				</h:panelGroup>
+
 				<h:outputLabel value="Operator Name" for="operatorName" />
 				<h:outputText id="operatorName"
 					value="#{eid.identity.name} #{eid.identity.firstName}" />
@@ -57,7 +68,7 @@
 			</h:panelGrid>
 
 			<p><h:outputLabel value="CSR (PEM format)" for="csr" /></p>
-			<h:inputTextarea id="csr" value="#{csrForm.csr}" rows="10" cols="60"
+			<h:inputTextarea id="csr" value="#{csrForm.csr}" rows="20" cols="80"
 				required="true" />
 			<h:message for="csr" style="color: red;" />
 

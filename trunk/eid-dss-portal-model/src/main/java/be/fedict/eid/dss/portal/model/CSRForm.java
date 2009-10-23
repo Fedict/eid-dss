@@ -32,6 +32,10 @@ public interface CSRForm {
 
 	void setType(String type);
 
+	String getValidityPeriod();
+
+	void setValidityPeriod(String validityPeriod);
+
 	String getOperatorFunction();
 
 	void setOperatorFunction(String operatorFunction);
@@ -51,6 +55,10 @@ public interface CSRForm {
 	String getCsr();
 
 	void setCsr(String csr);
+
+	String getSignatureRequest();
+
+	void setSignatureRequest(String signatureRequest);
 
 	// actions
 	String submit();

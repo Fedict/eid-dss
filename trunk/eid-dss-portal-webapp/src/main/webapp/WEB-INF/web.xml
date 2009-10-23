@@ -77,6 +77,23 @@
 		<url-pattern>/post-response</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>CSRSignatureResponseProcessor</servlet-name>
+		<servlet-class>be.fedict.eid.dss.portal.SignatureResponseProcessorServlet</servlet-class>
+		<init-param>
+			<param-name>NextPage</param-name>
+			<param-value>csr-view-signed.seam</param-value>
+		</init-param>
+		<init-param>
+			<param-name>ErrorPage</param-name>
+			<param-value>csr-sign-error.seam</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CSRSignatureResponseProcessor</servlet-name>
+		<url-pattern>/post-csr-response</url-pattern>
+	</servlet-mapping>
+
 	<!-- XML document viewer -->
 	<servlet>
 		<servlet-name>DocumentViewer</servlet-name>

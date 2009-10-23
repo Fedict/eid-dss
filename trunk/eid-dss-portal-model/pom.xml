@@ -45,6 +45,8 @@
 							</schemaIncludes>
 							<debug>true</debug>
 							<verbose>true</verbose>
+							<catalog>src/main/resources/catalog.cat</catalog>
+							<extension>true</extension>
 						</configuration>
 					</execution>
 				</executions>
@@ -52,6 +54,10 @@
 		</plugins>
 	</build>
 	<dependencies>
+		<dependency>
+			<groupId>be.fedict.eid-applet</groupId>
+			<artifactId>eid-applet-service</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging-api</artifactId>
@@ -92,6 +98,10 @@
 			<groupId>org.jboss.seam</groupId>
 			<artifactId>jboss-seam</artifactId>
 			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>javax.faces</groupId>
+			<artifactId>jsf-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
