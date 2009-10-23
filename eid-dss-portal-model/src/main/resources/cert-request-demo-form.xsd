@@ -1,24 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:be:fedict:eid:dss:demo:cert:request:1.0"
-	xmlns:tns="urn:be:fedict:eid:dss:demo:cert:request:1.0"
-	elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	attributeFormDefault="unqualified">
-	<element name="CertificateRequest" type="tns:CertificateRequestType" />
+	xmlns:tns="urn:be:fedict:eid:dss:demo:cert:request:1.0" xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.w3.org/2000/09/xmldsig# http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"
+	attributeFormDefault="unqualified" elementFormDefault="qualified">
+
+	<import namespace="http://www.w3.org/2000/09/xmldsig#"
+		schemaLocation="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd" />
+
+	<element name="CertificateRequest" type="tns:CertificateRequestType">
+		<annotation>
+			<documentation>
+				A CertificateRequest document is used to request a
+				certificate via the FedICT automated RA infrastructure.
+			</documentation>
+		</annotation>
+	</element>
+
 	<complexType name="CertificateRequestType">
 		<sequence>
-			<element name="DistinguishedName" type="xsd:string" />
+			<element name="DistinguishedName" type="xsd:string">
+				<annotation>
+					<documentation>
+						The distinguished name of the requested certificate.
+					</documentation>
+				</annotation>
+			</element>
 			<element name="CertificateType" type="tns:CertificateTypeType" />
-			<element name="CSR" type="xsd:base64Binary" />
-			<element name="Description" type="xsd:string" />
+			<element name="ValidityPeriod" type="tns:ValidityPeriodType" />
+			<element name="CSR" type="xsd:string">
+				<annotation>
+					<documentation>
+						The CSR in PEM format.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="Description" type="xsd:string">
+				<annotation>
+					<documentation>
+						Description what the certificate is used for.
+					</documentation>
+				</annotation>
+			</element>
 			<element name="TechnicalOperator" type="tns:EntityType"
-				minOccurs="0" />
-			<element name="FederalCivilServant" type="tns:EntityType" />
+				minOccurs="0">
+				<annotation>
+					<documentation>
+						Technical Operator generating the request.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="FederalCivilServant" type="tns:EntityType">
+				<annotation>
+					<documentation>
+						Federal Civil Servant authorizing the request.
+					</documentation>
+				</annotation>
+			</element>
 			<element name="FedictResponsible" type="tns:EntityType"
-				minOccurs="0" />
+				minOccurs="0">
+				<annotation>
+					<documentation>
+						FedICT Responsible authorizing the issuance.
+					</documentation>
+				</annotation>
+			</element>
 			<element name="FedictOperator" type="tns:EntityType"
-				minOccurs="0" />
+				minOccurs="0">
+				<annotation>
+					<documentation>
+						FedICT Operator issuing the certificate.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="Signature" type="ds:SignatureType" minOccurs="0"
+				maxOccurs="unbounded" />
 		</sequence>
 	</complexType>
+
 	<simpleType name="CertificateTypeType">
 		<restriction base="xsd:string">
 			<enumeration value="Server" />
@@ -26,6 +85,20 @@
 			<enumeration value="Code" />
 		</restriction>
 	</simpleType>
+
+	<simpleType name="ValidityPeriodType">
+		<annotation>
+			<documentation>
+				The validity period in number of years.
+			</documentation>
+		</annotation>
+		<restriction base="xsd:integer">
+			<enumeration value="1" />
+			<enumeration value="2" />
+			<enumeration value="5" />
+		</restriction>
+	</simpleType>
+
 	<complexType name="EntityType">
 		<sequence>
 			<element name="Name" type="xsd:string" />
@@ -34,4 +107,5 @@
 			<element name="Email" type="xsd:string" />
 		</sequence>
 	</complexType>
+
 </schema>

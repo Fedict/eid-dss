@@ -18,14 +18,30 @@
 
 package be.fedict.eid.dss.portal.model;
 
+import java.io.StringWriter;
+import java.math.BigInteger;
+
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
+import org.bouncycastle.util.encoders.Base64;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.contexts.SessionContext;
+import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.log.Log;
+
+import be.fedict.eid.applet.service.Identity;
+import be.fedict.eid.dss.demo.cert.request._1.CertificateRequestType;
+import be.fedict.eid.dss.demo.cert.request._1.CertificateTypeType;
+import be.fedict.eid.dss.demo.cert.request._1.EntityType;
+import be.fedict.eid.dss.demo.cert.request._1.ObjectFactory;
 
 @Stateful
 @Name("csrForm")
@@ -48,6 +64,16 @@ public class CSRFormBean implements CSRForm {
 	private String operatorPhone;
 
 	private String operatorEmail;
+
+	private String validityPeriod;
+
+	private String signatureRequest;
+
+	@In
+	private SessionContext sessionContext;
+
+	@In
+	private FacesMessages facesMessages;
 
 	@Remove
 	@Destroy
@@ -113,8 +139,62 @@ public class CSRFormBean implements CSRForm {
 
 	public String submit() {
 		this.log.debug("submit");
-		// TODO
+
+		ObjectFactory objectFactory = new ObjectFactory();
+		CertificateRequestType certificateRequest = objectFactory
+				.createCertificateRequestType();
+		certificateRequest.setDistinguishedName(this.dn);
+		CertificateTypeType certificateType = CertificateTypeType
+				.fromValue(this.type);
+		certificateRequest.setCertificateType(certificateType);
+		certificateRequest
+				.setValidityPeriod(new BigInteger(this.validityPeriod));
+		certificateRequest.setCSR(this.csr);
+		certificateRequest.setDescription(this.description);
+
+		EntityType technicalOperator = objectFactory.createEntityType();
+		certificateRequest.setTechnicalOperator(technicalOperator);
+		Identity operatorIdentity = (Identity) this.sessionContext
+				.get("eid.identity");
+		technicalOperator.setName(operatorIdentity.name + " "
+				+ operatorIdentity.firstName);
+		technicalOperator.setFunction(this.operatorFunction);
+		technicalOperator.setEmail(this.operatorEmail);
+		technicalOperator.setPhone(this.operatorPhone);
+
+		try {
+			JAXBContext jaxbContext = JAXBContext
+					.newInstance(ObjectFactory.class);
+			Marshaller marshaller = jaxbContext.createMarshaller();
+			StringWriter stringWriter = new StringWriter();
+			marshaller
+					.marshal(objectFactory
+							.createCertificateRequest(certificateRequest),
+							stringWriter);
+			this.log.debug("document: " + stringWriter.toString());
+			this.signatureRequest = new String(Base64.encode(stringWriter
+					.toString().getBytes()));
+		} catch (JAXBException e) {
+			this.log.debug("JAXB error: " + e.getMessage(), e);
+			return null;
+		}
+
 		return "success";
 	}
 
+	public String getValidityPeriod() {
+		return this.validityPeriod;
+	}
+
+	public void setValidityPeriod(String validityPeriod) {
+		this.validityPeriod = validityPeriod;
+	}
+
+	public String getSignatureRequest() {
+		return this.signatureRequest;
+	}
+
+	public void setSignatureRequest(String signatureRequest) {
+		this.signatureRequest = signatureRequest;
+	}
 }

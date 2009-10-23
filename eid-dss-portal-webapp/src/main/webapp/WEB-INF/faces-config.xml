@@ -25,4 +25,12 @@
 		</navigation-case>
 	</navigation-rule>
 
+	<navigation-rule>
+		<from-view-id>/csr-form.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>success</from-outcome>
+			<to-view-id>/post-csr-sign-request.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+
 </faces-config>
