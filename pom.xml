@@ -33,28 +33,31 @@
 			<dependency>
 				<groupId>be.fedict.eid-applet</groupId>
 				<artifactId>eid-applet-shared</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>${eid-applet.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>be.fedict.eid-applet</groupId>
 				<artifactId>eid-applet-package</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>${eid-applet.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>be.fedict.eid-applet</groupId>
 				<artifactId>eid-applet-service</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>${eid-applet.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>be.fedict.eid-applet</groupId>
 				<artifactId>eid-applet-service-spi</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>${eid-applet.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>be.fedict.eid-applet</groupId>
 				<artifactId>eid-applet-service-signer</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>${eid-applet.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<properties>
+		<eid-applet.version>1.0.0-rc-3</eid-applet.version>
+	</properties>
 </project>
