@@ -11,7 +11,7 @@
 		-->
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-applet</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.0.GA</version>
 	</parent>
 	<groupId>be.fedict</groupId>
 	<artifactId>eid-dss</artifactId>
@@ -58,6 +58,6 @@
 		</dependencies>
 	</dependencyManagement>
 	<properties>
-		<eid-applet.version>1.0.0-rc-3</eid-applet.version>
+		<eid-applet.version>1.0.0.GA</eid-applet.version>
 	</properties>
 </project>
