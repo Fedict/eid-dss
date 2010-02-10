@@ -58,6 +58,6 @@
 		</dependencies>
 	</dependencyManagement>
 	<properties>
-		<eid-applet.version>1.0.0.GA</eid-applet.version>
+		<eid-applet.version>1.0.1-SNAPSHOT</eid-applet.version>
 	</properties>
 </project>
