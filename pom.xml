@@ -11,7 +11,7 @@
 		-->
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-applet</artifactId>
-		<version>1.0.0.GA</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 	<groupId>be.fedict</groupId>
 	<artifactId>eid-dss</artifactId>
