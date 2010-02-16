@@ -23,11 +23,29 @@
 	</scm>
 	<modules>
 		<module>eid-dss-model</module>
+		<module>eid-dss-ws</module>
+		<module>eid-dss-ws-impl</module>
+		<module>eid-dss-ws-webapp</module>
 		<module>eid-dss-webapp</module>
 		<module>eid-dss-portal-model</module>
 		<module>eid-dss-portal-webapp</module>
 		<module>eid-dss-deploy</module>
+		<module>eid-dss-client</module>
 	</modules>
+	<profiles>
+		<profile>
+			<id>tests</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>tests</value>
+				</property>
+			</activation>
+			<modules>
+				<module>eid-dss-tests</module>
+			</modules>
+		</profile>
+	</profiles>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
