@@ -19,10 +19,12 @@
 package test.be.fedict.eid.dss;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
 import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
+import be.fedict.eid.dss.client.NotParseableXMLDocumentException;
 
 public class DigitalSignatureServiceTest {
 
@@ -36,5 +38,19 @@ public class DigitalSignatureServiceTest {
 
 		// verify
 		assertFalse(result);
+	}
+
+	@Test
+	public void testVerifyNonXMLDocument() throws Exception {
+		// setup
+		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient();
+
+		// operate & verify
+		try {
+			client.verify("foo-bar");
+			fail();
+		} catch (NotParseableXMLDocumentException e) {
+			// expected
+		}
 	}
 }

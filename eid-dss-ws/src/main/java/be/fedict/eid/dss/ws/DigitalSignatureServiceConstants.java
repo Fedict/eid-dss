@@ -30,5 +30,9 @@ public class DigitalSignatureServiceConstants {
 
 	public static final String RESULT_MINOR_VALID_SIGNATURE = "urn:oasis:names:tc:dss:1.0:resultminor:valid:signature:OnAllDocuments";
 
+	public static final String RESULT_MINOR_VALID_MULTI_SIGNATURES = "urn:oasis:names:tc:dss:1.0:resultminor:ValidMultiSignatures";
+
 	public static final String RESULT_MINOR_INVALID_SIGNATURE = "urn:oasis:names:tc:dss:1.0:resultminor:invalid:IncorrectSignature";
+
+	public static final String RESULT_MINOR_NOT_PARSEABLE_XML_DOCUMENT = "urn:oasis:names:tc:dss:1.0:resultminor:NotParseableXMLDocument";
 }

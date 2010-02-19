@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.ws;
 
+import java.security.cert.X509Certificate;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -33,8 +34,16 @@ import oasis.names.tc.dss._1_0.core.schema.VerifyRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import be.fedict.eid.dss.DocumentFormatException;
+import be.fedict.eid.dss.InvalidSignatureException;
 import be.fedict.eid.dss.SignatureVerificationService;
 
+/**
+ * Implementation of the DSS verification web service JAX-WS endpoint.
+ * 
+ * @author Frank Cornelis
+ * 
+ */
 @WebService(endpointInterface = "be.fedict.eid.dss.ws.DigitalSignatureServicePortType")
 @ServiceConsumer
 public class DigitalSignatureServicePortImpl implements
@@ -67,14 +76,27 @@ public class DigitalSignatureServicePortImpl implements
 		if (null == xmlData) {
 			return createRequestorErrorResponse(dssObjectFactory, requestId);
 		}
-		boolean valid = this.signatureVerificationService.verify(xmlData);
+		List<X509Certificate> signatories;
+		try {
+			signatories = this.signatureVerificationService.verify(xmlData);
+		} catch (DocumentFormatException e) {
+			return createRequestorErrorResponse(
+					dssObjectFactory,
+					requestId,
+					DigitalSignatureServiceConstants.RESULT_MINOR_NOT_PARSEABLE_XML_DOCUMENT);
+		} catch (InvalidSignatureException e) {
+			return createRequestorErrorResponse(dssObjectFactory, requestId);
+		}
 		ResponseBaseType responseBase = dssObjectFactory
 				.createResponseBaseType();
 		responseBase.setRequestID(requestId);
 		Result result = dssObjectFactory.createResult();
 		result
 				.setResultMajor(DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS);
-		if (valid) {
+		if (signatories.size() > 1) {
+			result
+					.setResultMinor(DigitalSignatureServiceConstants.RESULT_MINOR_VALID_MULTI_SIGNATURES);
+		} else if (1 == signatories.size()) {
 			result
 					.setResultMinor(DigitalSignatureServiceConstants.RESULT_MINOR_VALID_SIGNATURE);
 		} else {
@@ -87,12 +109,20 @@ public class DigitalSignatureServicePortImpl implements
 
 	private ResponseBaseType createRequestorErrorResponse(
 			ObjectFactory dssObjectFactory, String requestId) {
+		return createRequestorErrorResponse(dssObjectFactory, requestId, null);
+	}
+
+	private ResponseBaseType createRequestorErrorResponse(
+			ObjectFactory dssObjectFactory, String requestId, String resultMinor) {
 		ResponseBaseType responseBase = dssObjectFactory
 				.createResponseBaseType();
 		responseBase.setRequestID(requestId);
 		Result result = dssObjectFactory.createResult();
 		result
 				.setResultMajor(DigitalSignatureServiceConstants.RESULT_MAJOR_REQUESTER_ERROR);
+		if (null != resultMinor) {
+			result.setResultMinor(resultMinor);
+		}
 		responseBase.setResult(result);
 		return responseBase;
 	}
