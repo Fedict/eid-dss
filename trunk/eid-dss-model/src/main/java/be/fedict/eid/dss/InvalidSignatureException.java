@@ -18,31 +18,8 @@
 
 package be.fedict.eid.dss;
 
-import java.security.cert.X509Certificate;
-import java.util.List;
+public class InvalidSignatureException extends Exception {
 
-import javax.ejb.Local;
+	private static final long serialVersionUID = 1L;
 
-/**
- * Service interface for signature verification service.
- * 
- * @author Frank Cornelis
- * 
- */
-@Local
-public interface SignatureVerificationService {
-
-	/**
-	 * Verifies the given XML structure for the presence of valid XML
-	 * signatures.
-	 * 
-	 * @param xmlData
-	 *            the given XML data.
-	 * @return the list of X509 identities of all signing parties.
-	 * @exception DocumentFormatException
-	 *                in case the given data is not valid XML.
-	 * @throws InvalidSignatureException
-	 */
-	List<X509Certificate> verify(byte[] xmlData)
-			throws DocumentFormatException, InvalidSignatureException;
 }
