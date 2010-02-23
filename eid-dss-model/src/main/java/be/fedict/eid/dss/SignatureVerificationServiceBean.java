@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateless;
+import javax.xml.crypto.KeySelectorException;
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.crypto.dsig.XMLSignatureException;
@@ -56,6 +57,7 @@ public class SignatureVerificationServiceBean implements
 	@PostConstruct
 	public void postConstruct() {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setNamespaceAware(true);
 		try {
 			this.builder = factory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
