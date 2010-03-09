@@ -19,6 +19,8 @@
 package be.fedict.eid.dss.client;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -40,6 +42,8 @@ public class LoggingSoapHandler implements SOAPHandler<SOAPMessageContext> {
 
 	private static final Log LOG = LogFactory.getLog(LoggingSoapHandler.class);
 
+	private static final boolean LOG_TO_FILE = true;
+
 	public Set<QName> getHeaders() {
 		return null;
 	}
@@ -60,6 +64,16 @@ public class LoggingSoapHandler implements SOAPHandler<SOAPMessageContext> {
 		SOAPMessage soapMessage = context.getMessage();
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try {
+			if (LOG_TO_FILE) {
+				File tmpFile = File.createTempFile("eid-dss-soap-"
+						+ (outboundProperty ? "outbound" : "inbound") + "-",
+						".xml");
+				FileOutputStream fileOutputStream = new FileOutputStream(
+						tmpFile);
+				soapMessage.writeTo(fileOutputStream);
+				fileOutputStream.close();
+				LOG.debug("tmp file: " + tmpFile.getAbsolutePath());
+			}
 			soapMessage.writeTo(output);
 		} catch (Exception e) {
 			LOG.error("SOAP error: " + e.getMessage());
