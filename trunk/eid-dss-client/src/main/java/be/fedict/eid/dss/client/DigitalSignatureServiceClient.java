@@ -51,8 +51,20 @@ import be.fedict.eid.dss.ws.DigitalSignatureServicePortType;
  */
 public class DigitalSignatureServiceClient {
 
+	public static final String DEFAULT_ENDPOINT_ADDRESS = "http://localhost:8080/eid-dss-ws/dss";
+
 	private static final Log LOG = LogFactory
 			.getLog(DigitalSignatureServiceClient.class);
+
+	private final String endpointAddress;
+
+	public DigitalSignatureServiceClient(String endpointAddress) {
+		this.endpointAddress = endpointAddress;
+	}
+
+	public DigitalSignatureServiceClient() {
+		this(DEFAULT_ENDPOINT_ADDRESS);
+	}
 
 	public boolean verify(String signedDocument)
 			throws NotParseableXMLDocumentException {
@@ -170,9 +182,9 @@ public class DigitalSignatureServiceClient {
 				.getDigitalSignatureServicePort();
 
 		BindingProvider bindingProvider = (BindingProvider) digitalSignatureServicePort;
-		bindingProvider.getRequestContext().put(
-				BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-				"http://localhost:8080/eid-dss-ws/dss");
+		bindingProvider.getRequestContext()
+				.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+						this.endpointAddress);
 
 		Binding binding = bindingProvider.getBinding();
 		List<Handler> handlerChain = binding.getHandlerChain();
