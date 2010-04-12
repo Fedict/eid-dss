@@ -37,6 +37,7 @@ import oasis.names.tc.saml._1_0.assertion.NameIdentifierType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Element;
 
 import be.fedict.eid.dss.ws.DigitalSignatureService;
 import be.fedict.eid.dss.ws.DigitalSignatureServiceConstants;
@@ -160,6 +161,17 @@ public class DigitalSignatureServiceClient {
 						String name = nameIdentifier.getValue();
 						LOG.debug("identifier: " + name);
 						return name;
+					}
+				}
+				if (anyObject instanceof Element) {
+					Element element = (Element) anyObject;
+					if ("NameIdentifier".equals(element.getLocalName())) {
+						String name = element.getTextContent();
+						if (name!=null) {
+							name = name.trim();
+							LOG.debug("identifier: " + name);
+							return name;
+						}
 					}
 				}
 			}
