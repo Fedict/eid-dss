@@ -43,6 +43,10 @@
 			<artifactId>eid-applet-service-signer</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>be.fedict.eid-trust-service</groupId>
+			<artifactId>eid-trust-service-client</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging-api</artifactId>
 		</dependency>

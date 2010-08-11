@@ -73,9 +73,20 @@
 				<artifactId>eid-applet-service-signer</artifactId>
 				<version>${eid-applet.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>be.fedict.eid-trust-service</groupId>
+				<artifactId>eid-trust-service-client</artifactId>
+				<version>${eid-trust-service.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>be.fedict.eid-trust-service</groupId>
+				<artifactId>eid-trust-service-xkms2-ws</artifactId>
+				<version>${eid-trust-service.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<properties>
 		<eid-applet.version>1.0.1-SNAPSHOT</eid-applet.version>
+		<eid-trust-service.version>1.0.0-SNAPSHOT</eid-trust-service.version>
 	</properties>
 </project>

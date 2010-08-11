@@ -39,7 +39,11 @@ import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.facets.EnvelopedSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.KeyInfoSignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.TSPTimeStampService;
+import be.fedict.eid.applet.service.signer.facets.TimeStampService;
+import be.fedict.eid.applet.service.signer.facets.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
 import be.fedict.eid.applet.service.spi.SignatureService;
 
 @Stateless
@@ -54,7 +58,14 @@ public class XMLSignatureServiceBean extends AbstractXmlSignatureService {
 		addSignatureFacet(new EnvelopedSignatureFacet());
 		addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
 		addSignatureFacet(new XAdESSignatureFacet());
+		String tspServiceUrl = "http://tsa.belgium.be/connect";
+		TimeStampServiceValidator validator = new TrustServiceTimeStampServiceValidator();
+		TSPTimeStampService timeStampService = new TSPTimeStampService(
+				tspServiceUrl, validator);
+		timeStampService.setProxy("proxy.yourict.net", 8080);
+		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService));
 		addSignatureFacet(new SignerCertificateSignatureFacet());
+		setSignatureNamespacePrefix("ds");
 	}
 
 	@Override
