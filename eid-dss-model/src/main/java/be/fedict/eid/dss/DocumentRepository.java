@@ -25,7 +25,7 @@ import javax.servlet.http.HttpSession;
 /**
  * A document repository based on HTTP session storage.
  * 
- * @author fcorneli
+ * @author Frank Cornelis
  * 
  */
 public class DocumentRepository {

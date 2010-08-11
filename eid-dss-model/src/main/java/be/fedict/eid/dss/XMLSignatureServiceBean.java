@@ -39,8 +39,8 @@ import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.facets.EnvelopedSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.KeyInfoSignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.eid.applet.service.signer.facets.TSPTimeStampService;
-import be.fedict.eid.applet.service.signer.facets.TimeStampService;
 import be.fedict.eid.applet.service.signer.facets.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
@@ -63,7 +63,9 @@ public class XMLSignatureServiceBean extends AbstractXmlSignatureService {
 		TSPTimeStampService timeStampService = new TSPTimeStampService(
 				tspServiceUrl, validator);
 		timeStampService.setProxy("proxy.yourict.net", 8080);
-		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService));
+		RevocationDataService revocationDataService = new TrustServiceRevocationDataService();
+		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
+				revocationDataService));
 		addSignatureFacet(new SignerCertificateSignatureFacet());
 		setSignatureNamespacePrefix("ds");
 	}
