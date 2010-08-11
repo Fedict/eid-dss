@@ -39,6 +39,16 @@
 							<bundleDir>lib</bundleDir>
 						</jarModule>
 						<jarModule>
+							<groupId>be.fedict.eid-trust-service</groupId>
+							<artifactId>eid-trust-service-client</artifactId>
+							<includeInApplicationXml>true</includeInApplicationXml>
+						</jarModule>
+						<jarModule>
+							<groupId>be.fedict.eid-trust-service</groupId>
+							<artifactId>eid-trust-service-xkms2-ws</artifactId>
+							<includeInApplicationXml>true</includeInApplicationXml>
+						</jarModule>
+						<jarModule>
 							<groupId>be.fedict.eid-applet</groupId>
 							<artifactId>eid-applet-service-signer</artifactId>
 							<includeInApplicationXml>true</includeInApplicationXml>
@@ -95,6 +105,14 @@
 		<dependency>
 			<groupId>be.fedict.eid-applet</groupId>
 			<artifactId>eid-applet-service-signer</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-trust-service</groupId>
+			<artifactId>eid-trust-service-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-trust-service</groupId>
+			<artifactId>eid-trust-service-xkms2-ws</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
@@ -228,6 +246,31 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ws.security</groupId>
+			<artifactId>wss4j</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.ws</groupId>
+			<artifactId>jaxws-rt</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bctsp-jdk16</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

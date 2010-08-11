@@ -38,6 +38,18 @@
 			<version>${eid-applet.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>be.fedict.eid-applet</groupId>
+			<artifactId>eid-applet-service-signer</artifactId>
+			<scope>test</scope>
+			<version>${eid-applet.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-trust-service</groupId>
+			<artifactId>eid-trust-service-client</artifactId>
+			<scope>test</scope>
+			<version>${eid-trust-service.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging-api</artifactId>
 		</dependency>
