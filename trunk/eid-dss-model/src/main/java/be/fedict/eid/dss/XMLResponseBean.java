@@ -35,7 +35,7 @@ import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 /**
  * XML Response bean. Used by the post-response.xhtml page.
  * 
- * @author fcorneli
+ * @author Frank Cornelis
  * 
  */
 @Stateless

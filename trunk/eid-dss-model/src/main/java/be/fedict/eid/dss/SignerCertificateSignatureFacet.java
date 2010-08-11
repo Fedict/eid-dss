@@ -39,7 +39,7 @@ import be.fedict.eid.applet.service.signer.SignatureFacet;
 /**
  * Signature Facet to push the signer certificate in the HTTP session.
  * 
- * @author fcorneli
+ * @author Frank Cornelis
  * 
  */
 public class SignerCertificateSignatureFacet implements SignatureFacet {
