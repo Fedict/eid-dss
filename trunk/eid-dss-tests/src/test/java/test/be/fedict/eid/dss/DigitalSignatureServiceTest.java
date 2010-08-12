@@ -79,9 +79,11 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import sun.security.pkcs11.wrapper.PKCS11Exception;
+import be.fedict.eid.applet.DiagnosticTests;
 import be.fedict.eid.applet.Messages;
 import be.fedict.eid.applet.Status;
 import be.fedict.eid.applet.View;
+import be.fedict.eid.applet.Messages.MESSAGE_ID;
 import be.fedict.eid.applet.sc.Pkcs11Eid;
 import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
 import be.fedict.eid.dss.client.NotParseableXMLDocumentException;
@@ -111,6 +113,27 @@ public class DigitalSignatureServiceTest {
 		}
 
 		public void progressIndication(int max, int current) {
+		}
+
+		@Override
+		public void addTestResult(DiagnosticTests diagnosticTest,
+				boolean success, String description) {
+		}
+
+		@Override
+		public void increaseProgress() {
+		}
+
+		@Override
+		public void resetProgress(int max) {
+		}
+
+		@Override
+		public void setProgressIndeterminate() {
+		}
+
+		@Override
+		public void setStatusMessage(Status status, MESSAGE_ID messageId) {
 		}
 	}
 
