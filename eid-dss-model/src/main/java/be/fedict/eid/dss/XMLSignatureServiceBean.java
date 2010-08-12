@@ -55,17 +55,18 @@ public class XMLSignatureServiceBean extends AbstractXmlSignatureService {
 
 	public XMLSignatureServiceBean() {
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
-		addSignatureFacet(new EnvelopedSignatureFacet());
+		addSignatureFacet(new EnvelopedSignatureFacet("SHA-512"));
 		addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
-		addSignatureFacet(new XAdESSignatureFacet());
+		addSignatureFacet(new XAdESSignatureFacet("SHA-512"));
 		String tspServiceUrl = "http://tsa.belgium.be/connect";
 		TimeStampServiceValidator validator = new TrustServiceTimeStampServiceValidator();
 		TSPTimeStampService timeStampService = new TSPTimeStampService(
 				tspServiceUrl, validator);
+		timeStampService.setDigestAlgo("SHA-512");
 		timeStampService.setProxy("proxy.yourict.net", 8080);
 		RevocationDataService revocationDataService = new TrustServiceRevocationDataService();
 		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
-				revocationDataService));
+				revocationDataService, "SHA-512"));
 		addSignatureFacet(new SignerCertificateSignatureFacet());
 		setSignatureNamespacePrefix("ds");
 	}
@@ -102,6 +103,11 @@ public class XMLSignatureServiceBean extends AbstractXmlSignatureService {
 
 	public String getFilesDigestAlgorithm() {
 		return null;
+	}
+
+	@Override
+	protected String getSignatureDigestAlgorithm() {
+		return "SHA-512";
 	}
 
 	@Override
