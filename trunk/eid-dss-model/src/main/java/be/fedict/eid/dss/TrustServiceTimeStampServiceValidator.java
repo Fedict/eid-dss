@@ -21,6 +21,13 @@ package be.fedict.eid.dss;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
+import org.bouncycastle.util.encoders.Base64;
+import org.etsi.uri._01903.v1_3.CRLValuesType;
+import org.etsi.uri._01903.v1_3.EncapsulatedPKIDataType;
+import org.etsi.uri._01903.v1_3.OCSPValuesType;
+import org.etsi.uri._01903.v1_3.RevocationValuesType;
+
+import be.fedict.eid.applet.service.signer.facets.RevocationData;
 import be.fedict.eid.applet.service.signer.facets.TimeStampServiceValidator;
 import be.fedict.trust.client.XKMS2Client;
 
@@ -34,8 +41,34 @@ public class TrustServiceTimeStampServiceValidator implements
 				"http://localhost:8080/eid-trust-service-ws/xkms2");
 	}
 
-	public void validate(List<X509Certificate> certificateChain)
-			throws Exception {
-		this.xkms2Client.validate("BE-TSA", certificateChain);
+	public void validate(List<X509Certificate> certificateChain,
+			RevocationData revocationData) throws Exception {
+		this.xkms2Client.validate("BE-TSA", certificateChain,
+				revocationData != null);
+		if (null == revocationData) {
+			return;
+		}
+		RevocationValuesType revocationValues = this.xkms2Client
+				.getRevocationValues();
+		CRLValuesType crlValues = revocationValues.getCRLValues();
+		if (null != crlValues) {
+			List<EncapsulatedPKIDataType> encapsulatedCrls = crlValues
+					.getEncapsulatedCRLValue();
+			for (EncapsulatedPKIDataType encapsulatedCrl : encapsulatedCrls) {
+				// XXX: stupid work-around for double base64 coding
+				byte[] encodedCrl = Base64.decode(encapsulatedCrl.getValue());
+				revocationData.addCRL(encodedCrl);
+			}
+		}
+		OCSPValuesType ocspValues = revocationValues.getOCSPValues();
+		if (null != ocspValues) {
+			List<EncapsulatedPKIDataType> encapsulatedOcsps = ocspValues
+					.getEncapsulatedOCSPValue();
+			for (EncapsulatedPKIDataType encapsulatedOcsp : encapsulatedOcsps) {
+				// XXX: stupid work-around for double base64 coding
+				byte[] encodedOcsp = Base64.decode(encapsulatedOcsp.getValue());
+				revocationData.addOCSP(encodedOcsp);
+			}
+		}
 	}
 }
