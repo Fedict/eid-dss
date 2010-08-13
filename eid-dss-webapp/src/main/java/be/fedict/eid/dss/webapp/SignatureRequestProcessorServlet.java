@@ -54,8 +54,7 @@ public class SignatureRequestProcessorServlet extends HttpServlet {
 	public static final String LANGUAGE_PARAMETER = "language";
 
 	public static final String LANGUAGE_SESSION_ATTRIBUTE = SignatureRequestProcessorServlet.class
-			.getName()
-			+ ".language";
+			.getName() + ".language";
 
 	public static final String NEXT_PAGE_INIT_PARAM = "NextPage";
 
@@ -92,12 +91,10 @@ public class SignatureRequestProcessorServlet extends HttpServlet {
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		out.println("<html>");
-		out
-				.println("<head><title>eID DSS Signature Request Processor</title></head>");
+		out.println("<head><title>eID DSS Signature Request Processor</title></head>");
 		out.println("<body>");
 		out.println("<h1>eID DSS Signature Request Processor</h1>");
-		out
-				.println("<p>The Signature Processor should not be accessed directly.</p>");
+		out.println("<p>The Signature Processor should not be accessed directly.</p>");
 		out.println("</body></html>");
 		out.close();
 	}
@@ -110,6 +107,12 @@ public class SignatureRequestProcessorServlet extends HttpServlet {
 		HttpSession httpSession = request.getSession();
 		DocumentRepository documentRepository = new DocumentRepository(
 				httpSession);
+
+		/*
+		 * Make sure we don't use previous results.
+		 */
+		documentRepository.reset();
+
 		if (null != target) {
 			LOG.debug("target: " + target);
 			documentRepository.setTarget(target);
@@ -165,8 +168,7 @@ public class SignatureRequestProcessorServlet extends HttpServlet {
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		out.println("<html>");
-		out
-				.println("<head><title>eID DSS Signature Request Processor</title></head>");
+		out.println("<head><title>eID DSS Signature Request Processor</title></head>");
 		out.println("<body>");
 		out.println("<h1>eID DSS Signature Request Processor</h1>");
 		out.println("<p>ERROR: " + message + "</p>");
