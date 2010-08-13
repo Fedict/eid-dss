@@ -31,29 +31,32 @@ import javax.servlet.http.HttpSession;
 public class DocumentRepository {
 
 	public static final String DOCUMENT_SESSION_ATTRIBUTE = DocumentRepository.class
-			.getName()
-			+ ".document";
+			.getName() + ".document";
 
 	public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE = DocumentRepository.class
-			.getName()
-			+ ".signedDocument";
+			.getName() + ".signedDocument";
 
 	public static final String TARGET_SESSION_ATTRIBUTE = DocumentRepository.class
-			.getName()
-			+ ".target";
+			.getName() + ".target";
 
 	public static final String SIGNATURE_STATUS_SESSION_ATTRIBUTE = DocumentRepository.class
-			.getName()
-			+ ".status";
+			.getName() + ".status";
 
 	public static final String SIGNER_CERTIFICATE_SESSION_ATTRIBUTE = DocumentRepository.class
-			.getName()
-			+ ".certificate";
+			.getName() + ".certificate";
 
 	public final HttpSession httpSession;
 
 	public DocumentRepository(HttpSession httpSession) {
 		this.httpSession = httpSession;
+	}
+
+	public void reset() {
+		this.httpSession.removeAttribute(DOCUMENT_SESSION_ATTRIBUTE);
+		this.httpSession.removeAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE);
+		this.httpSession.removeAttribute(TARGET_SESSION_ATTRIBUTE);
+		this.httpSession.removeAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE);
+		this.httpSession.removeAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE);
 	}
 
 	public void setDocument(String document) {

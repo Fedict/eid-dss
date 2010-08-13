@@ -46,14 +46,6 @@ public class XMLResponseBean implements XMLResponse {
 	@Logger
 	private Log log;
 
-	private String encodedSignatureResponse;
-
-	private String target;
-
-	private String signatureStatus;
-
-	private String encodedSignatureCertificate;
-
 	public String getEncodedSignatureResponse() {
 		HttpSession httpSession = HttpSessionTemporaryDataStorage
 				.getHttpSession();
@@ -62,11 +54,10 @@ public class XMLResponseBean implements XMLResponse {
 
 		String signedDocument = documentRepository.getSignedDocument();
 		if (null != signedDocument) {
-			this.encodedSignatureResponse = new String(Base64
-					.encode(signedDocument.getBytes()));
+			return new String(Base64.encode(signedDocument.getBytes()));
 		}
 
-		return this.encodedSignatureResponse;
+		return null;
 	}
 
 	public String getTarget() {
@@ -74,17 +65,17 @@ public class XMLResponseBean implements XMLResponse {
 				.getHttpSession();
 		DocumentRepository documentRepository = new DocumentRepository(
 				httpSession);
-		this.target = documentRepository.getTarget();
+		String target = documentRepository.getTarget();
 		this.log.debug("target: " + target);
-		return this.target;
+		return target;
 	}
 
 	public void setEncodedSignatureResponse(String encodedSignatureResponse) {
-		this.encodedSignatureResponse = encodedSignatureResponse;
+		// keep JSF happy
 	}
 
 	public void setTarget(String target) {
-		this.target = target;
+		// keep JSF happy
 	}
 
 	public String getSignatureStatus() {
@@ -92,14 +83,14 @@ public class XMLResponseBean implements XMLResponse {
 				.getHttpSession();
 		DocumentRepository documentRepository = new DocumentRepository(
 				httpSession);
-		this.signatureStatus = documentRepository.getSignatureStatus()
+		String signatureStatus = documentRepository.getSignatureStatus()
 				.getStatus();
-		this.log.debug("signature status: " + this.signatureStatus);
-		return this.signatureStatus;
+		this.log.debug("signature status: " + signatureStatus);
+		return signatureStatus;
 	}
 
 	public void setSignatureStatus(String signatureStatus) {
-		this.signatureStatus = signatureStatus;
+		// keep JSF happy
 	}
 
 	public String getEncodedSignatureCertificate() {
@@ -112,8 +103,7 @@ public class XMLResponseBean implements XMLResponse {
 				.getSignerCertificate();
 		if (null != signerCertificate) {
 			try {
-				this.encodedSignatureCertificate = new String(Base64
-						.encode(signerCertificate.getEncoded()));
+				return new String(Base64.encode(signerCertificate.getEncoded()));
 			} catch (CertificateEncodingException e) {
 				this.log.error("certificate encoding error: " + e.getMessage(),
 						e);
@@ -121,11 +111,11 @@ public class XMLResponseBean implements XMLResponse {
 		} else {
 			this.log.error("signer certificate is null");
 		}
-		return this.encodedSignatureCertificate;
+		return null;
 	}
 
 	public void setEncodedSignatureCertificate(
 			String encodedSignatureCertificate) {
-		this.encodedSignatureCertificate = encodedSignatureCertificate;
+		// keep JSF happy
 	}
 }
