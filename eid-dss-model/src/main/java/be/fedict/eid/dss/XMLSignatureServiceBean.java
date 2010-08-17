@@ -40,10 +40,10 @@ import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.facets.EnvelopedSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.KeyInfoSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
-import be.fedict.eid.applet.service.signer.facets.TSPTimeStampService;
-import be.fedict.eid.applet.service.signer.facets.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
+import be.fedict.eid.applet.service.signer.time.TSPTimeStampService;
+import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.spi.SignatureService;
 
 @Stateless

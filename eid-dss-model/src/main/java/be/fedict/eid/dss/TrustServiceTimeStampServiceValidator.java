@@ -28,7 +28,7 @@ import org.etsi.uri._01903.v1_3.OCSPValuesType;
 import org.etsi.uri._01903.v1_3.RevocationValuesType;
 
 import be.fedict.eid.applet.service.signer.facets.RevocationData;
-import be.fedict.eid.applet.service.signer.facets.TimeStampServiceValidator;
+import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.trust.client.XKMS2Client;
 
 public class TrustServiceTimeStampServiceValidator implements
