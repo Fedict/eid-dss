@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DigitalSignatureServiceProtocol xmlns="urn:be:fedict:eid:dss:spi:protocol">
+	<Name>Simple DSS protocol</Name>
+	<Description>A very simple implementation of a DSS protocol.</Description>
+	<ProtocolServiceClass>be.fedict.eid.dss.protocol.simple.SimpleDSSProtocolService</ProtocolServiceClass>
+	<ContextPath>/simple</ContextPath>
+</DigitalSignatureServiceProtocol>
