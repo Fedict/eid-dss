@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss;
+package be.fedict.eid.dss.control;
 
 import javax.ejb.Stateless;
 import javax.servlet.http.HttpSession;
@@ -25,6 +25,8 @@ import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.annotations.Name;
 
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
+import be.fedict.eid.dss.model.DocumentRepository;
+import be.fedict.eid.dss.model.SignatureStatus;
 
 @Stateless
 @Name("xmlView")

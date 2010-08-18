@@ -58,6 +58,10 @@
 							<groupId>be.fedict.eid-dss</groupId>
 							<artifactId>eid-dss-model</artifactId>
 						</ejbModule>
+						<ejbModule>
+							<groupId>be.fedict.eid-dss</groupId>
+							<artifactId>eid-dss-webapp-control</artifactId>
+						</ejbModule>
 						<webModule>
 							<groupId>be.fedict.eid-dss</groupId>
 							<artifactId>eid-dss-webapp</artifactId>
@@ -117,6 +121,12 @@
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-model</artifactId>
+			<type>ejb</type>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-webapp-control</artifactId>
 			<type>ejb</type>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>

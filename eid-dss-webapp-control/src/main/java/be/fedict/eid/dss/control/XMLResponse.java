@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2009-2010 FedICT.
+ * Copyright (C) 2009 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -16,10 +16,27 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss;
+package be.fedict.eid.dss.control;
 
-public class DocumentFormatException extends Exception {
+import javax.ejb.Local;
 
-	private static final long serialVersionUID = 1L;
+@Local
+public interface XMLResponse {
 
+	// accessors
+	String getTarget();
+
+	void setTarget(String target);
+
+	String getEncodedSignatureResponse();
+
+	void setEncodedSignatureResponse(String encodedSignatureResponse);
+
+	String getSignatureStatus();
+
+	void setSignatureStatus(String signatureStatus);
+
+	void setEncodedSignatureCertificate(String encodedSignatureCertificate);
+
+	String getEncodedSignatureCertificate();
 }

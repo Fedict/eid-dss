@@ -16,21 +16,13 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss;
+package be.fedict.eid.dss.control;
 
-public enum SignatureStatus {
+import javax.ejb.Local;
 
-	OK("OK"), USER_CANCELLED("USER_CANCELLED"), CERTIFICATE_INVALID(
-			"CERTIFICATE_INVALID"), FILE_FORMAT("FILE_FORMAT"), FILE_SIZE(
-			"FILE_SIZE");
+@Local
+public interface XMLView {
 
-	private final String status;
-
-	private SignatureStatus(String status) {
-		this.status = status;
-	}
-
-	public String getStatus() {
-		return this.status;
-	}
+	// actions
+	String cancel();
 }

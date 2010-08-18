@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss;
+package be.fedict.eid.dss.control;
 
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
@@ -31,6 +31,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.log.Log;
 
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
+import be.fedict.eid.dss.model.DocumentRepository;
 
 /**
  * XML Response bean. Used by the post-response.xhtml page.

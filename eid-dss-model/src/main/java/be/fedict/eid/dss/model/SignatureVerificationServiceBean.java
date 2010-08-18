@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss;
+package be.fedict.eid.dss.model;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss;
+package be.fedict.eid.dss.model;
 
 import java.security.cert.X509Certificate;
 import java.util.List;

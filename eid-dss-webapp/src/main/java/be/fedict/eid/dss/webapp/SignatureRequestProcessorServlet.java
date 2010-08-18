@@ -40,8 +40,8 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import be.fedict.eid.dss.DocumentRepository;
-import be.fedict.eid.dss.SignatureStatus;
+import be.fedict.eid.dss.model.DocumentRepository;
+import be.fedict.eid.dss.model.SignatureStatus;
 
 public class SignatureRequestProcessorServlet extends HttpServlet {
 

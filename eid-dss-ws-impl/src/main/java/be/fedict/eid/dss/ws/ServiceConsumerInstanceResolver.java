@@ -27,7 +27,7 @@ import javax.xml.ws.handler.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import be.fedict.eid.dss.SignatureVerificationService;
+import be.fedict.eid.dss.model.SignatureVerificationService;
 
 import com.sun.xml.ws.api.message.Packet;
 import com.sun.xml.ws.server.AbstractMultiInstanceResolver;

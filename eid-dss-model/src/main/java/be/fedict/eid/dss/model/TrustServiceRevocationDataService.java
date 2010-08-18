@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss;
+package be.fedict.eid.dss.model;
 
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -28,47 +28,56 @@ import org.etsi.uri._01903.v1_3.OCSPValuesType;
 import org.etsi.uri._01903.v1_3.RevocationValuesType;
 
 import be.fedict.eid.applet.service.signer.facets.RevocationData;
-import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
+import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.trust.client.XKMS2Client;
 
-public class TrustServiceTimeStampServiceValidator implements
-		TimeStampServiceValidator {
+/**
+ * Revocation data service implementation using the eID Trust Service.
+ * 
+ * @author Frank Cornelis
+ * 
+ */
+public class TrustServiceRevocationDataService implements RevocationDataService {
 
 	private final XKMS2Client xkms2Client;
 
-	public TrustServiceTimeStampServiceValidator() {
+	public TrustServiceRevocationDataService() {
 		this.xkms2Client = new XKMS2Client(
 				"http://localhost:8080/eid-trust-service-ws/xkms2");
 	}
 
-	public void validate(List<X509Certificate> certificateChain,
-			RevocationData revocationData) throws Exception {
-		this.xkms2Client.validate("BE-TSA", certificateChain,
-				revocationData != null);
-		if (null == revocationData) {
-			return;
+	public RevocationData getRevocationData(
+			List<X509Certificate> certificateChain) {
+		try {
+			this.xkms2Client.validate("BE", certificateChain, true);
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"error validating signing certificate chain: "
+							+ e.getMessage(), e);
 		}
 		RevocationValuesType revocationValues = this.xkms2Client
 				.getRevocationValues();
+		RevocationData revocationData = new RevocationData();
 		CRLValuesType crlValues = revocationValues.getCRLValues();
 		if (null != crlValues) {
-			List<EncapsulatedPKIDataType> encapsulatedCrls = crlValues
+			List<EncapsulatedPKIDataType> encapsulatedCRLValueList = crlValues
 					.getEncapsulatedCRLValue();
-			for (EncapsulatedPKIDataType encapsulatedCrl : encapsulatedCrls) {
-				// XXX: stupid work-around for double base64 coding
-				byte[] encodedCrl = Base64.decode(encapsulatedCrl.getValue());
-				revocationData.addCRL(encodedCrl);
+			for (EncapsulatedPKIDataType encapsulatedCRLValue : encapsulatedCRLValueList) {
+				// XXX: dirty work-around for eID Trust Service client double
+				// base64 encoding issue.
+				byte[] crl = Base64.decode(encapsulatedCRLValue.getValue());
+				revocationData.addCRL(crl);
 			}
 		}
 		OCSPValuesType ocspValues = revocationValues.getOCSPValues();
 		if (null != ocspValues) {
-			List<EncapsulatedPKIDataType> encapsulatedOcsps = ocspValues
+			List<EncapsulatedPKIDataType> encapsulatedOCSPValueList = ocspValues
 					.getEncapsulatedOCSPValue();
-			for (EncapsulatedPKIDataType encapsulatedOcsp : encapsulatedOcsps) {
-				// XXX: stupid work-around for double base64 coding
-				byte[] encodedOcsp = Base64.decode(encapsulatedOcsp.getValue());
-				revocationData.addOCSP(encodedOcsp);
+			for (EncapsulatedPKIDataType encapsulatedOCSPValue : encapsulatedOCSPValueList) {
+				byte[] ocsp = Base64.decode(encapsulatedOCSPValue.getValue());
+				revocationData.addOCSP(ocsp);
 			}
 		}
+		return revocationData;
 	}
 }
