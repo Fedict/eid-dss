@@ -53,17 +53,6 @@
 					XML</a></li>
 				</c:otherwise>
 			</c:choose>
-
-			<c:choose>
-				<c:when test="#{activeMenu == 'csr'}">
-					<li class="selected"><a
-						href="#{facesContext.externalContext.requestContextPath}/csr-start.seam">CSR</a></li>
-				</c:when>
-				<c:otherwise>
-					<li><a
-						href="#{facesContext.externalContext.requestContextPath}/csr-start.seam">CSR</a></li>
-				</c:otherwise>
-			</c:choose>
 		</ul>
 		</div>
 	</h:form>

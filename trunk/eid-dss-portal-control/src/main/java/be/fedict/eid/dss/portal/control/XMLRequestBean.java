@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.portal.model;
+package be.fedict.eid.dss.portal.control;
 
 import javax.ejb.Remove;
 import javax.ejb.Stateful;

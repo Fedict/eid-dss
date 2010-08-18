@@ -69,7 +69,7 @@
 						</webModule>
 						<ejbModule>
 							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-portal-model</artifactId>
+							<artifactId>eid-dss-portal-control</artifactId>
 						</ejbModule>
 						<webModule>
 							<groupId>be.fedict.eid-dss</groupId>
@@ -138,7 +138,7 @@
 		</dependency>
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-portal-model</artifactId>
+			<artifactId>eid-dss-portal-control</artifactId>
 			<type>ejb</type>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>

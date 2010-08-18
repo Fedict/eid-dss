@@ -15,50 +15,23 @@
  * License along with this software; if not, see 
  * http://www.gnu.org/licenses/.
  */
-package be.fedict.eid.dss.portal.model;
+
+package be.fedict.eid.dss.portal.control;
 
 import javax.ejb.Local;
 import javax.ejb.Remove;
 
 @Local
-public interface CSRForm {
+public interface XMLRequest {
 
 	// accessors
-	String getDn();
+	String getDocument();
 
-	void setDn(String dn);
+	void setDocument(String document);
 
-	String getType();
+	String getEncodedDocument();
 
-	void setType(String type);
-
-	String getValidityPeriod();
-
-	void setValidityPeriod(String validityPeriod);
-
-	String getOperatorFunction();
-
-	void setOperatorFunction(String operatorFunction);
-
-	String getOperatorEmail();
-
-	void setOperatorEmail(String operatorEmail);
-
-	String getOperatorPhone();
-
-	void setOperatorPhone(String operatorPhone);
-
-	String getDescription();
-
-	void setDescription(String description);
-
-	String getCsr();
-
-	void setCsr(String csr);
-
-	String getSignatureRequest();
-
-	void setSignatureRequest(String signatureRequest);
+	void setEncodedDocument(String encodedDocument);
 
 	// actions
 	String submit();
