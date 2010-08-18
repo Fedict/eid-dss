@@ -3,7 +3,8 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd"
 	version="3.0">
 
-	<display-name>eID Digital Signature Service Portal Model</display-name>
+	<display-name>eID Digital Signature Service Portal Controller
+		Components</display-name>
 
 	<interceptors>
 		<interceptor>

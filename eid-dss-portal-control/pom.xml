@@ -7,10 +7,10 @@
 		<artifactId>eid-dss</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<name>FedICT eID Digital Signature Service Portal Model</name>
-	<description>EJB3 Model for eID Digital Signature Service Portal</description>
+	<name>FedICT eID Digital Signature Service Portal Controllers</name>
+	<description>Seam Controllers for eID Digital Signature Service Portal</description>
 	<groupId>be.fedict.eid-dss</groupId>
-	<artifactId>eid-dss-portal-model</artifactId>
+	<artifactId>eid-dss-portal-control</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>ejb</packaging>
 	<build>
@@ -19,8 +19,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -31,33 +31,9 @@
 					<generateClient>true</generateClient>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<schemaIncludes>
-								<schemaInclude>cert-request-demo-form.xsd</schemaInclude>
-							</schemaIncludes>
-							<debug>true</debug>
-							<verbose>true</verbose>
-							<catalog>src/main/resources/catalog.cat</catalog>
-							<extension>true</extension>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
-		<dependency>
-			<groupId>be.fedict.eid-applet</groupId>
-			<artifactId>eid-applet-service</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging-api</artifactId>
