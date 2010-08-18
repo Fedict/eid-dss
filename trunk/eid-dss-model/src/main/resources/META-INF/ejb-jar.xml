@@ -5,16 +5,4 @@
 
 	<display-name>eID Digital Signature Service Model</display-name>
 
-	<interceptors>
-		<interceptor>
-			<interceptor-class>org.jboss.seam.ejb.SeamInterceptor</interceptor-class>
-		</interceptor>
-	</interceptors>
-	<assembly-descriptor>
-		<interceptor-binding>
-			<ejb-name>*</ejb-name>
-			<interceptor-class>org.jboss.seam.ejb.SeamInterceptor</interceptor-class>
-		</interceptor-binding>
-	</assembly-descriptor>
-
 </ejb-jar>

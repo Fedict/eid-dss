@@ -26,7 +26,7 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import be.fedict.eid.dss.SignatureVerificationService;
+import be.fedict.eid.dss.model.SignatureVerificationService;
 
 /**
  * Service Consumer Servlet Context Listener. For the moment this is the only

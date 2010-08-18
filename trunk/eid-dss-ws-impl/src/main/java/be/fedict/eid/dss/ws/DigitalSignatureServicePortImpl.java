@@ -43,9 +43,9 @@ import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.jce.PrincipalUtil;
 import org.bouncycastle.jce.X509Principal;
 
-import be.fedict.eid.dss.DocumentFormatException;
-import be.fedict.eid.dss.InvalidSignatureException;
-import be.fedict.eid.dss.SignatureVerificationService;
+import be.fedict.eid.dss.model.DocumentFormatException;
+import be.fedict.eid.dss.model.InvalidSignatureException;
+import be.fedict.eid.dss.model.SignatureVerificationService;
 
 /**
  * Implementation of the DSS verification web service JAX-WS endpoint.

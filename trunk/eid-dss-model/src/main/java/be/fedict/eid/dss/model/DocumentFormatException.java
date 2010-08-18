@@ -16,9 +16,9 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss;
+package be.fedict.eid.dss.model;
 
-public class InvalidSignatureException extends Exception {
+public class DocumentFormatException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 

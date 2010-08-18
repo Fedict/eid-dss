@@ -35,8 +35,10 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>be.fedict.eid-applet</groupId>
-			<artifactId>eid-applet-service</artifactId>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-model</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<type>ejb-client</type>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
