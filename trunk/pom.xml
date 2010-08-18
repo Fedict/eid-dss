@@ -22,6 +22,8 @@
 		<developerConnection>scm:svn:https://eid-dss.googlecode.com/svn/trunk</developerConnection>
 	</scm>
 	<modules>
+		<module>eid-dss-spi</module>
+		<module>eid-dss-protocol-simple</module>
 		<module>eid-dss-model</module>
 		<module>eid-dss-ws</module>
 		<module>eid-dss-ws-impl</module>

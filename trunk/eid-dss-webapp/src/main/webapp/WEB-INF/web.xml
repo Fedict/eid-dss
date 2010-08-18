@@ -5,6 +5,10 @@
 
 	<display-name>eID Digital Signature Service Web Application</display-name>
 
+	<listener>
+		<listener-class>be.fedict.eid.dss.webapp.StartupServletContextListener</listener-class>
+	</listener>
+
 	<!-- JBoss Seam -->
 	<listener>
 		<listener-class>org.jboss.seam.servlet.SeamListener</listener-class>
@@ -107,6 +111,32 @@
 	<servlet-mapping>
 		<servlet-name>AppletServiceServlet</servlet-name>
 		<url-pattern>/applet-xml-service</url-pattern>
+	</servlet-mapping>
+
+	<!-- DSS Protocol Servlets -->
+	<servlet>
+		<servlet-name>ProtocolEntryServlet</servlet-name>
+		<servlet-class>be.fedict.eid.dss.webapp.ProtocolEntryServlet</servlet-class>
+		<init-param>
+			<param-name>UnknownProtocolPage</param-name>
+			<param-value>/unknown-protocol.seam</param-value>
+		</init-param>
+		<init-param>
+			<param-name>ProtocolErrorPage</param-name>
+			<param-value>/protocol-error.seam</param-value>
+		</init-param>
+		<init-param>
+			<param-name>ProtocolErrorMessageSessionAttribute</param-name>
+			<param-value>dssProtocolErrorMessage</param-value>
+		</init-param>
+		<init-param>
+			<param-name>NextPage</param-name>
+			<param-value>/view-xml.seam</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ProtocolEntryServlet</servlet-name>
+		<url-pattern>/protocol/*</url-pattern>
 	</servlet-mapping>
 
 </web-app>

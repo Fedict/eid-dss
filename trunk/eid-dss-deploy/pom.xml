@@ -54,6 +54,11 @@
 							<includeInApplicationXml>true</includeInApplicationXml>
 							<bundleDir>lib</bundleDir>
 						</jarModule>
+						<jarModule>
+							<groupId>be.fedict.eid-dss</groupId>
+							<artifactId>eid-dss-spi</artifactId>
+							<includeInApplicationXml>true</includeInApplicationXml>
+						</jarModule>
 						<ejbModule>
 							<groupId>be.fedict.eid-dss</groupId>
 							<artifactId>eid-dss-model</artifactId>
@@ -95,30 +100,6 @@
 	</build>
 	<dependencies>
 		<dependency>
-			<groupId>be.fedict.eid-applet</groupId>
-			<artifactId>eid-applet-shared</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-applet</groupId>
-			<artifactId>eid-applet-service-spi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-applet</groupId>
-			<artifactId>eid-applet-service</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-applet</groupId>
-			<artifactId>eid-applet-service-signer</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-trust-service</groupId>
-			<artifactId>eid-trust-service-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-trust-service</groupId>
-			<artifactId>eid-trust-service-xkms2-ws</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-model</artifactId>
 			<type>ejb</type>
@@ -153,6 +134,36 @@
 			<artifactId>eid-dss-ws-webapp</artifactId>
 			<type>war</type>
 			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-spi</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<!-- dependencies on other eID projects -->
+		<dependency>
+			<groupId>be.fedict.eid-applet</groupId>
+			<artifactId>eid-applet-shared</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-applet</groupId>
+			<artifactId>eid-applet-service-spi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-applet</groupId>
+			<artifactId>eid-applet-service</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-applet</groupId>
+			<artifactId>eid-applet-service-signer</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-trust-service</groupId>
+			<artifactId>eid-trust-service-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-trust-service</groupId>
+			<artifactId>eid-trust-service-xkms2-ws</artifactId>
 		</dependency>
 		<!--
 			The following dependencies are all provided by the Java EE runtime.
