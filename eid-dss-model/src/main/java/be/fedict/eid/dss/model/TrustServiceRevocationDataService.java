@@ -21,15 +21,13 @@ package be.fedict.eid.dss.model;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import org.bouncycastle.util.encoders.Base64;
-import org.etsi.uri._01903.v1_3.CRLValuesType;
-import org.etsi.uri._01903.v1_3.EncapsulatedPKIDataType;
-import org.etsi.uri._01903.v1_3.OCSPValuesType;
-import org.etsi.uri._01903.v1_3.RevocationValuesType;
-
 import be.fedict.eid.applet.service.signer.facets.RevocationData;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.trust.client.XKMS2Client;
+import be.fedict.trust.client.jaxb.xades.v1_3.CRLValuesType;
+import be.fedict.trust.client.jaxb.xades.v1_3.EncapsulatedPKIDataType;
+import be.fedict.trust.client.jaxb.xades.v1_3.OCSPValuesType;
+import be.fedict.trust.client.jaxb.xades.v1_3.RevocationValuesType;
 
 /**
  * Revocation data service implementation using the eID Trust Service.
@@ -63,9 +61,7 @@ public class TrustServiceRevocationDataService implements RevocationDataService 
 			List<EncapsulatedPKIDataType> encapsulatedCRLValueList = crlValues
 					.getEncapsulatedCRLValue();
 			for (EncapsulatedPKIDataType encapsulatedCRLValue : encapsulatedCRLValueList) {
-				// XXX: dirty work-around for eID Trust Service client double
-				// base64 encoding issue.
-				byte[] crl = Base64.decode(encapsulatedCRLValue.getValue());
+				byte[] crl = encapsulatedCRLValue.getValue();
 				revocationData.addCRL(crl);
 			}
 		}
@@ -74,7 +70,7 @@ public class TrustServiceRevocationDataService implements RevocationDataService 
 			List<EncapsulatedPKIDataType> encapsulatedOCSPValueList = ocspValues
 					.getEncapsulatedOCSPValue();
 			for (EncapsulatedPKIDataType encapsulatedOCSPValue : encapsulatedOCSPValueList) {
-				byte[] ocsp = Base64.decode(encapsulatedOCSPValue.getValue());
+				byte[] ocsp = encapsulatedOCSPValue.getValue();
 				revocationData.addOCSP(ocsp);
 			}
 		}
