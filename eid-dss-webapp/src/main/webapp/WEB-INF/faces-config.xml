@@ -9,6 +9,10 @@
 		<view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
 	</application>
 
+	<lifecycle>
+		<phase-listener>be.fedict.eid.dss.webapp.CacheControlPhaseListener</phase-listener>
+	</lifecycle>
+
 	<navigation-rule>
 		<from-view-id>/view-xml.xhtml</from-view-id>
 		<navigation-case>
