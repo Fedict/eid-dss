@@ -21,15 +21,13 @@ package be.fedict.eid.dss.model;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import org.bouncycastle.util.encoders.Base64;
-import org.etsi.uri._01903.v1_3.CRLValuesType;
-import org.etsi.uri._01903.v1_3.EncapsulatedPKIDataType;
-import org.etsi.uri._01903.v1_3.OCSPValuesType;
-import org.etsi.uri._01903.v1_3.RevocationValuesType;
-
 import be.fedict.eid.applet.service.signer.facets.RevocationData;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.trust.client.XKMS2Client;
+import be.fedict.trust.client.jaxb.xades.v1_3.CRLValuesType;
+import be.fedict.trust.client.jaxb.xades.v1_3.EncapsulatedPKIDataType;
+import be.fedict.trust.client.jaxb.xades.v1_3.OCSPValuesType;
+import be.fedict.trust.client.jaxb.xades.v1_3.RevocationValuesType;
 
 public class TrustServiceTimeStampServiceValidator implements
 		TimeStampServiceValidator {
@@ -55,8 +53,7 @@ public class TrustServiceTimeStampServiceValidator implements
 			List<EncapsulatedPKIDataType> encapsulatedCrls = crlValues
 					.getEncapsulatedCRLValue();
 			for (EncapsulatedPKIDataType encapsulatedCrl : encapsulatedCrls) {
-				// XXX: stupid work-around for double base64 coding
-				byte[] encodedCrl = Base64.decode(encapsulatedCrl.getValue());
+				byte[] encodedCrl = encapsulatedCrl.getValue();
 				revocationData.addCRL(encodedCrl);
 			}
 		}
@@ -65,8 +62,7 @@ public class TrustServiceTimeStampServiceValidator implements
 			List<EncapsulatedPKIDataType> encapsulatedOcsps = ocspValues
 					.getEncapsulatedOCSPValue();
 			for (EncapsulatedPKIDataType encapsulatedOcsp : encapsulatedOcsps) {
-				// XXX: stupid work-around for double base64 coding
-				byte[] encodedOcsp = Base64.decode(encapsulatedOcsp.getValue());
+				byte[] encodedOcsp = encapsulatedOcsp.getValue();
 				revocationData.addOCSP(encodedOcsp);
 			}
 		}
