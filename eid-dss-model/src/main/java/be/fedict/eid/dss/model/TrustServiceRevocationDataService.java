@@ -23,7 +23,9 @@ import java.util.List;
 
 import be.fedict.eid.applet.service.signer.facets.RevocationData;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
+import be.fedict.eid.applet.service.spi.TrustCertificateSecurityException;
 import be.fedict.trust.client.XKMS2Client;
+import be.fedict.trust.client.exception.ValidationFailedException;
 import be.fedict.trust.client.jaxb.xades132.CRLValuesType;
 import be.fedict.trust.client.jaxb.xades132.EncapsulatedPKIDataType;
 import be.fedict.trust.client.jaxb.xades132.OCSPValuesType;
@@ -48,6 +50,8 @@ public class TrustServiceRevocationDataService implements RevocationDataService 
 			List<X509Certificate> certificateChain) {
 		try {
 			this.xkms2Client.validate("BE", certificateChain, true);
+		} catch (ValidationFailedException e) {
+			throw new TrustCertificateSecurityException();
 		} catch (Exception e) {
 			throw new RuntimeException(
 					"error validating signing certificate chain: "
