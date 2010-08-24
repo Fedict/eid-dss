@@ -66,6 +66,13 @@ public class StartupServletContextListener implements ServletContextListener {
 		LOG.debug("contextDestroyed");
 	}
 
+	/**
+	 * Gives back a map of protocol services with context path as key. This map
+	 * has been constructed during startup of the eID DSS service.
+	 * 
+	 * @param context
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static Map<String, String> getProtocolServices(ServletContext context) {
 		Map<String, String> protocolServices = (Map<String, String>) context

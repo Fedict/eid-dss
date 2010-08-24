@@ -32,6 +32,12 @@ import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.dss.model.DocumentRepository;
 
+/**
+ * A servlet for visualizing a document.
+ * 
+ * @author Frank Cornelis.
+ * 
+ */
 public class DocumentViewerServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -46,8 +52,8 @@ public class DocumentViewerServlet extends HttpServlet {
 		HttpSession httpSession = request.getSession();
 		DocumentRepository documentRepository = new DocumentRepository(
 				httpSession);
-		String document = documentRepository.getDocument();
-		byte[] documentData = document.getBytes();
+		byte[] documentData = documentRepository.getDocument();
+		String contentType = documentRepository.getDocumentContentType();
 
 		response.setHeader("Cache-Control",
 				"no-cache, no-store, must-revalidate, max-age=-1"); // http 1.1
@@ -60,7 +66,7 @@ public class DocumentViewerServlet extends HttpServlet {
 		response.setDateHeader("Expires", -1);
 		response.setContentLength(documentData.length);
 
-		response.setContentType("text/xml");
+		response.setContentType(contentType);
 		response.setContentLength(documentData.length);
 		ServletOutputStream out = response.getOutputStream();
 		out.write(documentData);

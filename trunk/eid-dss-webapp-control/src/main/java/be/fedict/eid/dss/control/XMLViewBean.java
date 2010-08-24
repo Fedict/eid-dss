@@ -18,20 +18,31 @@
 
 package be.fedict.eid.dss.control;
 
+import java.io.IOException;
+
 import javax.ejb.Stateless;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.jboss.ejb3.annotation.LocalBinding;
+import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.log.Log;
 
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.dss.model.DocumentRepository;
-import be.fedict.eid.dss.model.SignatureStatus;
+import be.fedict.eid.dss.spi.SignatureStatus;
 
 @Stateless
 @Name("xmlView")
 @LocalBinding(jndiBinding = "fedict/eid/dss/XMLViewBean")
 public class XMLViewBean implements XMLView {
+
+	@Logger
+	private Log log;
 
 	public String cancel() {
 		HttpSession httpSession = HttpSessionTemporaryDataStorage
@@ -39,6 +50,20 @@ public class XMLViewBean implements XMLView {
 		DocumentRepository documentRepository = new DocumentRepository(
 				httpSession);
 		documentRepository.setSignatureStatus(SignatureStatus.USER_CANCELLED);
-		return "cancel";
+
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext externalContext = facesContext.getExternalContext();
+		HttpServletResponse httpServletResponse = (HttpServletResponse) externalContext
+				.getResponse();
+		HttpServletRequest httpServletRequest = (HttpServletRequest) externalContext
+				.getRequest();
+		String redirectUrl = httpServletRequest.getContextPath()
+				+ "/protocol-exit";
+		try {
+			httpServletResponse.sendRedirect(redirectUrl);
+		} catch (IOException e) {
+			this.log.error("I/O error: #0", e, e.getMessage());
+		}
+		return null;
 	}
 }

@@ -24,10 +24,10 @@ import java.util.List;
 import be.fedict.eid.applet.service.signer.facets.RevocationData;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.trust.client.XKMS2Client;
-import be.fedict.trust.client.jaxb.xades.v1_3.CRLValuesType;
-import be.fedict.trust.client.jaxb.xades.v1_3.EncapsulatedPKIDataType;
-import be.fedict.trust.client.jaxb.xades.v1_3.OCSPValuesType;
-import be.fedict.trust.client.jaxb.xades.v1_3.RevocationValuesType;
+import be.fedict.trust.client.jaxb.xades132.CRLValuesType;
+import be.fedict.trust.client.jaxb.xades132.EncapsulatedPKIDataType;
+import be.fedict.trust.client.jaxb.xades132.OCSPValuesType;
+import be.fedict.trust.client.jaxb.xades132.RevocationValuesType;
 
 /**
  * Revocation data service implementation using the eID Trust Service.

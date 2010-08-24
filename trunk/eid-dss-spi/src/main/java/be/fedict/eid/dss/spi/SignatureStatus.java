@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2009 FedICT.
+ * Copyright (C) 2009-2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -16,8 +16,14 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.model;
+package be.fedict.eid.dss.spi;
 
+/**
+ * Enumeration on the signature status.
+ * 
+ * @author Frank Cornelis
+ * 
+ */
 public enum SignatureStatus {
 
 	OK("OK"), USER_CANCELLED("USER_CANCELLED"), CERTIFICATE_INVALID(

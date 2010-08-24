@@ -5,8 +5,8 @@
 <body>
 <ui:composition template="/WEB-INF/template.xhtml">
 	<ui:define name="body">
-		<h2>Sign XML document</h2>
-		<p>You're about to sign the XML document.</p>
+		<h2>Sign document</h2>
+		<p>You're about to sign the document.</p>
 		<script src="https://www.java.com/js/deployJava.js"></script>
 		<script>
 	var attributes = {
@@ -16,11 +16,10 @@
 		height :300
 	};
 	var parameters = {
-		TargetPage :'post-response.seam',
-		AppletService :'applet-xml-service',
-		Language :'en'
+		TargetPage :'protocol-exit',
+		AppletService :'applet-xml-service'
 	};
-	var version = '1.5';
+	var version = '1.6';
 	deployJava.runApplet(attributes, parameters, version);
 </script>
 	</ui:define>

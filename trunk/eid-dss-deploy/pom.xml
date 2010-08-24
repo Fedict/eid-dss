@@ -83,6 +83,11 @@
 							<includeInApplicationXml>true</includeInApplicationXml>
 							<bundleDir>lib</bundleDir>
 						</jarModule>
+						<jarModule>
+							<groupId>be.fedict.eid-dss</groupId>
+							<artifactId>eid-dss-protocol-simple</artifactId>
+							<includeInApplicationXml>true</includeInApplicationXml>
+						</jarModule>
 						<ejbModule>
 							<groupId>be.fedict.eid-dss</groupId>
 							<artifactId>eid-dss-model</artifactId>
@@ -162,6 +167,11 @@
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-spi</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-protocol-simple</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<!-- dependencies on other eID projects -->

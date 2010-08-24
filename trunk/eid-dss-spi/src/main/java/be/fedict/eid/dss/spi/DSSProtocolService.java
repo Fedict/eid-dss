@@ -18,18 +18,22 @@
 
 package be.fedict.eid.dss.spi;
 
+import java.io.Serializable;
+import java.security.cert.X509Certificate;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Interface for Digital Signature Service protocol components.
+ * Interface for Digital Signature Service protocol components. Protocol service
+ * components have a life-cycle within the scope of a regular servlet.
  * 
  * @author Frank Cornelis
  * 
  */
-public interface DSSProtocolService {
+public interface DSSProtocolService extends Serializable {
 
 	/**
 	 * Initializes this component.
@@ -47,17 +51,24 @@ public interface DSSProtocolService {
 	 *            the HTTP response. Can be used if the protocol handler does
 	 *            not want to continue via the regular DSS flow.
 	 * 
+	 * @return a DSS request object.
 	 * @throws Exception
 	 *             in case this protocol service cannot handle the incoming
 	 *             request.
 	 */
-	void handleIncomingRequest(HttpServletRequest request,
+	DSSRequest handleIncomingRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception;
 
 	/**
 	 * Handles the outgoing response to return to the Service Provider web
 	 * application.
 	 * 
+	 * @param signatureStatus
+	 *            the signature status.
+	 * @param signedDocument
+	 *            the signed document.
+	 * @param signerCertificate
+	 *            the certificate of the signer.
 	 * @param httpSession
 	 *            the HTTP session context.
 	 * @param request
@@ -71,7 +82,8 @@ public interface DSSProtocolService {
 	 *             in case this protocol service cannot construct the outgoing
 	 *             response.
 	 */
-	BrowserPOSTResponse handleResponse(HttpSession httpSession,
-			HttpServletRequest request, HttpServletResponse response)
-			throws Exception;
+	BrowserPOSTResponse handleResponse(SignatureStatus signatureStatus,
+			byte[] signedDocument, X509Certificate signerCertificate,
+			HttpSession httpSession, HttpServletRequest request,
+			HttpServletResponse response) throws Exception;
 }

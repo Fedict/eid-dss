@@ -16,53 +16,50 @@
  * http://www.gnu.org/licenses/.
  */
 
-/**
- * A name value pair class.
- * 
- * @author Frank Cornelis
- */
 package be.fedict.eid.dss.spi;
 
 import java.io.Serializable;
 
 /**
- * Generic name-value pair class.
+ * Represents a DSS request after unmarshalling by the DSSProtocolService.
  * 
  * @author Frank Cornelis
  * 
  */
-public class NameValuePair implements Serializable {
+public class DSSRequest implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
-	private final String name;
-	private final String value;
+	private final byte[] documentData;
+
+	private final String contentType;
 
 	/**
 	 * Main constructor.
 	 * 
-	 * @param name
-	 * @param value
+	 * @param documentData
+	 * @param contentType
 	 */
-	public NameValuePair(String name, String value) {
-		this.name = name;
-		this.value = value;
+	public DSSRequest(byte[] documentData, String contentType) {
+		this.documentData = documentData;
+		this.contentType = contentType;
 	}
 
 	/**
-	 * Gives back the name of this name-value pair.
+	 * The data bytes of the document to be signed.
 	 * 
 	 * @return
 	 */
-	public String getName() {
-		return this.name;
+	public byte[] getDocumentData() {
+		return this.documentData;
 	}
 
 	/**
-	 * Gives back the value of this name-value pair.
+	 * The content type of the document to be signed.
 	 * 
 	 * @return
 	 */
-	public String getValue() {
-		return this.value;
+	public String getContentType() {
+		return this.contentType;
 	}
 }

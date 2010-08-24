@@ -22,6 +22,8 @@ import java.security.cert.X509Certificate;
 
 import javax.servlet.http.HttpSession;
 
+import be.fedict.eid.dss.spi.SignatureStatus;
+
 /**
  * A document repository based on HTTP session storage.
  * 
@@ -32,6 +34,9 @@ public class DocumentRepository {
 
 	public static final String DOCUMENT_SESSION_ATTRIBUTE = DocumentRepository.class
 			.getName() + ".document";
+
+	public static final String DOCUMENT_CONTENT_TYPE_SESSION_ATTRIBUTE = DocumentRepository.class
+			.getName() + ".DocumentContentType";
 
 	public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE = DocumentRepository.class
 			.getName() + ".signedDocument";
@@ -59,23 +64,34 @@ public class DocumentRepository {
 		this.httpSession.removeAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE);
 	}
 
-	public void setDocument(String document) {
+	public void setDocument(byte[] document) {
 		this.httpSession.setAttribute(DOCUMENT_SESSION_ATTRIBUTE, document);
 	}
 
-	public String getDocument() {
-		String document = (String) this.httpSession
+	public byte[] getDocument() {
+		byte[] document = (byte[]) this.httpSession
 				.getAttribute(DOCUMENT_SESSION_ATTRIBUTE);
 		return document;
 	}
 
-	public void setSignedDocument(String signedDocument) {
+	public void setDocumentContentType(String contentType) {
+		this.httpSession.setAttribute(DOCUMENT_CONTENT_TYPE_SESSION_ATTRIBUTE,
+				contentType);
+	}
+
+	public String getDocumentContentType() {
+		String contentType = (String) this.httpSession
+				.getAttribute(DOCUMENT_CONTENT_TYPE_SESSION_ATTRIBUTE);
+		return contentType;
+	}
+
+	public void setSignedDocument(byte[] signedDocument) {
 		this.httpSession.setAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE,
 				signedDocument);
 	}
 
-	public String getSignedDocument() {
-		String signedDocument = (String) this.httpSession
+	public byte[] getSignedDocument() {
+		byte[] signedDocument = (byte[]) this.httpSession
 				.getAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE);
 		return signedDocument;
 	}
