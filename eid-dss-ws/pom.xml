@@ -28,6 +28,10 @@
 				<configuration>
 					<verbose>true</verbose>
 					<xdebug>true</xdebug>
+					<bindingDirectory>src/wsdl</bindingDirectory>
+					<bindingFiles>
+						<bindingFile>bindings.xml</bindingFile>
+					</bindingFiles>
 				</configuration>
 				<dependencies>
 					<dependency>
