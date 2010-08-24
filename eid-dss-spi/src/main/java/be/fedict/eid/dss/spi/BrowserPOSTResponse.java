@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.spi;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,7 +28,10 @@ import java.util.List;
  * 
  * @author Frank Cornelis
  */
-public class BrowserPOSTResponse {
+public class BrowserPOSTResponse implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	private final String actionUrl;
 	private final List<NameValuePair> attributes;
 

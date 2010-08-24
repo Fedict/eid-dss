@@ -51,7 +51,7 @@ public class ProtocolServiceManagerBean implements ProtocolServiceManager {
 		Enumeration<URL> resources;
 		try {
 			resources = classLoader
-					.getResources("META-INF/eid-idp-protocol.xml");
+					.getResources("META-INF/eid-dss-protocol.xml");
 		} catch (IOException e) {
 			LOG.error("I/O error: " + e.getMessage(), e);
 			return protocolServices;

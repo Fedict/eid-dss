@@ -18,6 +18,8 @@
 
 package be.fedict.eid.dss.protocol.oasis;
 
+import java.security.cert.X509Certificate;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +30,8 @@ import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.dss.spi.BrowserPOSTResponse;
 import be.fedict.eid.dss.spi.DSSProtocolService;
+import be.fedict.eid.dss.spi.DSSRequest;
+import be.fedict.eid.dss.spi.SignatureStatus;
 
 /**
  * Class implementing the OASIS DSS Browser POST Profile.
@@ -37,18 +41,23 @@ import be.fedict.eid.dss.spi.DSSProtocolService;
  */
 public class OASISDSSProtocolService implements DSSProtocolService {
 
+	private static final long serialVersionUID = 1L;
 	private static final Log LOG = LogFactory
 			.getLog(OASISDSSProtocolService.class);
 
-	public void handleIncomingRequest(HttpServletRequest request,
+	public DSSRequest handleIncomingRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		LOG.debug("handleIncomingRequest");
+		// TODO: implement me
+		return null;
 	}
 
-	public BrowserPOSTResponse handleResponse(HttpSession httpSession,
-			HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
+	public BrowserPOSTResponse handleResponse(SignatureStatus signatureStatus,
+			byte[] signedDocument, X509Certificate signerCertificate,
+			HttpSession httpSession, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
 		LOG.debug("handleResponse");
+		// TODO: implement me
 		return null;
 	}
 

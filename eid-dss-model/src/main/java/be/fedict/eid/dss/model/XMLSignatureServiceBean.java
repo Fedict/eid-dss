@@ -45,6 +45,7 @@ import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
 import be.fedict.eid.applet.service.signer.time.TSPTimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.spi.SignatureService;
+import be.fedict.eid.dss.spi.SignatureStatus;
 
 @Stateless
 @Local(SignatureService.class)
@@ -86,12 +87,11 @@ public class XMLSignatureServiceBean extends AbstractXmlSignatureService {
 			super.close();
 			byte[] data = this.toByteArray();
 			LOG.debug("size of signed XML document: " + data.length);
-			String signedDocument = new String(data);
 			HttpSession httpSession = HttpSessionTemporaryDataStorage
 					.getHttpSession();
 			DocumentRepository documentRepository = new DocumentRepository(
 					httpSession);
-			documentRepository.setSignedDocument(signedDocument);
+			documentRepository.setSignedDocument(data);
 			documentRepository.setSignatureStatus(SignatureStatus.OK);
 		}
 	}
@@ -120,9 +120,8 @@ public class XMLSignatureServiceBean extends AbstractXmlSignatureService {
 				.getHttpSession();
 		DocumentRepository documentRepository = new DocumentRepository(
 				httpSession);
-		String documentStr = documentRepository.getDocument();
-		Document document = loadDocument(new ByteArrayInputStream(documentStr
-				.getBytes()));
+		byte[] documentData = documentRepository.getDocument();
+		Document document = loadDocument(new ByteArrayInputStream(documentData));
 		return document;
 	}
 }

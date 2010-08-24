@@ -19,13 +19,9 @@
 package be.fedict.eid.dss.webapp;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -33,7 +29,9 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import be.fedict.eid.dss.model.DocumentRepository;
 import be.fedict.eid.dss.spi.DSSProtocolService;
+import be.fedict.eid.dss.spi.DSSRequest;
 
 /**
  * The main entry point for DSS protocols. This servlet serves as a broker
@@ -43,14 +41,16 @@ import be.fedict.eid.dss.spi.DSSProtocolService;
  * @author Frank Cornelis
  * 
  */
-public class ProtocolEntryServlet extends HttpServlet {
+public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 
 	private static final long serialVersionUID = 1L;
 
 	private static final Log LOG = LogFactory
 			.getLog(ProtocolEntryServlet.class);
 
-	private Map<String, DSSProtocolService> protocolServices;
+	private static final String PROTOCOL_SERVICE_CONTEXT_PATH_SESSION_ATTRIBUTE = ProtocolEntryServlet.class
+			.getName()
+			+ ".ProtocolServiceContextPath";
 
 	private String unknownProtocolPageInitParam;
 
@@ -62,67 +62,41 @@ public class ProtocolEntryServlet extends HttpServlet {
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
-		/*
-		 * Get init-params.
-		 */
-		this.unknownProtocolPageInitParam = getRequiredInitParameter(config,
+		super.init(config);
+
+		this.unknownProtocolPageInitParam = super.getRequiredInitParameter(config,
 				"UnknownProtocolPage");
 
-		this.protocolErrorPageInitParam = getRequiredInitParameter(config,
+		this.protocolErrorPageInitParam = super.getRequiredInitParameter(config,
 				"ProtocolErrorPage");
-		this.protocolErrorMessageSessionAttributeInitParam = getRequiredInitParameter(
+		this.protocolErrorMessageSessionAttributeInitParam = super.getRequiredInitParameter(
 				config, "ProtocolErrorMessageSessionAttribute");
 
-		this.nextPageInitParam = getRequiredInitParameter(config, "NextPage");
+		this.nextPageInitParam = super.getRequiredInitParameter(config, "NextPage");
+	}
 
-		/*
-		 * We align the life-cycle of a DSSProtocoLService with the life-cycle
-		 * of this servlet.
-		 */
-		ServletContext servletContext = config.getServletContext();
-		Map<String, String> protocolServiceClasses = StartupServletContextListener
-				.getProtocolServices(servletContext);
-		this.protocolServices = new HashMap<String, DSSProtocolService>();
-		for (Map.Entry<String, String> protocolServiceEntry : protocolServiceClasses
-				.entrySet()) {
-			String contextPath = protocolServiceEntry.getKey();
-			String protocolServiceClassName = protocolServiceEntry.getValue();
-			Class<? extends DSSProtocolService> protocolServiceClass;
-			try {
-				protocolServiceClass = (Class<? extends DSSProtocolService>) Class
-						.forName(protocolServiceClassName);
-			} catch (ClassNotFoundException e) {
-				LOG.error("protocol service class not found: "
-						+ protocolServiceClassName);
-				continue;
-			}
-			DSSProtocolService dssProtocolService;
-			try {
-				dssProtocolService = protocolServiceClass.newInstance();
-			} catch (Exception e) {
-				LOG
-						.error("could not create an instance of the protocol service class: "
-								+ protocolServiceClassName);
-				continue;
-			}
-			dssProtocolService.init(servletContext);
-			this.protocolServices.put(contextPath, dssProtocolService);
-		}
+	private void storeProtocolServiceContextPath(String contextPath,
+			HttpSession httpSession) {
+		httpSession.setAttribute(
+				PROTOCOL_SERVICE_CONTEXT_PATH_SESSION_ATTRIBUTE, contextPath);
+	}
+
+	/**
+	 * Gives back the protocol service context path that was used during entry
+	 * of the eID DSS.
+	 * 
+	 * @param httpSession
+	 * @return
+	 */
+	public static String retrieveProtocolServiceEntryContextPath(
+			HttpSession httpSession) {
+		String contextPath = (String) httpSession
+				.getAttribute(PROTOCOL_SERVICE_CONTEXT_PATH_SESSION_ATTRIBUTE);
+		return contextPath;
 	}
 
 	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		handleRequest(request, response);
-	}
-
-	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		handleRequest(request, response);
-	}
-
-	private void handleRequest(HttpServletRequest request,
+	protected void handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 		LOG.debug("handle request");
 		LOG.debug("request URI: " + request.getRequestURI());
@@ -132,9 +106,11 @@ public class ProtocolEntryServlet extends HttpServlet {
 		LOG.debug("request query string: " + request.getQueryString());
 		LOG.debug("request path translated: " + request.getPathTranslated());
 		String protocolServiceContextPath = request.getPathInfo();
+		HttpSession httpSession = request.getSession();
+		storeProtocolServiceContextPath(protocolServiceContextPath, httpSession);
 
-		DSSProtocolService dssProtocolService = this.protocolServices
-				.get(protocolServiceContextPath);
+		DSSProtocolService dssProtocolService = super
+				.findProtocolService(protocolServiceContextPath);
 		if (null == dssProtocolService) {
 			LOG.warn("unsupported protocol: " + protocolServiceContextPath);
 			response.sendRedirect(request.getContextPath()
@@ -142,28 +118,31 @@ public class ProtocolEntryServlet extends HttpServlet {
 			return;
 		}
 
+		DSSRequest dssRequest;
 		try {
-			dssProtocolService.handleIncomingRequest(request, response);
+			dssRequest = dssProtocolService.handleIncomingRequest(request,
+					response);
 		} catch (Exception e) {
 			LOG.error("protocol error: " + e.getMessage(), e);
-			HttpSession httpSession = request.getSession();
 			httpSession.setAttribute(
 					this.protocolErrorMessageSessionAttributeInitParam, e
 							.getMessage());
 			response.sendRedirect(request.getContextPath()
 					+ this.protocolErrorPageInitParam);
+			return;
 		}
 
+		/*
+		 * Store the relevant data into the HTTP session document repository.
+		 */
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+		documentRepository.setDocument(dssRequest.getDocumentData());
+
+		/*
+		 * Goto the next eID DSS page.
+		 */
 		response
 				.sendRedirect(request.getContextPath() + this.nextPageInitParam);
-	}
-
-	private String getRequiredInitParameter(ServletConfig config,
-			String initParamName) throws ServletException {
-		String value = config.getInitParameter(initParamName);
-		if (null == value) {
-			throw new ServletException(initParamName + " init-param required");
-		}
-		return value;
 	}
 }

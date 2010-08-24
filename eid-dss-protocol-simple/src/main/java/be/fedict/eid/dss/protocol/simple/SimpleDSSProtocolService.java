@@ -18,16 +18,21 @@
 
 package be.fedict.eid.dss.protocol.simple;
 
+import java.security.cert.X509Certificate;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.dss.spi.BrowserPOSTResponse;
 import be.fedict.eid.dss.spi.DSSProtocolService;
+import be.fedict.eid.dss.spi.DSSRequest;
+import be.fedict.eid.dss.spi.SignatureStatus;
 
 /**
  * Implementation of a very simple DSS protocol.
@@ -37,19 +42,85 @@ import be.fedict.eid.dss.spi.DSSProtocolService;
  */
 public class SimpleDSSProtocolService implements DSSProtocolService {
 
+	private static final long serialVersionUID = 1L;
+
 	private static final Log LOG = LogFactory
 			.getLog(SimpleDSSProtocolService.class);
 
-	public void handleIncomingRequest(HttpServletRequest request,
+	public static final String TARGET_PARAMETER = "target";
+	public static final String SIGNATURE_REQUEST_PARAMETER = "SignatureRequest";
+
+	public static final String TARGET_SESSION_ATTRIBUTE = SimpleDSSProtocolService.class
+			.getName() + ".Target";
+	public static final String SIGNATURE_REQUEST_SESSION_ATTRIBUTE = SimpleDSSProtocolService.class
+			.getName() + ".SignatureRequest";
+
+	public DSSRequest handleIncomingRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		LOG.debug("handleIncomingRequest");
+		String target = request.getParameter(TARGET_PARAMETER);
+		if (null == target) {
+			throw new IllegalArgumentException("missing target parameter");
+		}
+		HttpSession httpSession = request.getSession();
+		storeTarget(target, httpSession);
+
+		String signatureRequest = request
+				.getParameter(SIGNATURE_REQUEST_PARAMETER);
+		if (null == signatureRequest) {
+			throw new IllegalArgumentException("missing parameter: "
+					+ SIGNATURE_REQUEST_PARAMETER);
+		}
+		/*
+		 * Needed during response for service signature.
+		 */
+		storeSignatureRequest(signatureRequest, httpSession);
+
+		byte[] decodedSignatureRequest = Base64.decodeBase64(signatureRequest);
+
+		DSSRequest dssRequest = new DSSRequest(decodedSignatureRequest,
+				"text/xml");
+		return dssRequest;
 	}
 
-	public BrowserPOSTResponse handleResponse(HttpSession httpSession,
-			HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
+	private void storeTarget(String target, HttpSession httpSession) {
+		httpSession.setAttribute(TARGET_SESSION_ATTRIBUTE, target);
+	}
+
+	private String retrieveTarget(HttpSession httpSession) {
+		String target = (String) httpSession
+				.getAttribute(TARGET_SESSION_ATTRIBUTE);
+		return target;
+	}
+
+	private void storeSignatureRequest(String signatureRequest,
+			HttpSession httpSession) {
+		httpSession.setAttribute(SIGNATURE_REQUEST_SESSION_ATTRIBUTE,
+				signatureRequest);
+	}
+
+	public BrowserPOSTResponse handleResponse(SignatureStatus signatureStatus,
+			byte[] signedDocument, X509Certificate signerCertificate,
+			HttpSession httpSession, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
 		LOG.debug("handleResponse");
-		return null;
+		String target = retrieveTarget(httpSession);
+		BrowserPOSTResponse browserPOSTResponse = new BrowserPOSTResponse(
+				target);
+		browserPOSTResponse.addAttribute("SignatureStatus",
+				signatureStatus.getStatus());
+		if (SignatureStatus.OK == signatureStatus) {
+			String encodedSignedDocument = Base64
+					.encodeBase64String(signedDocument);
+			browserPOSTResponse.addAttribute("SignatureResponse",
+					encodedSignedDocument);
+			byte[] derSignerCertificate = signerCertificate.getEncoded();
+			String encodedSignatureCertificate = Base64
+					.encodeBase64String(derSignerCertificate);
+			browserPOSTResponse.addAttribute("SignatureCertificate",
+					encodedSignatureCertificate);
+		}
+		return browserPOSTResponse;
 	}
 
 	public void init(ServletContext servletContext) {
