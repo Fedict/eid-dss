@@ -26,15 +26,6 @@ import javax.xml.ws.Binding;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.Handler;
 
-import oasis.names.tc.dss._1_0.core.schema.AnyType;
-import oasis.names.tc.dss._1_0.core.schema.DocumentType;
-import oasis.names.tc.dss._1_0.core.schema.InputDocuments;
-import oasis.names.tc.dss._1_0.core.schema.ObjectFactory;
-import oasis.names.tc.dss._1_0.core.schema.ResponseBaseType;
-import oasis.names.tc.dss._1_0.core.schema.Result;
-import oasis.names.tc.dss._1_0.core.schema.VerifyRequest;
-import oasis.names.tc.saml._1_0.assertion.NameIdentifierType;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Element;
@@ -43,6 +34,14 @@ import be.fedict.eid.dss.ws.DigitalSignatureService;
 import be.fedict.eid.dss.ws.DigitalSignatureServiceConstants;
 import be.fedict.eid.dss.ws.DigitalSignatureServiceFactory;
 import be.fedict.eid.dss.ws.DigitalSignatureServicePortType;
+import be.fedict.eid.dss.ws.jaxb.dss.AnyType;
+import be.fedict.eid.dss.ws.jaxb.dss.DocumentType;
+import be.fedict.eid.dss.ws.jaxb.dss.InputDocuments;
+import be.fedict.eid.dss.ws.jaxb.dss.ObjectFactory;
+import be.fedict.eid.dss.ws.jaxb.dss.ResponseBaseType;
+import be.fedict.eid.dss.ws.jaxb.dss.Result;
+import be.fedict.eid.dss.ws.jaxb.dss.VerifyRequest;
+import be.fedict.eid.dss.ws.jaxb.saml.NameIdentifierType;
 
 /**
  * Client for the OASIS DSS verification web service.
@@ -167,7 +166,7 @@ public class DigitalSignatureServiceClient {
 					Element element = (Element) anyObject;
 					if ("NameIdentifier".equals(element.getLocalName())) {
 						String name = element.getTextContent();
-						if (name!=null) {
+						if (name != null) {
 							name = name.trim();
 							LOG.debug("identifier: " + name);
 							return name;

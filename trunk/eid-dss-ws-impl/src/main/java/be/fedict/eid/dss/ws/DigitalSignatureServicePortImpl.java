@@ -28,15 +28,6 @@ import javax.jws.WebService;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import oasis.names.tc.dss._1_0.core.schema.AnyType;
-import oasis.names.tc.dss._1_0.core.schema.DocumentType;
-import oasis.names.tc.dss._1_0.core.schema.InputDocuments;
-import oasis.names.tc.dss._1_0.core.schema.ObjectFactory;
-import oasis.names.tc.dss._1_0.core.schema.ResponseBaseType;
-import oasis.names.tc.dss._1_0.core.schema.Result;
-import oasis.names.tc.dss._1_0.core.schema.VerifyRequest;
-import oasis.names.tc.saml._1_0.assertion.NameIdentifierType;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.asn1.DERObjectIdentifier;
@@ -46,6 +37,14 @@ import org.bouncycastle.jce.X509Principal;
 import be.fedict.eid.dss.model.DocumentFormatException;
 import be.fedict.eid.dss.model.InvalidSignatureException;
 import be.fedict.eid.dss.model.SignatureVerificationService;
+import be.fedict.eid.dss.ws.jaxb.dss.AnyType;
+import be.fedict.eid.dss.ws.jaxb.dss.DocumentType;
+import be.fedict.eid.dss.ws.jaxb.dss.InputDocuments;
+import be.fedict.eid.dss.ws.jaxb.dss.ObjectFactory;
+import be.fedict.eid.dss.ws.jaxb.dss.ResponseBaseType;
+import be.fedict.eid.dss.ws.jaxb.dss.Result;
+import be.fedict.eid.dss.ws.jaxb.dss.VerifyRequest;
+import be.fedict.eid.dss.ws.jaxb.saml.NameIdentifierType;
 
 /**
  * Implementation of the DSS verification web service JAX-WS endpoint.
@@ -70,7 +69,7 @@ public class DigitalSignatureServicePortImpl implements
 	public ResponseBaseType verify(VerifyRequest verifyRequest) {
 		LOG.debug("verify");
 		ObjectFactory dssObjectFactory = new ObjectFactory();
-		oasis.names.tc.saml._1_0.assertion.ObjectFactory samlObjectFactory = new oasis.names.tc.saml._1_0.assertion.ObjectFactory();
+		be.fedict.eid.dss.ws.jaxb.saml.ObjectFactory samlObjectFactory = new be.fedict.eid.dss.ws.jaxb.saml.ObjectFactory();
 
 		String requestId = verifyRequest.getRequestID();
 		LOG.debug("request Id: " + requestId);
@@ -123,14 +122,11 @@ public class DigitalSignatureServicePortImpl implements
 				.createResponseBaseType();
 		responseBase.setRequestID(requestId);
 		Result result = dssObjectFactory.createResult();
-		result
-				.setResultMajor(DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS);
+		result.setResultMajor(DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS);
 		if (signatories.size() > 1) {
-			result
-					.setResultMinor(DigitalSignatureServiceConstants.RESULT_MINOR_VALID_MULTI_SIGNATURES);
+			result.setResultMinor(DigitalSignatureServiceConstants.RESULT_MINOR_VALID_MULTI_SIGNATURES);
 		} else if (1 == signatories.size()) {
-			result
-					.setResultMinor(DigitalSignatureServiceConstants.RESULT_MINOR_VALID_SIGNATURE);
+			result.setResultMinor(DigitalSignatureServiceConstants.RESULT_MINOR_VALID_SIGNATURE);
 			if (returnSignerIdentity) {
 				NameIdentifierType nameIdentifier = samlObjectFactory
 						.createNameIdentifierType();
@@ -154,8 +150,7 @@ public class DigitalSignatureServicePortImpl implements
 				responseBase.setOptionalOutputs(any);
 			}
 		} else {
-			result
-					.setResultMinor(DigitalSignatureServiceConstants.RESULT_MINOR_INVALID_SIGNATURE);
+			result.setResultMinor(DigitalSignatureServiceConstants.RESULT_MINOR_INVALID_SIGNATURE);
 		}
 		responseBase.setResult(result);
 		return responseBase;
@@ -172,8 +167,7 @@ public class DigitalSignatureServicePortImpl implements
 				.createResponseBaseType();
 		responseBase.setRequestID(requestId);
 		Result result = dssObjectFactory.createResult();
-		result
-				.setResultMajor(DigitalSignatureServiceConstants.RESULT_MAJOR_REQUESTER_ERROR);
+		result.setResultMajor(DigitalSignatureServiceConstants.RESULT_MAJOR_REQUESTER_ERROR);
 		if (null != resultMinor) {
 			result.setResultMinor(resultMinor);
 		}
