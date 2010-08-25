@@ -20,13 +20,11 @@
 
 <div id="header">
 
-	<div id="logo">
-		<h:graphicImage id="logo" alt="Fedict Logo"
-			height="45" url="/images/fedict.png" />
-	</div>
-	
-	<h1>eID Digital Signature Service Admin Portal</h1>
-	
+<div id="logo"><h:graphicImage id="logo" alt="Fedict Logo"
+	height="45" url="/images/fedict.png" /></div>
+
+<h1>eID Digital Signature Service Admin Portal</h1>
+
 </div>
 
 <f:view>
@@ -41,6 +39,17 @@
 				<c:otherwise>
 					<li><a
 						href="#{facesContext.externalContext.requestContextPath}/main.seam">Home</a></li>
+				</c:otherwise>
+			</c:choose>
+
+			<c:choose>
+				<c:when test="#{activeMenu == 'admin'}">
+					<li class="selected"><a
+						href="#{facesContext.externalContext.requestContextPath}/admin/main.seam">Admin</a></li>
+				</c:when>
+				<c:otherwise>
+					<li><a
+						href="#{facesContext.externalContext.requestContextPath}/admin/main.seam">Admin</a></li>
 				</c:otherwise>
 			</c:choose>
 		</ul>
