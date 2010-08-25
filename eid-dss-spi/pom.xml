@@ -26,6 +26,7 @@
 						<configuration>
 							<schemaIncludes>
 								<schemaInclude>eid-dss-protocol.xsd</schemaInclude>
+								<schemaInclude>eid-dss-document.xsd</schemaInclude>
 							</schemaIncludes>
 							<debug>true</debug>
 							<verbose>true</verbose>

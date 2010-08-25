@@ -31,8 +31,10 @@ import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.dss.control.XMLView;
 import be.fedict.eid.dss.model.DocumentRepository;
+import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DSSProtocolService;
 import be.fedict.eid.dss.spi.DSSRequest;
+import be.fedict.eid.dss.spi.SignatureStatus;
 
 /**
  * The main entry point for DSS protocols. This servlet serves as a broker
@@ -60,6 +62,12 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 
 	private String nextPageInitParam;
 
+	private String exitPageInitParam;
+
+	public ProtocolEntryServlet() {
+		super(true);
+	}
+
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -75,6 +83,8 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 
 		this.nextPageInitParam = super.getRequiredInitParameter(config,
 				"NextPage");
+		this.exitPageInitParam = super.getRequiredInitParameter(config,
+				"ExitPage");
 	}
 
 	private void storeProtocolServiceContextPath(String contextPath,
@@ -134,11 +144,37 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 			return;
 		}
 
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+
+		/*
+		 * Check the document format.
+		 */
+		String contentType = dssRequest.getContentType();
+		LOG.debug("document content type: " + contentType);
+		DSSDocumentService documentService = super
+				.findDocumentService(contentType);
+		if (null == documentService) {
+			LOG.debug("no document service found for content type: "
+					+ contentType);
+			documentRepository.setSignatureStatus(SignatureStatus.FILE_FORMAT);
+			response.sendRedirect(request.getContextPath()
+					+ this.exitPageInitParam);
+			return;
+		}
+		try {
+			documentService.checkIncomingDocument(dssRequest.getDocumentData());
+		} catch (Exception e) {
+			LOG.debug("document verification error: " + e.getMessage(), e);
+			documentRepository.setSignatureStatus(SignatureStatus.FILE_FORMAT);
+			response.sendRedirect(request.getContextPath()
+					+ this.exitPageInitParam);
+			return;
+		}
+
 		/*
 		 * Store the relevant data into the HTTP session document repository.
 		 */
-		DocumentRepository documentRepository = new DocumentRepository(
-				httpSession);
 		documentRepository.setDocument(dssRequest.getDocumentData());
 
 		/*

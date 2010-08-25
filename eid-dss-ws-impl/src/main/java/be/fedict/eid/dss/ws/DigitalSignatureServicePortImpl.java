@@ -34,9 +34,9 @@ import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.jce.PrincipalUtil;
 import org.bouncycastle.jce.X509Principal;
 
-import be.fedict.eid.dss.model.DocumentFormatException;
-import be.fedict.eid.dss.model.InvalidSignatureException;
 import be.fedict.eid.dss.model.SignatureVerificationService;
+import be.fedict.eid.dss.model.exception.DocumentFormatException;
+import be.fedict.eid.dss.model.exception.InvalidSignatureException;
 import be.fedict.eid.dss.ws.jaxb.dss.AnyType;
 import be.fedict.eid.dss.ws.jaxb.dss.DocumentType;
 import be.fedict.eid.dss.ws.jaxb.dss.InputDocuments;

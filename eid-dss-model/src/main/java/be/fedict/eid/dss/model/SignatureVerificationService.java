@@ -23,6 +23,9 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import be.fedict.eid.dss.model.exception.DocumentFormatException;
+import be.fedict.eid.dss.model.exception.InvalidSignatureException;
+
 /**
  * Service interface for signature verification service.
  * 

@@ -28,7 +28,7 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import be.fedict.eid.dss.model.ProtocolServiceManager;
+import be.fedict.eid.dss.model.ServicesManager;
 
 /**
  * Startup servlet component. This servlet context listener boots up the eID DSS
@@ -43,11 +43,13 @@ public class StartupServletContextListener implements ServletContextListener {
 			.getLog(StartupServletContextListener.class);
 
 	private static final String PROTOCOL_SERVICES_CONTEXT_ATTRIBUTE = StartupServletContextListener.class
-			.getName()
-			+ ".ProtocolServices";
+			.getName() + ".ProtocolServices";
+
+	private static final String DOCUMENT_SERVICES_CONTEXT_ATTRIBUTE = StartupServletContextListener.class
+			.getName() + ".DocumentServices";
 
 	@EJB
-	private ProtocolServiceManager protocolServiceManager;
+	private ServicesManager servicesManager;
 
 	public void contextInitialized(ServletContextEvent event) {
 		LOG.debug("contextInitialized");
@@ -56,10 +58,15 @@ public class StartupServletContextListener implements ServletContextListener {
 		 * We once load the protocol services so we don't have to iterate over
 		 * all protocol descriptor files upon each DSS request.
 		 */
-		Map<String, String> protocolServices = this.protocolServiceManager
-				.getProtocolServices();
+		Map<String, String> protocolServiceClassNames = this.servicesManager
+				.getProtocolServiceClassNames();
 		servletContext.setAttribute(PROTOCOL_SERVICES_CONTEXT_ATTRIBUTE,
-				protocolServices);
+				protocolServiceClassNames);
+
+		Map<String, String> documentServiceClassNames = this.servicesManager
+				.getDocumentServiceClassNames();
+		servletContext.setAttribute(DOCUMENT_SERVICES_CONTEXT_ATTRIBUTE,
+				documentServiceClassNames);
 	}
 
 	public void contextDestroyed(ServletContextEvent event) {
@@ -73,10 +80,26 @@ public class StartupServletContextListener implements ServletContextListener {
 	 * @param context
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public static Map<String, String> getProtocolServices(ServletContext context) {
-		Map<String, String> protocolServices = (Map<String, String>) context
+	public static Map<String, String> getProtocolServiceClassNames(
+			ServletContext context) {
+		@SuppressWarnings("unchecked")
+		Map<String, String> protocolServiceClassNames = (Map<String, String>) context
 				.getAttribute(PROTOCOL_SERVICES_CONTEXT_ATTRIBUTE);
-		return protocolServices;
+		return protocolServiceClassNames;
+	}
+
+	/**
+	 * Gives back a map of document service with content type as key. This map
+	 * has been constructed during startup of the eID DSS service.
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static Map<String, String> getDocumentServiceClassNames(
+			ServletContext context) {
+		@SuppressWarnings("unchecked")
+		Map<String, String> documentServiceClassNames = (Map<String, String>) context
+				.getAttribute(DOCUMENT_SERVICES_CONTEXT_ATTRIBUTE);
+		return documentServiceClassNames;
 	}
 }

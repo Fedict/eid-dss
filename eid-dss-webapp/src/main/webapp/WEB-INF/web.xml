@@ -115,6 +115,10 @@
 			<param-name>NextPage</param-name>
 			<param-value>/view-xml.seam</param-value>
 		</init-param>
+		<init-param>
+			<param-name>ExitPage</param-name>
+			<param-value>/protocol-exit</param-value>
+		</init-param>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ProtocolEntryServlet</servlet-name>

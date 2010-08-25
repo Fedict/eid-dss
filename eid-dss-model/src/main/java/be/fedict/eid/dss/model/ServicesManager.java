@@ -18,8 +18,31 @@
 
 package be.fedict.eid.dss.model;
 
-public class InvalidSignatureException extends Exception {
+import java.util.Map;
 
-	private static final long serialVersionUID = 1L;
+import javax.ejb.Local;
+
+/**
+ * Interface for component that manages the registered different services.
+ * 
+ * @author Frank Cornelis
+ * 
+ */
+@Local
+public interface ServicesManager {
+
+	/**
+	 * Gives back a map with (context path, protocol service class name) tuples.
+	 * 
+	 * @return
+	 */
+	Map<String, String> getProtocolServiceClassNames();
+
+	/**
+	 * Gives back a map with (content type, document service class name) tuples.
+	 * 
+	 * @return
+	 */
+	Map<String, String> getDocumentServiceClassNames();
 
 }

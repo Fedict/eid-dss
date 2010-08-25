@@ -32,11 +32,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DSSProtocolService;
 
 /**
  * The base class for servlets that need to use protocol services. Manages the
- * life-cycle of the protocol services.
+ * life-cycle of the protocol services and optionally the document services.
  * 
  * @author Frank Cornelis
  * 
@@ -50,6 +51,19 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 
 	private Map<String, DSSProtocolService> protocolServices;
 
+	private Map<String, DSSDocumentService> documentServices;
+
+	private final boolean initDocumentServices;
+
+	/**
+	 * Main constructor.
+	 * 
+	 * @param initDocumentServices
+	 */
+	protected AbstractProtocolServiceServlet(boolean initDocumentServices) {
+		this.initDocumentServices = initDocumentServices;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -58,10 +72,10 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 		 * of this servlet.
 		 */
 		ServletContext servletContext = config.getServletContext();
-		Map<String, String> protocolServiceClasses = StartupServletContextListener
-				.getProtocolServices(servletContext);
+		Map<String, String> protocolServiceClassNames = StartupServletContextListener
+				.getProtocolServiceClassNames(servletContext);
 		this.protocolServices = new HashMap<String, DSSProtocolService>();
-		for (Map.Entry<String, String> protocolServiceEntry : protocolServiceClasses
+		for (Map.Entry<String, String> protocolServiceEntry : protocolServiceClassNames
 				.entrySet()) {
 			String contextPath = protocolServiceEntry.getKey();
 			String protocolServiceClassName = protocolServiceEntry.getValue();
@@ -84,6 +98,43 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 			}
 			dssProtocolService.init(servletContext);
 			this.protocolServices.put(contextPath, dssProtocolService);
+		}
+
+		if (this.initDocumentServices) {
+			this.documentServices = new HashMap<String, DSSDocumentService>();
+			Map<String, String> documentServiceClassNames = StartupServletContextListener
+					.getDocumentServiceClassNames(servletContext);
+			for (Map.Entry<String, String> documentServiceEntry : documentServiceClassNames
+					.entrySet()) {
+				String contentType = documentServiceEntry.getKey();
+				String documentServiceClassName = documentServiceEntry
+						.getValue();
+				Class<? extends DSSDocumentService> documentServiceClass;
+				try {
+					documentServiceClass = (Class<? extends DSSDocumentService>) Class
+							.forName(documentServiceClassName);
+				} catch (ClassNotFoundException e) {
+					LOG.error("document service class not found: "
+							+ documentServiceClassName);
+					continue;
+				}
+				DSSDocumentService dssDocumentService;
+				try {
+					dssDocumentService = documentServiceClass.newInstance();
+				} catch (Exception e) {
+					LOG.error("could not create an instance of the document service class: "
+							+ documentServiceClassName);
+					continue;
+				}
+				try {
+					dssDocumentService.init(servletContext);
+				} catch (Exception e) {
+					LOG.error(
+							"error initializing document service: "
+									+ e.getMessage(), e);
+				}
+				this.documentServices.put(contentType, dssDocumentService);
+			}
 		}
 	}
 
@@ -119,5 +170,12 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 			throw new ServletException(initParamName + " init-param required");
 		}
 		return value;
+	}
+
+	protected DSSDocumentService findDocumentService(String contentType) {
+		if (false == this.initDocumentServices) {
+			throw new RuntimeException("document services not initialized");
+		}
+		return this.documentServices.get(contentType);
 	}
 }
