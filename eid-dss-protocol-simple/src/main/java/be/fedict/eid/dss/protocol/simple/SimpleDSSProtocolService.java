@@ -49,6 +49,7 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 
 	public static final String TARGET_PARAMETER = "target";
 	public static final String SIGNATURE_REQUEST_PARAMETER = "SignatureRequest";
+	public static final String LANGUAGE_PARAMETER = "language";
 
 	public static final String TARGET_SESSION_ATTRIBUTE = SimpleDSSProtocolService.class
 			.getName() + ".Target";
@@ -65,6 +66,8 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 		HttpSession httpSession = request.getSession();
 		storeTarget(target, httpSession);
 
+		String language = request.getParameter(LANGUAGE_PARAMETER);
+
 		String signatureRequest = request
 				.getParameter(SIGNATURE_REQUEST_PARAMETER);
 		if (null == signatureRequest) {
@@ -79,7 +82,8 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 		byte[] decodedSignatureRequest = Base64.decodeBase64(signatureRequest);
 
 		DSSRequest dssRequest = new DSSRequest(decodedSignatureRequest,
-				"text/xml");
+				"text/xml", language);
+
 		return dssRequest;
 	}
 

@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.portal.control;
+package be.fedict.eid.dss.portal.control.bean;
 
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
@@ -24,9 +24,13 @@ import javax.ejb.Stateful;
 import org.bouncycastle.util.encoders.Base64;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.log.Log;
+
+import be.fedict.eid.dss.portal.control.XMLRequest;
 
 @Stateful
 @Name("xmlRequest")
@@ -35,6 +39,9 @@ public class XMLRequestBean implements XMLRequest {
 
 	@Logger
 	private Log log;
+
+	@In
+	private LocaleSelector localeSelector;
 
 	private String encodedDocument;
 
@@ -67,5 +74,16 @@ public class XMLRequestBean implements XMLRequest {
 		this.encodedDocument = new String(Base64.encode(this.document
 				.getBytes()));
 		return "success";
+	}
+
+	@Override
+	public String getLanguage() {
+		String language = this.localeSelector.getLanguage();
+		this.log.debug("language: #0", language);
+		return language;
+	}
+
+	@Override
+	public void setLanguage(String language) {
 	}
 }

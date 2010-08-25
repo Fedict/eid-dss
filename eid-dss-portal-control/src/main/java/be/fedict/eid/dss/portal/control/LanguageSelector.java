@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2009 FedICT.
+ * Copyright (C) 2009-2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -18,29 +18,17 @@
 
 package be.fedict.eid.dss.portal.control;
 
+import java.util.List;
+
 import javax.ejb.Local;
-import javax.ejb.Remove;
+import javax.faces.model.SelectItem;
 
 @Local
-public interface XMLRequest {
+public interface LanguageSelector {
 
-	// accessors
-	String getDocument();
+	String getLocaleString();
 
-	void setDocument(String document);
+	void setLocaleString(java.lang.String localeString);
 
-	String getEncodedDocument();
-
-	void setEncodedDocument(String encodedDocument);
-
-	String getLanguage();
-
-	void setLanguage(String language);
-
-	// actions
-	String submit();
-
-	// lifecycle
-	@Remove
-	void destroy();
+	List<SelectItem> getSupportedLocales();
 }

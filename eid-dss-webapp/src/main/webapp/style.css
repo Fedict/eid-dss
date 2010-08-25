@@ -25,6 +25,10 @@ h3 {
 	margin-right: 10px;
 }
 
+#language {
+	float: right;
+}
+
 #header {
 	width: 700px;
 	margin: 0 auto;

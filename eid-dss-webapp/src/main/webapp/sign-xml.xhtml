@@ -5,8 +5,7 @@
 <body>
 <ui:composition template="/WEB-INF/template.xhtml">
 	<ui:define name="body">
-		<h2>Sign document</h2>
-		<p>You're about to sign the document.</p>
+		<h2>#{messages.signDocument}</h2>
 		<script src="https://www.java.com/js/deployJava.js"></script>
 		<script>
 	var attributes = {
@@ -17,7 +16,8 @@
 	};
 	var parameters = {
 		TargetPage :'protocol-exit',
-		AppletService :'applet-xml-service'
+		AppletService :'applet-xml-service',
+		Language :'#{localeSelector.language}'
 	};
 	var version = '1.6';
 	deployJava.runApplet(attributes, parameters, version);

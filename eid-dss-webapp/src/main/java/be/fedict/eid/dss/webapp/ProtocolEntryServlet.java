@@ -29,6 +29,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import be.fedict.eid.dss.control.XMLView;
 import be.fedict.eid.dss.model.DocumentRepository;
 import be.fedict.eid.dss.spi.DSSProtocolService;
 import be.fedict.eid.dss.spi.DSSRequest;
@@ -49,8 +50,7 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 			.getLog(ProtocolEntryServlet.class);
 
 	private static final String PROTOCOL_SERVICE_CONTEXT_PATH_SESSION_ATTRIBUTE = ProtocolEntryServlet.class
-			.getName()
-			+ ".ProtocolServiceContextPath";
+			.getName() + ".ProtocolServiceContextPath";
 
 	private String unknownProtocolPageInitParam;
 
@@ -64,15 +64,17 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 
-		this.unknownProtocolPageInitParam = super.getRequiredInitParameter(config,
-				"UnknownProtocolPage");
+		this.unknownProtocolPageInitParam = super.getRequiredInitParameter(
+				config, "UnknownProtocolPage");
 
-		this.protocolErrorPageInitParam = super.getRequiredInitParameter(config,
-				"ProtocolErrorPage");
-		this.protocolErrorMessageSessionAttributeInitParam = super.getRequiredInitParameter(
-				config, "ProtocolErrorMessageSessionAttribute");
+		this.protocolErrorPageInitParam = super.getRequiredInitParameter(
+				config, "ProtocolErrorPage");
+		this.protocolErrorMessageSessionAttributeInitParam = super
+				.getRequiredInitParameter(config,
+						"ProtocolErrorMessageSessionAttribute");
 
-		this.nextPageInitParam = super.getRequiredInitParameter(config, "NextPage");
+		this.nextPageInitParam = super.getRequiredInitParameter(config,
+				"NextPage");
 	}
 
 	private void storeProtocolServiceContextPath(String contextPath,
@@ -125,8 +127,8 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 		} catch (Exception e) {
 			LOG.error("protocol error: " + e.getMessage(), e);
 			httpSession.setAttribute(
-					this.protocolErrorMessageSessionAttributeInitParam, e
-							.getMessage());
+					this.protocolErrorMessageSessionAttributeInitParam,
+					e.getMessage());
 			response.sendRedirect(request.getContextPath()
 					+ this.protocolErrorPageInitParam);
 			return;
@@ -140,9 +142,19 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 		documentRepository.setDocument(dssRequest.getDocumentData());
 
 		/*
+		 * i18n
+		 */
+		String language = dssRequest.getLanguage();
+		if (null != language) {
+			httpSession.setAttribute(XMLView.LANGUAGE_SESSION_ATTRIBUTE,
+					language);
+		} else {
+			httpSession.removeAttribute(XMLView.LANGUAGE_SESSION_ATTRIBUTE);
+		}
+
+		/*
 		 * Goto the next eID DSS page.
 		 */
-		response
-				.sendRedirect(request.getContextPath() + this.nextPageInitParam);
+		response.sendRedirect(request.getContextPath() + this.nextPageInitParam);
 	}
 }
