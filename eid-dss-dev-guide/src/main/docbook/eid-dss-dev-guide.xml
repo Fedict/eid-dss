@@ -10,10 +10,10 @@
 			web applications.
 		</subtitle>
 		<copyright>
-			<year>2009</year>
+			<year>2009-2010</year>
 			<holder>FedICT</holder>
 		</copyright>
-		<releaseinfo>draft 9 Oct 2009</releaseinfo>
+		<releaseinfo>draft 25 Aug 2010</releaseinfo>
 		<authorgroup>
 			<author>
 				<firstname>Frank</firstname>
@@ -41,27 +41,28 @@
 		</para>
 	</section>
 	<section>
-		<title>eID DSS Browser POST Profile</title>
-		<para>The eID Digital Signature Service Browser POST Profile can be
+		<title>eID DSS Browser POST Protocol</title>
+		<para>
+			The eID Digital Signature Service Protocol POST Profile can be
 			used to sign XML based transactions and forms as part of web
 			application work-flows. The service offers basic visualization of the
 			XML data, and creation of the XMLDSig based XML signature with
-			XAdES-BES v1.3.2 extension. The protocol is very lightweight to ease
-			integration within your web applications.</para>
+			XAdES-X-L v1.4.1 extension. The protocol is very lightweight to ease
+			integration within your web applications.
+		</para>
 		<section>
 			<title>Signature Request</title>
 			<para>
 				Suppose that the web application prepared an XML based
 				transaction or form that needs to be signed by the end-user as part
-				of some business work-flow.
-				The web application sends the signature
-				request to the eID DSS web service using a HTTP POST via the web
-				browser of the client. The following POST parameters are mandatory:
+				of some business work-flow. The web application sends the signature
+				request to the eID DSS web service using an HTTP POST via the web
+				browser of the client. The following POST parameters are available:
 			</para>
 			<itemizedlist>
 				<listitem>
 					<para>
-						The
+						The required
 						<code>SignatureRequest</code>
 						POST parameter should contain the base-64 encoded XML document
 						that needs to be signed.
@@ -69,19 +70,29 @@
 				</listitem>
 				<listitem>
 					<para>
-						The
+						The required
 						<code>target</code>
 						POST parameter should contain the URL of the web application to
 						which to send back the signed XML document.
 					</para>
 				</listitem>
+				<listitem>
+					<para>
+						The optional
+						<code>language</code>
+						POST parameter should contain the language code which will be used
+						by the eID DSS during signature creation.
+					</para>
+				</listitem>
 			</itemizedlist>
-			<para>The web application can construct the eID DSS Browser POST
-				Profile signature request via the following piece of HTML code.
+			<para>
+				The web application can construct the eID DSS Browser POST
+				Protocol signature request via the following piece of HTML code.
 			</para>
-			<programlisting role="XML"><![CDATA[<form id="dss-request-form" method="post" action="https://www.e-contract.be/eid-dss/dss-post-entry">
+			<programlisting role="XML"><![CDATA[<form id="dss-request-form" method="post" action="https://www.e-contract.be/eid-dss/protocol/simple">
     <input type="hidden" name="SignatureRequest" value="..." />
     <input type="hidden" name="target" value="http://www.some-web-application.be/dss-landing-page" />
+    <input type="hidden" name="language" value="nl" />
     <input type="submit" value="Submit" />
 </form>
 <script type="text/javascript">
@@ -95,22 +106,22 @@
 				execution of the signature ceremony. The signature ceremony is
 				presented to the end-user via a web application interface. A first
 				screen visualizes the incoming XML document. Here the end-user can
-				choose to either sign the XML document, or to cancel the signature
+				choose to either sign the XML document, or to cancel the signing
 				process. The next screen loads an eID Applet to have the XML
 				document signed according to the W3C XMLDSig specification. The XML
-				signature also contains a XAdES-BES v1.3.2 extension in accordance
-				with the Service Directive. At last the end-user's web browser is
-				redirected to the originating web application where the signed XML
-				document can be processed further.
+				signature also contains a XAdES-X-L v1.4.1 extension in accordance
+				with the recommendations of the expert group on the e-Signatures
+				Service Directive. At last the end-user's web browser is redirected
+				to the originating web application where the signed XML document can
+				be processed further.
 			</para>
 		</section>
 		<section>
 			<title>Signature Response</title>
 			<para>
 				After a successful completion of the signature ceremony, the
-				eID DSS responds to the web application using a HTTP POST via the
-				web browser of the client.
-				The following POST parameters are
+				eID DSS responds to the web application using an HTTP POST via the
+				web browser of the client. The following POST parameters are
 				available to the web application.
 			</para>
 			<itemizedlist>
@@ -213,27 +224,28 @@
 		<para>
 			The eID Digital Signature Service source code has been released
 			under the GNU LGPL version 3.0.
-			</para>
+		</para>
 		<para>
 			<code>
 				This is free software; you can redistribute it and/or modify it
-				under the terms of the GNU Lesser General Public License version
-				3.0
+				under the terms of the GNU Lesser General Public License version 3.0
 				as published by the Free Software Foundation.
-
-				This software is
-				distributed in the hope that it will be useful,
-				but WITHOUT ANY
-				WARRANTY; without even the implied warranty of
-				MERCHANTABILITY or
-				FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-				Lesser General Public
-				License for more details.
-
-				You should have received a copy of the GNU
-				Lesser General Public
-				License along with this software; if not, see
-				http://www.gnu.org/licenses/.</code>
+			</code>
+		</para>
+		<para>
+			<code>
+				This software is distributed in the hope that it will be
+				useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+				of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+				Lesser General Public License for more details.
+			</code>
+		</para>
+		<para>
+			<code>
+				You should have received a copy of the GNU Lesser General
+				Public License along with this software; if not, see
+				http://www.gnu.org/licenses/.
+			</code>
 		</para>
 	</appendix>
 	<appendix>
@@ -256,6 +268,11 @@
 						<entry>9 Oct 2009</entry>
 						<entry>Frank Cornelis</entry>
 						<entry>Initial version.</entry>
+					</row>
+					<row>
+						<entry>25 Aug 2010</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>language parameter.</entry>
 					</row>
 				</tbody>
 			</tgroup>
