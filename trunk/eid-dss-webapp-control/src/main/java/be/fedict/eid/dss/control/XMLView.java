@@ -23,6 +23,10 @@ import javax.ejb.Local;
 @Local
 public interface XMLView {
 
+	public static final String LANGUAGE_SESSION_ATTRIBUTE = "Language";
+
 	// actions
 	String cancel();
+
+	void initLanguage();
 }

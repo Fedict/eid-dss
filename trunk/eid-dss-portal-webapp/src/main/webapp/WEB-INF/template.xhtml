@@ -17,13 +17,24 @@
 </head>
 
 <body>
+
 <div id="header">
-<div id="fed">fed</div>
-<div id="ictegov">
-<div id="ict">ict</div>
-<div id="egov">e-gov</div>
-</div>
-<h1>eID Digital Signature Service Portal</h1>
+
+	<div id="language">
+		<h:form>
+			<h:selectOneMenu id="language" value="#{dssLanguageSelector.localeString}" onchange="submit();">
+				<f:selectItems value="#{dssLanguageSelector.supportedLocales}" />
+			</h:selectOneMenu>
+   		</h:form>
+	</div>
+	
+	<div id="logo">
+		<h:graphicImage id="logo" alt="Fedict Logo"
+			height="45" url="/images/fedict.png" />
+	</div>
+	
+	<h1>eID Digital Signature Service Portal</h1>
+	
 </div>
 
 <f:view>

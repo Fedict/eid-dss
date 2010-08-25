@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.control;
+package be.fedict.eid.dss.control.bean;
 
 import java.io.IOException;
 
@@ -28,11 +28,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.jboss.ejb3.annotation.LocalBinding;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.log.Log;
 
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
+import be.fedict.eid.dss.control.XMLView;
 import be.fedict.eid.dss.model.DocumentRepository;
 import be.fedict.eid.dss.spi.SignatureStatus;
 
@@ -43,6 +47,12 @@ public class XMLViewBean implements XMLView {
 
 	@Logger
 	private Log log;
+
+	@In
+	private LocaleSelector localeSelector;
+
+	@In(value = XMLView.LANGUAGE_SESSION_ATTRIBUTE, scope = ScopeType.SESSION)
+	private String language;
 
 	public String cancel() {
 		HttpSession httpSession = HttpSessionTemporaryDataStorage
@@ -65,5 +75,14 @@ public class XMLViewBean implements XMLView {
 			this.log.error("I/O error: #0", e, e.getMessage());
 		}
 		return null;
+	}
+
+	@Override
+	public void initLanguage() {
+		this.log.debug("language: #0", this.language);
+		if (null != this.language) {
+			this.localeSelector.setLocaleString(language);
+			this.localeSelector.select();
+		}
 	}
 }

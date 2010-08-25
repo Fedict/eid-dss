@@ -34,15 +34,19 @@ public class DSSRequest implements Serializable {
 
 	private final String contentType;
 
+	private final String language;
+
 	/**
 	 * Main constructor.
 	 * 
 	 * @param documentData
 	 * @param contentType
+	 * @param language
 	 */
-	public DSSRequest(byte[] documentData, String contentType) {
+	public DSSRequest(byte[] documentData, String contentType, String language) {
 		this.documentData = documentData;
 		this.contentType = contentType;
+		this.language = language;
 	}
 
 	/**
@@ -61,5 +65,14 @@ public class DSSRequest implements Serializable {
 	 */
 	public String getContentType() {
 		return this.contentType;
+	}
+
+	/**
+	 * The language to be used on the GUI for signing the document.
+	 * 
+	 * @return
+	 */
+	public String getLanguage() {
+		return this.language;
 	}
 }

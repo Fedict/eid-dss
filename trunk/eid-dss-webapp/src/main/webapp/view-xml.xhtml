@@ -5,11 +5,12 @@
 <body>
 <ui:composition template="/WEB-INF/template.xhtml">
 	<ui:define name="body">
-		<h2>View document</h2>
-		<p>Please verify the content of the document you're about to sign.</p>
+		<h2>#{messages.viewDocument}</h2>
+		<p>#{messages.viewDocumentInfo}</p>
 		<h:form>
-			<h:commandButton value="Sign" action="sign" />
-			<h:commandButton value="Cancel" action="#{xmlView.cancel}" />
+			<h:commandButton value="#{messages.sign}" action="sign" />
+			<h:commandButton value="#{messages.cancel}"
+				action="#{xmlView.cancel}" />
 		</h:form>
 		<iframe src="document.xml" width="100%" height="300">
 		<p>Your browser does not support iframes.</p>

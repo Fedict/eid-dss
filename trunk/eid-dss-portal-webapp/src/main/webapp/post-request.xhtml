@@ -9,13 +9,13 @@
 		<h2>POST Signature Request</h2>
 		<p>Please wait while transmitting the signature request to the eID
 		Digital Signature Service...</p>
-		<form id="dss-request-form" method="post"
-			action="#{facesContext.externalContext.requestContextPath}/../eid-dss/protocol/simple"><input
-			type="hidden" name="SignatureRequest"
-			value="#{xmlRequest.encodedDocument}" /> <input type="hidden"
-			name="target"
-			value="#{facesContext.externalContext.requestContextPath}/post-response" />
-		<input type="submit" value="Submit" /></form>
+		<form id="dss-request-form" method="post" 
+			action="#{facesContext.externalContext.requestContextPath}/../eid-dss/protocol/simple">
+			<input type="hidden" name="SignatureRequest" value="#{xmlRequest.encodedDocument}" />
+			<input type="hidden" name="target" value="#{facesContext.externalContext.requestContextPath}/post-response" />
+			<input type="hidden" name="language" value="#{xmlRequest.language}" />
+			<input type="submit" value="Submit" />
+		</form>
 		<script type="text/javascript">
 			document.getElementById('dss-request-form').submit();
 		</script>
