@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 	version="2.5">
 
-	<display-name>eID Digital Signature Service Portal Web Application</display-name>
+	<display-name>eID DSS Admin Portal Web Application</display-name>
 
 	<!-- JBoss Seam -->
 	<listener>
@@ -61,44 +61,6 @@
 	<servlet-mapping>
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>*.seam</url-pattern>
-	</servlet-mapping>
-
-	<!-- eID DSS Response Servlet -->
-	<servlet>
-		<servlet-name>SignatureResponseProcessor</servlet-name>
-		<servlet-class>be.fedict.eid.dss.portal.SignatureResponseProcessorServlet</servlet-class>
-		<init-param>
-			<param-name>NextPage</param-name>
-			<param-value>view-signed-xml.seam</param-value>
-		</init-param>
-		<init-param>
-			<param-name>ErrorPage</param-name>
-			<param-value>sign-error.seam</param-value>
-		</init-param>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>SignatureResponseProcessor</servlet-name>
-		<url-pattern>/post-response</url-pattern>
-	</servlet-mapping>
-
-	<!-- XML document viewer -->
-	<servlet>
-		<servlet-name>DocumentViewer</servlet-name>
-		<servlet-class>be.fedict.eid.dss.portal.DocumentViewerServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>DocumentViewer</servlet-name>
-		<url-pattern>/signed-document.xml</url-pattern>
-	</servlet-mapping>
-
-	<!-- eID Applet Identification service -->
-	<servlet>
-		<servlet-name>AppletIdentificationServiceServlet</servlet-name>
-		<servlet-class>be.fedict.eid.applet.service.AppletServiceServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AppletIdentificationServiceServlet</servlet-name>
-		<url-pattern>/applet-identification-service</url-pattern>
 	</servlet-mapping>
 
 </web-app>

@@ -115,6 +115,15 @@
 							<artifactId>eid-dss-portal-webapp</artifactId>
 							<contextRoot>/eid-dss-portal</contextRoot>
 						</webModule>
+						<ejbModule>
+							<groupId>be.fedict.eid-dss</groupId>
+							<artifactId>eid-dss-admin-portal-control</artifactId>
+						</ejbModule>
+						<webModule>
+							<groupId>be.fedict.eid-dss</groupId>
+							<artifactId>eid-dss-admin-portal-webapp</artifactId>
+							<contextRoot>/eid-dss-admin-portal</contextRoot>
+						</webModule>
 						<jarModule>
 							<groupId>org.jboss.el</groupId>
 							<artifactId>jboss-el</artifactId>
@@ -160,6 +169,18 @@
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-portal-webapp</artifactId>
+			<type>war</type>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-admin-portal-control</artifactId>
+			<type>ejb</type>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-admin-portal-webapp</artifactId>
 			<type>war</type>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
