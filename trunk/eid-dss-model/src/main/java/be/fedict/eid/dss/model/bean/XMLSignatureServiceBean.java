@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.model;
+package be.fedict.eid.dss.model.bean;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,6 +45,10 @@ import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
 import be.fedict.eid.applet.service.signer.time.TSPTimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.spi.SignatureService;
+import be.fedict.eid.dss.model.DocumentRepository;
+import be.fedict.eid.dss.model.SignerCertificateSignatureFacet;
+import be.fedict.eid.dss.model.TrustServiceRevocationDataService;
+import be.fedict.eid.dss.model.TrustServiceTimeStampServiceValidator;
 import be.fedict.eid.dss.spi.SignatureStatus;
 
 @Stateless

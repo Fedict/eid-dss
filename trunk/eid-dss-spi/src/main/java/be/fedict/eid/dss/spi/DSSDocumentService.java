@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2009-2010 FedICT.
+ * Copyright (C) 2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -16,26 +16,34 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.model;
+package be.fedict.eid.dss.spi;
 
-import java.util.Map;
+import java.io.Serializable;
 
-import javax.ejb.Local;
+import javax.servlet.ServletContext;
 
 /**
- * Interface for component that manages the registered protocol services.
+ * Document Service interface. A document service interface knows all about a
+ * document format, and how to sign it.
  * 
  * @author Frank Cornelis
  * 
  */
-@Local
-public interface ProtocolServiceManager {
+public interface DSSDocumentService extends Serializable {
 
 	/**
-	 * Gives back a map with (context path, protocol service class name) tuples.
+	 * Initializes this component.
 	 * 
-	 * @return
+	 * @param servletContext
+	 * @throws Exception
 	 */
-	Map<String, String> getProtocolServices();
+	void init(ServletContext servletContext) throws Exception;
 
+	/**
+	 * Checks the incoming document.
+	 * 
+	 * @param document
+	 * @throws Exception
+	 */
+	void checkIncomingDocument(byte[] document) throws Exception;
 }

@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.model;
+package be.fedict.eid.dss.model.bean;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -43,6 +43,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
+import be.fedict.eid.dss.model.SignatureVerificationService;
+import be.fedict.eid.dss.model.exception.DocumentFormatException;
+import be.fedict.eid.dss.model.exception.InvalidSignatureException;
 
 @Stateless
 public class SignatureVerificationServiceBean implements

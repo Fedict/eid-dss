@@ -88,6 +88,11 @@
 							<artifactId>eid-dss-protocol-simple</artifactId>
 							<includeInApplicationXml>true</includeInApplicationXml>
 						</jarModule>
+						<jarModule>
+							<groupId>be.fedict.eid-dss</groupId>
+							<artifactId>eid-dss-document-xml</artifactId>
+							<includeInApplicationXml>true</includeInApplicationXml>
+						</jarModule>
 						<ejbModule>
 							<groupId>be.fedict.eid-dss</groupId>
 							<artifactId>eid-dss-model</artifactId>
@@ -174,6 +179,11 @@
 			<artifactId>eid-dss-protocol-simple</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-document-xml</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
 		<!-- dependencies on other eID projects -->
 		<dependency>
 			<groupId>be.fedict.eid-applet</groupId>
@@ -199,9 +209,7 @@
 			<groupId>be.fedict.eid-trust-service</groupId>
 			<artifactId>eid-trust-service-xkms2-ws</artifactId>
 		</dependency>
-		<!--
-			The following dependencies are all provided by the Java EE runtime.
-		-->
+		<!-- The following dependencies are all provided by the Java EE runtime. -->
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging-api</artifactId>
