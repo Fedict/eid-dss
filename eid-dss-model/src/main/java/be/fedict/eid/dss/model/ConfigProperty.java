@@ -31,7 +31,8 @@ public enum ConfigProperty {
 			String.class), HTTP_PROXY_ENABLED("http-proxy", Boolean.class), HTTP_PROXY_HOST(
 			"http-proxy-host", String.class), HTTP_PROXY_PORT(
 			"http-proxy-port", Integer.class), XKMS_URL("xkms-url",
-			String.class);
+			String.class), TSP_DIGEST_ALGO("tsp-digest-algo",
+			TSPDigestAlgo.class);
 
 	private final String name;
 

@@ -42,7 +42,12 @@ public class ConfigurationBean implements Configuration {
 						+ type.getClass().getName());
 			}
 			Object castedValue = expectedType.cast(value);
-			propertyValue = castedValue.toString();
+			if (expectedType.isEnum()) {
+				Enum<?> enumValue = (Enum<?>) castedValue;
+				propertyValue = enumValue.name();
+			} else {
+				propertyValue = castedValue.toString();
+			}
 		} else {
 			propertyValue = null;
 		}
@@ -57,7 +62,7 @@ public class ConfigurationBean implements Configuration {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "static-access" })
 	public <T> T getValue(ConfigProperty configProperty, Class<T> type) {
 		if (false == type.equals(configProperty.getType())) {
 			throw new IllegalArgumentException("incorrect type: "
@@ -82,6 +87,10 @@ public class ConfigurationBean implements Configuration {
 		if (Integer.class == configProperty.getType()) {
 			Integer value = Integer.parseInt(strValue);
 			return (T) value;
+		}
+		if (configProperty.getType().isEnum()) {
+			Enum<?> e = (Enum<?>) configProperty.getType().getEnumConstants()[0];
+			return (T) e.valueOf(e.getClass(), strValue);
 		}
 		throw new RuntimeException("unsupported type: "
 				+ configProperty.getType().getName());
