@@ -34,9 +34,12 @@ public class TrustServiceTimeStampServiceValidator implements
 
 	private final XKMS2Client xkms2Client;
 
-	public TrustServiceTimeStampServiceValidator() {
-		this.xkms2Client = new XKMS2Client(
-				"http://localhost:8080/eid-trust-service-ws/xkms2");
+	public TrustServiceTimeStampServiceValidator(String xkmsUrl,
+			String proxyHost, int proxyPort) {
+		this.xkms2Client = new XKMS2Client(xkmsUrl);
+		if (null != proxyHost) {
+			this.xkms2Client.setProxy(proxyHost, proxyPort);
+		}
 	}
 
 	public void validate(List<X509Certificate> certificateChain,
