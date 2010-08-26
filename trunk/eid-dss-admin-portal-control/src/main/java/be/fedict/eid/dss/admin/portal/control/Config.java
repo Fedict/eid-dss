@@ -20,6 +20,8 @@ package be.fedict.eid.dss.admin.portal.control;
 
 import javax.ejb.Local;
 
+import be.fedict.eid.dss.model.TSPDigestAlgo;
+
 @Local
 public interface Config {
 
@@ -49,6 +51,12 @@ public interface Config {
 	Integer getHttpProxyPort();
 
 	void setHttpProxyPort(Integer httpProxyPort);
+
+	TSPDigestAlgo[] getTspDigestAlgoArray();
+
+	TSPDigestAlgo getTspDigestAlgo();
+
+	void setTspDigestAlgo(TSPDigestAlgo tspDigestAlgo);
 
 	/*
 	 * Actions.

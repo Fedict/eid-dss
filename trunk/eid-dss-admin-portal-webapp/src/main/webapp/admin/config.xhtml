@@ -3,7 +3,8 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:rich="http://richfaces.org/rich"
-	xmlns:f="http://java.sun.com/jsf/core">
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:s="http://jboss.com/products/seam/taglib">
 <body>
 <ui:composition template="/WEB-INF/template.xhtml">
 	<ui:param name="activeMenu" value="config" />
@@ -15,7 +16,7 @@
 				<rich:tab label="PKI validation">
 					<h:panelGrid columns="2">
 						<h:outputText value="eID Trust Service XKMS2 URL:" />
-						<h:inputText value="#{dssConfig.xkmsUrl}" size="30" />
+						<h:inputText value="#{dssConfig.xkmsUrl}" size="40" />
 					</h:panelGrid>
 					<h:commandButton value="Save" action="#{dssConfig.save}" />
 				</rich:tab>
@@ -23,10 +24,17 @@
 				<rich:tab label="TSP">
 					<h:panelGrid columns="2">
 						<h:outputText value="TSP server URL:" />
-						<h:inputText value="#{dssConfig.tspUrl}" size="30" />
+						<h:inputText value="#{dssConfig.tspUrl}" size="40" />
 
 						<h:outputText value="TSP Policy OID: " />
 						<h:inputText value="#{dssConfig.tspPolicyOid}" size="10" />
+
+						<h:outputText value="Digest algorithm: " />
+						<h:selectOneMenu value="#{dssConfig.tspDigestAlgo}">
+							<s:selectItems value="#{dssConfig.tspDigestAlgoArray}"
+								var="tspDigestAlgo" label="#{tspDigestAlgo.algoId}" />
+							<s:convertEnum />
+						</h:selectOneMenu>
 					</h:panelGrid>
 					<h:commandButton value="Save" action="#{dssConfig.save}" />
 				</rich:tab>
@@ -37,12 +45,15 @@
 						<h:selectBooleanCheckbox value="#{dssConfig.httpProxy}" />
 
 						<h:outputText value="HTTP Proxy Host: " />
-						<h:inputText value="#{dssConfig.httpProxyHost}" size="20" />
+						<h:inputText value="#{dssConfig.httpProxyHost}" size="30" />
 
 						<h:outputText value="HTTP Proxy Port: " />
 						<h:inputText value="#{dssConfig.httpProxyPort}" size="10" />
 					</h:panelGrid>
 					<h:commandButton value="Save" action="#{dssConfig.save}" />
+				</rich:tab>
+
+				<rich:tab label="Service Identity">
 				</rich:tab>
 			</rich:tabPanel>
 

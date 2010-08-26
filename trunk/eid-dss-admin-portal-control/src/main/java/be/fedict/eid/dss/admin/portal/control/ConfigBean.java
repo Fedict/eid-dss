@@ -31,6 +31,7 @@ import org.jboss.seam.log.Log;
 
 import be.fedict.eid.dss.model.ConfigProperty;
 import be.fedict.eid.dss.model.Configuration;
+import be.fedict.eid.dss.model.TSPDigestAlgo;
 
 @Stateful
 @Name("dssConfig")
@@ -55,6 +56,8 @@ public class ConfigBean implements Config {
 
 	private Integer httpProxyPort;
 
+	private TSPDigestAlgo tspDigestAlgo;
+
 	@Override
 	@PostConstruct
 	public void postConstruct() {
@@ -66,6 +69,8 @@ public class ConfigBean implements Config {
 				String.class);
 		this.tspPolicyOid = this.configuration.getValue(
 				ConfigProperty.TSP_POLICY_OID, String.class);
+		this.tspDigestAlgo = this.configuration.getValue(
+				ConfigProperty.TSP_DIGEST_ALGO, TSPDigestAlgo.class);
 
 		this.httpProxy = this.configuration.getValue(
 				ConfigProperty.HTTP_PROXY_ENABLED, Boolean.class);
@@ -90,6 +95,8 @@ public class ConfigBean implements Config {
 		this.configuration.setValue(ConfigProperty.TSP_URL, this.tspUrl);
 		this.configuration.setValue(ConfigProperty.TSP_POLICY_OID,
 				this.tspPolicyOid);
+		this.configuration.setValue(ConfigProperty.TSP_DIGEST_ALGO,
+				this.tspDigestAlgo);
 
 		this.configuration.setValue(ConfigProperty.HTTP_PROXY_ENABLED,
 				this.httpProxy);
@@ -158,5 +165,20 @@ public class ConfigBean implements Config {
 	@Override
 	public void setHttpProxyPort(Integer httpProxyPort) {
 		this.httpProxyPort = httpProxyPort;
+	}
+
+	@Override
+	public TSPDigestAlgo[] getTspDigestAlgoArray() {
+		return TSPDigestAlgo.values();
+	}
+
+	@Override
+	public TSPDigestAlgo getTspDigestAlgo() {
+		return this.tspDigestAlgo;
+	}
+
+	@Override
+	public void setTspDigestAlgo(TSPDigestAlgo tspDigestAlgo) {
+		this.tspDigestAlgo = tspDigestAlgo;
 	}
 }

@@ -90,6 +90,8 @@ public class XMLSignatureServiceBean implements SignatureService {
 	private SignatureService getSignatureService() {
 		String tspUrl = this.configuration.getValue(ConfigProperty.TSP_URL,
 				String.class);
+		String tspPolicyOid = this.configuration.getValue(
+				ConfigProperty.TSP_POLICY_OID, String.class);
 
 		Boolean useHttpProxy = this.configuration.getValue(
 				ConfigProperty.HTTP_PROXY_ENABLED, Boolean.class);
@@ -117,6 +119,9 @@ public class XMLSignatureServiceBean implements SignatureService {
 				timeStampServiceValidator);
 		if (null != httpProxyHost) {
 			timeStampService.setProxy(httpProxyHost, httpProxyPort);
+		}
+		if (null != tspPolicyOid && !tspPolicyOid.isEmpty()) {
+			timeStampService.setRequestPolicy(tspPolicyOid);
 		}
 
 		HttpSession httpSession = HttpSessionTemporaryDataStorage
