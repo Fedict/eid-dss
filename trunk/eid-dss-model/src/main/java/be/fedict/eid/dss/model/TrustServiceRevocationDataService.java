@@ -41,9 +41,12 @@ public class TrustServiceRevocationDataService implements RevocationDataService 
 
 	private final XKMS2Client xkms2Client;
 
-	public TrustServiceRevocationDataService() {
-		this.xkms2Client = new XKMS2Client(
-				"http://localhost:8080/eid-trust-service-ws/xkms2");
+	public TrustServiceRevocationDataService(String xkmsUrl, String proxyHost,
+			int proxyPort) {
+		this.xkms2Client = new XKMS2Client(xkmsUrl);
+		if (null != proxyHost) {
+			this.xkms2Client.setProxy(proxyHost, proxyPort);
+		}
 	}
 
 	public RevocationData getRevocationData(

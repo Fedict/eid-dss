@@ -69,6 +69,9 @@ public class ConfigurationBean implements Configuration {
 			return null;
 		}
 		String strValue = configPropertyEntity.getValue();
+		if (null == strValue) {
+			return null;
+		}
 		if (String.class == configProperty.getType()) {
 			return (T) strValue;
 		}
