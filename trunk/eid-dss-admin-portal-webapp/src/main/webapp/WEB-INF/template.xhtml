@@ -3,7 +3,8 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:h="http://java.sun.com/jsf/html">
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.com/products/seam/taglib">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta http-equiv="Content-Script-Type" content="text/javascript" />
@@ -30,31 +31,46 @@
 <f:view>
 	<h:form>
 		<div id="menu">
+		<div id="menu-content">
 		<ul>
-			<c:choose>
-				<c:when test="#{activeMenu == 'main'}">
-					<li class="selected"><a
-						href="#{facesContext.externalContext.requestContextPath}/main.seam">Home</a></li>
-				</c:when>
-				<c:otherwise>
-					<li><a
-						href="#{facesContext.externalContext.requestContextPath}/main.seam">Home</a></li>
-				</c:otherwise>
-			</c:choose>
+			<s:div rendered="#{!identity.isLoggedIn()}">
+				<li id="menu_item_main"><a
+					href="#{facesContext.externalContext.requestContextPath}/main.seam">Home</a></li>
+			</s:div>
 
-			<c:choose>
-				<c:when test="#{activeMenu == 'admin'}">
-					<li class="selected"><a
-						href="#{facesContext.externalContext.requestContextPath}/admin/main.seam">Admin</a></li>
-				</c:when>
-				<c:otherwise>
-					<li><a
-						href="#{facesContext.externalContext.requestContextPath}/admin/main.seam">Admin</a></li>
-				</c:otherwise>
-			</c:choose>
+			<s:div rendered="#{!identity.isLoggedIn()}">
+				<li id="menu_item_login"><a
+					href="#{facesContext.externalContext.requestContextPath}/admin/main.seam">Login</a></li>
+			</s:div>
+
+			<s:div rendered="#{identity.isLoggedIn()}">
+				<li id="menu_item_main"><a
+					href="#{facesContext.externalContext.requestContextPath}/admin/main.seam">Home</a></li>
+			</s:div>
+
+			<s:div rendered="#{identity.isLoggedIn()}">
+				<li id="menu_item_config"><a
+					href="#{facesContext.externalContext.requestContextPath}/admin/config.seam">Config</a></li>
+			</s:div>
+
+			<s:div rendered="#{identity.isLoggedIn()}">
+				<li><s:link value="Logout" view="/main.xhtml"
+					action="#{identity.logout}" /></li>
+			</s:div>
 		</ul>
 		</div>
+		</div>
 	</h:form>
+
+	<script type="text/javascript">
+                function setClass(id, className) {
+                    obj = document.getElementById(id);
+                    if (null != obj) {
+                        obj.className = className;
+                    }
+                }
+                setClass("menu_item_#{activeMenu}", "selected");
+    </script>
 
 	<div id="content"><ui:insert name="body">
 		<p>Default Body</p>
