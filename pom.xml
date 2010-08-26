@@ -24,6 +24,7 @@
 		<module>eid-dss-protocol-simple</module>
 		<module>eid-dss-protocol-oasis-dss-profile</module>
 		<module>eid-dss-document-xml</module>
+		<module>eid-dss-entity</module>
 		<module>eid-dss-model</module>
 		<module>eid-dss-ws</module>
 		<module>eid-dss-ws-impl</module>
@@ -93,5 +94,9 @@
 	<properties>
 		<eid-applet.version>1.0.1-SNAPSHOT</eid-applet.version>
 		<eid-trust-service.version>1.0.0-SNAPSHOT</eid-trust-service.version>
+		<hibernate.dialect>org.hibernate.dialect.HSQLDialect
+		</hibernate.dialect>
+		<hibernate.hbm2ddl.auto>create-drop</hibernate.hbm2ddl.auto>
+		<hibernate.jdbc.use_streams_for_binary>true</hibernate.jdbc.use_streams_for_binary>
 	</properties>
 </project>

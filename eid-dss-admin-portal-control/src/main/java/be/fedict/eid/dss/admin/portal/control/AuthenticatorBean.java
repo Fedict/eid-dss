@@ -1,6 +1,7 @@
 /*
  * eID Digital Signature Service Project.
  * Copyright (C) 2010 FedICT.
+ * Copyright (C) 2010 Frank Cornelis.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -18,15 +19,21 @@
 
 package be.fedict.eid.dss.admin.portal.control;
 
+import java.security.cert.X509Certificate;
+
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.ejb3.annotation.LocalBinding;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.security.Credentials;
 import org.jboss.seam.security.Identity;
+
+import be.fedict.eid.dss.model.AdministratorManager;
 
 @Name("authenticator")
 @Stateless
@@ -41,10 +48,18 @@ public class AuthenticatorBean implements Authenticator {
 	@In
 	Identity identity;
 
+	@In(value = "eid.certs.authn", scope = ScopeType.SESSION)
+	private X509Certificate authenticatedCertificate;
+
+	@EJB
+	private AdministratorManager administratorManager;
+
 	public boolean authenticate() {
 		LOG.debug("authenticate: " + this.credentials.getUsername());
-		// TODO: check whether the user really has the correct roles.
-		this.identity.addRole("admin");
+		if (this.administratorManager
+				.hasAdminRights(this.authenticatedCertificate)) {
+			this.identity.addRole("admin");
+		}
 		return true;
 	}
 }
