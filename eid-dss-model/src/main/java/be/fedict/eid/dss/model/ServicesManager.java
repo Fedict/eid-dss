@@ -22,6 +22,8 @@ import java.util.Map;
 
 import javax.ejb.Local;
 
+import be.fedict.eid.dss.spi.DSSDocumentService;
+
 /**
  * Interface for component that manages the registered different services.
  * 
@@ -45,4 +47,10 @@ public interface ServicesManager {
 	 */
 	Map<String, String> getDocumentServiceClassNames();
 
+	/**
+	 * Gives back the current document service to be used.
+	 * 
+	 * @return
+	 */
+	DSSDocumentService getDocumentService();
 }

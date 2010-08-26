@@ -19,11 +19,18 @@
 package be.fedict.eid.dss.document.xml;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import be.fedict.eid.applet.service.signer.SignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
+import be.fedict.eid.applet.service.signer.time.TimeStampService;
+import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
+import be.fedict.eid.applet.service.spi.SignatureService;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 
 /**
@@ -49,5 +56,15 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 				.newInstance();
 		documentBuilderFactory.setNamespaceAware(true);
 		this.documentBuilder = documentBuilderFactory.newDocumentBuilder();
+	}
+
+	public SignatureService getSignatureService(
+			InputStream documentInputStream,
+			TimeStampService timeStampService,
+			TimeStampServiceValidator timeStampServiceValidator, RevocationDataService revocationDataService,
+			SignatureFacet signatureFacet, OutputStream documentOutputStream) {
+		return new XMLSignatureService(timeStampServiceValidator,
+				revocationDataService, signatureFacet, documentInputStream,
+				documentOutputStream, timeStampService);
 	}
 }

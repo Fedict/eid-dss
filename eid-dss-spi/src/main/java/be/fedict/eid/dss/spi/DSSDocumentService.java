@@ -18,9 +18,17 @@
 
 package be.fedict.eid.dss.spi;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 
 import javax.servlet.ServletContext;
+
+import be.fedict.eid.applet.service.signer.SignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
+import be.fedict.eid.applet.service.signer.time.TimeStampService;
+import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
+import be.fedict.eid.applet.service.spi.SignatureService;
 
 /**
  * Document Service interface. A document service interface knows all about a
@@ -46,4 +54,16 @@ public interface DSSDocumentService extends Serializable {
 	 * @throws Exception
 	 */
 	void checkIncomingDocument(byte[] document) throws Exception;
+
+	/**
+	 * Factory for the signature service that will be used to signed the
+	 * document.
+	 * 
+	 * @return
+	 */
+	SignatureService getSignatureService(
+			InputStream documentInputStream,
+			TimeStampService timeStampService,
+			TimeStampServiceValidator timeStampServiceValidator, RevocationDataService revocationDataService,
+			SignatureFacet signatureFacet, OutputStream documentOutputStream);
 }

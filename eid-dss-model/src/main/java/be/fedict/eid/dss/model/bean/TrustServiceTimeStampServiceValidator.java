@@ -16,10 +16,13 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.model;
+package be.fedict.eid.dss.model.bean;
 
 import java.security.cert.X509Certificate;
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.applet.service.signer.facets.RevocationData;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
@@ -31,6 +34,9 @@ import be.fedict.trust.client.jaxb.xades132.RevocationValuesType;
 
 public class TrustServiceTimeStampServiceValidator implements
 		TimeStampServiceValidator {
+
+	private static final Log LOG = LogFactory
+			.getLog(TrustServiceTimeStampServiceValidator.class);
 
 	private final XKMS2Client xkms2Client;
 
@@ -44,6 +50,8 @@ public class TrustServiceTimeStampServiceValidator implements
 
 	public void validate(List<X509Certificate> certificateChain,
 			RevocationData revocationData) throws Exception {
+		LOG.debug("validating TSA certificate: "
+				+ certificateChain.get(0).getSubjectX500Principal());
 		this.xkms2Client.validate("BE-TSA", certificateChain,
 				revocationData != null);
 		if (null == revocationData) {

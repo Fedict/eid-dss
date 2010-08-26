@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.model;
+package be.fedict.eid.dss.model.bean;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.NoSuchAlgorithmException;
@@ -35,6 +35,7 @@ import org.w3c.dom.Element;
 
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
+import be.fedict.eid.dss.model.DocumentRepository;
 
 /**
  * Signature Facet to push the signer certificate in the HTTP session.

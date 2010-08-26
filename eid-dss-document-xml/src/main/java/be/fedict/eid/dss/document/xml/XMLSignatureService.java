@@ -16,95 +16,65 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.model.bean;
+package be.fedict.eid.dss.document.xml;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.servlet.http.HttpSession;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import be.fedict.eid.applet.service.signer.AbstractXmlSignatureService;
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
+import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.facets.EnvelopedSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.KeyInfoSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
-import be.fedict.eid.applet.service.signer.time.TSPTimeStampService;
+import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
-import be.fedict.eid.dss.model.DocumentRepository;
-import be.fedict.eid.dss.model.SignerCertificateSignatureFacet;
-import be.fedict.eid.dss.model.TrustServiceRevocationDataService;
-import be.fedict.eid.dss.model.TrustServiceTimeStampServiceValidator;
-import be.fedict.eid.dss.spi.SignatureStatus;
 
 /**
- * XML signature service.
+ * XML signature service. Will create XAdES-X-L v1.4.1 co-signatures.
  * 
  * @author Frank Cornelis
  * 
  */
 public class XMLSignatureService extends AbstractXmlSignatureService {
 
-	private TemporaryDataStorage temporaryDataStorage;
+	private final TemporaryDataStorage temporaryDataStorage;
 
-	public XMLSignatureService(String tspUrl, String httpProxyHost,
-			int httpProxyPort, String xkmsUrl) {
+	private final InputStream documentInputStream;
+
+	private final OutputStream documentOutputStream;
+
+	public XMLSignatureService(
+			TimeStampServiceValidator validator,
+			RevocationDataService revocationDataService,
+			SignatureFacet signatureFacet, InputStream documentInputStream,
+			OutputStream documentOutputStream, TimeStampService timeStampService) {
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
+		this.documentInputStream = documentInputStream;
+		this.documentOutputStream = documentOutputStream;
+
 		addSignatureFacet(new EnvelopedSignatureFacet("SHA-512"));
 		addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
 		addSignatureFacet(new XAdESSignatureFacet("SHA-512"));
-
-		TimeStampServiceValidator validator = new TrustServiceTimeStampServiceValidator(
-				xkmsUrl, httpProxyHost, httpProxyPort);
-
-		TSPTimeStampService timeStampService = new TSPTimeStampService(tspUrl,
-				validator);
-		if (null != httpProxyHost) {
-			timeStampService.setProxy(httpProxyHost, httpProxyPort);
-		}
-		timeStampService.setDigestAlgo("SHA-512");
-
-		RevocationDataService revocationDataService = new TrustServiceRevocationDataService(
-				xkmsUrl, httpProxyHost, httpProxyPort);
-
 		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
 				revocationDataService, "SHA-512"));
-		addSignatureFacet(new SignerCertificateSignatureFacet());
+		addSignatureFacet(signatureFacet);
+
 		setSignatureNamespacePrefix("ds");
 	}
 
 	@Override
 	protected OutputStream getSignedDocumentOutputStream() {
-		OutputStream signedDocumentOutputStream = new XMLOutputStream();
-		return signedDocumentOutputStream;
-	}
-
-	private class XMLOutputStream extends ByteArrayOutputStream {
-		private final Log LOG = LogFactory.getLog(XMLOutputStream.class);
-
-		@Override
-		public void close() throws IOException {
-			LOG.debug("closing XML signed document output stream");
-			super.close();
-			byte[] data = this.toByteArray();
-			LOG.debug("size of signed XML document: " + data.length);
-			HttpSession httpSession = HttpSessionTemporaryDataStorage
-					.getHttpSession();
-			DocumentRepository documentRepository = new DocumentRepository(
-					httpSession);
-			documentRepository.setSignedDocument(data);
-			documentRepository.setSignatureStatus(SignatureStatus.OK);
-		}
+		return this.documentOutputStream;
 	}
 
 	@Override
@@ -124,15 +94,7 @@ public class XMLSignatureService extends AbstractXmlSignatureService {
 	@Override
 	protected Document getEnvelopingDocument()
 			throws ParserConfigurationException, IOException, SAXException {
-		/*
-		 * We use the document that was sent to us via the POST request.
-		 */
-		HttpSession httpSession = HttpSessionTemporaryDataStorage
-				.getHttpSession();
-		DocumentRepository documentRepository = new DocumentRepository(
-				httpSession);
-		byte[] documentData = documentRepository.getDocument();
-		Document document = loadDocument(new ByteArrayInputStream(documentData));
+		Document document = loadDocument(this.documentInputStream);
 		return document;
 	}
 }

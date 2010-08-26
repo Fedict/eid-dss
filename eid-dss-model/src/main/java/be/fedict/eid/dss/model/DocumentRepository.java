@@ -22,6 +22,9 @@ import java.security.cert.X509Certificate;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import be.fedict.eid.dss.spi.SignatureStatus;
 
 /**
@@ -31,6 +34,8 @@ import be.fedict.eid.dss.spi.SignatureStatus;
  * 
  */
 public class DocumentRepository {
+
+	private static final Log LOG = LogFactory.getLog(DocumentRepository.class);
 
 	public static final String DOCUMENT_SESSION_ATTRIBUTE = DocumentRepository.class
 			.getName() + ".document";
@@ -75,6 +80,7 @@ public class DocumentRepository {
 	}
 
 	public void setDocumentContentType(String contentType) {
+		LOG.debug("set document content type: " + contentType);
 		this.httpSession.setAttribute(DOCUMENT_CONTENT_TYPE_SESSION_ATTRIBUTE,
 				contentType);
 	}
