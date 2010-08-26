@@ -152,6 +152,7 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 		 */
 		String contentType = dssRequest.getContentType();
 		LOG.debug("document content type: " + contentType);
+		documentRepository.setDocumentContentType(contentType);
 		DSSDocumentService documentService = super
 				.findDocumentService(contentType);
 		if (null == documentService) {

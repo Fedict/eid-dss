@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2009-2010 FedICT.
+ * Copyright (C) 2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -18,49 +18,34 @@
 
 package be.fedict.eid.dss.model.bean;
 
-import java.util.Map;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.servlet.http.HttpSession;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.dss.model.DocumentRepository;
-import be.fedict.eid.dss.model.ServicesManager;
-import be.fedict.eid.dss.spi.DSSDocumentService;
+import be.fedict.eid.dss.spi.SignatureStatus;
 
 /**
- * Services manager EJB3 bean.
+ * An output stream that will eventually write back to the current document
+ * repository.
  * 
  * @author Frank Cornelis
  * 
  */
-@Stateless
-public class ServicesManagerBean implements ServicesManager {
+public class DocumentRepositoryOutputStream extends ByteArrayOutputStream {
 
-	private static final Log LOG = LogFactory.getLog(ServicesManagerBean.class);
+	@Override
+	public void close() throws IOException {
+		super.close();
 
-	@EJB
-	private ServicesManagerSingletonBean servicesManagerSingleton;
-
-	public Map<String, String> getProtocolServiceClassNames() {
-		return this.servicesManagerSingleton.getProtocolServiceClassNames();
-	}
-
-	public Map<String, String> getDocumentServiceClassNames() {
-		return this.servicesManagerSingleton.getDocumentServiceClassNames();
-	}
-
-	public DSSDocumentService getDocumentService() {
+		byte[] data = super.toByteArray();
 		HttpSession httpSession = HttpSessionTemporaryDataStorage
 				.getHttpSession();
 		DocumentRepository documentRepository = new DocumentRepository(
 				httpSession);
-		String contentType = documentRepository.getDocumentContentType();
-		LOG.debug("content type: " + contentType);
-		return this.servicesManagerSingleton.getDocumentService(contentType);
+		documentRepository.setSignedDocument(data);
+		documentRepository.setSignatureStatus(SignatureStatus.OK);
 	}
 }

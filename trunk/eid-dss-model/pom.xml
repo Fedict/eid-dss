@@ -27,7 +27,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-ejb-plugin</artifactId>
 				<configuration>
-					<ejbVersion>3.0</ejbVersion>
+					<ejbVersion>3.1</ejbVersion>
 					<generateClient>true</generateClient>
 				</configuration>
 			</plugin>
@@ -49,10 +49,6 @@
 			<artifactId>eid-applet-service-spi</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>be.fedict.eid-applet</groupId>
-			<artifactId>eid-applet-service-signer</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>be.fedict.eid-trust-service</groupId>
 			<artifactId>eid-trust-service-client</artifactId>
 		</dependency>
@@ -61,8 +57,18 @@
 			<artifactId>commons-logging-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.ejb</groupId>
-			<artifactId>ejb-api</artifactId>
+			<groupId>org.jboss.spec.javax.ejb</groupId>
+			<artifactId>jboss-ejb-api_3.1_spec</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.ejb3</groupId>
+			<artifactId>jboss-ejb3-ext-api</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jboss.javaee</groupId>
+					<artifactId>jboss-ejb-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.ejb3</groupId>

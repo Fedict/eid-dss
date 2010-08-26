@@ -16,10 +16,13 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.model;
+package be.fedict.eid.dss.model.bean;
 
 import java.security.cert.X509Certificate;
 import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.applet.service.signer.facets.RevocationData;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
@@ -39,6 +42,9 @@ import be.fedict.trust.client.jaxb.xades132.RevocationValuesType;
  */
 public class TrustServiceRevocationDataService implements RevocationDataService {
 
+	private static final Log LOG = LogFactory
+			.getLog(TrustServiceRevocationDataService.class);
+
 	private final XKMS2Client xkms2Client;
 
 	public TrustServiceRevocationDataService(String xkmsUrl, String proxyHost,
@@ -51,6 +57,8 @@ public class TrustServiceRevocationDataService implements RevocationDataService 
 
 	public RevocationData getRevocationData(
 			List<X509Certificate> certificateChain) {
+		LOG.debug("retrieving revocation data for: "
+				+ certificateChain.get(0).getSubjectX500Principal());
 		try {
 			this.xkms2Client.validate("BE", certificateChain, true);
 		} catch (ValidationFailedException e) {

@@ -89,6 +89,11 @@
 				<artifactId>eid-trust-service-xkms2-ws</artifactId>
 				<version>${eid-trust-service.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.jboss.spec.javax.ejb</groupId>
+				<artifactId>jboss-ejb-api_3.1_spec</artifactId>
+				<version>1.0.0.Beta2</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<properties>
