@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core">
+<body>
+<ui:composition template="/WEB-INF/template.xhtml">
+	<ui:param name="activeMenu" value="config" />
+	<ui:define name="body">
+		<h2>Configuration</h2>
+		<h:form>
+
+			<rich:tabPanel switchType="client">
+				<rich:tab label="PKI validation">
+					<h:panelGrid columns="2">
+						<h:outputText value="eID Trust Service XKMS2 URL:" />
+						<h:inputText value="#{dssConfig.xkmsUrl}" size="30" />
+					</h:panelGrid>
+					<h:commandButton value="Save" action="#{dssConfig.save}" />
+				</rich:tab>
+
+				<rich:tab label="TSP">
+					<h:panelGrid columns="2">
+						<h:outputText value="TSP server URL:" />
+						<h:inputText value="#{dssConfig.tspUrl}" size="30" />
+
+						<h:outputText value="TSP Policy OID: " />
+						<h:inputText value="#{dssConfig.tspPolicyOid}" size="10" />
+					</h:panelGrid>
+					<h:commandButton value="Save" action="#{dssConfig.save}" />
+				</rich:tab>
+
+				<rich:tab label="Network">
+					<h:panelGrid columns="2">
+						<h:outputText value="HTTP Proxy" />
+						<h:selectBooleanCheckbox value="#{dssConfig.httpProxy}" />
+
+						<h:outputText value="HTTP Proxy Host: " />
+						<h:inputText value="#{dssConfig.httpProxyHost}" size="20" />
+
+						<h:outputText value="HTTP Proxy Port: " />
+						<h:inputText value="#{dssConfig.httpProxyPort}" size="10" />
+					</h:panelGrid>
+					<h:commandButton value="Save" action="#{dssConfig.save}" />
+				</rich:tab>
+			</rich:tabPanel>
+
+		</h:form>
+	</ui:define>
+</ui:composition>
+</body>
+</html>
