@@ -32,7 +32,9 @@ public enum ConfigProperty {
 			"http-proxy-host", String.class), HTTP_PROXY_PORT(
 			"http-proxy-port", Integer.class), XKMS_URL("xkms-url",
 			String.class), TSP_DIGEST_ALGO("tsp-digest-algo",
-			TSPDigestAlgo.class);
+			TSPDigestAlgo.class), KEY_STORE_TYPE("key-store-type",
+			KeyStoreType.class), KEY_STORE_PATH("key-store-path", String.class), KEY_STORE_SECRET(
+			"key-store-secret", String.class);
 
 	private final String name;
 
