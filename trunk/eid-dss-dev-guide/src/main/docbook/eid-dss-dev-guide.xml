@@ -173,6 +173,49 @@
 					</para>
 				</listitem>
 			</itemizedlist>
+			<para>
+				In case the eID Digital Signature Service signs the response
+				messages the following additional POST parameters are available to
+				the web application. This protocol level signature is created by the
+				eID DSS identity itself.
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<code>ServiceSigned</code>
+						contains the URL encoded comma-separated list of POST parameters
+						signed by the eID DSS itself. Example:
+						<code>target,SignatureRequest,SignatureResponse,SignatureCertificate
+						</code>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<code>ServiceSignature</code>
+						contains the base64 encoded signature created by the eID DSS
+						service itself. This signature can be used by the Relying Party to
+						verify the integrity and the authenticity of the signed document.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<code>ServiceCertificateChainSize</code>
+						contains the length as an integer string of the certificate chain
+						used by the service to sign the request/response protocol
+						parameters.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<code>ServiceCertificate.n</code>
+						contains the base64 encoded n-th certificate of the service
+						certificate chain.
+						<code>n</code>
+						goes from 1 to the size of the certificate chain. The eID DSS end
+						entity certificate has number 1.
+					</para>
+				</listitem>
+			</itemizedlist>
 		</section>
 	</section>
 	<appendix>
@@ -273,6 +316,11 @@
 						<entry>25 Aug 2010</entry>
 						<entry>Frank Cornelis</entry>
 						<entry>language parameter.</entry>
+					</row>
+					<row>
+						<entry>27 Aug 2010</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>Service signature.</entry>
 					</row>
 				</tbody>
 			</tgroup>
