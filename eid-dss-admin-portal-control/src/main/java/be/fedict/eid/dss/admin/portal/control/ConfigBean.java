@@ -31,6 +31,8 @@ import org.jboss.seam.log.Log;
 
 import be.fedict.eid.dss.model.ConfigProperty;
 import be.fedict.eid.dss.model.Configuration;
+import be.fedict.eid.dss.model.IdentityService;
+import be.fedict.eid.dss.model.KeyStoreType;
 import be.fedict.eid.dss.model.TSPDigestAlgo;
 
 @Stateful
@@ -43,6 +45,9 @@ public class ConfigBean implements Config {
 
 	@EJB
 	private Configuration configuration;
+
+	@EJB
+	private IdentityService identityService;
 
 	private String xkmsUrl;
 
@@ -57,6 +62,12 @@ public class ConfigBean implements Config {
 	private Integer httpProxyPort;
 
 	private TSPDigestAlgo tspDigestAlgo;
+
+	private KeyStoreType keyStoreType;
+
+	private String keyStorePath;
+
+	private String keyStoreSecret;
 
 	@Override
 	@PostConstruct
@@ -78,6 +89,13 @@ public class ConfigBean implements Config {
 				ConfigProperty.HTTP_PROXY_HOST, String.class);
 		this.httpProxyPort = this.configuration.getValue(
 				ConfigProperty.HTTP_PROXY_PORT, Integer.class);
+
+		this.keyStoreType = this.configuration.getValue(
+				ConfigProperty.KEY_STORE_TYPE, KeyStoreType.class);
+		this.keyStorePath = this.configuration.getValue(
+				ConfigProperty.KEY_STORE_PATH, String.class);
+		this.keyStoreSecret = this.configuration.getValue(
+				ConfigProperty.KEY_STORE_SECRET, String.class);
 	}
 
 	@Remove
@@ -104,6 +122,14 @@ public class ConfigBean implements Config {
 				this.httpProxyHost);
 		this.configuration.setValue(ConfigProperty.HTTP_PROXY_PORT,
 				this.httpProxyPort);
+
+		this.configuration.setValue(ConfigProperty.KEY_STORE_TYPE,
+				this.keyStoreType);
+		this.configuration.setValue(ConfigProperty.KEY_STORE_PATH,
+				this.keyStorePath);
+		this.configuration.setValue(ConfigProperty.KEY_STORE_SECRET,
+				this.keyStoreSecret);
+		this.identityService.reloadIdentity();
 		return null;
 	}
 
@@ -180,5 +206,40 @@ public class ConfigBean implements Config {
 	@Override
 	public void setTspDigestAlgo(TSPDigestAlgo tspDigestAlgo) {
 		this.tspDigestAlgo = tspDigestAlgo;
+	}
+
+	@Override
+	public KeyStoreType[] getKeyStoreTypeArray() {
+		return KeyStoreType.values();
+	}
+
+	@Override
+	public KeyStoreType getKeyStoreType() {
+		return this.keyStoreType;
+	}
+
+	@Override
+	public void setKeyStoreType(KeyStoreType keyStoreType) {
+		this.keyStoreType = keyStoreType;
+	}
+
+	@Override
+	public String getKeyStorePath() {
+		return this.keyStorePath;
+	}
+
+	@Override
+	public void setKeyStorePath(String keyStorePath) {
+		this.keyStorePath = keyStorePath;
+	}
+
+	@Override
+	public String getKeyStoreSecret() {
+		return this.keyStoreSecret;
+	}
+
+	@Override
+	public void setKeyStoreSecret(String keyStoreSecret) {
+		this.keyStoreSecret = keyStoreSecret;
 	}
 }

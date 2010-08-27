@@ -20,6 +20,7 @@ package be.fedict.eid.dss.admin.portal.control;
 
 import javax.ejb.Local;
 
+import be.fedict.eid.dss.model.KeyStoreType;
 import be.fedict.eid.dss.model.TSPDigestAlgo;
 
 @Local
@@ -57,6 +58,20 @@ public interface Config {
 	TSPDigestAlgo getTspDigestAlgo();
 
 	void setTspDigestAlgo(TSPDigestAlgo tspDigestAlgo);
+
+	KeyStoreType[] getKeyStoreTypeArray();
+
+	KeyStoreType getKeyStoreType();
+
+	void setKeyStoreType(KeyStoreType keyStoreType);
+
+	String getKeyStorePath();
+
+	void setKeyStorePath(String keyStorePath);
+
+	String getKeyStoreSecret();
+
+	void setKeyStoreSecret(String keyStoreSecret);
 
 	/*
 	 * Actions.
