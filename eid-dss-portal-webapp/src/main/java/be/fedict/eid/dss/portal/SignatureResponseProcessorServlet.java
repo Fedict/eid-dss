@@ -22,6 +22,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
@@ -161,6 +163,7 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 		String serviceSigned = (String) request
 				.getParameter(SERVICE_SIGNED_PARAMETER);
 		if (null != serviceSigned) {
+			serviceSigned = URLDecoder.decode(serviceSigned, "UTF-8");
 			LOG.debug("service signature present");
 			String encodedServiceSignature = (String) request
 					.getParameter(SERVICE_SIGNATURE_PARAMETER);

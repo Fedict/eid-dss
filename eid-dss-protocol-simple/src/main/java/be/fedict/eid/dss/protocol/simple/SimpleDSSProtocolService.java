@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.protocol.simple;
 
+import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.Signature;
 import java.security.cert.Certificate;
@@ -141,8 +142,11 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 			if (null != identityPrivateKeyEntry) {
 				LOG.debug("signing the response");
 				browserPOSTResponse
-						.addAttribute("ServiceSigned",
-								"target,SignatureRequest,SignatureResponse,SignatureCertificate");
+						.addAttribute(
+								"ServiceSigned",
+								URLEncoder
+										.encode("target,SignatureRequest,SignatureResponse,SignatureCertificate",
+												"UTF-8"));
 
 				Signature serviceSignature = Signature
 						.getInstance("SHA1withRSA");
