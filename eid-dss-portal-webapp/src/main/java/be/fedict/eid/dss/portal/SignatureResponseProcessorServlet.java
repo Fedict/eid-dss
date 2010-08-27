@@ -22,9 +22,16 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -43,6 +50,14 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+/**
+ * Processes the response from the eID DSS.
+ * 
+ * TODO: factor out this code to have some SDK components.
+ * 
+ * @author Frank Cornelis
+ * 
+ */
 public class SignatureResponseProcessorServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -56,6 +71,14 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 
 	public static final String SIGNATURE_CERTIFICATE_PARAMETER = "SignatureCertificate";
 
+	public static final String SERVICE_SIGNED_PARAMETER = "ServiceSigned";
+
+	public static final String SERVICE_SIGNATURE_PARAMETER = "ServiceSignature";
+
+	public static final String SERVICE_CERTIFICATE_CHAIN_SIZE_PARAMETER = "ServiceCertificateChainSize";
+
+	public static final String SERVICE_CERTIFICATE_PARAMETER_PREFIX = "ServiceCertificate.";
+
 	public static final String NEXT_PAGE_INIT_PARAM = "NextPage";
 
 	public static final String ERROR_PAGE_INIT_PARAM = "ErrorPage";
@@ -63,8 +86,7 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 	public static final String SIGNATURE_STATUS_SESSION_ATTRIBUTE = "SignatureStatus";
 
 	public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE = SignatureResponseProcessorServlet.class
-			.getName()
-			+ ".signedDocument";
+			.getName() + ".signedDocument";
 
 	private String nextPage;
 
@@ -91,6 +113,9 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		LOG.debug("doPost");
+		/*
+		 * Decode all incoming parameters.
+		 */
 		String signatureStatus = request
 				.getParameter(SIGNATURE_STATUS_PARAMETER);
 		if (null == signatureStatus) {
@@ -119,19 +144,6 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 			showErrorPage(msg, response);
 			return;
 		}
-		byte[] decodedSignatureResponse = Base64.decode(signatureResponse);
-		LOG.debug("decoded signature response: "
-				+ new String(decodedSignatureResponse));
-		try {
-			loadDocument(new ByteArrayInputStream(decodedSignatureResponse));
-		} catch (Exception e) {
-			String msg = SIGNATURE_RESPONSE_PARAMETER
-					+ " is not an XML document";
-			LOG.error(msg);
-			showErrorPage(msg, response);
-			return;
-		}
-		setSignedDocument(new String(decodedSignatureResponse), httpSession);
 
 		String encodedSignatureCertificate = (String) request
 				.getParameter(SIGNATURE_CERTIFICATE_PARAMETER);
@@ -142,20 +154,131 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 			showErrorPage(msg, response);
 			return;
 		}
+
+		/*
+		 * Check service signature.
+		 */
+		String serviceSigned = (String) request
+				.getParameter(SERVICE_SIGNED_PARAMETER);
+		if (null != serviceSigned) {
+			LOG.debug("service signature present");
+			String encodedServiceSignature = (String) request
+					.getParameter(SERVICE_SIGNATURE_PARAMETER);
+			byte[] serviceSignatureValue = Base64
+					.decode(encodedServiceSignature);
+			int serviceCertificateChainSize = Integer.parseInt((String) request
+					.getParameter(SERVICE_CERTIFICATE_CHAIN_SIZE_PARAMETER));
+			List<byte[]> serviceCertificateChain = new LinkedList<byte[]>();
+			for (int idx = 1; idx <= serviceCertificateChainSize; idx++) {
+				String encodedCertificate = (String) request
+						.getParameter(SERVICE_CERTIFICATE_PARAMETER_PREFIX
+								+ idx);
+				byte[] certificateData = Base64.decode(encodedCertificate);
+				serviceCertificateChain.add(certificateData);
+			}
+			String target = (String) httpSession.getAttribute("target");
+			String signatureRequest = (String) httpSession
+					.getAttribute("SignatureRequest");
+			try {
+				verifyServiceSignature(serviceSigned, target, signatureRequest,
+						signatureResponse, encodedSignatureCertificate,
+						serviceSignatureValue, serviceCertificateChain);
+			} catch (Exception e) {
+				String msg = "service signature invalid: " + e.getMessage();
+				LOG.error(msg, e);
+				showErrorPage(msg, response);
+				return;
+			}
+		}
+
+		/*
+		 * Parse all incoming data.
+		 */
+		byte[] decodedSignatureResponse = Base64.decode(signatureResponse);
+		LOG.debug("decoded signature response: "
+				+ new String(decodedSignatureResponse));
+		try {
+			loadDocument(new ByteArrayInputStream(decodedSignatureResponse));
+		} catch (Exception e) {
+			String msg = SIGNATURE_RESPONSE_PARAMETER
+					+ " is not an XML document";
+			LOG.error(msg, e);
+			showErrorPage(msg, response);
+			return;
+		}
+
 		byte[] decodedSignatureCertificate = Base64
 				.decode(encodedSignatureCertificate);
+		X509Certificate signatureCertificate;
 		try {
 			CertificateFactory certificateFactory = CertificateFactory
 					.getInstance("X.509");
-			X509Certificate signatureCertificate = (X509Certificate) certificateFactory
+			signatureCertificate = (X509Certificate) certificateFactory
 					.generateCertificate(new ByteArrayInputStream(
 							decodedSignatureCertificate));
-			httpSession.setAttribute("signatureCertificate",
-					signatureCertificate);
 		} catch (CertificateException e) {
+			String msg = SIGNATURE_CERTIFICATE_PARAMETER
+					+ " is not an X509 certificate";
+			LOG.error(msg, e);
+			showErrorPage(msg, response);
+			return;
 		}
 
+		/*
+		 * Push data into the HTTP session.
+		 */
+		setSignedDocument(new String(decodedSignatureResponse), httpSession);
+		httpSession.setAttribute("signatureCertificate", signatureCertificate);
+
+		/*
+		 * Continue work-flow.
+		 */
 		response.sendRedirect(this.nextPage);
+	}
+
+	private void verifyServiceSignature(String serviceSigned, String target,
+			String signatureRequest, String signatureResponse,
+			String encodedSignatureCertificate, byte[] serviceSignatureValue,
+			List<byte[]> serviceCertificateChain) throws CertificateException,
+			NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+		LOG.debug("verifying service signature");
+		byte[] serviceCertificateData = serviceCertificateChain.get(0);
+		CertificateFactory certificateFactory = CertificateFactory
+				.getInstance("X.509");
+		X509Certificate serviceCertificate = (X509Certificate) certificateFactory
+				.generateCertificate(new ByteArrayInputStream(
+						serviceCertificateData));
+		LOG.debug("service identity: "
+				+ serviceCertificate.getSubjectX500Principal());
+		Signature serviceSignature = Signature.getInstance("SHA1withRSA");
+		serviceSignature.initVerify(serviceCertificate);
+
+		StringTokenizer serviceSignedStringTokenizer = new StringTokenizer(
+				serviceSigned, ",");
+		while (serviceSignedStringTokenizer.hasMoreTokens()) {
+			String serviceSignedElement = serviceSignedStringTokenizer
+					.nextToken();
+			LOG.debug("service signed: " + serviceSignedElement);
+			byte[] data;
+			if ("target".equals(serviceSignedElement)) {
+				data = target.getBytes();
+			} else if ("SignatureRequest".equals(serviceSignedElement)) {
+				data = signatureRequest.getBytes();
+			} else if ("SignatureResponse".equals(serviceSignedElement)) {
+				data = signatureResponse.getBytes();
+			} else if ("SignatureCertificate".equals(serviceSignedElement)) {
+				data = encodedSignatureCertificate.getBytes();
+			} else {
+				throw new SecurityException("service signed unknown element: "
+						+ serviceSignedElement);
+			}
+			serviceSignature.update(data);
+		}
+
+		boolean result = serviceSignature.verify(serviceSignatureValue);
+		if (false == result) {
+			throw new SecurityException("service signature not valid");
+		}
 	}
 
 	private void setSignedDocument(String signedDocument,
@@ -188,8 +311,7 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
 		out.println("<html>");
-		out
-				.println("<head><title>eID DSS Signature Response Processor</title></head>");
+		out.println("<head><title>eID DSS Signature Response Processor</title></head>");
 		out.println("<body>");
 		out.println("<h1>eID DSS Signature Response Processor</h1>");
 		out.println("<p>ERROR: " + message + "</p>");

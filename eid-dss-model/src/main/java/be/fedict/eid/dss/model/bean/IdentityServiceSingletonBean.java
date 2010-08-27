@@ -19,7 +19,6 @@
 package be.fedict.eid.dss.model.bean;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStore.PrivateKeyEntry;
@@ -29,7 +28,6 @@ import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.util.Enumeration;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Singleton;
@@ -53,31 +51,6 @@ public class IdentityServiceSingletonBean {
 
 	@EJB
 	private Configuration configuration;
-
-	@PostConstruct
-	public void postConstruct() {
-		try {
-			reloadIdentity();
-		} catch (KeyStoreException e) {
-			throw new EJBException("error loading the service identity: "
-					+ e.getMessage(), e);
-		} catch (FileNotFoundException e) {
-			throw new EJBException("error loading the service identity: "
-					+ e.getMessage(), e);
-		} catch (NoSuchAlgorithmException e) {
-			throw new EJBException("error loading the service identity: "
-					+ e.getMessage(), e);
-		} catch (CertificateException e) {
-			throw new EJBException("error loading the service identity: "
-					+ e.getMessage(), e);
-		} catch (IOException e) {
-			throw new EJBException("error loading the service identity: "
-					+ e.getMessage(), e);
-		} catch (UnrecoverableEntryException e) {
-			throw new EJBException("error loading the service identity: "
-					+ e.getMessage(), e);
-		}
-	}
 
 	public void reloadIdentity() throws KeyStoreException,
 			NoSuchAlgorithmException, CertificateException, IOException,

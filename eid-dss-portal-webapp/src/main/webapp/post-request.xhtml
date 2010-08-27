@@ -12,7 +12,7 @@
 		<form id="dss-request-form" method="post" 
 			action="#{facesContext.externalContext.requestContextPath}/../eid-dss/protocol/simple">
 			<input type="hidden" name="SignatureRequest" value="#{xmlRequest.encodedDocument}" />
-			<input type="hidden" name="target" value="#{facesContext.externalContext.requestContextPath}/post-response" />
+			<input type="hidden" name="target" value="#{xmlRequest.target}" />
 			<input type="hidden" name="language" value="#{xmlRequest.language}" />
 			<input type="submit" value="Submit" />
 		</form>

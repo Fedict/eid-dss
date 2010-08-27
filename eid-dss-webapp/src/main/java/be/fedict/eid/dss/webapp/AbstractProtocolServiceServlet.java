@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ejb.EJB;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -32,6 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import be.fedict.eid.dss.model.IdentityService;
+import be.fedict.eid.dss.spi.DSSContext;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DSSProtocolService;
 
@@ -55,6 +58,9 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 
 	private final boolean initDocumentServices;
 
+	@EJB
+	private IdentityService identityService;
+
 	/**
 	 * Main constructor.
 	 * 
@@ -71,6 +77,8 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 		 * We align the life-cycle of a DSSProtocolService with the life-cycle
 		 * of this servlet.
 		 */
+		DSSContext dssContext = new DSSContextImpl(this.identityService);
+
 		ServletContext servletContext = config.getServletContext();
 		Map<String, String> protocolServiceClassNames = StartupServletContextListener
 				.getProtocolServiceClassNames(servletContext);
@@ -96,7 +104,7 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 						+ protocolServiceClassName);
 				continue;
 			}
-			dssProtocolService.init(servletContext);
+			dssProtocolService.init(servletContext, dssContext);
 			this.protocolServices.put(contextPath, dssProtocolService);
 		}
 

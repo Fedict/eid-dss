@@ -39,8 +39,9 @@ public interface DSSProtocolService extends Serializable {
 	 * Initializes this component.
 	 * 
 	 * @param servletContext
+	 * @param dssContext
 	 */
-	void init(ServletContext servletContext);
+	void init(ServletContext servletContext, DSSContext dssContext);
 
 	/**
 	 * Handles an incoming request for this protocol.

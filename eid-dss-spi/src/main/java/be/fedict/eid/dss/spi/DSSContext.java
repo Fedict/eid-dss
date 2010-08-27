@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2009 FedICT.
+ * Copyright (C) 2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -16,35 +16,23 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.portal.control;
+package be.fedict.eid.dss.spi;
 
-import javax.ejb.Local;
-import javax.ejb.Remove;
+import java.io.Serializable;
+import java.security.KeyStore;
 
-@Local
-public interface XMLRequest {
+/**
+ * Interface for Digital Signature Service context.
+ * 
+ * @author Frank Cornelis
+ * 
+ */
+public interface DSSContext extends Serializable {
 
-	// accessors
-	String getDocument();
-
-	void setDocument(String document);
-
-	String getEncodedDocument();
-
-	void setEncodedDocument(String encodedDocument);
-
-	String getLanguage();
-
-	void setLanguage(String language);
-
-	String getTarget();
-
-	void setTarget(String target);
-
-	// actions
-	String submit();
-
-	// lifecycle
-	@Remove
-	void destroy();
+	/**
+	 * Gives back the identity of the eID DSS service.
+	 * 
+	 * @return
+	 */
+	KeyStore.PrivateKeyEntry getIdentity();
 }

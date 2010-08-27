@@ -18,6 +18,9 @@
 
 package be.fedict.eid.dss.protocol.simple;
 
+import java.security.KeyStore;
+import java.security.Signature;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
 import javax.servlet.ServletContext;
@@ -30,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.dss.spi.BrowserPOSTResponse;
+import be.fedict.eid.dss.spi.DSSContext;
 import be.fedict.eid.dss.spi.DSSProtocolService;
 import be.fedict.eid.dss.spi.DSSRequest;
 import be.fedict.eid.dss.spi.SignatureStatus;
@@ -55,6 +59,8 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 			.getName() + ".Target";
 	public static final String SIGNATURE_REQUEST_SESSION_ATTRIBUTE = SimpleDSSProtocolService.class
 			.getName() + ".SignatureRequest";
+
+	private DSSContext dssContext;
 
 	public DSSRequest handleIncomingRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -103,6 +109,12 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 				signatureRequest);
 	}
 
+	private String retrieveSignatureRequest(HttpSession httpSession) {
+		String signatureRequest = (String) httpSession
+				.getAttribute(SIGNATURE_REQUEST_SESSION_ATTRIBUTE);
+		return signatureRequest;
+	}
+
 	public BrowserPOSTResponse handleResponse(SignatureStatus signatureStatus,
 			byte[] signedDocument, X509Certificate signerCertificate,
 			HttpSession httpSession, HttpServletRequest request,
@@ -123,11 +135,48 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 					.encodeBase64String(derSignerCertificate);
 			browserPOSTResponse.addAttribute("SignatureCertificate",
 					encodedSignatureCertificate);
+
+			KeyStore.PrivateKeyEntry identityPrivateKeyEntry = this.dssContext
+					.getIdentity();
+			if (null != identityPrivateKeyEntry) {
+				LOG.debug("signing the response");
+				browserPOSTResponse
+						.addAttribute("ServiceSigned",
+								"target,SignatureRequest,SignatureResponse,SignatureCertificate");
+
+				Signature serviceSignature = Signature
+						.getInstance("SHA1withRSA");
+				serviceSignature.initSign(identityPrivateKeyEntry
+						.getPrivateKey());
+				serviceSignature.update(target.getBytes());
+				serviceSignature.update(retrieveSignatureRequest(httpSession)
+						.getBytes());
+				serviceSignature.update(encodedSignedDocument.getBytes());
+				serviceSignature.update(encodedSignatureCertificate.getBytes());
+				byte[] serviceSignatureValue = serviceSignature.sign();
+				String encodedServiceSignature = Base64
+						.encodeBase64String(serviceSignatureValue);
+				browserPOSTResponse.addAttribute("ServiceSignature",
+						encodedServiceSignature);
+
+				Certificate[] serviceCertificateChain = identityPrivateKeyEntry
+						.getCertificateChain();
+				browserPOSTResponse.addAttribute("ServiceCertificateChainSize",
+						Integer.toString(serviceCertificateChain.length));
+				for (int certIdx = 0; certIdx < serviceCertificateChain.length; certIdx++) {
+					Certificate certificate = serviceCertificateChain[certIdx];
+					String encodedServiceCertificate = Base64
+							.encodeBase64String(certificate.getEncoded());
+					browserPOSTResponse.addAttribute("ServiceCertificate."
+							+ (certIdx + 1), encodedServiceCertificate);
+				}
+			}
 		}
 		return browserPOSTResponse;
 	}
 
-	public void init(ServletContext servletContext) {
+	public void init(ServletContext servletContext, DSSContext dssContext) {
 		LOG.debug("init");
+		this.dssContext = dssContext;
 	}
 }
