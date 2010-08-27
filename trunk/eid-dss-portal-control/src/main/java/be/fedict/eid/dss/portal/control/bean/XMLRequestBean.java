@@ -20,13 +20,17 @@ package be.fedict.eid.dss.portal.control.bean;
 
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 import org.bouncycastle.util.encoders.Base64;
 import org.jboss.ejb3.annotation.LocalBinding;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Out;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.log.Log;
 
@@ -46,6 +50,14 @@ public class XMLRequestBean implements XMLRequest {
 	private String encodedDocument;
 
 	private String document;
+
+	private String target;
+
+	@Out(value = "target", scope = ScopeType.SESSION, required = false)
+	private String sessionTarget;
+
+	@Out(value = "SignatureRequest", scope = ScopeType.SESSION, required = false)
+	private String signatureRequest;
 
 	@Remove
 	@Destroy
@@ -73,6 +85,14 @@ public class XMLRequestBean implements XMLRequest {
 		this.log.debug("submit");
 		this.encodedDocument = new String(Base64.encode(this.document
 				.getBytes()));
+		this.signatureRequest = this.encodedDocument;
+
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext externalContext = facesContext.getExternalContext();
+		String requestContextPath = externalContext.getRequestContextPath();
+		this.target = requestContextPath + "/post-response";
+		this.sessionTarget = this.target;
+
 		return "success";
 	}
 
@@ -85,5 +105,14 @@ public class XMLRequestBean implements XMLRequest {
 
 	@Override
 	public void setLanguage(String language) {
+	}
+
+	@Override
+	public String getTarget() {
+		return this.target;
+	}
+
+	@Override
+	public void setTarget(String target) {
 	}
 }
