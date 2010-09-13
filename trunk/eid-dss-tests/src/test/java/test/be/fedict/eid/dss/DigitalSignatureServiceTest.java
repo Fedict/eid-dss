@@ -31,10 +31,10 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyStore.PrivateKeyEntry;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableEntryException;
-import java.security.KeyStore.PrivateKeyEntry;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
@@ -69,6 +69,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -81,9 +82,9 @@ import org.xml.sax.SAXException;
 import sun.security.pkcs11.wrapper.PKCS11Exception;
 import be.fedict.eid.applet.DiagnosticTests;
 import be.fedict.eid.applet.Messages;
+import be.fedict.eid.applet.Messages.MESSAGE_ID;
 import be.fedict.eid.applet.Status;
 import be.fedict.eid.applet.View;
-import be.fedict.eid.applet.Messages.MESSAGE_ID;
 import be.fedict.eid.applet.sc.Pkcs11Eid;
 import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
 import be.fedict.eid.dss.client.NotParseableXMLDocumentException;
@@ -188,6 +189,24 @@ public class DigitalSignatureServiceTest {
 	}
 
 	@Test
+	public void testVerifyXAdESXLSignedDocument() throws Exception {
+		// setup
+		InputStream signedDocumentInputStream = DigitalSignatureServiceTest.class
+				.getResourceAsStream("/signed-document.xml");
+		String signedDocument = IOUtils.toString(signedDocumentInputStream);
+
+		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient();
+
+		// operate
+		String result = client.verifyWithSignerIdentity(signedDocument);
+
+		// verify
+		assertNotNull(result);
+		LOG.debug("signed id: " + result);
+		assertEquals("79102520991", result);
+	}
+
+	@Test
 	public void testSignedDocumentWithCertResult() throws Exception {
 		// setup
 		String documentStr = "<document><data id=\"id\">hello world</data></document>";
@@ -229,8 +248,8 @@ public class DigitalSignatureServiceTest {
 
 		XMLSignatureFactory signatureFactory = XMLSignatureFactory.getInstance(
 				"DOM", new org.jcp.xml.dsig.internal.dom.XMLDSigRI());
-		XMLSignContext signContext = new DOMSignContext(privateKeyEntry
-				.getPrivateKey(), document.getDocumentElement());
+		XMLSignContext signContext = new DOMSignContext(
+				privateKeyEntry.getPrivateKey(), document.getDocumentElement());
 		signContext.putNamespacePrefix(
 				javax.xml.crypto.dsig.XMLSignature.XMLNS, "ds");
 
@@ -245,8 +264,8 @@ public class DigitalSignatureServiceTest {
 						CanonicalizationMethod.EXCLUSIVE_WITH_COMMENTS,
 						(C14NMethodParameterSpec) null);
 		SignedInfo signedInfo = signatureFactory.newSignedInfo(
-				canonicalizationMethod, signatureMethod, Collections
-						.singletonList(reference));
+				canonicalizationMethod, signatureMethod,
+				Collections.singletonList(reference));
 		KeyInfoFactory keyInfoFactory = KeyInfoFactory.getInstance();
 		List<Object> x509DataObjects = new LinkedList<Object>();
 		X509Certificate signingCertificate = (X509Certificate) privateKeyEntry
@@ -277,8 +296,8 @@ public class DigitalSignatureServiceTest {
 
 	private Document loadDocument(String document)
 			throws ParserConfigurationException, SAXException, IOException {
-		InputStream documentInputStream = new ByteArrayInputStream(document
-				.getBytes());
+		InputStream documentInputStream = new ByteArrayInputStream(
+				document.getBytes());
 		return loadDocument(documentInputStream);
 	}
 
