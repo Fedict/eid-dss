@@ -18,7 +18,6 @@
 
 package be.fedict.eid.dss.model;
 
-import java.security.cert.X509Certificate;
 import java.util.List;
 
 import javax.ejb.Local;
@@ -41,11 +40,11 @@ public interface SignatureVerificationService {
 	 * 
 	 * @param xmlData
 	 *            the given XML data.
-	 * @return the list of X509 identities of all signing parties.
+	 * @return the list of all signing parties.
 	 * @exception DocumentFormatException
 	 *                in case the given data is not valid XML.
 	 * @throws InvalidSignatureException
 	 */
-	List<X509Certificate> verify(byte[] xmlData)
-			throws DocumentFormatException, InvalidSignatureException;
+	List<SignatureInfo> verify(byte[] xmlData) throws DocumentFormatException,
+			InvalidSignatureException;
 }

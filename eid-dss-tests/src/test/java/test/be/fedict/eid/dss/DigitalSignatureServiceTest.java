@@ -205,6 +205,21 @@ public class DigitalSignatureServiceTest {
 		LOG.debug("signed id: " + result);
 		assertEquals("79102520991", result);
 	}
+	
+	@Test
+	public void testVerifyWithSigners() throws Exception {
+		// setup
+		InputStream signedDocumentInputStream = DigitalSignatureServiceTest.class
+				.getResourceAsStream("/signed-document.xml");
+		String signedDocument = IOUtils.toString(signedDocumentInputStream);
+
+		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient();
+
+		// operate
+		List<X509Certificate> signers = client.verifyWithSigners(signedDocument);
+
+		// verify
+	}
 
 	@Test
 	public void testSignedDocumentWithCertResult() throws Exception {
