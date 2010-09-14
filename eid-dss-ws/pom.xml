@@ -41,10 +41,42 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaIncludes>
+								<schemaInclude>oasis-dssx-1.0-profiles-vr-cd1.xsd</schemaInclude>
+							</schemaIncludes>
+							<debug>true</debug>
+							<verbose>true</verbose>
+							<catalog>src/main/resources/catalog.cat</catalog>
+							<bindingIncludes>
+								<include>bindings.xjb.xml</include>
+							</bindingIncludes>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>com.sun.xml.bind</groupId>
+						<artifactId>jaxb-impl</artifactId>
+						<version>2.1.12</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 		<resources>
 			<resource>
 				<directory>src/wsdl</directory>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
 			</resource>
 		</resources>
 	</build>
