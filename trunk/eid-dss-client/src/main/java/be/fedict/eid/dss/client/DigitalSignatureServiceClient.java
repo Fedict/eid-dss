@@ -18,16 +18,24 @@
 
 package be.fedict.eid.dss.client;
 
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.UUID;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.ws.Binding;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.Handler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import be.fedict.eid.dss.ws.DigitalSignatureService;
@@ -42,6 +50,7 @@ import be.fedict.eid.dss.ws.jaxb.dss.ResponseBaseType;
 import be.fedict.eid.dss.ws.jaxb.dss.Result;
 import be.fedict.eid.dss.ws.jaxb.dss.VerifyRequest;
 import be.fedict.eid.dss.ws.jaxb.saml.NameIdentifierType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.ReturnVerificationReport;
 
 /**
  * Client for the OASIS DSS verification web service.
@@ -58,8 +67,35 @@ public class DigitalSignatureServiceClient {
 
 	private final String endpointAddress;
 
+	private final ObjectFactory dssObjectFactory;
+
+	private final be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory vrObjectFactory;
+
+	private final Marshaller vrMarshaller;
+
+	private final DocumentBuilder documentBuilder;
+
 	public DigitalSignatureServiceClient(String endpointAddress) {
 		this.endpointAddress = endpointAddress;
+		this.dssObjectFactory = new ObjectFactory();
+		this.vrObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory();
+		try {
+			JAXBContext vrJAXBContext = JAXBContext
+					.newInstance(be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory.class);
+			this.vrMarshaller = vrJAXBContext.createMarshaller();
+		} catch (JAXBException e) {
+			throw new RuntimeException("JAXB error: " + e.getMessage(), e);
+		}
+
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+				.newInstance();
+		documentBuilderFactory.setNamespaceAware(true);
+		try {
+			this.documentBuilder = documentBuilderFactory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			throw new RuntimeException("document builder error: "
+					+ e.getMessage(), e);
+		}
 	}
 
 	public DigitalSignatureServiceClient() {
@@ -68,20 +104,9 @@ public class DigitalSignatureServiceClient {
 
 	public boolean verify(String signedDocument)
 			throws NotParseableXMLDocumentException {
-		ObjectFactory dssObjectFactory = new ObjectFactory();
-		String requestId = "dss-request-" + UUID.randomUUID().toString();
-		ResponseBaseType responseBase = doVerification(dssObjectFactory,
-				requestId, signedDocument, false);
-		if (null == responseBase) {
-			throw new RuntimeException("missing Response");
-		}
-		String responseRequestId = responseBase.getRequestID();
-		if (null == responseRequestId) {
-			throw new RuntimeException("missing response RequestID");
-		}
-		if (false == requestId.equals(responseRequestId)) {
-			throw new RuntimeException("incorrect response RequestID");
-		}
+		ResponseBaseType responseBase = doVerification(signedDocument, false,
+				false);
+
 		Result result = responseBase.getResult();
 		String resultMajor = result.getResultMajor();
 		LOG.debug("result major: " + resultMajor);
@@ -110,6 +135,21 @@ public class DigitalSignatureServiceClient {
 		return false;
 	}
 
+	public List<X509Certificate> verifyWithSigners(String signedDocument) {
+		ResponseBaseType responseBase = doVerification(signedDocument, false,
+				true);
+
+		Result result = responseBase.getResult();
+		String resultMajor = result.getResultMajor();
+		LOG.debug("result major: " + resultMajor);
+		if (false == DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS
+				.equals(resultMajor)) {
+			throw new RuntimeException("unsuccessful result: " + resultMajor);
+		}
+
+		return null;
+	}
+
 	/**
 	 * Verifies the signature on a signed XML document.
 	 * 
@@ -118,21 +158,9 @@ public class DigitalSignatureServiceClient {
 	 * @return the identifier of the signatory.
 	 */
 	public String verifyWithSignerIdentity(String signedDocument) {
-		ObjectFactory dssObjectFactory = new ObjectFactory();
-		String requestId = "dss-request-" + UUID.randomUUID().toString();
-		ResponseBaseType responseBase = doVerification(dssObjectFactory,
-				requestId, signedDocument, true);
+		ResponseBaseType responseBase = doVerification(signedDocument, true,
+				false);
 
-		if (null == responseBase) {
-			throw new RuntimeException("missing Response");
-		}
-		String responseRequestId = responseBase.getRequestID();
-		if (null == responseRequestId) {
-			throw new RuntimeException("missing response RequestID");
-		}
-		if (false == requestId.equals(responseRequestId)) {
-			throw new RuntimeException("incorrect response RequestID");
-		}
 		Result result = responseBase.getResult();
 		String resultMajor = result.getResultMajor();
 		LOG.debug("result major: " + resultMajor);
@@ -144,6 +172,7 @@ public class DigitalSignatureServiceClient {
 		if (null == resultMinor) {
 			throw new RuntimeException("missing ResultMinor");
 		}
+
 		if (DigitalSignatureServiceConstants.RESULT_MINOR_VALID_SIGNATURE
 				.equals(resultMinor)) {
 			AnyType anyType = responseBase.getOptionalOutputs();
@@ -183,10 +212,10 @@ public class DigitalSignatureServiceClient {
 		return null;
 	}
 
-	private ResponseBaseType doVerification(ObjectFactory dssObjectFactory,
-			String requestId, String signedDocument,
-			boolean returnSignerIdentity) {
+	private ResponseBaseType doVerification(String signedDocument,
+			boolean returnSignerIdentity, boolean returnVerificationReport) {
 		LOG.debug("verify");
+		String requestId = "dss-request-" + UUID.randomUUID().toString();
 		DigitalSignatureService digitalSignatureService = DigitalSignatureServiceFactory
 				.getInstance();
 		DigitalSignatureServicePortType digitalSignatureServicePort = digitalSignatureService
@@ -202,25 +231,66 @@ public class DigitalSignatureServiceClient {
 		handlerChain.add(new LoggingSoapHandler());
 		binding.setHandlerChain(handlerChain);
 
-		VerifyRequest verifyRequest = dssObjectFactory.createVerifyRequest();
+		VerifyRequest verifyRequest = this.dssObjectFactory
+				.createVerifyRequest();
 		verifyRequest.setRequestID(requestId);
+
+		AnyType optionalInputs = this.dssObjectFactory.createAnyType();
 		if (returnSignerIdentity) {
-			JAXBElement<Object> returnSignerIdentityElement = dssObjectFactory
+			JAXBElement<Object> returnSignerIdentityElement = this.dssObjectFactory
 					.createReturnSignerIdentity(null);
-			AnyType anyType = dssObjectFactory.createAnyType();
-			anyType.getAny().add(returnSignerIdentityElement);
-			verifyRequest.setOptionalInputs(anyType);
+			optionalInputs.getAny().add(returnSignerIdentityElement);
 		}
-		InputDocuments inputDocuments = dssObjectFactory.createInputDocuments();
+		if (returnVerificationReport) {
+			ReturnVerificationReport jaxbReturnVerificationReport = this.vrObjectFactory
+					.createReturnVerificationReport();
+			/*
+			 * No need to do this, as we're using SSL.
+			 */
+			jaxbReturnVerificationReport.setIncludeVerifier(false);
+			jaxbReturnVerificationReport.setIncludeCertificateValues(true);
+			jaxbReturnVerificationReport
+					.setReportDetailLevel("urn:oasis:names:tc:dss-x:1.0:profiles:verificationreport:reportdetail:noDetails");
+
+			Document document = this.documentBuilder.newDocument();
+			Element newElement = (Element) document.createElement("newNode");
+			try {
+				this.vrMarshaller.marshal(jaxbReturnVerificationReport,
+						newElement);
+			} catch (JAXBException e) {
+				throw new RuntimeException("JAXB error: " + e.getMessage(), e);
+			}
+			Element returnVerificationReportElement = (Element) newElement
+					.getFirstChild();
+			optionalInputs.getAny().add(returnVerificationReportElement);
+		}
+		if (false == optionalInputs.getAny().isEmpty()) {
+			verifyRequest.setOptionalInputs(optionalInputs);
+		}
+
+		InputDocuments inputDocuments = this.dssObjectFactory
+				.createInputDocuments();
 		List<Object> documents = inputDocuments
 				.getDocumentOrTransformedDataOrDocumentHash();
-		DocumentType document = dssObjectFactory.createDocumentType();
+		DocumentType document = this.dssObjectFactory.createDocumentType();
 		document.setBase64XML(signedDocument.getBytes());
 		documents.add(document);
 		verifyRequest.setInputDocuments(inputDocuments);
 
 		ResponseBaseType responseBase = digitalSignatureServicePort
 				.verify(verifyRequest);
+
+		if (null == responseBase) {
+			throw new RuntimeException("missing Response");
+		}
+		String responseRequestId = responseBase.getRequestID();
+		if (null == responseRequestId) {
+			throw new RuntimeException("missing response RequestID");
+		}
+		if (false == requestId.equals(responseRequestId)) {
+			throw new RuntimeException("incorrect response RequestID");
+		}
+
 		return responseBase;
 	}
 }
