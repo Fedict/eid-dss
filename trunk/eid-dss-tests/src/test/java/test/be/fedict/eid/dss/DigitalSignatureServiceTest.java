@@ -88,6 +88,7 @@ import be.fedict.eid.applet.View;
 import be.fedict.eid.applet.sc.Pkcs11Eid;
 import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
 import be.fedict.eid.dss.client.NotParseableXMLDocumentException;
+import be.fedict.eid.dss.client.SignatureInfo;
 
 public class DigitalSignatureServiceTest {
 
@@ -205,7 +206,7 @@ public class DigitalSignatureServiceTest {
 		LOG.debug("signed id: " + result);
 		assertEquals("79102520991", result);
 	}
-	
+
 	@Test
 	public void testVerifyWithSigners() throws Exception {
 		// setup
@@ -216,9 +217,17 @@ public class DigitalSignatureServiceTest {
 		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient();
 
 		// operate
-		List<X509Certificate> signers = client.verifyWithSigners(signedDocument);
+		List<SignatureInfo> signers = client.verifyWithSigners(signedDocument);
 
 		// verify
+		assertNotNull(signers);
+		assertEquals(1, signers.size());
+		SignatureInfo signatureInfo = signers.get(0);
+		LOG.debug("signer: "
+				+ signatureInfo.getSigner().getSubjectX500Principal());
+		assertTrue(signatureInfo.getSigner().getSubjectX500Principal()
+				.toString().contains("Frank Cornelis"));
+		LOG.debug("signing time: " + signatureInfo.getSigningTime());
 	}
 
 	@Test

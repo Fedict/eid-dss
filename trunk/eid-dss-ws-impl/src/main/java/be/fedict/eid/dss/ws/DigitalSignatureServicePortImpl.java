@@ -167,7 +167,8 @@ public class DigitalSignatureServicePortImpl implements
 			for (Object anyObject : anyObjects) {
 				if (anyObject instanceof JAXBElement<?>) {
 					JAXBElement<?> anyElement = (JAXBElement<?>) anyObject;
-					if (new QName("urn:oasis:names:tc:dss:1.0:core:schema",
+					if (new QName(
+							DigitalSignatureServiceConstants.DSS_NAMESPACE,
 							"ReturnSignerIdentity")
 							.equals(anyElement.getName())) {
 						returnSignerIdentity = true;
@@ -176,7 +177,7 @@ public class DigitalSignatureServicePortImpl implements
 				}
 				if (anyObject instanceof Element) {
 					Element element = (Element) anyObject;
-					if ("urn:oasis:names:tc:dss-x:1.0:profiles:verificationreport:schema#"
+					if (DigitalSignatureServiceConstants.VR_NAMESPACE
 							.equals(element.getNamespaceURI())
 							&& "ReturnVerificationReport".equals(element
 									.getLocalName())) {
