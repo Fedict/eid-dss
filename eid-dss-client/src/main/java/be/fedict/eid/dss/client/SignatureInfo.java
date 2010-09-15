@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2009-2010 FedICT.
+ * Copyright (C) 2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -18,14 +18,37 @@
 
 package be.fedict.eid.dss.client;
 
+import java.security.cert.X509Certificate;
+import java.util.Date;
+
 /**
- * Thrown in case the given XML document was not parseable.
+ * Signature information container class.
  * 
  * @author Frank Cornelis
  * 
  */
-public class NotParseableXMLDocumentException extends Exception {
+public class SignatureInfo {
 
-	private static final long serialVersionUID = 1L;
+	private final X509Certificate signer;
 
+	private final Date signingTime;
+
+	/**
+	 * Main constructor.
+	 * 
+	 * @param signer
+	 * @param signingTime
+	 */
+	public SignatureInfo(X509Certificate signer, Date signingTime) {
+		this.signer = signer;
+		this.signingTime = signingTime;
+	}
+
+	public X509Certificate getSigner() {
+		return this.signer;
+	}
+
+	public Date getSigningTime() {
+		return this.signingTime;
+	}
 }

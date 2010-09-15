@@ -218,6 +218,195 @@
 			</itemizedlist>
 		</section>
 	</section>
+	<section>
+		<title>OASIS DSS Web Service</title>
+		<para>
+			The eID Digital Signature Service implements a SOAP web service
+			for validation of signed documents. This validation web service has
+			been implemented according to the OASIS Digital Signature Service
+			Core Protocols, Elements, and Bindings Version 1.0. The web service
+			also implements the OASIS Profile for Comprehensive Multi-signature
+			Verification Reports for OASIS Digital Signature Services Version 1.0
+			for providing detailed reporting on the signatures of a signed
+			document.
+		</para>
+		<para>In this section we will highlight the web service protocol by
+			example. A web service client can connect to the SOAP web service
+			using some URL. For example:
+		</para>
+		<programlisting>https://www.e-contract.be/eid-dss-ws/dss</programlisting>
+		<para>
+			In the examples we'll use the following namespace prefixes:
+		</para>
+		<table>
+			<title>Used namespaces</title>
+			<tgroup cols="2">
+				<colspec colwidth="1*" />
+				<colspec colwidth="8*" />
+				<thead>
+					<row>
+						<entry>Prefix</entry>
+						<entry>Namespace</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>
+							<code>soap</code>
+						</entry>
+						<entry>
+							<code>http://schemas.xmlsoap.org/soap/envelope/</code>
+						</entry>
+					</row>
+					<row>
+						<entry>
+							<code>dss</code>
+						</entry>
+						<entry>
+							<code>urn:oasis:names:tc:dss:1.0:core:schema</code>
+						</entry>
+					</row>
+					<row>
+						<entry>
+							<code>vr</code>
+						</entry>
+						<entry>
+							<code>
+								urn:oasis:names:tc:dss-x:1.0:profiles:verificationreport:schema#
+							</code>
+						</entry>
+					</row>
+					<row>
+						<entry>
+							<code>xades</code>
+						</entry>
+						<entry>
+							<code>http://uri.etsi.org/01903/v1.3.2#</code>
+						</entry>
+					</row>
+					<row>
+						<entry>
+							<code>xmldsig</code>
+						</entry>
+						<entry>
+							<code>http://www.w3.org/2000/09/xmldsig#</code>
+						</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+		<para>
+			A SOAP request for validation of a signed document looks as
+			follows:
+		</para>
+		<programlisting role="XML"><![CDATA[<soap:Envelope>
+<soap:Body>
+	<dss:VerifyRequest RequestID="some-id">
+		<dss:OptionalInputs>
+			<vr:ReturnVerificationReport>
+				<vr:IncludeVerifier>false</vr:IncludeVerifier>
+				<vr:IncludeCertificateValues>true</vr:IncludeCertificateValues>
+				<vr:ReportDetailLevel>
+				urn:oasis:names:tc:dss-x:1.0:profiles:verificationreport:reportdetail:noDetails
+				</vr:ReportDetailLevel>
+			</vr:ReturnVerificationReport>
+		</dss:OptionalInputs>
+		<dss:InputDocuments>
+			<dss:Document>
+				<dss:Base64XML>the document base64 encoded</dss:Base64XML>
+			</dss:Document>
+		</dss:InputDocuments>
+	</dss:VerifyRequest>
+</soap:Body>
+</soap:Envelope>]]></programlisting>
+		<para>
+			The corresponding SOAP response looks as follows:
+		</para>
+		<programlisting role="XML"><![CDATA[<soap:Envelope>
+<soap:Body>
+	<dss:Response RequestID="the original request id">
+		<dss:Result>
+			<dss:ResultMajor>
+				urn:oasis:names:tc:dss:1.0:resultmajor:Success
+			</dss:ResultMajor>
+			<dss:ResultMinor>
+				urn:oasis:names:tc:dss:1.0:resultminor:valid:signature:OnAllDocuments
+			</dss:ResultMinor>
+		</dss:Result>
+		<dss:OptionalOutputs>
+			<vr:VerificationReport>
+				<vr:IndividualReport>
+					<vr:SignedObjectIdentifier>
+						<vr:SignedProperties>
+							<vr:SignedSignatureProperties>
+								<xades:SigningTime>
+									2010-09-13T15:35:49.767+02:00
+								</xades:SigningTime>
+							</vr:SignedSignatureProperties>
+						</vr:SignedProperties>
+					</vr:SignedObjectIdentifier>
+				<dss:Result>
+					<dss:ResultMajor>
+						urn:oasis:names:tc:dss:1.0:resultmajor:Success
+					</dss:ResultMajor>
+					<dss:ResultMinor>
+						urn:oasis:names:tc:dss:1.0:resultminor:valid:signature:OnAllDocuments
+					</dss:ResultMinor>
+				</dss:Result>
+				<vr:Details>
+					<vr:IndividualCertificateReport>
+						<vr:CertificateIdentifier>
+							<xmldsig:X509IssuerName>
+								SERIALNUMBER=200612, CN=Citizen CA, C=BE
+							</xmldsig:X509IssuerName>
+							<xmldsig:X509SerialNumber>
+								21267647932559078400084294942057726232
+							</xmldsig:X509SerialNumber>
+						</vr:CertificateIdentifier>
+						<vr:Subject>
+							SERIALNUMBER=79102520991, GIVENNAME=Frank Henri, SURNAME=Cornelis, CN=Frank Cornelis (Signature), C=BE
+						</vr:Subject>
+						<vr:ChainingOK>
+							<vr:ResultMajor>
+								urn:oasis:names:tc:dss:1.0:detail:valid
+							</vr:ResultMajor>
+						</vr:ChainingOK>
+						<vr:ValidityPeriodOK>
+							<vr:ResultMajor>
+								urn:oasis:names:tc:dss:1.0:detail:valid
+							</vr:ResultMajor>
+						</vr:ValidityPeriodOK>
+						<vr:ExtensionsOK>
+							<vr:ResultMajor>
+								urn:oasis:names:tc:dss:1.0:detail:valid
+							</vr:ResultMajor>
+						</vr:ExtensionsOK>
+						<vr:CertificateValue>
+							base64 encoded signer certificate
+						</vr:CertificateValue>
+						<vr:SignatureOK>
+							<vr:SigMathOK>
+								<vr:ResultMajor>
+									urn:oasis:names:tc:dss:1.0:detail:valid
+								</vr:ResultMajor>
+							</vr:SigMathOK>
+						</vr:SignatureOK>
+						<vr:CertificateStatus>
+							<vr:CertStatusOK>
+								<vr:ResultMajor>
+									urn:oasis:names:tc:dss:1.0:detail:valid
+								</vr:ResultMajor>
+							</vr:CertStatusOK>
+						</vr:CertificateStatus>
+					</vr:IndividualCertificateReport>
+				</vr:Details>
+				</vr:IndividualReport>
+			</vr:VerificationReport>
+		</dss:OptionalOutputs>
+	</dss:Response>
+</soap:Body>
+</soap:Envelope>]]></programlisting>
+	</section>
 	<appendix>
 		<title>eID Digital Signature Service Developer's Guide License</title>
 		<para>
@@ -321,6 +510,11 @@
 						<entry>27 Aug 2010</entry>
 						<entry>Frank Cornelis</entry>
 						<entry>Service signature.</entry>
+					</row>
+					<row>
+						<entry>15 Sep 2010</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>OASIS DSS validation web service.</entry>
 					</row>
 				</tbody>
 			</tgroup>

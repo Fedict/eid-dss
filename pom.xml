@@ -51,6 +51,19 @@
 				<module>eid-dss-tests</module>
 			</modules>
 		</profile>
+		<profile>
+			<id>sdk</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>sdk</value>
+				</property>
+			</activation>
+			<modules>
+				<module>eid-dss-dev-guide</module>
+				<module>eid-dss-sdk</module>
+			</modules>
+		</profile>
 	</profiles>
 	<dependencyManagement>
 		<dependencies>

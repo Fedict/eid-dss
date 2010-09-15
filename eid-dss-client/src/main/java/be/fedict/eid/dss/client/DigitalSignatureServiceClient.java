@@ -18,7 +18,12 @@
 
 package be.fedict.eid.dss.client;
 
+import java.io.ByteArrayInputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +31,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -50,7 +57,11 @@ import be.fedict.eid.dss.ws.jaxb.dss.ResponseBaseType;
 import be.fedict.eid.dss.ws.jaxb.dss.Result;
 import be.fedict.eid.dss.ws.jaxb.dss.VerifyRequest;
 import be.fedict.eid.dss.ws.jaxb.saml.NameIdentifierType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.CertificateValidityType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.IndividualReportType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.ReturnVerificationReport;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.SignedObjectIdentifierType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.VerificationReportType;
 
 /**
  * Client for the OASIS DSS verification web service.
@@ -72,9 +83,18 @@ public class DigitalSignatureServiceClient {
 	private final be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory vrObjectFactory;
 
 	private final Marshaller vrMarshaller;
+	private final Unmarshaller vrUnmarshaller;
 
 	private final DocumentBuilder documentBuilder;
 
+	private final CertificateFactory certificateFactory;
+
+	/**
+	 * Main constructor.
+	 * 
+	 * @param endpointAddress
+	 *            the DSS web service endpoint address.
+	 */
 	public DigitalSignatureServiceClient(String endpointAddress) {
 		this.endpointAddress = endpointAddress;
 		this.dssObjectFactory = new ObjectFactory();
@@ -83,6 +103,7 @@ public class DigitalSignatureServiceClient {
 			JAXBContext vrJAXBContext = JAXBContext
 					.newInstance(be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory.class);
 			this.vrMarshaller = vrJAXBContext.createMarshaller();
+			this.vrUnmarshaller = vrJAXBContext.createUnmarshaller();
 		} catch (JAXBException e) {
 			throw new RuntimeException("JAXB error: " + e.getMessage(), e);
 		}
@@ -96,12 +117,29 @@ public class DigitalSignatureServiceClient {
 			throw new RuntimeException("document builder error: "
 					+ e.getMessage(), e);
 		}
+
+		try {
+			this.certificateFactory = CertificateFactory.getInstance("X.509");
+		} catch (CertificateException e) {
+			throw new RuntimeException("X509 factory error: " + e.getMessage(),
+					e);
+		}
 	}
 
+	/**
+	 * Default constructor.
+	 */
 	public DigitalSignatureServiceClient() {
 		this(DEFAULT_ENDPOINT_ADDRESS);
 	}
 
+	/**
+	 * Verifies whether the given document has been signed or not.
+	 * 
+	 * @param signedDocument
+	 * @return
+	 * @throws NotParseableXMLDocumentException
+	 */
 	public boolean verify(String signedDocument)
 			throws NotParseableXMLDocumentException {
 		ResponseBaseType responseBase = doVerification(signedDocument, false,
@@ -135,7 +173,16 @@ public class DigitalSignatureServiceClient {
 		return false;
 	}
 
-	public List<X509Certificate> verifyWithSigners(String signedDocument) {
+	/**
+	 * Verifies whether the given document has been signed and reports back on
+	 * the signing parties.
+	 * 
+	 * @param signedDocument
+	 * @return
+	 * @throws NotParseableXMLDocumentException
+	 */
+	public List<SignatureInfo> verifyWithSigners(String signedDocument)
+			throws NotParseableXMLDocumentException {
 		ResponseBaseType responseBase = doVerification(signedDocument, false,
 				true);
 
@@ -144,10 +191,96 @@ public class DigitalSignatureServiceClient {
 		LOG.debug("result major: " + resultMajor);
 		if (false == DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS
 				.equals(resultMajor)) {
+			String resultMinor = result.getResultMinor();
+			if (null != resultMinor
+					&& DigitalSignatureServiceConstants.RESULT_MINOR_NOT_PARSEABLE_XML_DOCUMENT
+							.equals(resultMinor)) {
+				throw new NotParseableXMLDocumentException();
+			}
 			throw new RuntimeException("unsuccessful result: " + resultMajor);
 		}
 
-		return null;
+		List<SignatureInfo> signers = new LinkedList<SignatureInfo>();
+		AnyType optionalOutputs = responseBase.getOptionalOutputs();
+		if (null == optionalOutputs) {
+			return signers;
+		}
+		List<Object> optionalOutputContent = optionalOutputs.getAny();
+		for (Object optionalOutput : optionalOutputContent) {
+			if (optionalOutput instanceof Element) {
+				Element optionalOutputElement = (Element) optionalOutput;
+				if (DigitalSignatureServiceConstants.VR_NAMESPACE
+						.equals(optionalOutputElement.getNamespaceURI())
+						&& "VerificationReport".equals(optionalOutputElement
+								.getLocalName())) {
+					JAXBElement<VerificationReportType> verificationReportElement;
+					try {
+						verificationReportElement = (JAXBElement<VerificationReportType>) this.vrUnmarshaller
+								.unmarshal(optionalOutputElement);
+					} catch (JAXBException e) {
+						throw new RuntimeException(
+								"JAXB error parsing verification report: "
+										+ e.getMessage(), e);
+					}
+					VerificationReportType verificationReport = verificationReportElement
+							.getValue();
+					List<IndividualReportType> individualReports = verificationReport
+							.getIndividualReport();
+					for (IndividualReportType individualReport : individualReports) {
+						if (false == DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS
+								.equals(individualReport.getResult()
+										.getResultMajor())) {
+							LOG.warn("some invalid VR result reported: "
+									+ individualReport.getResult()
+											.getResultMajor());
+							continue;
+						}
+						SignedObjectIdentifierType signedObjectIdentifier = individualReport
+								.getSignedObjectIdentifier();
+						Date signingTime = signedObjectIdentifier
+								.getSignedProperties()
+								.getSignedSignatureProperties()
+								.getSigningTime().toGregorianCalendar()
+								.getTime();
+						List<Object> details = individualReport.getDetails()
+								.getAny();
+						X509Certificate signer = null;
+						for (Object detail : details) {
+							if (detail instanceof JAXBElement<?>) {
+								JAXBElement<?> detailElement = (JAXBElement<?>) detail;
+								if (new QName(
+										DigitalSignatureServiceConstants.VR_NAMESPACE,
+										"IndividualCertificateReport")
+										.equals(detailElement.getName())) {
+									CertificateValidityType individualCertificateReport = (CertificateValidityType) detailElement
+											.getValue();
+									byte[] encodedSigner = individualCertificateReport
+											.getCertificateValue();
+									try {
+										signer = (X509Certificate) this.certificateFactory
+												.generateCertificate(new ByteArrayInputStream(
+														encodedSigner));
+									} catch (CertificateException e) {
+										throw new RuntimeException(
+												"cert decoding error: "
+														+ e.getMessage(), e);
+									}
+								}
+							}
+						}
+						if (null == signer) {
+							throw new RuntimeException(
+									"no signer certificate present in verification report");
+						}
+						SignatureInfo signatureInfo = new SignatureInfo(signer,
+								signingTime);
+						signers.add(signatureInfo);
+					}
+				}
+			}
+		}
+
+		return signers;
 	}
 
 	/**
@@ -156,6 +289,7 @@ public class DigitalSignatureServiceClient {
 	 * @param signedDocument
 	 *            the document.
 	 * @return the identifier of the signatory.
+	 * @deprecated
 	 */
 	public String verifyWithSignerIdentity(String signedDocument) {
 		ResponseBaseType responseBase = doVerification(signedDocument, true,
