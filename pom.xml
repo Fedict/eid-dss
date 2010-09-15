@@ -22,6 +22,7 @@
 	<modules>
 		<module>eid-dss-spi</module>
 		<module>eid-dss-protocol-simple</module>
+		<module>eid-dss-protocol-simple-client</module>
 		<module>eid-dss-protocol-oasis-dss-profile</module>
 		<module>eid-dss-document-xml</module>
 		<module>eid-dss-entity</module>
