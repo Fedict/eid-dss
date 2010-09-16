@@ -20,6 +20,7 @@ package be.fedict.eid.dss.portal;
 
 import java.io.IOException;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -37,13 +38,21 @@ public class DocumentViewerServlet extends HttpServlet {
 	private static final Log LOG = LogFactory
 			.getLog(DocumentViewerServlet.class);
 
+	private String signedDocumentSessionAttribute;
+
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		this.signedDocumentSessionAttribute = config
+				.getInitParameter("SignedDocumentSessionAttribute");
+	}
+
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		LOG.debug("doGet");
 		HttpSession httpSession = request.getSession();
-		String document = SignatureResponseProcessorServlet
-				.getSignedDocument(httpSession);
+		String document = (String) httpSession
+				.getAttribute(this.signedDocumentSessionAttribute);
 		byte[] documentData = document.getBytes();
 
 		response.setHeader("Cache-Control",

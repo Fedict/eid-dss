@@ -28,6 +28,14 @@
 				<exclude>META-INF/**</exclude>
 			</excludes>
 		</fileSet>
+		<fileSet>
+			<directory>target/protocol-simple-client-javadoc</directory>
+			<outputDirectory>eid-dss-protocol-simple-client-javadoc
+			</outputDirectory>
+			<excludes>
+				<exclude>META-INF/**</exclude>
+			</excludes>
+		</fileSet>
 	</fileSets>
 	<dependencySets>
 		<dependencySet>

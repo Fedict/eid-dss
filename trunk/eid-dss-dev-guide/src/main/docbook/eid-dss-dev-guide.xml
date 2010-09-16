@@ -13,7 +13,7 @@
 			<year>2009-2010</year>
 			<holder>FedICT</holder>
 		</copyright>
-		<releaseinfo>draft 25 Aug 2010</releaseinfo>
+		<releaseinfo>draft 16 Sep 2010</releaseinfo>
 		<authorgroup>
 			<author>
 				<firstname>Frank</firstname>
@@ -111,9 +111,12 @@
 				document signed according to the W3C XMLDSig specification. The XML
 				signature also contains a XAdES-X-L v1.4.1 extension in accordance
 				with the recommendations of the expert group on the e-Signatures
-				Service Directive. At last the end-user's web browser is redirected
-				to the originating web application where the signed XML document can
-				be processed further.
+				Service Directive. The created XML signature is a co-signature,
+				meaning that multiple signatures can coexist within the same
+				document. The signature is appended as last child of the document
+				root element. At last the end-user's web browser is redirected to
+				the originating web application where the signed XML document can be
+				processed further.
 			</para>
 		</section>
 		<section>
@@ -216,6 +219,17 @@
 					</para>
 				</listitem>
 			</itemizedlist>
+			<tip>
+				<title>Java SDK component</title>
+				<para>
+					To ease the handling of DSS response messages according to the
+					described protocol we've provided eID DSS SDK components. These can
+					be found within the
+					<code>eid-dss-protocol-simple-client</code>
+					artifact. The corresponding javadoc documentation is also part of
+					the eID DSS SDK.
+				</para>
+			</tip>
 		</section>
 	</section>
 	<section>
@@ -345,67 +359,84 @@
 							</vr:SignedSignatureProperties>
 						</vr:SignedProperties>
 					</vr:SignedObjectIdentifier>
-				<dss:Result>
-					<dss:ResultMajor>
-						urn:oasis:names:tc:dss:1.0:resultmajor:Success
-					</dss:ResultMajor>
-					<dss:ResultMinor>
-						urn:oasis:names:tc:dss:1.0:resultminor:valid:signature:OnAllDocuments
-					</dss:ResultMinor>
-				</dss:Result>
-				<vr:Details>
-					<vr:IndividualCertificateReport>
-						<vr:CertificateIdentifier>
-							<xmldsig:X509IssuerName>
-								SERIALNUMBER=200612, CN=Citizen CA, C=BE
-							</xmldsig:X509IssuerName>
-							<xmldsig:X509SerialNumber>
-								21267647932559078400084294942057726232
-							</xmldsig:X509SerialNumber>
-						</vr:CertificateIdentifier>
-						<vr:Subject>
-							SERIALNUMBER=79102520991, GIVENNAME=Frank Henri, SURNAME=Cornelis, CN=Frank Cornelis (Signature), C=BE
-						</vr:Subject>
-						<vr:ChainingOK>
-							<vr:ResultMajor>
-								urn:oasis:names:tc:dss:1.0:detail:valid
-							</vr:ResultMajor>
-						</vr:ChainingOK>
-						<vr:ValidityPeriodOK>
-							<vr:ResultMajor>
-								urn:oasis:names:tc:dss:1.0:detail:valid
-							</vr:ResultMajor>
-						</vr:ValidityPeriodOK>
-						<vr:ExtensionsOK>
-							<vr:ResultMajor>
-								urn:oasis:names:tc:dss:1.0:detail:valid
-							</vr:ResultMajor>
-						</vr:ExtensionsOK>
-						<vr:CertificateValue>
-							base64 encoded signer certificate
-						</vr:CertificateValue>
-						<vr:SignatureOK>
-							<vr:SigMathOK>
+					<dss:Result>
+						<dss:ResultMajor>
+							urn:oasis:names:tc:dss:1.0:resultmajor:Success
+						</dss:ResultMajor>
+						<dss:ResultMinor>
+							urn:oasis:names:tc:dss:1.0:resultminor:valid:signature:OnAllDocuments
+						</dss:ResultMinor>
+					</dss:Result>
+					<vr:Details>
+						<vr:IndividualCertificateReport>
+							<vr:CertificateIdentifier>
+								<xmldsig:X509IssuerName>
+									SERIALNUMBER=200612, CN=Citizen CA, C=BE
+								</xmldsig:X509IssuerName>
+								<xmldsig:X509SerialNumber>
+									21267647932559078400084294942057726232
+								</xmldsig:X509SerialNumber>
+							</vr:CertificateIdentifier>
+							<vr:Subject>
+								SERIALNUMBER=79102520991, GIVENNAME=Frank Henri, SURNAME=Cornelis, CN=Frank Cornelis (Signature), C=BE
+							</vr:Subject>
+							<vr:ChainingOK>
 								<vr:ResultMajor>
 									urn:oasis:names:tc:dss:1.0:detail:valid
 								</vr:ResultMajor>
-							</vr:SigMathOK>
-						</vr:SignatureOK>
-						<vr:CertificateStatus>
-							<vr:CertStatusOK>
+							</vr:ChainingOK>
+							<vr:ValidityPeriodOK>
 								<vr:ResultMajor>
 									urn:oasis:names:tc:dss:1.0:detail:valid
 								</vr:ResultMajor>
-							</vr:CertStatusOK>
-						</vr:CertificateStatus>
-					</vr:IndividualCertificateReport>
-				</vr:Details>
+							</vr:ValidityPeriodOK>
+							<vr:ExtensionsOK>
+								<vr:ResultMajor>
+									urn:oasis:names:tc:dss:1.0:detail:valid
+								</vr:ResultMajor>
+							</vr:ExtensionsOK>
+							<vr:CertificateValue>
+								base64 encoded signer certificate
+							</vr:CertificateValue>
+							<vr:SignatureOK>
+								<vr:SigMathOK>
+									<vr:ResultMajor>
+										urn:oasis:names:tc:dss:1.0:detail:valid
+									</vr:ResultMajor>
+								</vr:SigMathOK>
+							</vr:SignatureOK>
+							<vr:CertificateStatus>
+								<vr:CertStatusOK>
+									<vr:ResultMajor>
+										urn:oasis:names:tc:dss:1.0:detail:valid
+									</vr:ResultMajor>
+								</vr:CertStatusOK>
+							</vr:CertificateStatus>
+						</vr:IndividualCertificateReport>
+					</vr:Details>
 				</vr:IndividualReport>
 			</vr:VerificationReport>
 		</dss:OptionalOutputs>
 	</dss:Response>
 </soap:Body>
 </soap:Envelope>]]></programlisting>
+		<para>
+			The signature is uniquely identified by the
+			<code>SigningTime</code>
+			element. The certificate of the signatory is delivered via the
+			<code>CertificateValue</code>
+			element.
+		</para>
+		<tip>
+			<title>Java SDK component</title>
+			<para>
+				The eID DSS SDK comes with a Java DSS verification web service
+				client component. This component is part of the
+				<code>eid-dss-client</code>
+				artifact. The corresponding javadoc documentation is also part of
+				the eID DSS SDK.
+			</para>
+		</tip>
 	</section>
 	<appendix>
 		<title>eID Digital Signature Service Developer's Guide License</title>
