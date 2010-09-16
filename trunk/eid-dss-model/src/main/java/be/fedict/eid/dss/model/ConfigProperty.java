@@ -34,7 +34,10 @@ public enum ConfigProperty {
 			String.class), TSP_DIGEST_ALGO("tsp-digest-algo",
 			TSPDigestAlgo.class), KEY_STORE_TYPE("key-store-type",
 			KeyStoreType.class), KEY_STORE_PATH("key-store-path", String.class), KEY_STORE_SECRET(
-			"key-store-secret", String.class);
+			"key-store-secret", String.class), SIGN_TRUST_DOMAIN(
+			"sign-trust-domain", String.class), VERIFY_TRUST_DOMAIN(
+			"verify-trust-domain", String.class), TSA_TRUST_DOMAIN(
+			"tsa-trust-domain", String.class);
 
 	private final String name;
 

@@ -47,12 +47,15 @@ public class TrustServiceRevocationDataService implements RevocationDataService 
 
 	private final XKMS2Client xkms2Client;
 
+	private final String trustDomain;
+
 	public TrustServiceRevocationDataService(String xkmsUrl, String proxyHost,
-			int proxyPort) {
+			int proxyPort, String trustDomain) {
 		this.xkms2Client = new XKMS2Client(xkmsUrl);
 		if (null != proxyHost) {
 			this.xkms2Client.setProxy(proxyHost, proxyPort);
 		}
+		this.trustDomain = trustDomain;
 	}
 
 	public RevocationData getRevocationData(
@@ -60,7 +63,7 @@ public class TrustServiceRevocationDataService implements RevocationDataService 
 		LOG.debug("retrieving revocation data for: "
 				+ certificateChain.get(0).getSubjectX500Principal());
 		try {
-			this.xkms2Client.validate("BE", certificateChain, true);
+			this.xkms2Client.validate(this.trustDomain, certificateChain, true);
 		} catch (ValidationFailedException e) {
 			throw new TrustCertificateSecurityException();
 		} catch (Exception e) {

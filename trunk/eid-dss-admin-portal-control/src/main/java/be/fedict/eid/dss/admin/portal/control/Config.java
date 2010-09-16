@@ -73,6 +73,18 @@ public interface Config {
 
 	void setKeyStoreSecret(String keyStoreSecret);
 
+	String getSignTrustDomain();
+
+	void setSignTrustDomain(String signTrustDomain);
+
+	String getVerifyTrustDomain();
+
+	void setVerifyTrustDomain(String verifyTrustDomain);
+
+	String getTsaTrustDomain();
+
+	void setTsaTrustDomain(String tsaTrustDomain);
+
 	/*
 	 * Actions.
 	 */

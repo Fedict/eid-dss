@@ -39,20 +39,23 @@ public class TrustServiceTimeStampServiceValidator implements
 			.getLog(TrustServiceTimeStampServiceValidator.class);
 
 	private final XKMS2Client xkms2Client;
+	
+	private final String trustDomain;
 
 	public TrustServiceTimeStampServiceValidator(String xkmsUrl,
-			String proxyHost, int proxyPort) {
+			String proxyHost, int proxyPort, String trustDomain) {
 		this.xkms2Client = new XKMS2Client(xkmsUrl);
 		if (null != proxyHost) {
 			this.xkms2Client.setProxy(proxyHost, proxyPort);
 		}
+		this.trustDomain = trustDomain;
 	}
 
 	public void validate(List<X509Certificate> certificateChain,
 			RevocationData revocationData) throws Exception {
 		LOG.debug("validating TSA certificate: "
 				+ certificateChain.get(0).getSubjectX500Principal());
-		this.xkms2Client.validate("BE-TSA", certificateChain,
+		this.xkms2Client.validate(this.trustDomain, certificateChain,
 				revocationData != null);
 		if (null == revocationData) {
 			return;
