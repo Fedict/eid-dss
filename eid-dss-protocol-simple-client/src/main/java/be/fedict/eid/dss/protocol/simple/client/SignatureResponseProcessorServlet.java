@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2009 FedICT.
+ * Copyright (C) 2009-2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -16,14 +16,11 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.portal;
+package be.fedict.eid.dss.protocol.simple.client;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
@@ -31,6 +28,7 @@ import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -41,21 +39,41 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.util.encoders.Base64;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
- * Processes the response from the eID DSS.
+ * Processes the response from the eID DSS simple protocol.
  * 
- * TODO: factor out this code to have some SDK components.
+ * <p>
+ * The following init-params are required:
+ * </p>
+ * <ul>
+ * <li><tt>NextPage</tt>: indicates the page where the flow continues.</li>
+ * <li><tt>SignedDocumentSessionAttribute</tt>: indicates which session
+ * attribute to use to push in the signed document as returned by the eID DSS.</li>
+ * <li><tt>ErrorPage</tt>: indicates the page to be shown in case of errors.</li>
+ * <li><tt>ErrorMessageSessionAttribute</tt>: indicates which session attribute
+ * to use for reporting an error. This session attribute can be used on the
+ * error page.</li>
+ * </ul>
+ * 
+ * <p>
+ * The following init-params are optional:
+ * </p>
+ * <ul>
+ * <li><tt>SignatureCertificateSessionAttribute</tt>: indicates which session
+ * attribute to use to push in the signature certificate as returned by the eID
+ * DSS.</li>
+ * <li><tt>ServiceFingerprint</tt>: contains the hexadecimal encoded SHA1
+ * fingerprint of the service certificate used to sign the DSS response. Use
+ * this parameter when a very simple trust model is sufficient.</li>
+ * </ul>
  * 
  * @author Frank Cornelis
  * 
@@ -85,36 +103,97 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 
 	public static final String ERROR_PAGE_INIT_PARAM = "ErrorPage";
 
-	public static final String SIGNATURE_STATUS_SESSION_ATTRIBUTE = "SignatureStatus";
+	public static final String ERROR_MESSAGE_SESSION_ATTRIBUTE_INIT_PARAM = "ErrorMessageSessionAttribute";
 
-	public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE = SignatureResponseProcessorServlet.class
-			.getName() + ".signedDocument";
+	public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE_INIT_PARAM = "SignedDocumentSessionAttribute";
+
+	public static final String SIGNATURE_CERTIFICATE_SESSION_ATTRIBUTE_INIT_PARAM = "SignatureCertificateSessionAttribute";
+
+	public static final String SERVICE_FINGERPRINT_INIT_PARAM = "ServiceFingerprint";
 
 	private String nextPage;
 
 	private String errorPage;
 
+	private String errorMessageSessionAttribute;
+
+	private String signedDocumentSessionAttribute;
+
+	private String signatureCertificateSessionAttribute;
+
+	private byte[] serviceFingerprint;
+
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		LOG.debug("init");
-		this.nextPage = config.getInitParameter(NEXT_PAGE_INIT_PARAM);
-		if (null == this.nextPage) {
-			throw new ServletException("missing init-param: "
-					+ NEXT_PAGE_INIT_PARAM);
-		}
+		this.nextPage = getRequiredInitParameter(config, NEXT_PAGE_INIT_PARAM);
 		LOG.debug("next page: " + this.nextPage);
-		this.errorPage = config.getInitParameter(ERROR_PAGE_INIT_PARAM);
-		if (null == this.errorPage) {
-			throw new ServletException("missing init-param: "
-					+ ERROR_PAGE_INIT_PARAM);
-		}
+
+		this.errorPage = getRequiredInitParameter(config, ERROR_PAGE_INIT_PARAM);
 		LOG.debug("error page: " + this.errorPage);
+
+		this.errorMessageSessionAttribute = getRequiredInitParameter(config,
+				ERROR_MESSAGE_SESSION_ATTRIBUTE_INIT_PARAM);
+		LOG.debug("error message session attribute: "
+				+ this.errorMessageSessionAttribute);
+
+		this.signedDocumentSessionAttribute = getRequiredInitParameter(config,
+				SIGNED_DOCUMENT_SESSION_ATTRIBUTE_INIT_PARAM);
+		LOG.debug("signed document session attribute: "
+				+ this.signedDocumentSessionAttribute);
+
+		this.signatureCertificateSessionAttribute = config
+				.getInitParameter(SIGNATURE_CERTIFICATE_SESSION_ATTRIBUTE_INIT_PARAM);
+
+		String encodedServiceFingerprint = config
+				.getInitParameter(SERVICE_FINGERPRINT_INIT_PARAM);
+		if (null != encodedServiceFingerprint) {
+			LOG.debug("service fingerprint: " + encodedServiceFingerprint);
+			try {
+				this.serviceFingerprint = Hex
+						.decodeHex(encodedServiceFingerprint.toCharArray());
+			} catch (DecoderException e) {
+				throw new ServletException(
+						"service fingerprint decoding error: " + e.getMessage(),
+						e);
+			}
+		} else {
+			this.serviceFingerprint = null;
+		}
+	}
+
+	private String getRequiredInitParameter(ServletConfig config,
+			String paramName) throws ServletException {
+		String paramValue = config.getInitParameter(paramName);
+		if (null == paramValue) {
+			throw new ServletException("missing init-param: " + paramName);
+		}
+		return paramValue;
+	}
+
+	private void clearAllSessionAttribute(HttpServletRequest request) {
+		HttpSession httpSession = request.getSession();
+		httpSession.removeAttribute(this.errorMessageSessionAttribute);
+		httpSession.removeAttribute(this.signedDocumentSessionAttribute);
+		if (null != this.signatureCertificateSessionAttribute) {
+			httpSession
+					.removeAttribute(this.signatureCertificateSessionAttribute);
+		}
+	}
+
+	@Override
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+		showErrorPage("DSS response processor not available via GET", request,
+				response);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		LOG.debug("doPost");
+		clearAllSessionAttribute(request);
+
 		/*
 		 * Decode all incoming parameters.
 		 */
@@ -124,16 +203,14 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 			String msg = SIGNATURE_RESPONSE_PARAMETER
 					+ " parameter not present";
 			LOG.error(msg);
-			showErrorPage(msg, response);
+			showErrorPage(msg, request, response);
 			return;
 		}
 		LOG.debug("signature status: " + signatureStatus);
 		HttpSession httpSession = request.getSession();
 		if (false == "OK".equals(signatureStatus)) {
-			// signature status is used by the error page.
-			httpSession.setAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE,
-					signatureStatus);
-			response.sendRedirect(this.errorPage);
+			showErrorPage("invalid signature status: " + signatureStatus,
+					request, response);
 			return;
 		}
 
@@ -143,7 +220,7 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 			String msg = SIGNATURE_RESPONSE_PARAMETER
 					+ " parameter not present";
 			LOG.error(msg);
-			showErrorPage(msg, response);
+			showErrorPage(msg, request, response);
 			return;
 		}
 
@@ -153,7 +230,7 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 			String msg = SIGNATURE_CERTIFICATE_PARAMETER
 					+ " parameter not present";
 			LOG.error(msg);
-			showErrorPage(msg, response);
+			showErrorPage(msg, request, response);
 			return;
 		}
 
@@ -189,7 +266,18 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 			} catch (Exception e) {
 				String msg = "service signature invalid: " + e.getMessage();
 				LOG.error(msg, e);
-				showErrorPage(msg, response);
+				showErrorPage(msg, request, response);
+				return;
+			}
+		} else {
+			if (null != this.serviceFingerprint) {
+				/*
+				 * In case of a service fingerprint being available, we really
+				 * require the eID DSS to send us a service signature.
+				 */
+				showErrorPage(
+						"Service fingerprint available but service signature is missing",
+						request, response);
 				return;
 			}
 		}
@@ -198,17 +286,8 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 		 * Parse all incoming data.
 		 */
 		byte[] decodedSignatureResponse = Base64.decode(signatureResponse);
-		LOG.debug("decoded signature response: "
-				+ new String(decodedSignatureResponse));
-		try {
-			loadDocument(new ByteArrayInputStream(decodedSignatureResponse));
-		} catch (Exception e) {
-			String msg = SIGNATURE_RESPONSE_PARAMETER
-					+ " is not an XML document";
-			LOG.error(msg, e);
-			showErrorPage(msg, response);
-			return;
-		}
+		String signedDocument = new String(decodedSignatureResponse);
+		LOG.debug("decoded signature response: " + signedDocument);
 
 		byte[] decodedSignatureCertificate = Base64
 				.decode(encodedSignatureCertificate);
@@ -223,20 +302,32 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 			String msg = SIGNATURE_CERTIFICATE_PARAMETER
 					+ " is not an X509 certificate";
 			LOG.error(msg, e);
-			showErrorPage(msg, response);
+			showErrorPage(msg, request, response);
 			return;
 		}
 
 		/*
 		 * Push data into the HTTP session.
 		 */
-		setSignedDocument(new String(decodedSignatureResponse), httpSession);
-		httpSession.setAttribute("signatureCertificate", signatureCertificate);
+		httpSession.setAttribute(this.signedDocumentSessionAttribute,
+				signedDocument);
+		if (null != this.signatureCertificateSessionAttribute) {
+			httpSession.setAttribute(this.signatureCertificateSessionAttribute,
+					signatureCertificate);
+		}
 
 		/*
 		 * Continue work-flow.
 		 */
-		response.sendRedirect(this.nextPage);
+		response.sendRedirect(request.getContextPath() + this.nextPage);
+	}
+
+	private void showErrorPage(String errorMessage, HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		HttpSession httpSession = request.getSession();
+		httpSession.setAttribute(this.errorMessageSessionAttribute,
+				errorMessage);
+		response.sendRedirect(request.getContextPath() + this.errorPage);
 	}
 
 	private void verifyServiceSignature(String serviceSigned, String target,
@@ -282,43 +373,14 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 		if (false == result) {
 			throw new SecurityException("service signature not valid");
 		}
-	}
-
-	private void setSignedDocument(String signedDocument,
-			HttpSession httpSession) {
-		httpSession.setAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE,
-				signedDocument);
-	}
-
-	public static String getSignedDocument(HttpSession httpSession) {
-		String signedDocument = (String) httpSession
-				.getAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE);
-		return signedDocument;
-	}
-
-	private Document loadDocument(InputStream documentInputStream)
-			throws ParserConfigurationException, SAXException, IOException {
-		InputSource inputSource = new InputSource(documentInputStream);
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-				.newInstance();
-		documentBuilderFactory.setNamespaceAware(true);
-		DocumentBuilder documentBuilder = documentBuilderFactory
-				.newDocumentBuilder();
-		Document document = documentBuilder.parse(inputSource);
-		return document;
-	}
-
-	private void showErrorPage(String message, HttpServletResponse response)
-			throws IOException {
-		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-		out.println("<html>");
-		out.println("<head><title>eID DSS Signature Response Processor</title></head>");
-		out.println("<body>");
-		out.println("<h1>eID DSS Signature Response Processor</h1>");
-		out.println("<p>ERROR: " + message + "</p>");
-		out.println("</body></html>");
-		out.close();
+		if (null != this.serviceFingerprint) {
+			byte[] actualServiceFingerprint = DigestUtils
+					.sha(serviceCertificateData);
+			if (false == Arrays.equals(this.serviceFingerprint,
+					actualServiceFingerprint)) {
+				throw new SecurityException(
+						"service certificate fingerprint mismatch");
+			}
+		}
 	}
 }

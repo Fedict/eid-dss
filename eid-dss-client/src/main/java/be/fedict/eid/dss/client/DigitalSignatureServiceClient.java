@@ -137,7 +137,8 @@ public class DigitalSignatureServiceClient {
 	 * Verifies whether the given document has been signed or not.
 	 * 
 	 * @param signedDocument
-	 * @return
+	 * @return <code>true</code> is the document has been signed,
+	 *         <code>false</code> otherwise.
 	 * @throws NotParseableXMLDocumentException
 	 */
 	public boolean verify(String signedDocument)
@@ -178,7 +179,8 @@ public class DigitalSignatureServiceClient {
 	 * the signing parties.
 	 * 
 	 * @param signedDocument
-	 * @return
+	 * @return a list of signature information objects detailing on the signing
+	 *         parties.
 	 * @throws NotParseableXMLDocumentException
 	 */
 	public List<SignatureInfo> verifyWithSigners(String signedDocument)
