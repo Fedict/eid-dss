@@ -23,16 +23,24 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.security.cert.X509CRL;
+import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.ocsp.OCSPResp;
+import org.easymock.EasyMock;
 import org.junit.Test;
 
 import be.fedict.eid.dss.model.SignatureInfo;
+import be.fedict.eid.dss.model.TrustValidationService;
 import be.fedict.eid.dss.model.bean.SignatureVerificationServiceBean;
 
 public class SignatureVerificationServiceBeanTest {
@@ -54,12 +62,27 @@ public class SignatureVerificationServiceBeanTest {
 				.getResourceAsStream("/signed-document.xml");
 		byte[] signedDocument = IOUtils.toByteArray(signedDocumentInputStream);
 		SignatureVerificationServiceBean testedInstance = new SignatureVerificationServiceBean();
+
+		TrustValidationService mockTrustValidationService = EasyMock
+				.createMock(TrustValidationService.class);
+		inject(testedInstance, mockTrustValidationService);
 		testedInstance.postConstruct();
+
+		// expectations
+		mockTrustValidationService.validate(
+				(List<X509Certificate>) EasyMock.anyObject(),
+				(Date) EasyMock.anyObject(),
+				(List<OCSPResp>) EasyMock.anyObject(),
+				(List<X509CRL>) EasyMock.anyObject());
+
+		// prepare
+		EasyMock.replay(mockTrustValidationService);
 
 		// operate
 		List<SignatureInfo> result = testedInstance.verify(signedDocument);
 
 		// verify
+		EasyMock.verify(mockTrustValidationService);
 		assertNotNull(result);
 		assertEquals(1, result.size());
 		SignatureInfo signatureInfo = result.get(0);
@@ -70,5 +93,21 @@ public class SignatureVerificationServiceBeanTest {
 				.toString().contains("Frank Cornelis"));
 		assertNotNull(signatureInfo.getSigningTime());
 		LOG.debug("signing time: " + signatureInfo.getSigningTime());
+	}
+
+	private void inject(Object bean, Object ejbService)
+			throws IllegalArgumentException, IllegalAccessException {
+		Class<?> beanClass = bean.getClass();
+		Field[] fields = beanClass.getDeclaredFields();
+		for (Field field : fields) {
+			EJB ejbAnnotation = field.getAnnotation(EJB.class);
+			if (null == ejbAnnotation) {
+				continue;
+			}
+			if (field.getType().isAssignableFrom(ejbService.getClass())) {
+				field.setAccessible(true);
+				field.set(bean, ejbService);
+			}
+		}
 	}
 }
