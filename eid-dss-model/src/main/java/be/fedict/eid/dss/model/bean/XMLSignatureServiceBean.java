@@ -52,6 +52,8 @@ import be.fedict.eid.dss.spi.DSSDocumentService;
  * XML Signature Service bean. Acts as a proxy towards the actual
  * SignatureService implementation provided by some document service.
  * 
+ * TODO: rename as this has become a generic signature service.
+ * 
  * @author Frank Cornelis
  * 
  */
@@ -109,12 +111,16 @@ public class XMLSignatureServiceBean implements SignatureService {
 
 		String xkmsUrl = this.configuration.getValue(ConfigProperty.XKMS_URL,
 				String.class);
+		String signTrustDomain = this.configuration.getValue(
+				ConfigProperty.SIGN_TRUST_DOMAIN, String.class);
+		String tsaTrustDomain = this.configuration.getValue(
+				ConfigProperty.TSA_TRUST_DOMAIN, String.class);
 
 		RevocationDataService revocationDataService = new TrustServiceRevocationDataService(
-				xkmsUrl, httpProxyHost, httpProxyPort);
+				xkmsUrl, httpProxyHost, httpProxyPort, signTrustDomain);
 		SignatureFacet signatureFacet = new SignerCertificateSignatureFacet();
 		TimeStampServiceValidator timeStampServiceValidator = new TrustServiceTimeStampServiceValidator(
-				xkmsUrl, httpProxyHost, httpProxyPort);
+				xkmsUrl, httpProxyHost, httpProxyPort, tsaTrustDomain);
 		TSPTimeStampService timeStampService = new TSPTimeStampService(tspUrl,
 				timeStampServiceValidator);
 		if (null != httpProxyHost) {

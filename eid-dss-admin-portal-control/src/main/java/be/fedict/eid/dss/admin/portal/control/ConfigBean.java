@@ -69,6 +69,12 @@ public class ConfigBean implements Config {
 
 	private String keyStoreSecret;
 
+	private String signTrustDomain;
+
+	private String verifyTrustDomain;
+
+	private String tsaTrustDomain;
+
 	@Override
 	@PostConstruct
 	public void postConstruct() {
@@ -96,6 +102,13 @@ public class ConfigBean implements Config {
 				ConfigProperty.KEY_STORE_PATH, String.class);
 		this.keyStoreSecret = this.configuration.getValue(
 				ConfigProperty.KEY_STORE_SECRET, String.class);
+
+		this.signTrustDomain = this.configuration.getValue(
+				ConfigProperty.SIGN_TRUST_DOMAIN, String.class);
+		this.verifyTrustDomain = this.configuration.getValue(
+				ConfigProperty.VERIFY_TRUST_DOMAIN, String.class);
+		this.tsaTrustDomain = this.configuration.getValue(
+				ConfigProperty.TSA_TRUST_DOMAIN, String.class);
 	}
 
 	@Remove
@@ -130,6 +143,13 @@ public class ConfigBean implements Config {
 		this.configuration.setValue(ConfigProperty.KEY_STORE_SECRET,
 				this.keyStoreSecret);
 		this.identityService.reloadIdentity();
+
+		this.configuration.setValue(ConfigProperty.SIGN_TRUST_DOMAIN,
+				this.signTrustDomain);
+		this.configuration.setValue(ConfigProperty.VERIFY_TRUST_DOMAIN,
+				this.verifyTrustDomain);
+		this.configuration.setValue(ConfigProperty.TSA_TRUST_DOMAIN,
+				this.tsaTrustDomain);
 		return null;
 	}
 
@@ -241,5 +261,35 @@ public class ConfigBean implements Config {
 	@Override
 	public void setKeyStoreSecret(String keyStoreSecret) {
 		this.keyStoreSecret = keyStoreSecret;
+	}
+
+	@Override
+	public String getSignTrustDomain() {
+		return this.signTrustDomain;
+	}
+
+	@Override
+	public void setSignTrustDomain(String signTrustDomain) {
+		this.signTrustDomain = signTrustDomain;
+	}
+
+	@Override
+	public String getVerifyTrustDomain() {
+		return this.verifyTrustDomain;
+	}
+
+	@Override
+	public void setVerifyTrustDomain(String verifyTrustDomain) {
+		this.verifyTrustDomain = verifyTrustDomain;
+	}
+
+	@Override
+	public String getTsaTrustDomain() {
+		return this.tsaTrustDomain;
+	}
+
+	@Override
+	public void setTsaTrustDomain(String tsaTrustDomain) {
+		this.tsaTrustDomain = tsaTrustDomain;
 	}
 }
