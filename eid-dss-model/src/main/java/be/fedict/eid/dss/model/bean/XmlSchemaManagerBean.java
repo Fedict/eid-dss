@@ -110,4 +110,13 @@ public class XmlSchemaManagerBean implements XmlSchemaManager {
 				XmlSchemaEntity.class, namespace);
 		this.entityManager.remove(xmlSchemaEntity);
 	}
+
+	public byte[] getXmlSchema(String namespace) {
+		XmlSchemaEntity xmlSchemaEntity = this.entityManager.find(
+				XmlSchemaEntity.class, namespace);
+		if (null == xmlSchemaEntity) {
+			return null;
+		}
+		return xmlSchemaEntity.getXsd();
+	}
 }
