@@ -18,45 +18,11 @@
 
 package be.fedict.eid.dss.entity;
 
-import java.io.Serializable;
+public class Constants {
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+	public static final String DATABASE_TABLE_PREFIX = "dss_";
 
-@Entity
-@Table(name = Constants.DATABASE_TABLE_PREFIX + "config")
-public class ConfigPropertyEntity implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-
-	private String name;
-
-	private String value;
-
-	public ConfigPropertyEntity() {
+	private Constants() {
 		super();
-	}
-
-	public ConfigPropertyEntity(String name, String value) {
-		this.name = name;
-		this.value = value;
-	}
-
-	@Id
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getValue() {
-		return this.value;
-	}
-
-	public void setValue(String value) {
-		this.value = value;
 	}
 }
