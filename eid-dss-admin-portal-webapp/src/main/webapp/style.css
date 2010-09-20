@@ -76,3 +76,9 @@ h3 {
 	margin: 0 auto;
 	color: #303030;
 }
+
+.error {
+    border:             1px solid red;
+    background:         pink;
+    text-align:         center;
+}

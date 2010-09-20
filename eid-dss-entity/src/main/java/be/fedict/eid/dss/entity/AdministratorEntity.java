@@ -30,7 +30,7 @@ import javax.persistence.Query;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "dss_admin")
+@Table(name = Constants.DATABASE_TABLE_PREFIX + "admin")
 @NamedQueries({ @NamedQuery(name = AdministratorEntity.COUNT_ALL, query = "SELECT COUNT(*) FROM AdministratorEntity") })
 public class AdministratorEntity implements Serializable {
 
