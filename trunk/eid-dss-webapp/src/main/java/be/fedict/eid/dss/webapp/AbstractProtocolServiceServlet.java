@@ -34,7 +34,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.dss.model.IdentityService;
-import be.fedict.eid.dss.spi.DSSContext;
+import be.fedict.eid.dss.model.XmlSchemaManager;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
+import be.fedict.eid.dss.spi.DSSProtocolContext;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DSSProtocolService;
 
@@ -61,6 +63,9 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 	@EJB
 	private IdentityService identityService;
 
+	@EJB
+	private XmlSchemaManager xmlSchemaManager;
+
 	/**
 	 * Main constructor.
 	 * 
@@ -77,7 +82,10 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 		 * We align the life-cycle of a DSSProtocolService with the life-cycle
 		 * of this servlet.
 		 */
-		DSSContext dssContext = new DSSContextImpl(this.identityService);
+		DSSProtocolContext dssProtocolContext = new DSSProtocolContextImpl(
+				this.identityService);
+		DSSDocumentContext dssDocumentContext = new DSSDocumentContextImpl(
+				this.xmlSchemaManager);
 
 		ServletContext servletContext = config.getServletContext();
 		Map<String, String> protocolServiceClassNames = StartupServletContextListener
@@ -104,7 +112,7 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 						+ protocolServiceClassName);
 				continue;
 			}
-			dssProtocolService.init(servletContext, dssContext);
+			dssProtocolService.init(servletContext, dssProtocolContext);
 			this.protocolServices.put(contextPath, dssProtocolService);
 		}
 
@@ -135,7 +143,7 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 					continue;
 				}
 				try {
-					dssDocumentService.init(servletContext);
+					dssDocumentService.init(servletContext, dssDocumentContext);
 				} catch (Exception e) {
 					LOG.error(
 							"error initializing document service: "

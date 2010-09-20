@@ -43,9 +43,11 @@ public interface DSSDocumentService extends Serializable {
 	 * Initializes this component.
 	 * 
 	 * @param servletContext
+	 * @param context
 	 * @throws Exception
 	 */
-	void init(ServletContext servletContext) throws Exception;
+	void init(ServletContext servletContext, DSSDocumentContext context)
+			throws Exception;
 
 	/**
 	 * Checks the incoming document.
@@ -61,9 +63,9 @@ public interface DSSDocumentService extends Serializable {
 	 * 
 	 * @return
 	 */
-	SignatureService getSignatureService(
-			InputStream documentInputStream,
+	SignatureService getSignatureService(InputStream documentInputStream,
 			TimeStampService timeStampService,
-			TimeStampServiceValidator timeStampServiceValidator, RevocationDataService revocationDataService,
+			TimeStampServiceValidator timeStampServiceValidator,
+			RevocationDataService revocationDataService,
 			SignatureFacet signatureFacet, OutputStream documentOutputStream);
 }

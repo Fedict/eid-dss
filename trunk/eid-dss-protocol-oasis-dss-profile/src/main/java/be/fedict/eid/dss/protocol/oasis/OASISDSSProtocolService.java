@@ -29,7 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.dss.spi.BrowserPOSTResponse;
-import be.fedict.eid.dss.spi.DSSContext;
+import be.fedict.eid.dss.spi.DSSProtocolContext;
 import be.fedict.eid.dss.spi.DSSProtocolService;
 import be.fedict.eid.dss.spi.DSSRequest;
 import be.fedict.eid.dss.spi.SignatureStatus;
@@ -62,7 +62,7 @@ public class OASISDSSProtocolService implements DSSProtocolService {
 		return null;
 	}
 
-	public void init(ServletContext servletContext, DSSContext dssContext) {
+	public void init(ServletContext servletContext, DSSProtocolContext dssContext) {
 		LOG.debug("init");
 	}
 }

@@ -16,30 +16,23 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.webapp;
+package be.fedict.eid.dss.spi;
 
-import java.security.KeyStore.PrivateKeyEntry;
-
-import be.fedict.eid.dss.model.IdentityService;
-import be.fedict.eid.dss.spi.DSSContext;
+import java.io.Serializable;
+import java.security.KeyStore;
 
 /**
- * Implementation of the DSS Context.
+ * Interface for Digital Signature Service context.
  * 
  * @author Frank Cornelis
  * 
  */
-public class DSSContextImpl implements DSSContext {
+public interface DSSProtocolContext extends Serializable {
 
-	private static final long serialVersionUID = 1L;
-
-	private final IdentityService identityService;
-
-	public DSSContextImpl(IdentityService identityService) {
-		this.identityService = identityService;
-	}
-
-	public PrivateKeyEntry getIdentity() {
-		return this.identityService.getIdentity();
-	}
+	/**
+	 * Gives back the identity of the eID DSS service.
+	 * 
+	 * @return
+	 */
+	KeyStore.PrivateKeyEntry getIdentity();
 }

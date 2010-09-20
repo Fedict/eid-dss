@@ -34,7 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.dss.spi.BrowserPOSTResponse;
-import be.fedict.eid.dss.spi.DSSContext;
+import be.fedict.eid.dss.spi.DSSProtocolContext;
 import be.fedict.eid.dss.spi.DSSProtocolService;
 import be.fedict.eid.dss.spi.DSSRequest;
 import be.fedict.eid.dss.spi.SignatureStatus;
@@ -61,7 +61,7 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 	public static final String SIGNATURE_REQUEST_SESSION_ATTRIBUTE = SimpleDSSProtocolService.class
 			.getName() + ".SignatureRequest";
 
-	private DSSContext dssContext;
+	private DSSProtocolContext dssContext;
 
 	public DSSRequest handleIncomingRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -179,7 +179,7 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 		return browserPOSTResponse;
 	}
 
-	public void init(ServletContext servletContext, DSSContext dssContext) {
+	public void init(ServletContext servletContext, DSSProtocolContext dssContext) {
 		LOG.debug("init");
 		this.dssContext = dssContext;
 	}

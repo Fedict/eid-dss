@@ -25,12 +25,22 @@ import java.io.OutputStream;
 import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
 
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.spi.SignatureService;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 
 /**
@@ -43,25 +53,55 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final Log LOG = LogFactory
+			.getLog(XMLDSSDocumentService.class);
+
 	private DocumentBuilder documentBuilder;
 
+	private DSSDocumentContext context;
+
 	public void checkIncomingDocument(byte[] document) throws Exception {
+		LOG.debug("checking incoming document");
 		ByteArrayInputStream documentInputStream = new ByteArrayInputStream(
 				document);
-		this.documentBuilder.parse(documentInputStream);
+		Document dom = this.documentBuilder.parse(documentInputStream);
+
+		String namespace = dom.getDocumentElement().getNamespaceURI();
+		if (null == namespace) {
+			LOG.debug("no namespace defined");
+			return;
+		}
+
+		byte[] xsd = this.context.getXmlSchema(namespace);
+		if (null == xsd) {
+			LOG.debug("no XML schema available for namespace: " + namespace);
+			return;
+		}
+
+		LOG.debug("validating against XML schema: " + namespace);
+		SchemaFactory schemaFactory = SchemaFactory
+				.newInstance("http://www.w3.org/2001/XMLSchema");
+		StreamSource schemaSource = new StreamSource(new ByteArrayInputStream(
+				xsd));
+		Schema schema = schemaFactory.newSchema(schemaSource);
+		Validator validator = schema.newValidator();
+		DOMSource domSource = new DOMSource(dom);
+		validator.validate(domSource);
 	}
 
-	public void init(ServletContext servletContext) throws Exception {
+	public void init(ServletContext servletContext, DSSDocumentContext context)
+			throws Exception {
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
 				.newInstance();
 		documentBuilderFactory.setNamespaceAware(true);
 		this.documentBuilder = documentBuilderFactory.newDocumentBuilder();
+		this.context = context;
 	}
 
 	public SignatureService getSignatureService(
-			InputStream documentInputStream,
-			TimeStampService timeStampService,
-			TimeStampServiceValidator timeStampServiceValidator, RevocationDataService revocationDataService,
+			InputStream documentInputStream, TimeStampService timeStampService,
+			TimeStampServiceValidator timeStampServiceValidator,
+			RevocationDataService revocationDataService,
 			SignatureFacet signatureFacet, OutputStream documentOutputStream) {
 		return new XMLSignatureService(timeStampServiceValidator,
 				revocationDataService, signatureFacet, documentInputStream,
