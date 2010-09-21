@@ -13,7 +13,7 @@
 			<year>2009-2010</year>
 			<holder>FedICT</holder>
 		</copyright>
-		<releaseinfo>draft 16 Sep 2010</releaseinfo>
+		<releaseinfo>draft 21 Sep 2010</releaseinfo>
 		<authorgroup>
 			<author>
 				<firstname>Frank</firstname>
@@ -438,6 +438,121 @@
 			</para>
 		</tip>
 	</section>
+	<section>
+		<title>Document Visualization</title>
+		<para>
+			The eID Digital Signature Service features visualization of the
+			documents before they are signed. The Relying Party can register an
+			XML Schema and XML Style Sheet with the eID DSS hosting party to
+			visualize the XML data structure within the web browser as part of
+			the signature ceremony. This allows the Relying Party to define a
+			domain specific language for its transactions that need to be signed.
+		</para>
+		<para>
+			For example, suppose the Relying Party defined a domain specific
+			language to express some transaction as follows:
+		</para>
+		<programlisting role="XML"><![CDATA[<Transaction xmlns="urn:be:fedict:eid:dss:example">
+	<From>Tom</From>
+	<To>Jerry</To>
+	<Amount>10.5</Amount>
+	<Description>Example transaction</Description>
+</Transaction>]]></programlisting>
+		<para>
+			The corresponding XML Schema could look as follows.
+		</para>
+		<programlisting role="XML"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:be:fedict:eid:dss:example"
+	xmlns:tns="urn:be:fedict:eid:dss:example" elementFormDefault="qualified"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<element name="Transaction" type="tns:TransactionType" />
+	<complexType name="TransactionType">
+		<sequence>
+			<element name="From" type="xsd:string" />
+			<element name="To" type="xsd:string" />
+			<element name="Amount" type="xsd:double" />
+			<element name="Description" type="xsd:string" minOccurs="0" />
+		</sequence>
+	</complexType>
+</schema>]]></programlisting>
+		<para>
+			A possible XML Style Sheet could then be:
+		</para>
+		<programlisting role="XML"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:tns="urn:be:fedict:eid:dss:example">
+	<xsl:param name="language">en</xsl:param>
+	<xsl:template match="/tns:Transaction">
+
+		<xsl:variable name="from">
+			<xsl:choose>
+				<xsl:when test="$language = 'nl'">
+					Van
+				</xsl:when>
+				<xsl:otherwise>
+					From
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<html>
+			<body>
+				<h1>Transaction</h1>
+				<table>
+					<tr>
+						<th>
+							<xsl:copy-of select="$from" />
+							:
+						</th>
+						<td>
+							<xsl:value-of select="tns:From" />
+						</td>
+					</tr>
+					<tr>
+						<th>To:</th>
+						<td>
+							<xsl:value-of select="tns:To" />
+						</td>
+					</tr>
+					<tr>
+						<th>Amount:</th>
+						<td>
+							<xsl:value-of select="tns:Amount" />
+						</td>
+					</tr>
+					<xsl:for-each select="tns:Description">
+						<tr>
+							<th>Description:</th>
+							<td>
+								<xsl:value-of select="." />
+							</td>
+						</tr>
+					</xsl:for-each>
+				</table>
+			</body>
+		</html>
+	</xsl:template>
+</xsl:stylesheet>]]></programlisting>
+		<para>
+			The XML Style Sheet should output HTML.
+		</para>
+		<para>
+			As you can see the XML Style Sheet receives a
+			<code>language</code>
+			parameter from the eID Digital Signature Service to aid the
+			visualization process.
+		</para>
+		<para>
+			An XML Style Sheet can easily be developed using the following
+			command:
+		</para>
+		<programlisting role="XML"><![CDATA[xsltproc --stringparam language nl example.xsl example.xml]]></programlisting>
+		<para>
+			Once the XML Schema and corresponding XML Style Sheet is ready,
+			you can submit this to the eID Digital Signature Service hosting
+			party for registration within the eID DSS service.
+		</para>
+	</section>
 	<appendix>
 		<title>eID Digital Signature Service Developer's Guide License</title>
 		<para>
@@ -546,6 +661,11 @@
 						<entry>15 Sep 2010</entry>
 						<entry>Frank Cornelis</entry>
 						<entry>OASIS DSS validation web service.</entry>
+					</row>
+					<row>
+						<entry>21 Sep 2010</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>XML schemas and XML style sheets</entry>
 					</row>
 				</tbody>
 			</tgroup>

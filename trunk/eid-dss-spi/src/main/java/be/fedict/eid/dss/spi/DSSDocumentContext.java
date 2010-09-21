@@ -23,4 +23,6 @@ import java.io.Serializable;
 public interface DSSDocumentContext extends Serializable {
 
 	byte[] getXmlSchema(String namespace);
+
+	byte[] getXmlStyleSheet(String namespace);
 }

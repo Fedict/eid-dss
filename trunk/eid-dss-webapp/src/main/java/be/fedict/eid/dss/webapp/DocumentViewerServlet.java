@@ -22,7 +22,6 @@ import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -30,7 +29,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import be.fedict.eid.dss.control.XMLView;
 import be.fedict.eid.dss.model.DocumentRepository;
+import be.fedict.eid.dss.spi.DSSDocumentService;
+import be.fedict.eid.dss.spi.DocumentVisualization;
 
 /**
  * A servlet for visualizing a document.
@@ -38,25 +40,48 @@ import be.fedict.eid.dss.model.DocumentRepository;
  * @author Frank Cornelis.
  * 
  */
-public class DocumentViewerServlet extends HttpServlet {
+public class DocumentViewerServlet extends AbstractProtocolServiceServlet {
 
 	private static final long serialVersionUID = 1L;
 
 	private static final Log LOG = LogFactory
 			.getLog(DocumentViewerServlet.class);
 
+	public DocumentViewerServlet() {
+		super(false, true);
+	}
+
 	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected void handleRequest(HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ServletException {
 		LOG.debug("doGet");
 		HttpSession httpSession = request.getSession();
 		DocumentRepository documentRepository = new DocumentRepository(
 				httpSession);
-		byte[] documentData = documentRepository.getDocument();
 		String contentType = documentRepository.getDocumentContentType();
+		byte[] documentData = documentRepository.getDocument();
+
+		DSSDocumentService documentService = super
+				.findDocumentService(contentType);
+		if (null != documentService) {
+			LOG.debug("document visualization transformation");
+			String language = (String) httpSession
+					.getAttribute(XMLView.LANGUAGE_SESSION_ATTRIBUTE);
+			DocumentVisualization documentVisualization;
+			try {
+				documentVisualization = documentService.visualizeDocument(
+						documentData, language);
+			} catch (Exception e) {
+				throw new ServletException("error visualizing the document: "
+						+ e.getMessage(), e);
+			}
+			contentType = documentVisualization.getBrowserContentType();
+			documentData = documentVisualization.getBrowserData();
+		}
 
 		response.setHeader("Cache-Control",
-				"no-cache, no-store, must-revalidate, max-age=-1"); // http 1.1
+				"no-cache, no-store, must-revalidate, max-age=-1"); // http
+																	// 1.1
 		if (false == request.getScheme().equals("https")) {
 			// else the download fails in IE
 			response.setHeader("Pragma", "no-cache"); // http 1.0

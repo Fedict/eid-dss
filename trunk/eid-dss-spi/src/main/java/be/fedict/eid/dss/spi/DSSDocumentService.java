@@ -58,6 +58,18 @@ public interface DSSDocumentService extends Serializable {
 	void checkIncomingDocument(byte[] document) throws Exception;
 
 	/**
+	 * Handles the visualization of the given document.
+	 * 
+	 * @param document
+	 * @param language
+	 *            the optional language to be used for visualization.
+	 * @return
+	 * @throws Exception
+	 */
+	DocumentVisualization visualizeDocument(byte[] document, String language)
+			throws Exception;
+
+	/**
 	 * Factory for the signature service that will be used to signed the
 	 * document.
 	 * 
