@@ -110,8 +110,21 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<repositories>
+		<repository>
+			<!-- required for jTrust, eID Applet -->
+			<id>e-contract.be</id>
+			<url>http://www.e-contract.be/maven2/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	<properties>
-		<eid-applet.version>1.0.1-SNAPSHOT</eid-applet.version>
+		<eid-applet.version>1.0.1.GA</eid-applet.version>
 		<eid-trust-service.version>1.0.0-SNAPSHOT</eid-trust-service.version>
 		<hibernate.dialect>org.hibernate.dialect.HSQLDialect
 		</hibernate.dialect>
