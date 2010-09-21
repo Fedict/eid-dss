@@ -16,26 +16,9 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.model;
+package be.fedict.eid.dss.model.exception;
 
-import java.io.InputStream;
-import java.util.List;
+public class InvalidXmlSchemaException extends Exception {
 
-import javax.ejb.Local;
-
-import be.fedict.eid.dss.entity.XmlSchemaEntity;
-import be.fedict.eid.dss.model.exception.ExistingXmlSchemaException;
-import be.fedict.eid.dss.model.exception.InvalidXmlSchemaException;
-
-@Local
-public interface XmlSchemaManager {
-
-	List<XmlSchemaEntity> getXmlSchemas();
-
-	void add(String revision, InputStream xsdInputStream)
-			throws InvalidXmlSchemaException, ExistingXmlSchemaException;
-
-	void delete(String namespace);
-
-	byte[] getXmlSchema(String namespace);
+	private static final long serialVersionUID = 1L;
 }

@@ -18,15 +18,14 @@ import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.log.Log;
 
-import be.fedict.eid.dss.entity.XmlSchemaEntity;
-import be.fedict.eid.dss.model.XmlSchemaManager;
-import be.fedict.eid.dss.model.exception.ExistingXmlSchemaException;
-import be.fedict.eid.dss.model.exception.InvalidXmlSchemaException;
+import be.fedict.eid.dss.entity.XmlStyleSheetEntity;
+import be.fedict.eid.dss.model.XmlStyleSheetManager;
+import be.fedict.eid.dss.model.exception.ExistingXmlStyleSheetException;
 
 @Stateful
-@Name("dssXmlSchema")
-@LocalBinding(jndiBinding = "fedict/eid/dss/admin/portal/XmlSchemaBean")
-public class XmlSchemaBean implements XmlSchema {
+@Name("dssXmlStyleSheet")
+@LocalBinding(jndiBinding = "fedict/eid/dss/admin/portal/XmlStyleSheetBean")
+public class XmlStyleSheetBean implements XmlStyleSheet {
 
 	@Logger
 	private Log log;
@@ -35,14 +34,16 @@ public class XmlSchemaBean implements XmlSchema {
 
 	private String revision;
 
+	private String namespace;
+
 	@DataModel
-	private List<XmlSchemaEntity> dssXmlSchemaList;
+	private List<XmlStyleSheetEntity> dssXmlStyleSheetList;
 
 	@DataModelSelection
-	private XmlSchemaEntity selectedXmlSchema;
+	private XmlStyleSheetEntity selectedXmlStyleSheet;
 
 	@EJB
-	private XmlSchemaManager xmlSchemaManager;
+	private XmlStyleSheetManager xmlStyleSheetManager;
 
 	@In
 	private FacesMessages facesMessages;
@@ -56,17 +57,15 @@ public class XmlSchemaBean implements XmlSchema {
 
 	@Override
 	public void add() {
-		this.log.debug("add #0", this.revision);
+		this.log.debug("add #0 #1", this.namespace, this.revision);
 		if (null == this.uploadedFile) {
 			this.facesMessages.addToControl("file", "missing XML schema");
 			return;
 		}
 		try {
-			this.xmlSchemaManager.add(this.revision, this.uploadedFile);
-		} catch (InvalidXmlSchemaException e) {
-			this.facesMessages.addToControl("file", "not a valid XML schema");
-			return;
-		} catch (ExistingXmlSchemaException e) {
+			this.xmlStyleSheetManager.add(this.namespace, this.revision,
+					this.uploadedFile);
+		} catch (ExistingXmlStyleSheetException e) {
 			this.facesMessages.addToControl("file", "existing XML schema");
 			return;
 		}
@@ -75,8 +74,9 @@ public class XmlSchemaBean implements XmlSchema {
 
 	@Override
 	public void delete() {
-		this.log.debug("delete: " + this.selectedXmlSchema.getNamespace());
-		this.xmlSchemaManager.delete(this.selectedXmlSchema.getNamespace());
+		this.log.debug("delete: " + this.selectedXmlStyleSheet.getNamespace());
+		this.xmlStyleSheetManager.delete(this.selectedXmlStyleSheet
+				.getNamespace());
 		initList();
 	}
 
@@ -91,9 +91,10 @@ public class XmlSchemaBean implements XmlSchema {
 	}
 
 	@Override
-	@Factory("dssXmlSchemaList")
+	@Factory("dssXmlStyleSheetList")
 	public void initList() {
-		this.dssXmlSchemaList = this.xmlSchemaManager.getXmlSchemas();
+		this.dssXmlStyleSheetList = this.xmlStyleSheetManager
+				.getXmlStyleSheets();
 	}
 
 	@Override
@@ -104,5 +105,15 @@ public class XmlSchemaBean implements XmlSchema {
 	@Override
 	public void setRevision(String revision) {
 		this.revision = revision;
+	}
+
+	@Override
+	public String getNamespace() {
+		return this.namespace;
+	}
+
+	@Override
+	public void setNamespace(String namespace) {
+		this.namespace = namespace;
 	}
 }
