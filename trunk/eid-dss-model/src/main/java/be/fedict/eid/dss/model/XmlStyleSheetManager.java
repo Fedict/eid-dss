@@ -18,8 +18,23 @@
 
 package be.fedict.eid.dss.model;
 
-public class ExistingXmlSchemaException extends Exception {
+import java.io.InputStream;
+import java.util.List;
 
-	private static final long serialVersionUID = 1L;
+import javax.ejb.Local;
 
+import be.fedict.eid.dss.entity.XmlStyleSheetEntity;
+import be.fedict.eid.dss.model.exception.ExistingXmlStyleSheetException;
+
+@Local
+public interface XmlStyleSheetManager {
+
+	List<XmlStyleSheetEntity> getXmlStyleSheets();
+
+	void add(String namespace, String revision, InputStream xslInputStream)
+			throws ExistingXmlStyleSheetException;
+
+	void delete(String namespace);
+
+	byte[] getXmlStyleSheet(String namespace);
 }

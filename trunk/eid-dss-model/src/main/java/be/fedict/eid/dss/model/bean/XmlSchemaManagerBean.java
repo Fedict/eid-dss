@@ -39,9 +39,9 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import be.fedict.eid.dss.entity.XmlSchemaEntity;
-import be.fedict.eid.dss.model.ExistingXmlSchemaException;
-import be.fedict.eid.dss.model.InvalidXmlSchemaException;
 import be.fedict.eid.dss.model.XmlSchemaManager;
+import be.fedict.eid.dss.model.exception.ExistingXmlSchemaException;
+import be.fedict.eid.dss.model.exception.InvalidXmlSchemaException;
 
 @Stateless
 public class XmlSchemaManagerBean implements XmlSchemaManager {
