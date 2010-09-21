@@ -65,7 +65,7 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 	private String exitPageInitParam;
 
 	public ProtocolEntryServlet() {
-		super(true);
+		super(true, true);
 	}
 
 	@Override

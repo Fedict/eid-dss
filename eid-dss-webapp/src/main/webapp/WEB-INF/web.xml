@@ -74,7 +74,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>DocumentViewer</servlet-name>
-		<url-pattern>/document.xml</url-pattern>
+		<url-pattern>/document</url-pattern>
 	</servlet-mapping>
 
 	<!-- eID Applet -->

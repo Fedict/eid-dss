@@ -19,6 +19,7 @@
 package be.fedict.eid.dss.webapp;
 
 import be.fedict.eid.dss.model.XmlSchemaManager;
+import be.fedict.eid.dss.model.XmlStyleSheetManager;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
 
 /**
@@ -33,16 +34,24 @@ public class DSSDocumentContextImpl implements DSSDocumentContext {
 
 	private final XmlSchemaManager xmlSchemaManager;
 
+	private final XmlStyleSheetManager xmlStyleSheetManager;
+
 	/**
 	 * Main constructor.
 	 * 
 	 * @param xmlSchemaManager
 	 */
-	public DSSDocumentContextImpl(XmlSchemaManager xmlSchemaManager) {
+	public DSSDocumentContextImpl(XmlSchemaManager xmlSchemaManager,
+			XmlStyleSheetManager xmlStyleSheetManager) {
 		this.xmlSchemaManager = xmlSchemaManager;
+		this.xmlStyleSheetManager = xmlStyleSheetManager;
 	}
 
 	public byte[] getXmlSchema(String namespace) {
 		return this.xmlSchemaManager.getXmlSchema(namespace);
+	}
+
+	public byte[] getXmlStyleSheet(String namespace) {
+		return this.xmlStyleSheetManager.getXmlStyleSheet(namespace);
 	}
 }

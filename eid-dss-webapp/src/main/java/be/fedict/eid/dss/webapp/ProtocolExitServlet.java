@@ -58,7 +58,7 @@ public class ProtocolExitServlet extends AbstractProtocolServiceServlet {
 	private String responseAttributesSessionAttributeInitParam;
 
 	public ProtocolExitServlet() {
-		super(false);
+		super(true, false);
 	}
 
 	@Override

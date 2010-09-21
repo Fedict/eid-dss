@@ -25,12 +25,16 @@ import java.io.OutputStream;
 import javax.servlet.ServletContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -42,6 +46,7 @@ import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.spi.SignatureService;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.DSSDocumentService;
+import be.fedict.eid.dss.spi.DocumentVisualization;
 
 /**
  * Document Service implementation for XML documents.
@@ -59,6 +64,8 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 	private DocumentBuilder documentBuilder;
 
 	private DSSDocumentContext context;
+
+	private TransformerFactory transformerFactory;
 
 	public void checkIncomingDocument(byte[] document) throws Exception {
 		LOG.debug("checking incoming document");
@@ -96,6 +103,7 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 		documentBuilderFactory.setNamespaceAware(true);
 		this.documentBuilder = documentBuilderFactory.newDocumentBuilder();
 		this.context = context;
+		this.transformerFactory = TransformerFactory.newInstance();
 	}
 
 	public SignatureService getSignatureService(
@@ -106,5 +114,39 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 		return new XMLSignatureService(timeStampServiceValidator,
 				revocationDataService, signatureFacet, documentInputStream,
 				documentOutputStream, timeStampService);
+	}
+
+	public DocumentVisualization visualizeDocument(byte[] document,
+			String language) throws Exception {
+		// per default we do nothing
+		byte[] browserData = document;
+		String browserContentType = "text/xml";
+
+		ByteArrayInputStream documentInputStream = new ByteArrayInputStream(
+				document);
+		Document dom = this.documentBuilder.parse(documentInputStream);
+		String namespace = dom.getDocumentElement().getNamespaceURI();
+		if (null != namespace) {
+			LOG.debug("document namespace: " + namespace);
+			byte[] xsl = this.context.getXmlStyleSheet(namespace);
+			if (null != xsl) {
+				LOG.debug("XML style sheet present");
+				browserContentType = "text/html";
+				Transformer transformer = this.transformerFactory
+						.newTransformer(new StreamSource(
+								new ByteArrayInputStream(xsl)));
+				if (null != language) {
+					transformer.setParameter("language", language);
+				}
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				transformer.transform(new DOMSource(dom), new StreamResult(
+						outputStream));
+				browserData = outputStream.toByteArray();
+			}
+		}
+
+		DocumentVisualization documentVisualization = new DocumentVisualization(
+				browserContentType, browserData);
+		return documentVisualization;
 	}
 }
