@@ -3,7 +3,8 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:rich="http://richfaces.org/rich"
-	xmlns:a4j="http://richfaces.org/a4j">
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:f="http://java.sun.com/jsf/core">
 <body>
 <ui:composition template="/WEB-INF/template.xhtml">
 	<ui:param name="activeMenu" value="view" />
@@ -16,6 +17,30 @@
 			<h:outputText value="File size:" />
 			<h:outputText value="#{filesize} bytes" />
 		</h:panelGrid>
+
+		<h:form>
+			<rich:dataTable var="row" value="#{signatureInfos}" rows="10"
+				rendered="#{signatureInfos.rowCount > 0}">
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Signer" />
+					</f:facet>
+					<h:outputText value="#{row.signer.subjectX500Principal}" />
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Signing Time" />
+					</f:facet>
+					<h:outputText value="#{row.signingTime}" />
+				</rich:column>
+				<f:facet name="footer">
+					<rich:datascroller />
+				</f:facet>
+			</rich:dataTable>
+		</h:form>
+		<h:outputText value="No signatures available."
+			rendered="#{signatureInfos.rowCount == 0}" />
+
 	</ui:define>
 </ui:composition>
 </body>
