@@ -9,7 +9,7 @@
 			anyway. -->
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-applet</artifactId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.0.2-SNAPSHOT</version>
 	</parent>
 	<groupId>be.fedict</groupId>
 	<artifactId>eid-dss</artifactId>
@@ -124,7 +124,7 @@
 		</repository>
 	</repositories>
 	<properties>
-		<eid-applet.version>1.0.1.GA</eid-applet.version>
+		<eid-applet.version>1.0.2-SNAPSHOT</eid-applet.version>
 		<eid-trust-service.version>1.0.0-SNAPSHOT</eid-trust-service.version>
 		<hibernate.dialect>org.hibernate.dialect.HSQLDialect
 		</hibernate.dialect>
