@@ -36,6 +36,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.ocsp.OCSPResp;
+import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.Test;
 
@@ -68,12 +69,14 @@ public class SignatureVerificationServiceBeanTest {
 		inject(testedInstance, mockTrustValidationService);
 		testedInstance.postConstruct();
 
+		Capture<List<OCSPResp>> ocspCapture = new Capture<List<OCSPResp>>();
+		Capture<List<X509CRL>> crlCapture = new Capture<List<X509CRL>>();
+
 		// expectations
 		mockTrustValidationService.validate(
 				(List<X509Certificate>) EasyMock.anyObject(),
-				(Date) EasyMock.anyObject(),
-				(List<OCSPResp>) EasyMock.anyObject(),
-				(List<X509CRL>) EasyMock.anyObject());
+				(Date) EasyMock.anyObject(), EasyMock.capture(ocspCapture),
+				EasyMock.capture(crlCapture));
 
 		// prepare
 		EasyMock.replay(mockTrustValidationService);
@@ -93,6 +96,10 @@ public class SignatureVerificationServiceBeanTest {
 				.toString().contains("Frank Cornelis"));
 		assertNotNull(signatureInfo.getSigningTime());
 		LOG.debug("signing time: " + signatureInfo.getSigningTime());
+		LOG.debug("number of OCSPs: " + ocspCapture.getValue().size());
+		LOG.debug("number of CRLs: " + crlCapture.getValue().size());
+		assertEquals(1, ocspCapture.getValue().size());
+		assertEquals(1, crlCapture.getValue().size());
 	}
 
 	private void inject(Object bean, Object ejbService)

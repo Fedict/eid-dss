@@ -74,8 +74,8 @@
 						<h:outputText value="Keystore path: " />
 						<h:inputText value="#{dssConfig.keyStorePath}" size="30" />
 						
-						<h:outputText value="keystore secret: " />
-						<h:inputText value="#{dssConfig.keyStoreSecret}" size="10" />
+						<h:outputText value="Keystore secret: " />
+						<h:inputSecret value="#{dssConfig.keyStoreSecret}" size="10" />
 					</h:panelGrid>
 					<h:commandButton value="Save" action="#{dssConfig.save}" />
 				</rich:tab>

@@ -68,6 +68,7 @@ import be.fedict.eid.applet.service.signer.jaxb.xades132.EncapsulatedPKIDataType
 import be.fedict.eid.applet.service.signer.jaxb.xades132.OCSPValuesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.ObjectFactory;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.QualifyingPropertiesType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.RevocationValuesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.SignedPropertiesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.SignedSignaturePropertiesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.UnsignedPropertiesType;
@@ -276,16 +277,15 @@ public class SignatureVerificationServiceBean implements
 			List<Object> unsignedSignaturePropertiesContentList = unsignedSignatureProperties
 					.getCounterSignatureOrSignatureTimeStampOrCompleteCertificateRefs();
 			for (Object unsignedSignatureProperty : unsignedSignaturePropertiesContentList) {
-				LOG.debug("unsigned signature property type: "
-						+ unsignedSignatureProperty.getClass().getName());
 				if (false == unsignedSignatureProperty instanceof JAXBElement) {
 					continue;
 				}
 				JAXBElement<?> unsignedSignaturePropertyElement = (JAXBElement<?>) unsignedSignatureProperty;
 				Object unsignedSignaturePropertyValue = unsignedSignaturePropertyElement
 						.getValue();
-				if (unsignedSignaturePropertyValue instanceof CRLValuesType) {
-					CRLValuesType crlValues = (CRLValuesType) unsignedSignaturePropertyValue;
+				if (unsignedSignaturePropertyValue instanceof RevocationValuesType) {
+					RevocationValuesType revocationValues = (RevocationValuesType) unsignedSignaturePropertyValue;
+					CRLValuesType crlValues = revocationValues.getCRLValues();
 					List<EncapsulatedPKIDataType> crlValuesList = crlValues
 							.getEncapsulatedCRLValue();
 					for (EncapsulatedPKIDataType crlValue : crlValuesList) {
@@ -301,8 +301,8 @@ public class SignatureVerificationServiceBean implements
 						}
 						crls.add(crl);
 					}
-				} else if (unsignedSignaturePropertyValue instanceof OCSPValuesType) {
-					OCSPValuesType ocspValues = (OCSPValuesType) unsignedSignaturePropertyValue;
+					OCSPValuesType ocspValues = revocationValues
+							.getOCSPValues();
 					List<EncapsulatedPKIDataType> ocspValuesList = ocspValues
 							.getEncapsulatedOCSPValue();
 					for (EncapsulatedPKIDataType ocspValue : ocspValuesList) {

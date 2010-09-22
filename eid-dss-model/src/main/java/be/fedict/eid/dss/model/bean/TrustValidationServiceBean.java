@@ -71,9 +71,9 @@ public class TrustValidationServiceBean implements TrustValidationService {
 				ConfigProperty.VERIFY_TRUST_DOMAIN, String.class);
 
 		LOG.debug("validating certificate chain");
-		LOG.warn("TODO: enable when eID Trust Service has been fixed");
-		// TODO: enable when eID Trust Service has been fixed
-		// xkms2Client.validate(verifyTrustDomain, certificateChain,
-		// validationDate, ocspResponses, crls);
+		LOG.debug("number of CRLs: " + crls.size());
+		LOG.debug("number of OCSPs: " + ocspResponses.size());
+		xkms2Client.validate(verifyTrustDomain, certificateChain,
+				validationDate, ocspResponses, crls);
 	}
 }
