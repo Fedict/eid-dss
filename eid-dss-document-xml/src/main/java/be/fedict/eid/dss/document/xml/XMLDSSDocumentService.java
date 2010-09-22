@@ -88,6 +88,8 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 		LOG.debug("validating against XML schema: " + namespace);
 		SchemaFactory schemaFactory = SchemaFactory
 				.newInstance("http://www.w3.org/2001/XMLSchema");
+		schemaFactory
+				.setResourceResolver(new SignatureServiceLSResourceResolver(this.context));
 		StreamSource schemaSource = new StreamSource(new ByteArrayInputStream(
 				xsd));
 		Schema schema = schemaFactory.newSchema(schemaSource);
