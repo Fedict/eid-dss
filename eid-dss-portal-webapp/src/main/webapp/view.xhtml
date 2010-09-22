@@ -1,0 +1,22 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+<body>
+<ui:composition template="/WEB-INF/template.xhtml">
+	<ui:param name="activeMenu" value="view" />
+	<ui:define name="body">
+		<h2>Document Overview</h2>
+		<h:panelGrid columns="2">
+			<h:outputText value="Filename:" />
+			<h:outputText value="#{filename}" />
+
+			<h:outputText value="File size:" />
+			<h:outputText value="#{filesize} bytes" />
+		</h:panelGrid>
+	</ui:define>
+</ui:composition>
+</body>
+</html>

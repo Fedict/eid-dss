@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:f="http://java.sun.com/jsf/core">
+<body>
+<ui:composition template="/WEB-INF/template.xhtml">
+	<ui:param name="activeMenu" value="view" />
+	<ui:define name="body">
+		<h2>Upload document</h2>
+		<p>First you have to upload the document on which you want to
+		check the signatures or on which you want to add a signature.</p>
+		<h:form>
+			<rich:fileUpload autoclear="true" maxFilesQuantity="1"
+				fileUploadListener="#{dssUpload.listener}"
+				addControlLabel="Select document..." immediateUpload="true">
+				<a4j:support event="onuploadcomplete" action="#{dssUpload.done}" />
+				<f:facet name="label">
+					<h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}" />
+				</f:facet>
+			</rich:fileUpload>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</body>
+</html>
