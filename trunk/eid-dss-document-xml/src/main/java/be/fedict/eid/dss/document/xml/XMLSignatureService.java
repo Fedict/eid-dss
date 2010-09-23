@@ -31,7 +31,7 @@ import be.fedict.eid.applet.service.signer.AbstractXmlSignatureService;
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
-import be.fedict.eid.applet.service.signer.facets.EnvelopedSignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.CoSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.KeyInfoSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
@@ -53,8 +53,7 @@ public class XMLSignatureService extends AbstractXmlSignatureService {
 
 	private final OutputStream documentOutputStream;
 
-	public XMLSignatureService(
-			TimeStampServiceValidator validator,
+	public XMLSignatureService(TimeStampServiceValidator validator,
 			RevocationDataService revocationDataService,
 			SignatureFacet signatureFacet, InputStream documentInputStream,
 			OutputStream documentOutputStream, TimeStampService timeStampService) {
@@ -62,7 +61,7 @@ public class XMLSignatureService extends AbstractXmlSignatureService {
 		this.documentInputStream = documentInputStream;
 		this.documentOutputStream = documentOutputStream;
 
-		addSignatureFacet(new EnvelopedSignatureFacet("SHA-512"));
+		addSignatureFacet(new CoSignatureFacet("SHA-512"));
 		addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
 		addSignatureFacet(new XAdESSignatureFacet("SHA-512"));
 		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,

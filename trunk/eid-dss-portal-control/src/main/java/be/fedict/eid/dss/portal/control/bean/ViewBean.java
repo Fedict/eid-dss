@@ -23,14 +23,19 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
+import org.bouncycastle.util.encoders.Base64;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.datamodel.DataModel;
+import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.log.Log;
 
 import be.fedict.eid.dss.model.SignatureInfo;
@@ -53,8 +58,24 @@ public class ViewBean implements View {
 	@In(value = "document", scope = ScopeType.SESSION, required = true)
 	private byte[] document;
 
+	@Out(value = "target", scope = ScopeType.SESSION, required = false)
+	private String target;
+
+	@Out(value = "SignatureRequest", scope = ScopeType.SESSION, required = false)
+	private String signatureRequest;
+
+	@Out(value = "language", scope = ScopeType.SESSION, required = false)
+	private String language;
+
+	@In(value = "filesize", scope = ScopeType.SESSION, required = false)
+	@Out(value = "filesize", scope = ScopeType.SESSION, required = false)
+	private Integer filesize;
+
 	@DataModel
 	private List<SignatureInfo> signatureInfos;
+
+	@In
+	private LocaleSelector localeSelector;
 
 	@Remove
 	@Destroy
@@ -65,6 +86,7 @@ public class ViewBean implements View {
 
 	@Override
 	public void verifySignatures() {
+		this.filesize = this.document.length;
 		try {
 			this.signatureInfos = this.signatureVerificationService
 					.verify(this.document);
@@ -81,5 +103,20 @@ public class ViewBean implements View {
 					.getSubjectX500Principal());
 			this.log.debug("signing time: #0", signatureInfo.getSigningTime());
 		}
+	}
+
+	@Override
+	public String sign() {
+		this.log.debug("sign");
+		this.signatureRequest = new String(Base64.encode(this.document));
+
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext externalContext = facesContext.getExternalContext();
+		String requestContextPath = externalContext.getRequestContextPath();
+		this.target = requestContextPath + "/dss-response";
+
+		this.language = this.localeSelector.getLanguage();
+
+		return "submit";
 	}
 }

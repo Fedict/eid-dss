@@ -71,7 +71,7 @@
 		<url-pattern>*.seam</url-pattern>
 	</servlet-mapping>
 
-	<!-- eID DSS Response Servlet -->
+	<!-- eID DSS Response Servlet (old one) -->
 	<servlet>
 		<servlet-name>SignatureResponseProcessor</servlet-name>
 		<servlet-class>be.fedict.eid.dss.protocol.simple.client.SignatureResponseProcessorServlet</servlet-class>
@@ -95,10 +95,52 @@
 			<param-name>SignatureCertificateSessionAttribute</param-name>
 			<param-value>SignatureCertificate</param-value>
 		</init-param>
+		<init-param>
+			<param-name>TargetSessionAttribute</param-name>
+			<param-value>target</param-value>
+		</init-param>
+		<init-param>
+			<param-name>SignatureRequestSessionAttribute</param-name>
+			<param-value>SignatureRequest</param-value>
+		</init-param>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>SignatureResponseProcessor</servlet-name>
 		<url-pattern>/post-response</url-pattern>
+	</servlet-mapping>
+
+	<!-- eID DSS Response Servlet (new one) -->
+	<servlet>
+		<servlet-name>DSSResponseProcessor</servlet-name>
+		<servlet-class>be.fedict.eid.dss.protocol.simple.client.SignatureResponseProcessorServlet</servlet-class>
+		<init-param>
+			<param-name>NextPage</param-name>
+			<param-value>/view.seam</param-value>
+		</init-param>
+		<init-param>
+			<param-name>ErrorPage</param-name>
+			<param-value>/sign-error.seam</param-value>
+		</init-param>
+		<init-param>
+			<param-name>ErrorMessageSessionAttribute</param-name>
+			<param-value>SignatureErrorMessage</param-value>
+		</init-param>
+		<init-param>
+			<param-name>SignedDocumentSessionAttribute</param-name>
+			<param-value>document</param-value>
+		</init-param>
+		<init-param>
+			<param-name>TargetSessionAttribute</param-name>
+			<param-value>target</param-value>
+		</init-param>
+		<init-param>
+			<param-name>SignatureRequestSessionAttribute</param-name>
+			<param-value>SignatureRequest</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DSSResponseProcessor</servlet-name>
+		<url-pattern>/dss-response</url-pattern>
 	</servlet-mapping>
 
 	<!-- XML document viewer -->

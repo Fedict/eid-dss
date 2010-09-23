@@ -29,18 +29,6 @@ public interface XMLRequest {
 
 	void setDocument(String document);
 
-	String getEncodedDocument();
-
-	void setEncodedDocument(String encodedDocument);
-
-	String getLanguage();
-
-	void setLanguage(String language);
-
-	String getTarget();
-
-	void setTarget(String target);
-
 	// actions
 	String submit();
 

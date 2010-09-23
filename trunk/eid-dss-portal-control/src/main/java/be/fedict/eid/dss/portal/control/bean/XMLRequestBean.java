@@ -47,72 +47,47 @@ public class XMLRequestBean implements XMLRequest {
 	@In
 	private LocaleSelector localeSelector;
 
-	private String encodedDocument;
-
 	private String document;
 
-	private String target;
-
 	@Out(value = "target", scope = ScopeType.SESSION, required = false)
-	private String sessionTarget;
+	private String target;
 
 	@Out(value = "SignatureRequest", scope = ScopeType.SESSION, required = false)
 	private String signatureRequest;
 
+	@Out(value = "language", scope = ScopeType.SESSION, required = false)
+	private String language;
+
 	@Remove
 	@Destroy
+	@Override
 	public void destroy() {
 		this.log.debug("destroy");
 	}
 
+	@Override
 	public String getDocument() {
 		return this.document;
 	}
 
+	@Override
 	public void setDocument(String document) {
 		this.document = document;
 	}
 
-	public String getEncodedDocument() {
-		return this.encodedDocument;
-	}
-
-	public void setEncodedDocument(String encodedDocument) {
-		this.encodedDocument = encodedDocument;
-	}
-
+	@Override
 	public String submit() {
 		this.log.debug("submit");
-		this.encodedDocument = new String(Base64.encode(this.document
+		this.signatureRequest = new String(Base64.encode(this.document
 				.getBytes()));
-		this.signatureRequest = this.encodedDocument;
 
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext externalContext = facesContext.getExternalContext();
 		String requestContextPath = externalContext.getRequestContextPath();
 		this.target = requestContextPath + "/post-response";
-		this.sessionTarget = this.target;
+
+		this.language = this.localeSelector.getLanguage();
 
 		return "success";
-	}
-
-	@Override
-	public String getLanguage() {
-		String language = this.localeSelector.getLanguage();
-		this.log.debug("language: #0", language);
-		return language;
-	}
-
-	@Override
-	public void setLanguage(String language) {
-	}
-
-	@Override
-	public String getTarget() {
-		return this.target;
-	}
-
-	@Override
-	public void setTarget(String target) {
 	}
 }

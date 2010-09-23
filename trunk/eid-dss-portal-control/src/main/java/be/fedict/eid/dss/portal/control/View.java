@@ -27,7 +27,9 @@ public interface View {
 	 * Actions.
 	 */
 	void verifySignatures();
-	
+
+	String sign();
+
 	/*
 	 * lifecycle
 	 */
