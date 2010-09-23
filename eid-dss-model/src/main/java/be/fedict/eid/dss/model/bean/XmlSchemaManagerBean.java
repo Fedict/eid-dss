@@ -67,10 +67,14 @@ public class XmlSchemaManagerBean implements XmlSchemaManager {
 		ByteArrayInputStream schemaInputStream = new ByteArrayInputStream(xsd);
 		SchemaFactory schemaFactory = SchemaFactory
 				.newInstance("http://www.w3.org/2001/XMLSchema");
+		schemaFactory
+				.setResourceResolver(new SignatureServiceLSResourceResolver(
+						this.entityManager));
 		StreamSource schemaSource = new StreamSource(schemaInputStream);
 		try {
 			schemaFactory.newSchema(schemaSource);
 		} catch (SAXException e) {
+			LOG.error("SAX error: " + e.getMessage(), e);
 			throw new InvalidXmlSchemaException();
 		}
 

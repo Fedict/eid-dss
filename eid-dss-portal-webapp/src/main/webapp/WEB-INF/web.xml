@@ -157,6 +157,20 @@
 		<url-pattern>/signed-document.xml</url-pattern>
 	</servlet-mapping>
 
+	<!-- Generic document downloader -->
+	<servlet>
+		<servlet-name>Downloader</servlet-name>
+		<servlet-class>be.fedict.eid.dss.portal.DownloadServlet</servlet-class>
+		<init-param>
+			<param-name>DocumentSessionAttribute</param-name>
+			<param-value>document</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Downloader</servlet-name>
+		<url-pattern>/download/*</url-pattern>
+	</servlet-mapping>
+
 	<!-- eID Applet Identification service -->
 	<servlet>
 		<servlet-name>AppletIdentificationServiceServlet</servlet-name>
