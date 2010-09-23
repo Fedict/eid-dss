@@ -51,4 +51,12 @@
 		</navigation-case>
 	</navigation-rule>
 
+	<navigation-rule>
+		<from-view-id>/view.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>submit</from-outcome>
+			<to-view-id>/post-request.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+
 </faces-config>

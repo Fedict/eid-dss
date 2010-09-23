@@ -56,12 +56,25 @@ import org.bouncycastle.util.encoders.Base64;
  * <ul>
  * <li><tt>NextPage</tt>: indicates the page where the flow continues.</li>
  * <li><tt>SignedDocumentSessionAttribute</tt>: indicates which session
- * attribute to use to push in the signed document as returned by the eID DSS.</li>
+ * attribute to use to push in the signed document as byte array as returned by
+ * the eID DSS.</li>
  * <li><tt>ErrorPage</tt>: indicates the page to be shown in case of errors.</li>
  * <li><tt>ErrorMessageSessionAttribute</tt>: indicates which session attribute
  * to use for reporting an error. This session attribute can be used on the
  * error page.</li>
  * </ul>
+ * 
+ * <p>
+ * In case the eID DSS puts a service signature on the DSS response, the
+ * following init-params become required for validation of the service
+ * signature:
+ * <ul>
+ * <li><tt>TargetSessionAttribute</tt>: refers to the session attribute
+ * containing the target page of the DSS signature request.</li>
+ * <li><tt>SignatureRequestSessionAttribute</tt>: refers to session attribute
+ * containing the base64 encoded signature request.</li>
+ * </ul>
+ * </p>
  * 
  * <p>
  * The following init-params are optional:
@@ -111,6 +124,10 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 
 	public static final String SERVICE_FINGERPRINT_INIT_PARAM = "ServiceFingerprint";
 
+	public static final String TARGET_SESSION_ATTRIBUTE_INIT_PARAM = "TargetSessionAttribute";
+
+	public static final String SIGNATURE_REQUEST_SESSION_ATTRIBUTE_INIT_PARAM = "SignatureRequestSessionAttribute";
+
 	private String nextPage;
 
 	private String errorPage;
@@ -122,6 +139,10 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 	private String signatureCertificateSessionAttribute;
 
 	private byte[] serviceFingerprint;
+
+	private String targetSessionAttribute;
+
+	private String signatureRequestSessionAttribute;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -160,6 +181,11 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 		} else {
 			this.serviceFingerprint = null;
 		}
+
+		this.targetSessionAttribute = config
+				.getInitParameter(TARGET_SESSION_ATTRIBUTE_INIT_PARAM);
+		this.signatureRequestSessionAttribute = config
+				.getInitParameter(SIGNATURE_REQUEST_SESSION_ATTRIBUTE_INIT_PARAM);
 	}
 
 	private String getRequiredInitParameter(ServletConfig config,
@@ -256,9 +282,24 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 				byte[] certificateData = Base64.decode(encodedCertificate);
 				serviceCertificateChain.add(certificateData);
 			}
-			String target = (String) httpSession.getAttribute("target");
+			if (null == this.targetSessionAttribute) {
+				showErrorPage(
+						TARGET_SESSION_ATTRIBUTE_INIT_PARAM
+								+ " init-param required for validation of service signature",
+						request, response);
+				return;
+			}
+			String target = (String) httpSession
+					.getAttribute(this.targetSessionAttribute);
+			if (null == this.signatureRequestSessionAttribute) {
+				showErrorPage(
+						SIGNATURE_REQUEST_SESSION_ATTRIBUTE_INIT_PARAM
+								+ " init-param required for validation of service signature",
+						request, response);
+				return;
+			}
 			String signatureRequest = (String) httpSession
-					.getAttribute("SignatureRequest");
+					.getAttribute(this.signatureRequestSessionAttribute);
 			try {
 				verifyServiceSignature(serviceSigned, target, signatureRequest,
 						signatureResponse, encodedSignatureCertificate,
@@ -286,8 +327,8 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 		 * Parse all incoming data.
 		 */
 		byte[] decodedSignatureResponse = Base64.decode(signatureResponse);
-		String signedDocument = new String(decodedSignatureResponse);
-		LOG.debug("decoded signature response: " + signedDocument);
+		LOG.debug("decoded signature response size: "
+				+ decodedSignatureResponse.length);
 
 		byte[] decodedSignatureCertificate = Base64
 				.decode(encodedSignatureCertificate);
@@ -310,7 +351,7 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 		 * Push data into the HTTP session.
 		 */
 		httpSession.setAttribute(this.signedDocumentSessionAttribute,
-				signedDocument);
+				decodedSignatureResponse);
 		if (null != this.signatureCertificateSessionAttribute) {
 			httpSession.setAttribute(this.signatureCertificateSessionAttribute,
 					signatureCertificate);

@@ -49,10 +49,6 @@ public class UploadBean implements Upload {
 	@Out(value = "filename", scope = ScopeType.SESSION, required = false)
 	private String filename;
 
-	@In(value = "filesize", scope = ScopeType.SESSION, required = false)
-	@Out(value = "filesize", scope = ScopeType.SESSION, required = false)
-	private Integer filesize;
-
 	@In(value = "document", scope = ScopeType.SESSION, required = false)
 	@Out(value = "document", scope = ScopeType.SESSION, required = false)
 	private byte[] document;
@@ -71,7 +67,6 @@ public class UploadBean implements Upload {
 		this.log.debug("filename: #0", item.getFileName());
 		this.filename = item.getFileName();
 		this.log.debug("file size: #0", item.getFileSize());
-		this.filesize = item.getFileSize();
 		this.log.debug("data bytes available: #0", (null != item.getData()));
 		if (null != item.getData()) {
 			this.document = item.getData();

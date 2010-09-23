@@ -19,27 +19,34 @@
 		</h:panelGrid>
 
 		<h:form>
-			<rich:dataTable var="row" value="#{signatureInfos}" rows="10"
-				rendered="#{signatureInfos.rowCount > 0}">
-				<rich:column>
-					<f:facet name="header">
-						<h:outputText value="Signer" />
-					</f:facet>
-					<h:outputText value="#{row.signer.subjectX500Principal}" />
-				</rich:column>
-				<rich:column>
-					<f:facet name="header">
-						<h:outputText value="Signing Time" />
-					</f:facet>
-					<h:outputText value="#{row.signingTime}" />
-				</rich:column>
+			<rich:dataGrid var="row" value="#{signatureInfos}" elements="5"
+				rendered="#{signatureInfos.rowCount > 0}" columns="1">
+				<f:facet name="header">
+					<h:outputText value="Signatures"></h:outputText>
+				</f:facet>
+				<rich:panel>
+					<h:panelGrid columns="2">
+						<h:outputText value="Signer:" />
+						<h:outputText value="#{row.signer.subjectX500Principal}" />
+
+						<h:outputText value="Signing Time:" />
+						<h:outputText value="#{row.signingTime}">
+							<f:convertDateTime type="both" dateStyle="full" timeStyle="long"
+								timeZone="Europe/Brussels" />
+						</h:outputText>
+					</h:panelGrid>
+				</rich:panel>
 				<f:facet name="footer">
 					<rich:datascroller />
 				</f:facet>
-			</rich:dataTable>
+			</rich:dataGrid>
 		</h:form>
 		<h:outputText value="No signatures available."
 			rendered="#{signatureInfos.rowCount == 0}" />
+
+		<h:form>
+			<h:commandButton value="Add signature..." action="#{dssView.sign}" />
+		</h:form>
 
 	</ui:define>
 </ui:composition>

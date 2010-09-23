@@ -51,9 +51,8 @@ public class DocumentViewerServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		LOG.debug("doGet");
 		HttpSession httpSession = request.getSession();
-		String document = (String) httpSession
+		byte[] document = (byte[]) httpSession
 				.getAttribute(this.signedDocumentSessionAttribute);
-		byte[] documentData = document.getBytes();
 
 		response.setHeader("Cache-Control",
 				"no-cache, no-store, must-revalidate, max-age=-1"); // http 1.1
@@ -64,12 +63,12 @@ public class DocumentViewerServlet extends HttpServlet {
 			response.setHeader("Pragma", "public");
 		}
 		response.setDateHeader("Expires", -1);
-		response.setContentLength(documentData.length);
+		response.setContentLength(document.length);
 
 		response.setContentType("text/xml");
-		response.setContentLength(documentData.length);
+		response.setContentLength(document.length);
 		ServletOutputStream out = response.getOutputStream();
-		out.write(documentData);
+		out.write(document);
 		out.flush();
 	}
 }
