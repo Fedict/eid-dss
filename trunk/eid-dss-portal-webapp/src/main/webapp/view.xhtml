@@ -11,8 +11,9 @@
 	<ui:define name="body">
 		<h2>Document Overview</h2>
 		<h:panelGrid columns="2">
-			<h:outputText value="Filename:" />
-			<h:outputText value="#{filename}" />
+			<h:outputText value="File (click to download):" />
+			<a
+				href="#{facesContext.externalContext.requestContextPath}/download/#{filename}">#{filename}</a>
 
 			<h:outputText value="File size:" />
 			<h:outputText value="#{filesize} bytes" />
