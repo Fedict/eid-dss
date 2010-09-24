@@ -25,6 +25,7 @@
 		<module>eid-dss-protocol-simple-client</module>
 		<module>eid-dss-protocol-oasis-dss-profile</module>
 		<module>eid-dss-document-xml</module>
+		<module>eid-dss-document-odf</module>
 		<module>eid-dss-entity</module>
 		<module>eid-dss-model</module>
 		<module>eid-dss-ws</module>

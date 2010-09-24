@@ -55,6 +55,7 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 	public static final String TARGET_PARAMETER = "target";
 	public static final String SIGNATURE_REQUEST_PARAMETER = "SignatureRequest";
 	public static final String LANGUAGE_PARAMETER = "language";
+	public static final String CONTENT_TYPE_PARAMETER = "ContentType";
 
 	public static final String TARGET_SESSION_ATTRIBUTE = SimpleDSSProtocolService.class
 			.getName() + ".Target";
@@ -88,8 +89,14 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 
 		byte[] decodedSignatureRequest = Base64.decodeBase64(signatureRequest);
 
+		String contentType = request.getParameter(CONTENT_TYPE_PARAMETER);
+		if (null == contentType) {
+			contentType = "text/xml";
+		}
+		LOG.debug("content type: " + contentType);
+
 		DSSRequest dssRequest = new DSSRequest(decodedSignatureRequest,
-				"text/xml", language);
+				contentType, language);
 
 		return dssRequest;
 	}
@@ -179,7 +186,8 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 		return browserPOSTResponse;
 	}
 
-	public void init(ServletContext servletContext, DSSProtocolContext dssContext) {
+	public void init(ServletContext servletContext,
+			DSSProtocolContext dssContext) {
 		LOG.debug("init");
 		this.dssContext = dssContext;
 	}
