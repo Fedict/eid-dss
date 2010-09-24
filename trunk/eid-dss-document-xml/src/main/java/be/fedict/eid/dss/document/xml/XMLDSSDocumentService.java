@@ -89,7 +89,8 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 		SchemaFactory schemaFactory = SchemaFactory
 				.newInstance("http://www.w3.org/2001/XMLSchema");
 		schemaFactory
-				.setResourceResolver(new SignatureServiceLSResourceResolver(this.context));
+				.setResourceResolver(new SignatureServiceLSResourceResolver(
+						this.context));
 		StreamSource schemaSource = new StreamSource(new ByteArrayInputStream(
 				xsd));
 		Schema schema = schemaFactory.newSchema(schemaSource);
@@ -98,8 +99,8 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 		validator.validate(domSource);
 	}
 
-	public void init(ServletContext servletContext, DSSDocumentContext context)
-			throws Exception {
+	public void init(ServletContext servletContext, DSSDocumentContext context,
+			String contentType) throws Exception {
 		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
 				.newInstance();
 		documentBuilderFactory.setNamespaceAware(true);

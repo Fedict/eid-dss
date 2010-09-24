@@ -34,7 +34,7 @@ public class XMLDSSDocumentServiceTest {
 		byte[] document = "<test>hello world</test>".getBytes();
 
 		// operate
-		testedInstance.init(null, null);
+		testedInstance.init(null, null, null);
 		testedInstance.checkIncomingDocument(document);
 	}
 
@@ -54,7 +54,7 @@ public class XMLDSSDocumentServiceTest {
 		EasyMock.replay(mockContext);
 
 		// operate
-		testedInstance.init(null, mockContext);
+		testedInstance.init(null, mockContext, null);
 		testedInstance.checkIncomingDocument(document);
 
 		// verify
@@ -81,7 +81,7 @@ public class XMLDSSDocumentServiceTest {
 		EasyMock.replay(mockContext);
 
 		// operate
-		testedInstance.init(null, mockContext);
+		testedInstance.init(null, mockContext, null);
 		testedInstance.checkIncomingDocument(document);
 
 		// verify
@@ -111,7 +111,7 @@ public class XMLDSSDocumentServiceTest {
 		EasyMock.replay(mockContext);
 
 		// operate
-		testedInstance.init(null, mockContext);
+		testedInstance.init(null, mockContext, null);
 		testedInstance.checkIncomingDocument(document);
 
 		// verify

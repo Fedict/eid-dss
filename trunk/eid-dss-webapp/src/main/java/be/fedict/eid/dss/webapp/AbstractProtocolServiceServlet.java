@@ -165,7 +165,8 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 				continue;
 			}
 			try {
-				dssDocumentService.init(servletContext, dssDocumentContext);
+				dssDocumentService.init(servletContext, dssDocumentContext,
+						contentType);
 			} catch (Exception e) {
 				LOG.error(
 						"error initializing document service: "
