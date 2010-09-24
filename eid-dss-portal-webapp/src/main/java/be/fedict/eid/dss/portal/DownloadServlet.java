@@ -39,10 +39,23 @@ public class DownloadServlet extends HttpServlet {
 
 	private String documentSessionAttribute;
 
+	private String contentTypeSessionAttribute;
+
 	@Override
 	public void init(ServletConfig config) throws ServletException {
-		this.documentSessionAttribute = config
-				.getInitParameter("DocumentSessionAttribute");
+		this.documentSessionAttribute = getRequiredInitParameter(config,
+				"DocumentSessionAttribute");
+		this.contentTypeSessionAttribute = getRequiredInitParameter(config,
+				"ContentTypeSessionAttribute");
+	}
+
+	private String getRequiredInitParameter(ServletConfig config,
+			String paramName) throws ServletException {
+		String paramValue = config.getInitParameter(paramName);
+		if (null == paramValue) {
+			throw new ServletException("missing init-param: " + paramName);
+		}
+		return paramValue;
 	}
 
 	@Override
@@ -64,7 +77,10 @@ public class DownloadServlet extends HttpServlet {
 		response.setDateHeader("Expires", -1);
 		response.setContentLength(document.length);
 
-		response.setContentType("text/xml");
+		String contentType = (String) httpSession
+				.getAttribute(this.contentTypeSessionAttribute);
+		LOG.debug("content-type: " + contentType);
+		response.setContentType(contentType);
 		response.setContentLength(document.length);
 		ServletOutputStream out = response.getOutputStream();
 		out.write(document);

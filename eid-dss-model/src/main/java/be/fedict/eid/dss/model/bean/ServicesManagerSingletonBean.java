@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -154,12 +155,14 @@ public class ServicesManagerSingletonBean {
 			}
 			DigitalSignatureServiceDocumentType digitalSignatureServiceDocument = jaxbElement
 					.getValue();
-			String contentType = digitalSignatureServiceDocument
-					.getContentType();
 			String documentServiceClassName = digitalSignatureServiceDocument
 					.getDocumentServiceClass();
-			documentServiceClassNames
-					.put(contentType, documentServiceClassName);
+			List<String> contentTypes = digitalSignatureServiceDocument
+					.getContentType();
+			for (String contentType : contentTypes) {
+				documentServiceClassNames.put(contentType,
+						documentServiceClassName);
+			}
 		}
 		return documentServiceClassNames;
 	}

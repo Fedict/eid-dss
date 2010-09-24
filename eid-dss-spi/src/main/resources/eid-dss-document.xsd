@@ -28,11 +28,11 @@
 					</xsd:documentation>
 				</xsd:annotation>
 			</element>
-			<element name="ContentType" type="xsd:string">
+			<element name="ContentType" type="xsd:string" maxOccurs="unbounded">
 				<xsd:annotation>
 					<xsd:documentation>
-						The unique content type that this document
-						service can handle.
+						The content type that this document service can
+						handle.
 					</xsd:documentation>
 				</xsd:annotation>
 			</element>

@@ -142,10 +142,16 @@ public class XMLSignatureServiceBean implements SignatureService {
 
 		DSSDocumentService documentService = this.servicesManager
 				.getDocumentService();
-		SignatureService signatureService = documentService
-				.getSignatureService(documentInputStream, timeStampService,
-						timeStampServiceValidator, revocationDataService,
-						signatureFacet, documentOutputStream);
+		SignatureService signatureService;
+		try {
+			signatureService = documentService.getSignatureService(
+					documentInputStream, timeStampService,
+					timeStampServiceValidator, revocationDataService,
+					signatureFacet, documentOutputStream);
+		} catch (Exception e) {
+			throw new RuntimeException("error retrieving signature service: "
+					+ e.getMessage(), e);
+		}
 		return signatureService;
 	}
 }

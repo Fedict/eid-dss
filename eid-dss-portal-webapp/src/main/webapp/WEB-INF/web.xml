@@ -113,6 +113,10 @@
 			<param-name>DocumentSessionAttribute</param-name>
 			<param-value>document</param-value>
 		</init-param>
+		<init-param>
+			<param-name>ContentTypeSessionAttribute</param-name>
+			<param-value>ContentType</param-value>
+		</init-param>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>Downloader</servlet-name>

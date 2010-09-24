@@ -75,8 +75,10 @@ public class DocumentViewerServlet extends AbstractProtocolServiceServlet {
 				throw new ServletException("error visualizing the document: "
 						+ e.getMessage(), e);
 			}
-			contentType = documentVisualization.getBrowserContentType();
-			documentData = documentVisualization.getBrowserData();
+			if (null != documentVisualization) {
+				contentType = documentVisualization.getBrowserContentType();
+				documentData = documentVisualization.getBrowserData();
+			}
 		}
 
 		response.setHeader("Cache-Control",
