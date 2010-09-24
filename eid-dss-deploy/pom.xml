@@ -60,6 +60,11 @@
 							<includeInApplicationXml>true</includeInApplicationXml>
 						</jarModule>
 						<jarModule>
+							<groupId>be.fedict.eid-dss</groupId>
+							<artifactId>eid-dss-spi-utils</artifactId>
+							<includeInApplicationXml>true</includeInApplicationXml>
+						</jarModule>
+						<jarModule>
 							<groupId>org.richfaces.framework</groupId>
 							<artifactId>richfaces-api</artifactId>
 							<includeInApplicationXml>true</includeInApplicationXml>
@@ -217,6 +222,11 @@
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-spi</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-spi-utils</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
