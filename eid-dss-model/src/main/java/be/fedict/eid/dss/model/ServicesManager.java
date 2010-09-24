@@ -48,9 +48,19 @@ public interface ServicesManager {
 	Map<String, String> getDocumentServiceClassNames();
 
 	/**
-	 * Gives back the current document service to be used.
+	 * Gives back the current document service to be used. The content-type is
+	 * retrieved from the currently active document repository.
 	 * 
 	 * @return
 	 */
 	DSSDocumentService getDocumentService();
+
+	/**
+	 * Gives back the document service corresponding with the given content
+	 * type.
+	 * 
+	 * @param contentType
+	 * @return
+	 */
+	DSSDocumentService getDocumentService(String contentType);
 }

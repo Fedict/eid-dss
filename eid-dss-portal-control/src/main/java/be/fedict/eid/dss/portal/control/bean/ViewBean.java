@@ -38,11 +38,11 @@ import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.log.Log;
 
-import be.fedict.eid.dss.model.SignatureInfo;
 import be.fedict.eid.dss.model.SignatureVerificationService;
 import be.fedict.eid.dss.model.exception.DocumentFormatException;
 import be.fedict.eid.dss.model.exception.InvalidSignatureException;
 import be.fedict.eid.dss.portal.control.View;
+import be.fedict.eid.dss.spi.SignatureInfo;
 
 @Stateful
 @Name("dssView")
@@ -71,6 +71,9 @@ public class ViewBean implements View {
 	@Out(value = "filesize", scope = ScopeType.SESSION, required = false)
 	private Integer filesize;
 
+	@In(value = "ContentType", scope = ScopeType.SESSION, required = false)
+	private String contentType;
+
 	@DataModel
 	private List<SignatureInfo> signatureInfos;
 
@@ -88,8 +91,8 @@ public class ViewBean implements View {
 	public void verifySignatures() {
 		this.filesize = this.document.length;
 		try {
-			this.signatureInfos = this.signatureVerificationService
-					.verify(this.document);
+			this.signatureInfos = this.signatureVerificationService.verify(
+					this.document, this.contentType);
 		} catch (DocumentFormatException e) {
 			this.log.error("document format error: #0", e.getMessage());
 			return;

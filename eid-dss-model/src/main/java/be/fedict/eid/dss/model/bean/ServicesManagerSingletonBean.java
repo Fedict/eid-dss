@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.xml.bind.JAXBContext;
@@ -36,6 +37,10 @@ import javax.xml.bind.Unmarshaller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import be.fedict.eid.dss.model.TrustValidationService;
+import be.fedict.eid.dss.model.XmlSchemaManager;
+import be.fedict.eid.dss.model.XmlStyleSheetManager;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.document.DigitalSignatureServiceDocumentType;
 import be.fedict.eid.dss.spi.protocol.DigitalSignatureServiceProtocolType;
@@ -64,6 +69,15 @@ public class ServicesManagerSingletonBean {
 	private Map<String, String> protocolServiceClassNames;
 
 	private Map<String, String> documentServiceClassNames;
+
+	@EJB
+	private XmlSchemaManager xmlSchemaManager;
+
+	@EJB
+	private XmlStyleSheetManager xmlStyleSheetManager;
+
+	@EJB
+	private TrustValidationService trustValidationService;
 
 	@PostConstruct
 	public void postConstruct() {
@@ -191,6 +205,16 @@ public class ServicesManagerSingletonBean {
 			throw new RuntimeException(
 					"could not create instance of document service: "
 							+ documentServiceClassName, e);
+		}
+		DSSDocumentContext documentContext = new ModelDSSDocumentContext(
+				this.xmlSchemaManager, this.xmlStyleSheetManager,
+				this.trustValidationService);
+		try {
+			documentService.init(documentContext, contentType);
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"error initializing the document service: "
+							+ e.getMessage(), e);
 		}
 		return documentService;
 	}
