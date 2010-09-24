@@ -20,30 +20,6 @@
 	</application>
 
 	<navigation-rule>
-		<from-view-id>/input-xml.xhtml</from-view-id>
-		<navigation-case>
-			<from-outcome>success</from-outcome>
-			<to-view-id>/post-request.xhtml</to-view-id>
-		</navigation-case>
-	</navigation-rule>
-
-	<navigation-rule>
-		<from-view-id>/csr-start.xhtml</from-view-id>
-		<navigation-case>
-			<from-outcome>start</from-outcome>
-			<to-view-id>/csr-identify.xhtml</to-view-id>
-		</navigation-case>
-	</navigation-rule>
-
-	<navigation-rule>
-		<from-view-id>/csr-form.xhtml</from-view-id>
-		<navigation-case>
-			<from-outcome>success</from-outcome>
-			<to-view-id>/post-csr-sign-request.xhtml</to-view-id>
-		</navigation-case>
-	</navigation-rule>
-
-	<navigation-rule>
 		<from-view-id>/upload.xhtml</from-view-id>
 		<navigation-case>
 			<from-outcome>done</from-outcome>
