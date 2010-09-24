@@ -84,6 +84,16 @@
 						by the eID DSS during signature creation.
 					</para>
 				</listitem>
+				<listitem>
+					<para>
+						The optional
+						<code>ContentType</code>
+						POST parameter should contain the content type of the document
+						being send. Defaults to
+						<code>text/xml</code>
+						.
+					</para>
+				</listitem>
 			</itemizedlist>
 			<para>
 				The web application can construct the eID DSS Browser POST
@@ -93,6 +103,7 @@
     <input type="hidden" name="SignatureRequest" value="..." />
     <input type="hidden" name="target" value="http://www.some-web-application.be/dss-landing-page" />
     <input type="hidden" name="language" value="nl" />
+    <input type="hidden" name="ContentType" value="text/xml" />
     <input type="submit" value="Submit" />
 </form>
 <script type="text/javascript">
@@ -464,7 +475,9 @@
 		<programlisting role="XML"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:be:fedict:eid:dss:example"
 	xmlns:tns="urn:be:fedict:eid:dss:example" elementFormDefault="qualified"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+	<xsd:import namespace="http://www.w3.org/2000/09/xmldsig#"
+		schemaLocation="xmldsig-core-schema.xsd" />
 	<element name="Transaction" type="tns:TransactionType" />
 	<complexType name="TransactionType">
 		<sequence>
@@ -472,6 +485,7 @@
 			<element name="To" type="xsd:string" />
 			<element name="Amount" type="xsd:double" />
 			<element name="Description" type="xsd:string" minOccurs="0" />
+			<element ref="ds:Signature" minOccurs="0" maxOccurs="unbounded" />
 		</sequence>
 	</complexType>
 </schema>]]></programlisting>

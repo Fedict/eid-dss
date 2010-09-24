@@ -49,6 +49,10 @@ public class UploadBean implements Upload {
 	@Out(value = "filename", scope = ScopeType.SESSION, required = false)
 	private String filename;
 
+	@In(value = "ContentType", scope = ScopeType.SESSION, required = false)
+	@Out(value = "ContentType", scope = ScopeType.SESSION, required = false)
+	private String contentType;
+
 	@In(value = "document", scope = ScopeType.SESSION, required = false)
 	@Out(value = "document", scope = ScopeType.SESSION, required = false)
 	private byte[] document;
@@ -64,6 +68,7 @@ public class UploadBean implements Upload {
 		this.log.debug("listener");
 		UploadItem item = event.getUploadItem();
 		this.log.debug("content type: #0", item.getContentType());
+		this.contentType = item.getContentType();
 		this.log.debug("filename: #0", item.getFileName());
 		this.filename = item.getFileName();
 		this.log.debug("file size: #0", item.getFileSize());

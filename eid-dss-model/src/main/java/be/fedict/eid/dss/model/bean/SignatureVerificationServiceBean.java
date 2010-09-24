@@ -126,8 +126,6 @@ public class SignatureVerificationServiceBean implements
 
 	public List<SignatureInfo> verify(byte[] xmlData)
 			throws DocumentFormatException, InvalidSignatureException {
-		String xmlStr = new String(xmlData);
-		LOG.debug("verify: " + xmlStr);
 		Document document;
 		try {
 			document = this.builder.parse(new ByteArrayInputStream(xmlData));
