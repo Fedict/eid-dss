@@ -7,13 +7,13 @@
 	<ui:param name="activeMenu" value="sign" />
 	<ui:define name="body">
 		<h2>Signature Error</h2>
-		<p style="color: red;">An error occurred while signing the XML
+		<p style="color: red;">An error occurred while signing the
 		document.</p>
 		<p style="color: red;">Error code: <h:outputText
 			value="#{SignatureErrorMessage}" /></p>
 		<p><a
-			href="#{facesContext.externalContext.requestContextPath}/input-xml.seam">Click
-		here to sign another XML document.</a></p>
+			href="#{facesContext.externalContext.requestContextPath}/upload.seam">Click
+		here to sign/verify another document.</a></p>
 	</ui:define>
 </ui:composition>
 </body>
