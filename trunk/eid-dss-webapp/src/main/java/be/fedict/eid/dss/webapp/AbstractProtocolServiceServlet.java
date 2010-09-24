@@ -34,8 +34,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.dss.model.IdentityService;
+import be.fedict.eid.dss.model.TrustValidationService;
 import be.fedict.eid.dss.model.XmlSchemaManager;
 import be.fedict.eid.dss.model.XmlStyleSheetManager;
+import be.fedict.eid.dss.model.bean.ModelDSSDocumentContext;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DSSProtocolContext;
@@ -71,6 +73,9 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 
 	@EJB
 	private XmlStyleSheetManager xmlStyleSheetManager;
+
+	@EJB
+	private TrustValidationService trustValidationService;
 
 	/**
 	 * Main constructor.
@@ -138,8 +143,9 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 		if (false == this.initDocumentServices) {
 			return;
 		}
-		DSSDocumentContext dssDocumentContext = new DSSDocumentContextImpl(
-				this.xmlSchemaManager, this.xmlStyleSheetManager);
+		DSSDocumentContext dssDocumentContext = new ModelDSSDocumentContext(
+				this.xmlSchemaManager, this.xmlStyleSheetManager,
+				this.trustValidationService);
 		this.documentServices = new HashMap<String, DSSDocumentService>();
 		Map<String, String> documentServiceClassNames = StartupServletContextListener
 				.getDocumentServiceClassNames(servletContext);
@@ -165,8 +171,7 @@ public abstract class AbstractProtocolServiceServlet extends HttpServlet {
 				continue;
 			}
 			try {
-				dssDocumentService.init(servletContext, dssDocumentContext,
-						contentType);
+				dssDocumentService.init(dssDocumentContext, contentType);
 			} catch (Exception e) {
 				LOG.error(
 						"error initializing document service: "

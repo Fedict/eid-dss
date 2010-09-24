@@ -145,7 +145,7 @@ public class DigitalSignatureServiceTest {
 		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient();
 
 		// operate
-		boolean result = client.verify("<test/>");
+		boolean result = client.verify("<test/>".getBytes(), "text/xml");
 
 		// verify
 		assertFalse(result);
@@ -158,7 +158,7 @@ public class DigitalSignatureServiceTest {
 
 		// operate & verify
 		try {
-			client.verify("foo-bar");
+			client.verify("foo-bar".getBytes(), "text/xml");
 			fail();
 		} catch (NotParseableXMLDocumentException e) {
 			// expected
@@ -183,28 +183,10 @@ public class DigitalSignatureServiceTest {
 		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient();
 
 		// operate
-		boolean result = client.verify(signedDocument);
+		boolean result = client.verify(signedDocument.getBytes(), "text/xml");
 
 		// verify
 		assertTrue(result);
-	}
-
-	@Test
-	public void testVerifyXAdESXLSignedDocument() throws Exception {
-		// setup
-		InputStream signedDocumentInputStream = DigitalSignatureServiceTest.class
-				.getResourceAsStream("/signed-document.xml");
-		String signedDocument = IOUtils.toString(signedDocumentInputStream);
-
-		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient();
-
-		// operate
-		String result = client.verifyWithSignerIdentity(signedDocument);
-
-		// verify
-		assertNotNull(result);
-		LOG.debug("signed id: " + result);
-		assertEquals("79102520991", result);
 	}
 
 	@Test
@@ -217,7 +199,8 @@ public class DigitalSignatureServiceTest {
 		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient();
 
 		// operate
-		List<SignatureInfo> signers = client.verifyWithSigners(signedDocument);
+		List<SignatureInfo> signers = client.verifyWithSigners(
+				signedDocument.getBytes(), "text/xml");
 
 		// verify
 		assertNotNull(signers);
@@ -228,31 +211,6 @@ public class DigitalSignatureServiceTest {
 		assertTrue(signatureInfo.getSigner().getSubjectX500Principal()
 				.toString().contains("Frank Cornelis"));
 		LOG.debug("signing time: " + signatureInfo.getSigningTime());
-	}
-
-	@Test
-	public void testSignedDocumentWithCertResult() throws Exception {
-		// setup
-		String documentStr = "<document><data id=\"id\">hello world</data></document>";
-		Document document = loadDocument(documentStr);
-
-		signDocument(document);
-
-		String signedDocument = toString(document);
-		LOG.debug("signed document: " + signedDocument);
-
-		NodeList signatureNodeList = document.getElementsByTagNameNS(
-				XMLSignature.XMLNS, "Signature");
-		assertEquals(1, signatureNodeList.getLength());
-
-		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient();
-
-		// operate
-		String result = client.verifyWithSignerIdentity(signedDocument);
-
-		// verify
-		LOG.debug("result: " + result);
-		assertNotNull(result);
 	}
 
 	private void signDocument(Document document) throws IOException,

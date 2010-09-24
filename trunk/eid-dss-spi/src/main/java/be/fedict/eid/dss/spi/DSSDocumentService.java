@@ -21,8 +21,7 @@ package be.fedict.eid.dss.spi;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-
-import javax.servlet.ServletContext;
+import java.util.List;
 
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
@@ -42,14 +41,12 @@ public interface DSSDocumentService extends Serializable {
 	/**
 	 * Initializes this component.
 	 * 
-	 * @param servletContext
 	 * @param context
 	 * @param contentType
 	 *            the content-type that this document service should handle.
 	 * @throws Exception
 	 */
-	void init(ServletContext servletContext, DSSDocumentContext context,
-			String contentType) throws Exception;
+	void init(DSSDocumentContext context, String contentType) throws Exception;
 
 	/**
 	 * Checks the incoming document.
@@ -84,4 +81,13 @@ public interface DSSDocumentService extends Serializable {
 			RevocationDataService revocationDataService,
 			SignatureFacet signatureFacet, OutputStream documentOutputStream)
 			throws Exception;
+
+	/**
+	 * Verifies the signatures on the given document.
+	 * 
+	 * @param document
+	 * @return
+	 * @throws Exception
+	 */
+	List<SignatureInfo> verifySignatures(byte[] document) throws Exception;
 }

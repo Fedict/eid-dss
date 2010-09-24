@@ -20,8 +20,7 @@ package be.fedict.eid.dss.document.odf;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import javax.servlet.ServletContext;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +33,7 @@ import be.fedict.eid.applet.service.spi.SignatureService;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DocumentVisualization;
+import be.fedict.eid.dss.spi.SignatureInfo;
 
 public class ODFDSSDocumentService implements DSSDocumentService {
 
@@ -42,8 +42,8 @@ public class ODFDSSDocumentService implements DSSDocumentService {
 	private static final Log LOG = LogFactory
 			.getLog(ODFDSSDocumentService.class);
 
-	public void init(ServletContext servletContext, DSSDocumentContext context,
-			String contentType) throws Exception {
+	public void init(DSSDocumentContext context, String contentType)
+			throws Exception {
 		LOG.debug("init");
 	}
 
@@ -67,5 +67,11 @@ public class ODFDSSDocumentService implements DSSDocumentService {
 		return new ODFSignatureService(timeStampServiceValidator,
 				revocationDataService, signatureFacet, documentInputStream,
 				documentOutputStream, timeStampService);
+	}
+
+	public List<SignatureInfo> verifySignatures(byte[] document)
+			throws Exception {
+		// TODO: implement me
+		return null;
 	}
 }

@@ -22,41 +22,35 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Vector;
 
 import javax.ejb.EJB;
 import javax.jws.WebService;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bouncycastle.asn1.DERObjectIdentifier;
-import org.bouncycastle.jce.PrincipalUtil;
-import org.bouncycastle.jce.X509Principal;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import be.fedict.eid.dss.model.SignatureInfo;
 import be.fedict.eid.dss.model.SignatureVerificationService;
 import be.fedict.eid.dss.model.exception.DocumentFormatException;
 import be.fedict.eid.dss.model.exception.InvalidSignatureException;
+import be.fedict.eid.dss.spi.SignatureInfo;
 import be.fedict.eid.dss.ws.jaxb.dss.AnyType;
+import be.fedict.eid.dss.ws.jaxb.dss.Base64Data;
 import be.fedict.eid.dss.ws.jaxb.dss.DocumentType;
 import be.fedict.eid.dss.ws.jaxb.dss.InputDocuments;
 import be.fedict.eid.dss.ws.jaxb.dss.ObjectFactory;
 import be.fedict.eid.dss.ws.jaxb.dss.ResponseBaseType;
 import be.fedict.eid.dss.ws.jaxb.dss.Result;
 import be.fedict.eid.dss.ws.jaxb.dss.VerifyRequest;
-import be.fedict.eid.dss.ws.jaxb.saml.NameIdentifierType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.CertificateStatusType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.CertificateValidityType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.IndividualReportType;
@@ -92,7 +86,6 @@ public class DigitalSignatureServicePortImpl implements
 	private SignatureVerificationService signatureVerificationService;
 
 	private final ObjectFactory dssObjectFactory;
-	private final be.fedict.eid.dss.ws.jaxb.saml.ObjectFactory samlObjectFactory;
 	private final be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory vrObjectFactory;
 	private final be.fedict.eid.dss.ws.profile.vr.jaxb.dss.ObjectFactory vrDssObjectFactory;
 	private final be.fedict.eid.dss.ws.profile.vr.jaxb.xmldsig.ObjectFactory vrXmldsigObjectFactory;
@@ -104,7 +97,6 @@ public class DigitalSignatureServicePortImpl implements
 
 	public DigitalSignatureServicePortImpl() {
 		this.dssObjectFactory = new ObjectFactory();
-		this.samlObjectFactory = new be.fedict.eid.dss.ws.jaxb.saml.ObjectFactory();
 		this.vrObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory();
 		this.vrDssObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.dss.ObjectFactory();
 		this.vrXmldsigObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.xmldsig.ObjectFactory();
@@ -147,6 +139,7 @@ public class DigitalSignatureServicePortImpl implements
 		List<Object> documentObjects = inputDocuments
 				.getDocumentOrTransformedDataOrDocumentHash();
 		if (1 != documentObjects.size()) {
+			LOG.error("can validate only one document");
 			return createRequestorErrorResponse(requestId);
 		}
 		Object documentObject = documentObjects.get(0);
@@ -154,27 +147,28 @@ public class DigitalSignatureServicePortImpl implements
 			return createRequestorErrorResponse(requestId);
 		}
 		DocumentType document = (DocumentType) documentObject;
-		byte[] xmlData = document.getBase64XML();
-		if (null == xmlData) {
+		Base64Data base64Data = document.getBase64Data();
+		byte[] data;
+		String mimeType;
+		if (null != base64Data) {
+			data = base64Data.getValue();
+			mimeType = base64Data.getMimeType();
+		} else {
+			data = document.getBase64XML();
+			mimeType = "text/xml";
+		}
+		if (null == data) {
+			return createRequestorErrorResponse(requestId);
+		}
+		if (null == mimeType) {
 			return createRequestorErrorResponse(requestId);
 		}
 
-		boolean returnSignerIdentity = false;
 		boolean returnVerificationReport = false;
 		AnyType optionalInput = verifyRequest.getOptionalInputs();
 		if (null != optionalInput) {
 			List<Object> anyObjects = optionalInput.getAny();
 			for (Object anyObject : anyObjects) {
-				if (anyObject instanceof JAXBElement<?>) {
-					JAXBElement<?> anyElement = (JAXBElement<?>) anyObject;
-					if (new QName(
-							DigitalSignatureServiceConstants.DSS_NAMESPACE,
-							"ReturnSignerIdentity")
-							.equals(anyElement.getName())) {
-						returnSignerIdentity = true;
-						LOG.debug("ReturnSignerIdentity detected");
-					}
-				}
 				if (anyObject instanceof Element) {
 					Element element = (Element) anyObject;
 					if (DigitalSignatureServiceConstants.VR_NAMESPACE
@@ -196,7 +190,8 @@ public class DigitalSignatureServicePortImpl implements
 		 */
 		List<SignatureInfo> signatureInfos;
 		try {
-			signatureInfos = this.signatureVerificationService.verify(xmlData);
+			signatureInfos = this.signatureVerificationService.verify(data,
+					mimeType);
 		} catch (DocumentFormatException e) {
 			return createRequestorErrorResponse(
 					requestId,
@@ -218,27 +213,6 @@ public class DigitalSignatureServicePortImpl implements
 			result.setResultMinor(DigitalSignatureServiceConstants.RESULT_MINOR_VALID_MULTI_SIGNATURES);
 		} else if (1 == signatureInfos.size()) {
 			result.setResultMinor(DigitalSignatureServiceConstants.RESULT_MINOR_VALID_SIGNATURE);
-			if (returnSignerIdentity) {
-				NameIdentifierType nameIdentifier = this.samlObjectFactory
-						.createNameIdentifierType();
-				SignatureInfo signatureInfo = signatureInfos.get(0);
-				X509Certificate signatory = signatureInfo.getSigner();
-				X509Principal principal;
-				try {
-					principal = PrincipalUtil
-							.getSubjectX509Principal(signatory);
-				} catch (CertificateEncodingException e) {
-					return createRequestorErrorResponse(requestId);
-				}
-				Vector<String> values = principal
-						.getValues(new DERObjectIdentifier("2.5.4.5"));
-				String name = (String) values.get(0);
-				nameIdentifier.setValue(name);
-				LOG.debug("signer identity: " + name);
-				optionalOutput.getAny().add(
-						this.samlObjectFactory
-								.createNameIdentifier(nameIdentifier));
-			}
 		} else {
 			result.setResultMinor(DigitalSignatureServiceConstants.RESULT_MINOR_INVALID_SIGNATURE);
 		}

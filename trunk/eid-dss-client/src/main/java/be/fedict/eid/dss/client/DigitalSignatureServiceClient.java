@@ -50,13 +50,13 @@ import be.fedict.eid.dss.ws.DigitalSignatureServiceConstants;
 import be.fedict.eid.dss.ws.DigitalSignatureServiceFactory;
 import be.fedict.eid.dss.ws.DigitalSignatureServicePortType;
 import be.fedict.eid.dss.ws.jaxb.dss.AnyType;
+import be.fedict.eid.dss.ws.jaxb.dss.Base64Data;
 import be.fedict.eid.dss.ws.jaxb.dss.DocumentType;
 import be.fedict.eid.dss.ws.jaxb.dss.InputDocuments;
 import be.fedict.eid.dss.ws.jaxb.dss.ObjectFactory;
 import be.fedict.eid.dss.ws.jaxb.dss.ResponseBaseType;
 import be.fedict.eid.dss.ws.jaxb.dss.Result;
 import be.fedict.eid.dss.ws.jaxb.dss.VerifyRequest;
-import be.fedict.eid.dss.ws.jaxb.saml.NameIdentifierType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.CertificateValidityType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.IndividualReportType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.ReturnVerificationReport;
@@ -137,14 +137,16 @@ public class DigitalSignatureServiceClient {
 	 * Verifies whether the given document has been signed or not.
 	 * 
 	 * @param signedDocument
+	 * @param mimeType
+	 *            optional mime-type, default is "text/xml".
 	 * @return <code>true</code> is the document has been signed,
 	 *         <code>false</code> otherwise.
 	 * @throws NotParseableXMLDocumentException
 	 */
-	public boolean verify(String signedDocument)
+	public boolean verify(byte[] signedDocument, String mimeType)
 			throws NotParseableXMLDocumentException {
-		ResponseBaseType responseBase = doVerification(signedDocument, false,
-				false);
+		ResponseBaseType responseBase = doVerification(signedDocument,
+				mimeType, false, false);
 
 		Result result = responseBase.getResult();
 		String resultMajor = result.getResultMajor();
@@ -183,10 +185,10 @@ public class DigitalSignatureServiceClient {
 	 *         parties.
 	 * @throws NotParseableXMLDocumentException
 	 */
-	public List<SignatureInfo> verifyWithSigners(String signedDocument)
-			throws NotParseableXMLDocumentException {
-		ResponseBaseType responseBase = doVerification(signedDocument, false,
-				true);
+	public List<SignatureInfo> verifyWithSigners(byte[] signedDocument,
+			String mimeType) throws NotParseableXMLDocumentException {
+		ResponseBaseType responseBase = doVerification(signedDocument,
+				mimeType, false, true);
 
 		Result result = responseBase.getResult();
 		String resultMajor = result.getResultMajor();
@@ -285,71 +287,9 @@ public class DigitalSignatureServiceClient {
 		return signers;
 	}
 
-	/**
-	 * Verifies the signature on a signed XML document.
-	 * 
-	 * @param signedDocument
-	 *            the document.
-	 * @return the identifier of the signatory.
-	 * @deprecated
-	 */
-	public String verifyWithSignerIdentity(String signedDocument) {
-		ResponseBaseType responseBase = doVerification(signedDocument, true,
-				false);
-
-		Result result = responseBase.getResult();
-		String resultMajor = result.getResultMajor();
-		LOG.debug("result major: " + resultMajor);
-		if (false == DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS
-				.equals(resultMajor)) {
-			throw new RuntimeException("unsuccessful result: " + resultMajor);
-		}
-		String resultMinor = result.getResultMinor();
-		if (null == resultMinor) {
-			throw new RuntimeException("missing ResultMinor");
-		}
-
-		if (DigitalSignatureServiceConstants.RESULT_MINOR_VALID_SIGNATURE
-				.equals(resultMinor)) {
-			AnyType anyType = responseBase.getOptionalOutputs();
-			if (null == anyType) {
-				throw new RuntimeException("expected OptionalOutputs");
-			}
-			List<Object> anyList = anyType.getAny();
-			for (Object anyObject : anyList) {
-				if (anyObject instanceof JAXBElement<?>) {
-					JAXBElement<?> jaxbElement = (JAXBElement<?>) anyObject;
-					Object value = jaxbElement.getValue();
-					if (value instanceof NameIdentifierType) {
-						NameIdentifierType nameIdentifier = (NameIdentifierType) value;
-						String name = nameIdentifier.getValue();
-						LOG.debug("identifier: " + name);
-						return name;
-					}
-				}
-				if (anyObject instanceof Element) {
-					Element element = (Element) anyObject;
-					if ("NameIdentifier".equals(element.getLocalName())) {
-						String name = element.getTextContent();
-						if (name != null) {
-							name = name.trim();
-							LOG.debug("identifier: " + name);
-							return name;
-						}
-					}
-				}
-			}
-			return null;
-		}
-		if (DigitalSignatureServiceConstants.RESULT_MINOR_VALID_MULTI_SIGNATURES
-				.equals(resultMinor)) {
-			throw new UnsupportedOperationException();
-		}
-		return null;
-	}
-
-	private ResponseBaseType doVerification(String signedDocument,
-			boolean returnSignerIdentity, boolean returnVerificationReport) {
+	private ResponseBaseType doVerification(byte[] documentData,
+			String mimeType, boolean returnSignerIdentity,
+			boolean returnVerificationReport) {
 		LOG.debug("verify");
 		String requestId = "dss-request-" + UUID.randomUUID().toString();
 		DigitalSignatureService digitalSignatureService = DigitalSignatureServiceFactory
@@ -409,7 +349,14 @@ public class DigitalSignatureServiceClient {
 		List<Object> documents = inputDocuments
 				.getDocumentOrTransformedDataOrDocumentHash();
 		DocumentType document = this.dssObjectFactory.createDocumentType();
-		document.setBase64XML(signedDocument.getBytes());
+		if (null == mimeType || "text/xml".equals(mimeType)) {
+			document.setBase64XML(documentData);
+		} else {
+			Base64Data base64Data = this.dssObjectFactory.createBase64Data();
+			base64Data.setValue(documentData);
+			base64Data.setMimeType(mimeType);
+			document.setBase64Data(base64Data);
+		}
 		documents.add(document);
 		verifyRequest.setInputDocuments(inputDocuments);
 

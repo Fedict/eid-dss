@@ -63,4 +63,8 @@ public class ServicesManagerBean implements ServicesManager {
 		LOG.debug("content type: " + contentType);
 		return this.servicesManagerSingleton.getDocumentService(contentType);
 	}
+
+	public DSSDocumentService getDocumentService(String contentType) {
+		return this.servicesManagerSingleton.getDocumentService(contentType);
+	}
 }

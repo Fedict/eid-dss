@@ -24,6 +24,7 @@ import javax.ejb.Local;
 
 import be.fedict.eid.dss.model.exception.DocumentFormatException;
 import be.fedict.eid.dss.model.exception.InvalidSignatureException;
+import be.fedict.eid.dss.spi.SignatureInfo;
 
 /**
  * Service interface for signature verification service.
@@ -35,16 +36,15 @@ import be.fedict.eid.dss.model.exception.InvalidSignatureException;
 public interface SignatureVerificationService {
 
 	/**
-	 * Verifies the given XML structure for the presence of valid XML
-	 * signatures.
+	 * Verifies the given document for the presence of valid signatures.
 	 * 
-	 * @param xmlData
-	 *            the given XML data.
+	 * @param data
+	 *            the given data.
 	 * @return the list of all signing parties.
 	 * @exception DocumentFormatException
-	 *                in case the given data is not valid XML.
+	 *                in case the given data is not valid.
 	 * @throws InvalidSignatureException
 	 */
-	List<SignatureInfo> verify(byte[] xmlData) throws DocumentFormatException,
-			InvalidSignatureException;
+	List<SignatureInfo> verify(byte[] data, String mimeType)
+			throws DocumentFormatException, InvalidSignatureException;
 }

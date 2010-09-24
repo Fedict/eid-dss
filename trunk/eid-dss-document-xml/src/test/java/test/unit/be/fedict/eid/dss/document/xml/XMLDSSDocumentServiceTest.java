@@ -18,14 +18,32 @@
 
 package test.unit.be.fedict.eid.dss.document.xml;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.InputStream;
+import java.security.cert.X509CRL;
+import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.ocsp.OCSPResp;
+import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.Test;
 
 import be.fedict.eid.dss.document.xml.XMLDSSDocumentService;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
+import be.fedict.eid.dss.spi.SignatureInfo;
 
 public class XMLDSSDocumentServiceTest {
+
+	private static final Log LOG = LogFactory
+			.getLog(XMLDSSDocumentServiceTest.class);
 
 	@Test
 	public void testCheckIncomingDocumentWithoutNamespace() throws Exception {
@@ -34,7 +52,7 @@ public class XMLDSSDocumentServiceTest {
 		byte[] document = "<test>hello world</test>".getBytes();
 
 		// operate
-		testedInstance.init(null, null, null);
+		testedInstance.init(null, null);
 		testedInstance.checkIncomingDocument(document);
 	}
 
@@ -54,7 +72,7 @@ public class XMLDSSDocumentServiceTest {
 		EasyMock.replay(mockContext);
 
 		// operate
-		testedInstance.init(null, mockContext, null);
+		testedInstance.init(mockContext, null);
 		testedInstance.checkIncomingDocument(document);
 
 		// verify
@@ -81,7 +99,7 @@ public class XMLDSSDocumentServiceTest {
 		EasyMock.replay(mockContext);
 
 		// operate
-		testedInstance.init(null, mockContext, null);
+		testedInstance.init(mockContext, null);
 		testedInstance.checkIncomingDocument(document);
 
 		// verify
@@ -111,10 +129,58 @@ public class XMLDSSDocumentServiceTest {
 		EasyMock.replay(mockContext);
 
 		// operate
-		testedInstance.init(null, mockContext, null);
+		testedInstance.init(mockContext, null);
 		testedInstance.checkIncomingDocument(document);
 
 		// verify
 		EasyMock.verify(mockContext);
+	}
+
+	@Test
+	public void testVerifySignedDocument() throws Exception {
+		// setup
+		InputStream signedDocumentInputStream = XMLDSSDocumentServiceTest.class
+				.getResourceAsStream("/signed-document.xml");
+		byte[] signedDocument = IOUtils.toByteArray(signedDocumentInputStream);
+		XMLDSSDocumentService testedInstance = new XMLDSSDocumentService();
+
+		DSSDocumentContext mockDocumentContext = EasyMock
+				.createMock(DSSDocumentContext.class);
+		testedInstance.init(mockDocumentContext, "text/xml");
+
+		Capture<List<X509Certificate>> certificateChainCapture = new Capture<List<X509Certificate>>();
+		Capture<Date> validationDateCapture = new Capture<Date>();
+		Capture<List<OCSPResp>> ocspResponsesCapture = new Capture<List<OCSPResp>>();
+		Capture<List<X509CRL>> crlsCapture = new Capture<List<X509CRL>>();
+		mockDocumentContext.validate(EasyMock.capture(certificateChainCapture),
+				EasyMock.capture(validationDateCapture),
+				EasyMock.capture(ocspResponsesCapture),
+				EasyMock.capture(crlsCapture));
+
+		// prepare
+		EasyMock.replay(mockDocumentContext);
+
+		// operate
+		List<SignatureInfo> result = testedInstance
+				.verifySignatures(signedDocument);
+
+		// verify
+		EasyMock.verify(mockDocumentContext);
+		assertNotNull(result);
+		assertEquals(1, result.size());
+		SignatureInfo signatureInfo = result.get(0);
+		assertNotNull(signatureInfo.getSigner());
+		LOG.debug("signer: "
+				+ signatureInfo.getSigner().getSubjectX500Principal());
+		assertTrue(signatureInfo.getSigner().getSubjectX500Principal()
+				.toString().contains("Frank Cornelis"));
+		assertNotNull(signatureInfo.getSigningTime());
+		LOG.debug("signing time: " + signatureInfo.getSigningTime());
+		LOG.debug("number of OCSPs: " + ocspResponsesCapture.getValue().size());
+		LOG.debug("number of CRLs: " + crlsCapture.getValue().size());
+		assertEquals(1, ocspResponsesCapture.getValue().size());
+		assertEquals(1, crlsCapture.getValue().size());
+		assertEquals(validationDateCapture.getValue(),
+				signatureInfo.getSigningTime());
 	}
 }
