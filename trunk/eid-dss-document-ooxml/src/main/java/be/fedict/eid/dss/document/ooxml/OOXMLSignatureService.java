@@ -16,10 +16,11 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.document.odf;
+package be.fedict.eid.dss.document.ooxml;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
@@ -30,14 +31,10 @@ import org.apache.commons.io.IOUtils;
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
-import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
-import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
-import be.fedict.eid.applet.service.signer.odf.AbstractODFSignatureService;
-import be.fedict.eid.applet.service.signer.time.TimeStampService;
-import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
+import be.fedict.eid.applet.service.signer.ooxml.AbstractOOXMLSignatureService;
 import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
 
-public class ODFSignatureService extends AbstractODFSignatureService {
+public class OOXMLSignatureService extends AbstractOOXMLSignatureService {
 
 	private final TemporaryDataStorage temporaryDataStorage;
 
@@ -45,25 +42,20 @@ public class ODFSignatureService extends AbstractODFSignatureService {
 
 	private final File tmpFile;
 
-	public ODFSignatureService(
-			TimeStampServiceValidator timeStampServiceValidator,
-			RevocationDataService revocationDataService,
-			SignatureFacet signatureFacet, InputStream documentInputStream,
-			OutputStream documentOutputStream, TimeStampService timeStampService)
-			throws Exception {
+	public OOXMLSignatureService(InputStream documentInputStream,
+			OutputStream documentOutputStream, SignatureFacet signatureFacet)
+			throws IOException {
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		this.documentOutputStream = documentOutputStream;
-		this.tmpFile = File.createTempFile("eid-dss-", ".odf");
+		this.tmpFile = File.createTempFile("eid-dss-", ".ooxml");
 		FileOutputStream fileOutputStream;
 		fileOutputStream = new FileOutputStream(this.tmpFile);
 		IOUtils.copy(documentInputStream, fileOutputStream);
-		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
-				revocationDataService, "SHA-512"));
 		addSignatureFacet(signatureFacet);
 	}
 
 	@Override
-	protected URL getOpenDocumentURL() {
+	protected URL getOfficeOpenXMLDocumentURL() {
 		try {
 			return this.tmpFile.toURI().toURL();
 		} catch (MalformedURLException e) {
@@ -72,14 +64,14 @@ public class ODFSignatureService extends AbstractODFSignatureService {
 	}
 
 	@Override
-	protected OutputStream getSignedOpenDocumentOutputStream() {
+	protected OutputStream getSignedOfficeOpenXMLDocumentOutputStream() {
 		return new CloseActionOutputStream(this.documentOutputStream,
 				new CloseAction());
 	}
 
 	private class CloseAction implements Runnable {
 		public void run() {
-			ODFSignatureService.this.tmpFile.delete();
+			OOXMLSignatureService.this.tmpFile.delete();
 		}
 	}
 

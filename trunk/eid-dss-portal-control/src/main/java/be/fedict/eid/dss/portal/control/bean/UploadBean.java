@@ -88,6 +88,14 @@ public class UploadBean implements Upload {
 				this.contentType = "application/vnd.oasis.opendocument.formula";
 			} else if (this.filename.endsWith(".odi")) {
 				this.contentType = "application/vnd.oasis.opendocument.image";
+			} else if (this.filename.endsWith(".docx")) {
+				this.contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+			} else if (this.filename.endsWith(".xlsx")) {
+				this.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+			} else if (this.filename.endsWith(".pptx")) {
+				this.contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+			} else if (this.filename.endsWith(".ppsx")) {
+				this.contentType = "application/vnd.openxmlformats-officedocument.presentationml.slideshow";
 			} else {
 				this.contentType = "application/octet-stream";
 			}
