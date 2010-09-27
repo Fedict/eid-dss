@@ -67,10 +67,31 @@ public class UploadBean implements Upload {
 	public void listener(UploadEvent event) throws Exception {
 		this.log.debug("listener");
 		UploadItem item = event.getUploadItem();
-		this.log.debug("content type: #0", item.getContentType());
-		this.contentType = item.getContentType();
 		this.log.debug("filename: #0", item.getFileName());
 		this.filename = item.getFileName();
+		this.log.debug("content type: #0", item.getContentType());
+		this.contentType = item.getContentType();
+		if (null == this.contentType) {
+			if (this.filename.endsWith(".xml")) {
+				this.contentType = "text/xml";
+			} else if (this.filename.endsWith(".odt")) {
+				this.contentType = "application/vnd.oasis.opendocument.text";
+			} else if (this.filename.endsWith(".ods")) {
+				this.contentType = "application/vnd.oasis.opendocument.spreadsheet";
+			} else if (this.filename.endsWith(".odp")) {
+				this.contentType = "application/vnd.oasis.opendocument.presentation";
+			} else if (this.filename.endsWith(".odg")) {
+				this.contentType = "application/vnd.oasis.opendocument.graphics";
+			} else if (this.filename.endsWith(".odc")) {
+				this.contentType = "application/vnd.oasis.opendocument.chart";
+			} else if (this.filename.endsWith(".odf")) {
+				this.contentType = "application/vnd.oasis.opendocument.formula";
+			} else if (this.filename.endsWith(".odi")) {
+				this.contentType = "application/vnd.oasis.opendocument.image";
+			} else {
+				this.contentType = "application/octet-stream";
+			}
+		}
 		this.log.debug("file size: #0", item.getFileSize());
 		this.log.debug("data bytes available: #0", (null != item.getData()));
 		if (null != item.getData()) {
