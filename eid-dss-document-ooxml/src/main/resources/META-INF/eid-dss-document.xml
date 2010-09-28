@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <DigitalSignatureServiceDocument xmlns="urn:be:fedict:eid:dss:spi:document">
 	<Name>OOXML Document</Name>
-	<Description>OOXML Documents</Description>
+	<Description>Office OpenXML Documents</Description>
 	<DocumentServiceClass>be.fedict.eid.dss.document.ooxml.OOXMLDSSDocumentService</DocumentServiceClass>
 	<ContentType>application/vnd.openxmlformats-officedocument.wordprocessingml.document</ContentType>
 	<ContentType>application/vnd.openxmlformats-officedocument.spreadsheetml.sheet</ContentType>
