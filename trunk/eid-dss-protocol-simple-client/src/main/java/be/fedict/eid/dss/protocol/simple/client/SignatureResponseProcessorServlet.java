@@ -18,20 +18,7 @@
 
 package be.fedict.eid.dss.protocol.simple.client;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -42,10 +29,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bouncycastle.util.encoders.Base64;
 
 /**
  * Processes the response from the eID DSS simple protocol.
@@ -98,20 +83,6 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 	private static final Log LOG = LogFactory
 			.getLog(SignatureResponseProcessorServlet.class);
 
-	public static final String SIGNATURE_RESPONSE_PARAMETER = "SignatureResponse";
-
-	public static final String SIGNATURE_STATUS_PARAMETER = "SignatureStatus";
-
-	public static final String SIGNATURE_CERTIFICATE_PARAMETER = "SignatureCertificate";
-
-	public static final String SERVICE_SIGNED_PARAMETER = "ServiceSigned";
-
-	public static final String SERVICE_SIGNATURE_PARAMETER = "ServiceSignature";
-
-	public static final String SERVICE_CERTIFICATE_CHAIN_SIZE_PARAMETER = "ServiceCertificateChainSize";
-
-	public static final String SERVICE_CERTIFICATE_PARAMETER_PREFIX = "ServiceCertificate.";
-
 	public static final String NEXT_PAGE_INIT_PARAM = "NextPage";
 
 	public static final String ERROR_PAGE_INIT_PARAM = "ErrorPage";
@@ -138,11 +109,11 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 
 	private String signatureCertificateSessionAttribute;
 
-	private byte[] serviceFingerprint;
-
 	private String targetSessionAttribute;
 
 	private String signatureRequestSessionAttribute;
+
+	private SignatureResponseProcessor signatureResponseProcessor;
 
 	@Override
 	public void init(ServletConfig config) throws ServletException {
@@ -168,19 +139,22 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 
 		String encodedServiceFingerprint = config
 				.getInitParameter(SERVICE_FINGERPRINT_INIT_PARAM);
+		byte[] serviceFingerprint;
 		if (null != encodedServiceFingerprint) {
 			LOG.debug("service fingerprint: " + encodedServiceFingerprint);
 			try {
-				this.serviceFingerprint = Hex
-						.decodeHex(encodedServiceFingerprint.toCharArray());
+				serviceFingerprint = Hex.decodeHex(encodedServiceFingerprint
+						.toCharArray());
 			} catch (DecoderException e) {
 				throw new ServletException(
 						"service fingerprint decoding error: " + e.getMessage(),
 						e);
 			}
 		} else {
-			this.serviceFingerprint = null;
+			serviceFingerprint = null;
 		}
+		this.signatureResponseProcessor = new SignatureResponseProcessor(
+				serviceFingerprint);
 
 		this.targetSessionAttribute = config
 				.getInitParameter(TARGET_SESSION_ATTRIBUTE_INIT_PARAM);
@@ -197,8 +171,7 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 		return paramValue;
 	}
 
-	private void clearAllSessionAttribute(HttpServletRequest request) {
-		HttpSession httpSession = request.getSession();
+	private void clearAllSessionAttribute(HttpSession httpSession) {
 		httpSession.removeAttribute(this.errorMessageSessionAttribute);
 		httpSession.removeAttribute(this.signedDocumentSessionAttribute);
 		if (null != this.signatureCertificateSessionAttribute) {
@@ -218,132 +191,20 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		LOG.debug("doPost");
-		clearAllSessionAttribute(request);
-
-		/*
-		 * Decode all incoming parameters.
-		 */
-		String signatureStatus = request
-				.getParameter(SIGNATURE_STATUS_PARAMETER);
-		if (null == signatureStatus) {
-			String msg = SIGNATURE_RESPONSE_PARAMETER
-					+ " parameter not present";
-			LOG.error(msg);
-			showErrorPage(msg, request, response);
-			return;
-		}
-		LOG.debug("signature status: " + signatureStatus);
 		HttpSession httpSession = request.getSession();
-		if (false == "OK".equals(signatureStatus)) {
-			showErrorPage("invalid signature status: " + signatureStatus,
-					request, response);
-			return;
-		}
+		clearAllSessionAttribute(httpSession);
 
-		String signatureResponse = request
-				.getParameter(SIGNATURE_RESPONSE_PARAMETER);
-		if (null == signatureResponse) {
-			String msg = SIGNATURE_RESPONSE_PARAMETER
-					+ " parameter not present";
-			LOG.error(msg);
-			showErrorPage(msg, request, response);
-			return;
-		}
+		String target = (String) httpSession
+				.getAttribute(this.targetSessionAttribute);
+		String base64encodedSignatureRequest = (String) httpSession
+				.getAttribute(this.signatureRequestSessionAttribute);
 
-		String encodedSignatureCertificate = (String) request
-				.getParameter(SIGNATURE_CERTIFICATE_PARAMETER);
-		if (null == encodedSignatureCertificate) {
-			String msg = SIGNATURE_CERTIFICATE_PARAMETER
-					+ " parameter not present";
-			LOG.error(msg);
-			showErrorPage(msg, request, response);
-			return;
-		}
-
-		/*
-		 * Check service signature.
-		 */
-		String serviceSigned = (String) request
-				.getParameter(SERVICE_SIGNED_PARAMETER);
-		if (null != serviceSigned) {
-			serviceSigned = URLDecoder.decode(serviceSigned, "UTF-8");
-			LOG.debug("service signature present");
-			String encodedServiceSignature = (String) request
-					.getParameter(SERVICE_SIGNATURE_PARAMETER);
-			byte[] serviceSignatureValue = Base64
-					.decode(encodedServiceSignature);
-			int serviceCertificateChainSize = Integer.parseInt((String) request
-					.getParameter(SERVICE_CERTIFICATE_CHAIN_SIZE_PARAMETER));
-			List<byte[]> serviceCertificateChain = new LinkedList<byte[]>();
-			for (int idx = 1; idx <= serviceCertificateChainSize; idx++) {
-				String encodedCertificate = (String) request
-						.getParameter(SERVICE_CERTIFICATE_PARAMETER_PREFIX
-								+ idx);
-				byte[] certificateData = Base64.decode(encodedCertificate);
-				serviceCertificateChain.add(certificateData);
-			}
-			if (null == this.targetSessionAttribute) {
-				showErrorPage(
-						TARGET_SESSION_ATTRIBUTE_INIT_PARAM
-								+ " init-param required for validation of service signature",
-						request, response);
-				return;
-			}
-			String target = (String) httpSession
-					.getAttribute(this.targetSessionAttribute);
-			if (null == this.signatureRequestSessionAttribute) {
-				showErrorPage(
-						SIGNATURE_REQUEST_SESSION_ATTRIBUTE_INIT_PARAM
-								+ " init-param required for validation of service signature",
-						request, response);
-				return;
-			}
-			String signatureRequest = (String) httpSession
-					.getAttribute(this.signatureRequestSessionAttribute);
-			try {
-				verifyServiceSignature(serviceSigned, target, signatureRequest,
-						signatureResponse, encodedSignatureCertificate,
-						serviceSignatureValue, serviceCertificateChain);
-			} catch (Exception e) {
-				String msg = "service signature invalid: " + e.getMessage();
-				LOG.error(msg, e);
-				showErrorPage(msg, request, response);
-				return;
-			}
-		} else {
-			if (null != this.serviceFingerprint) {
-				/*
-				 * In case of a service fingerprint being available, we really
-				 * require the eID DSS to send us a service signature.
-				 */
-				showErrorPage(
-						"Service fingerprint available but service signature is missing",
-						request, response);
-				return;
-			}
-		}
-
-		/*
-		 * Parse all incoming data.
-		 */
-		byte[] decodedSignatureResponse = Base64.decode(signatureResponse);
-		LOG.debug("decoded signature response size: "
-				+ decodedSignatureResponse.length);
-
-		byte[] decodedSignatureCertificate = Base64
-				.decode(encodedSignatureCertificate);
-		X509Certificate signatureCertificate;
+		SignatureResponse signatureResponse;
 		try {
-			CertificateFactory certificateFactory = CertificateFactory
-					.getInstance("X.509");
-			signatureCertificate = (X509Certificate) certificateFactory
-					.generateCertificate(new ByteArrayInputStream(
-							decodedSignatureCertificate));
-		} catch (CertificateException e) {
-			String msg = SIGNATURE_CERTIFICATE_PARAMETER
-					+ " is not an X509 certificate";
-			LOG.error(msg, e);
-			showErrorPage(msg, request, response);
+			signatureResponse = this.signatureResponseProcessor.process(
+					request, target, base64encodedSignatureRequest);
+		} catch (SignatureResponseProcessorException e) {
+			showErrorPage(e.getMessage(), request, response);
 			return;
 		}
 
@@ -351,10 +212,10 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 		 * Push data into the HTTP session.
 		 */
 		httpSession.setAttribute(this.signedDocumentSessionAttribute,
-				decodedSignatureResponse);
+				signatureResponse.getDecodedSignatureResponse());
 		if (null != this.signatureCertificateSessionAttribute) {
 			httpSession.setAttribute(this.signatureCertificateSessionAttribute,
-					signatureCertificate);
+					signatureResponse.getSignatureCertificate());
 		}
 
 		/*
@@ -369,59 +230,5 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 		httpSession.setAttribute(this.errorMessageSessionAttribute,
 				errorMessage);
 		response.sendRedirect(request.getContextPath() + this.errorPage);
-	}
-
-	private void verifyServiceSignature(String serviceSigned, String target,
-			String signatureRequest, String signatureResponse,
-			String encodedSignatureCertificate, byte[] serviceSignatureValue,
-			List<byte[]> serviceCertificateChain) throws CertificateException,
-			NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-		LOG.debug("verifying service signature");
-		byte[] serviceCertificateData = serviceCertificateChain.get(0);
-		CertificateFactory certificateFactory = CertificateFactory
-				.getInstance("X.509");
-		X509Certificate serviceCertificate = (X509Certificate) certificateFactory
-				.generateCertificate(new ByteArrayInputStream(
-						serviceCertificateData));
-		LOG.debug("service identity: "
-				+ serviceCertificate.getSubjectX500Principal());
-		Signature serviceSignature = Signature.getInstance("SHA1withRSA");
-		serviceSignature.initVerify(serviceCertificate);
-
-		StringTokenizer serviceSignedStringTokenizer = new StringTokenizer(
-				serviceSigned, ",");
-		while (serviceSignedStringTokenizer.hasMoreTokens()) {
-			String serviceSignedElement = serviceSignedStringTokenizer
-					.nextToken();
-			LOG.debug("service signed: " + serviceSignedElement);
-			byte[] data;
-			if ("target".equals(serviceSignedElement)) {
-				data = target.getBytes();
-			} else if ("SignatureRequest".equals(serviceSignedElement)) {
-				data = signatureRequest.getBytes();
-			} else if ("SignatureResponse".equals(serviceSignedElement)) {
-				data = signatureResponse.getBytes();
-			} else if ("SignatureCertificate".equals(serviceSignedElement)) {
-				data = encodedSignatureCertificate.getBytes();
-			} else {
-				throw new SecurityException("service signed unknown element: "
-						+ serviceSignedElement);
-			}
-			serviceSignature.update(data);
-		}
-
-		boolean result = serviceSignature.verify(serviceSignatureValue);
-		if (false == result) {
-			throw new SecurityException("service signature not valid");
-		}
-		if (null != this.serviceFingerprint) {
-			byte[] actualServiceFingerprint = DigestUtils
-					.sha(serviceCertificateData);
-			if (false == Arrays.equals(this.serviceFingerprint,
-					actualServiceFingerprint)) {
-				throw new SecurityException(
-						"service certificate fingerprint mismatch");
-			}
-		}
 	}
 }
