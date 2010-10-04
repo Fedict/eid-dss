@@ -28,6 +28,7 @@
 		<module>eid-dss-document-xml</module>
 		<module>eid-dss-document-odf</module>
 		<module>eid-dss-document-ooxml</module>
+		<module>eid-dss-document-zip</module>
 		<module>eid-dss-entity</module>
 		<module>eid-dss-model</module>
 		<module>eid-dss-ws</module>
