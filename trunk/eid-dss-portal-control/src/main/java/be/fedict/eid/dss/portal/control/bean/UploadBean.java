@@ -18,12 +18,19 @@
 
 package be.fedict.eid.dss.portal.control.bean;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
@@ -63,6 +70,48 @@ public class UploadBean implements Upload {
 		return "done";
 	}
 
+	private static final Map<String, String> supportedFileExtensions;
+
+	static {
+		supportedFileExtensions = new HashMap<String, String>();
+
+		// XML document container.
+		supportedFileExtensions.put("xml", "text/xml");
+
+		// Open Document Format
+		supportedFileExtensions.put("odt",
+				"application/vnd.oasis.opendocument.text");
+		supportedFileExtensions.put("ods",
+				"application/vnd.oasis.opendocument.spreadsheet");
+		supportedFileExtensions.put("odp",
+				"application/vnd.oasis.opendocument.presentation");
+		supportedFileExtensions.put("odg",
+				"application/vnd.oasis.opendocument.graphics");
+		supportedFileExtensions.put("odc",
+				"application/vnd.oasis.opendocument.chart");
+		supportedFileExtensions.put("odf",
+				"application/vnd.oasis.opendocument.formula");
+		supportedFileExtensions.put("odi",
+				"application/vnd.oasis.opendocument.image");
+
+		// Office OpenXML.
+		supportedFileExtensions
+				.put("docx",
+						"application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+		supportedFileExtensions
+				.put("xlsx",
+						"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		supportedFileExtensions
+				.put("pptx",
+						"application/vnd.openxmlformats-officedocument.presentationml.presentation");
+		supportedFileExtensions
+				.put("ppsx",
+						"application/vnd.openxmlformats-officedocument.presentationml.slideshow");
+
+		// ZIP containers.
+		supportedFileExtensions.put("zip", "application/zip");
+	}
+
 	@Override
 	public void listener(UploadEvent event) throws Exception {
 		this.log.debug("listener");
@@ -70,35 +119,23 @@ public class UploadBean implements Upload {
 		this.log.debug("filename: #0", item.getFileName());
 		this.filename = item.getFileName();
 		this.log.debug("content type: #0", item.getContentType());
-		this.contentType = item.getContentType();
+		String extension = FilenameUtils.getExtension(this.filename)
+				.toLowerCase();
+		this.contentType = supportedFileExtensions.get(extension);
 		if (null == this.contentType) {
-			if (this.filename.endsWith(".xml")) {
-				this.contentType = "text/xml";
-			} else if (this.filename.endsWith(".odt")) {
-				this.contentType = "application/vnd.oasis.opendocument.text";
-			} else if (this.filename.endsWith(".ods")) {
-				this.contentType = "application/vnd.oasis.opendocument.spreadsheet";
-			} else if (this.filename.endsWith(".odp")) {
-				this.contentType = "application/vnd.oasis.opendocument.presentation";
-			} else if (this.filename.endsWith(".odg")) {
-				this.contentType = "application/vnd.oasis.opendocument.graphics";
-			} else if (this.filename.endsWith(".odc")) {
-				this.contentType = "application/vnd.oasis.opendocument.chart";
-			} else if (this.filename.endsWith(".odf")) {
-				this.contentType = "application/vnd.oasis.opendocument.formula";
-			} else if (this.filename.endsWith(".odi")) {
-				this.contentType = "application/vnd.oasis.opendocument.image";
-			} else if (this.filename.endsWith(".docx")) {
-				this.contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-			} else if (this.filename.endsWith(".xlsx")) {
-				this.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-			} else if (this.filename.endsWith(".pptx")) {
-				this.contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-			} else if (this.filename.endsWith(".ppsx")) {
-				this.contentType = "application/vnd.openxmlformats-officedocument.presentationml.slideshow";
-			} else {
-				this.contentType = "application/octet-stream";
-			}
+			/*
+			 * Unsupported content-type is converted to a ZIP container.
+			 */
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
+			ZipEntry zipEntry = new ZipEntry(this.filename);
+			zipOutputStream.putNextEntry(zipEntry);
+			IOUtils.write(item.getData(), zipOutputStream);
+			zipOutputStream.close();
+			this.filename = FilenameUtils.getBaseName(this.filename) + ".zip";
+			this.document = outputStream.toByteArray();
+			this.contentType = "application/zip";
+			return;
 		}
 		this.log.debug("file size: #0", item.getFileSize());
 		this.log.debug("data bytes available: #0", (null != item.getData()));
