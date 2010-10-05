@@ -58,6 +58,8 @@ public class XMLViewBean implements XMLView {
 
 	private String role;
 
+	private boolean includeIdentity;
+
 	public String cancel() {
 		HttpSession httpSession = HttpSessionTemporaryDataStorage
 				.getHttpSession();
@@ -114,6 +116,17 @@ public class XMLViewBean implements XMLView {
 		DocumentRepository documentRepository = new DocumentRepository(
 				httpSession);
 		documentRepository.setRole(this.role);
+		documentRepository.setIncludeIdentity(this.includeIdentity);
 		return "sign";
+	}
+
+	@Override
+	public boolean getIncludeIdentity() {
+		return this.includeIdentity;
+	}
+
+	@Override
+	public void setIncludeIdentity(boolean includeIdentity) {
+		this.includeIdentity = includeIdentity;
 	}
 }

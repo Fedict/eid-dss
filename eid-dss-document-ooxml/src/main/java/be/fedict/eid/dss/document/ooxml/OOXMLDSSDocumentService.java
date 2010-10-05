@@ -53,7 +53,9 @@ import be.fedict.eid.applet.service.signer.ooxml.OOXMLSignatureVerifier;
 import be.fedict.eid.applet.service.signer.ooxml.OOXMLURIDereferencer;
 import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
+import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureService;
+import be.fedict.eid.applet.service.spi.SignatureServiceEx;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DocumentVisualization;
@@ -88,14 +90,14 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 		return null;
 	}
 
-	public SignatureService getSignatureService(
+	public SignatureServiceEx getSignatureService(
 			InputStream documentInputStream, TimeStampService timeStampService,
 			TimeStampServiceValidator timeStampServiceValidator,
 			RevocationDataService revocationDataService,
 			SignatureFacet signatureFacet, OutputStream documentOutputStream,
-			String role) throws Exception {
+			String role, IdentityDTO identity, byte[] photo) throws Exception {
 		return new OOXMLSignatureService(documentInputStream,
-				documentOutputStream, signatureFacet, role);
+				documentOutputStream, signatureFacet, role, identity, photo);
 	}
 
 	public List<SignatureInfo> verifySignatures(byte[] document)

@@ -27,7 +27,8 @@ import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
-import be.fedict.eid.applet.service.spi.SignatureService;
+import be.fedict.eid.applet.service.spi.IdentityDTO;
+import be.fedict.eid.applet.service.spi.SignatureServiceEx;
 
 /**
  * Document Service interface. A document service interface knows all about a
@@ -70,19 +71,18 @@ public interface DSSDocumentService extends Serializable {
 
 	/**
 	 * Factory for the signature service that will be used to signed the
-	 * document.
-	 * 
-	 * @param role
+	 * document. A new instance is being created for both preSign and postSign
+	 * phases.
 	 * 
 	 * @return
 	 * @throws Exception
 	 */
-	SignatureService getSignatureService(InputStream documentInputStream,
+	SignatureServiceEx getSignatureService(InputStream documentInputStream,
 			TimeStampService timeStampService,
 			TimeStampServiceValidator timeStampServiceValidator,
 			RevocationDataService revocationDataService,
 			SignatureFacet signatureFacet, OutputStream documentOutputStream,
-			String role) throws Exception;
+			String role, IdentityDTO identity, byte[] photo) throws Exception;
 
 	/**
 	 * Verifies the signatures on the given document.
