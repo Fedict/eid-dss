@@ -72,6 +72,8 @@ public interface DSSDocumentService extends Serializable {
 	 * Factory for the signature service that will be used to signed the
 	 * document.
 	 * 
+	 * @param role
+	 * 
 	 * @return
 	 * @throws Exception
 	 */
@@ -79,8 +81,8 @@ public interface DSSDocumentService extends Serializable {
 			TimeStampService timeStampService,
 			TimeStampServiceValidator timeStampServiceValidator,
 			RevocationDataService revocationDataService,
-			SignatureFacet signatureFacet, OutputStream documentOutputStream)
-			throws Exception;
+			SignatureFacet signatureFacet, OutputStream documentOutputStream,
+			String role) throws Exception;
 
 	/**
 	 * Verifies the signatures on the given document.

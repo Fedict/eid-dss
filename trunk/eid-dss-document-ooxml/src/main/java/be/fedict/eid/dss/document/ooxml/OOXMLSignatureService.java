@@ -31,6 +31,7 @@ import org.apache.commons.io.IOUtils;
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
+import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
 import be.fedict.eid.applet.service.signer.ooxml.AbstractOOXMLSignatureService;
 import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
 
@@ -43,8 +44,8 @@ public class OOXMLSignatureService extends AbstractOOXMLSignatureService {
 	private final File tmpFile;
 
 	public OOXMLSignatureService(InputStream documentInputStream,
-			OutputStream documentOutputStream, SignatureFacet signatureFacet)
-			throws IOException {
+			OutputStream documentOutputStream, SignatureFacet signatureFacet,
+			String role) throws IOException {
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		this.documentOutputStream = documentOutputStream;
 		this.tmpFile = File.createTempFile("eid-dss-", ".ooxml");
@@ -52,6 +53,10 @@ public class OOXMLSignatureService extends AbstractOOXMLSignatureService {
 		fileOutputStream = new FileOutputStream(this.tmpFile);
 		IOUtils.copy(documentInputStream, fileOutputStream);
 		addSignatureFacet(signatureFacet);
+
+		XAdESSignatureFacet xadesSignatureFacet = super
+				.getXAdESSignatureFacet();
+		xadesSignatureFacet.setRole(role);
 	}
 
 	@Override

@@ -25,8 +25,24 @@ public interface XMLView {
 
 	public static final String LANGUAGE_SESSION_ATTRIBUTE = "Language";
 
-	// actions
+	/*
+	 * Actions.
+	 */
 	String cancel();
+	
+	String sign();
 
 	void initLanguage();
+
+	/*
+	 * Accessors
+	 */
+	String getRole();
+
+	void setRole(String role);
+
+	/*
+	 * Lifecycle.
+	 */
+	void destroy();
 }

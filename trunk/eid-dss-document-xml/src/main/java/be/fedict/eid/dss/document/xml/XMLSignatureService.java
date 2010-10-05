@@ -56,14 +56,18 @@ public class XMLSignatureService extends AbstractXmlSignatureService {
 	public XMLSignatureService(TimeStampServiceValidator validator,
 			RevocationDataService revocationDataService,
 			SignatureFacet signatureFacet, InputStream documentInputStream,
-			OutputStream documentOutputStream, TimeStampService timeStampService) {
+			OutputStream documentOutputStream,
+			TimeStampService timeStampService, String role) {
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		this.documentInputStream = documentInputStream;
 		this.documentOutputStream = documentOutputStream;
 
 		addSignatureFacet(new CoSignatureFacet("SHA-512"));
 		addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
-		addSignatureFacet(new XAdESSignatureFacet("SHA-512"));
+		XAdESSignatureFacet xadesSignatureFacet = new XAdESSignatureFacet(
+				"SHA-512");
+		xadesSignatureFacet.setRole(role);
+		addSignatureFacet(xadesSignatureFacet);
 		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
 				revocationDataService, "SHA-512"));
 		addSignatureFacet(signatureFacet);

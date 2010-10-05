@@ -55,6 +55,9 @@ public class DocumentRepository {
 	public static final String SIGNER_CERTIFICATE_SESSION_ATTRIBUTE = DocumentRepository.class
 			.getName() + ".certificate";
 
+	public static final String ROLE_SESSION_ATTRIBUTE = DocumentRepository.class
+			.getName() + ".role";
+
 	public final HttpSession httpSession;
 
 	public DocumentRepository(HttpSession httpSession) {
@@ -67,6 +70,7 @@ public class DocumentRepository {
 		this.httpSession.removeAttribute(TARGET_SESSION_ATTRIBUTE);
 		this.httpSession.removeAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE);
 		this.httpSession.removeAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE);
+		this.httpSession.removeAttribute(ROLE_SESSION_ATTRIBUTE);
 	}
 
 	public void setDocument(byte[] document) {
@@ -132,5 +136,15 @@ public class DocumentRepository {
 		X509Certificate signerCertificate = (X509Certificate) this.httpSession
 				.getAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE);
 		return signerCertificate;
+	}
+
+	public void setRole(String role) {
+		this.httpSession.setAttribute(ROLE_SESSION_ATTRIBUTE, role);
+	}
+
+	public String getRole() {
+		String role = (String) this.httpSession
+				.getAttribute(ROLE_SESSION_ATTRIBUTE);
+		return role;
 	}
 }

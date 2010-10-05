@@ -85,10 +85,11 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 			InputStream documentInputStream, TimeStampService timeStampService,
 			TimeStampServiceValidator timeStampServiceValidator,
 			RevocationDataService revocationDataService,
-			SignatureFacet signatureFacet, OutputStream documentOutputStream)
-			throws Exception {
+			SignatureFacet signatureFacet, OutputStream documentOutputStream,
+			String role) throws Exception {
 		return new ZIPSignatureService(documentInputStream, signatureFacet,
-				documentOutputStream, revocationDataService, timeStampService);
+				documentOutputStream, revocationDataService, timeStampService,
+				role);
 	}
 
 	public List<SignatureInfo> verifySignatures(byte[] document)
