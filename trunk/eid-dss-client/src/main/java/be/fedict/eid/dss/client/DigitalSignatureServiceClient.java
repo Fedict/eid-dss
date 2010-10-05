@@ -58,9 +58,12 @@ import be.fedict.eid.dss.ws.jaxb.dss.ResponseBaseType;
 import be.fedict.eid.dss.ws.jaxb.dss.Result;
 import be.fedict.eid.dss.ws.jaxb.dss.VerifyRequest;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.CertificateValidityType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.DetailedSignatureReportType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.IndividualReportType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.PropertiesType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.ReturnVerificationReport;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.SignedObjectIdentifierType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.SignerRoleType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.VerificationReportType;
 
 /**
@@ -249,16 +252,24 @@ public class DigitalSignatureServiceClient {
 						List<Object> details = individualReport.getDetails()
 								.getAny();
 						X509Certificate signer = null;
+						String role = null;
 						for (Object detail : details) {
 							if (detail instanceof JAXBElement<?>) {
 								JAXBElement<?> detailElement = (JAXBElement<?>) detail;
 								if (new QName(
 										DigitalSignatureServiceConstants.VR_NAMESPACE,
-										"IndividualCertificateReport")
+										"DetailedSignatureReport")
 										.equals(detailElement.getName())) {
-									CertificateValidityType individualCertificateReport = (CertificateValidityType) detailElement
+									DetailedSignatureReportType detailedSignatureReport = (DetailedSignatureReportType) detailElement
 											.getValue();
-									byte[] encodedSigner = individualCertificateReport
+
+									List<CertificateValidityType> certificateValidities = detailedSignatureReport
+											.getCertificatePathValidity()
+											.getPathValidityDetail()
+											.getCertificateValidity();
+									CertificateValidityType certificateValidity = certificateValidities
+											.get(0);
+									byte[] encodedSigner = certificateValidity
 											.getCertificateValue();
 									try {
 										signer = (X509Certificate) this.certificateFactory
@@ -269,6 +280,21 @@ public class DigitalSignatureServiceClient {
 												"cert decoding error: "
 														+ e.getMessage(), e);
 									}
+
+									PropertiesType properties = detailedSignatureReport
+											.getProperties();
+									if (null != properties) {
+										SignerRoleType signerRole = properties
+												.getSignedProperties()
+												.getSignedSignatureProperties()
+												.getSignerRole();
+										if (null != signerRole) {
+											role = (String) signerRole
+													.getClaimedRoles()
+													.getClaimedRole().get(0)
+													.getContent().get(0);
+										}
+									}
 								}
 							}
 						}
@@ -277,7 +303,7 @@ public class DigitalSignatureServiceClient {
 									"no signer certificate present in verification report");
 						}
 						SignatureInfo signatureInfo = new SignatureInfo(signer,
-								signingTime);
+								signingTime, role);
 						signers.add(signatureInfo);
 					}
 				}

@@ -33,15 +33,19 @@ public class SignatureInfo {
 
 	private final Date signingTime;
 
+	private final String role;
+
 	/**
 	 * Main constructor.
 	 * 
 	 * @param signer
 	 * @param signingTime
+	 * @param role
 	 */
-	public SignatureInfo(X509Certificate signer, Date signingTime) {
+	public SignatureInfo(X509Certificate signer, Date signingTime, String role) {
 		this.signer = signer;
 		this.signingTime = signingTime;
+		this.role = role;
 	}
 
 	public X509Certificate getSigner() {
@@ -50,5 +54,9 @@ public class SignatureInfo {
 
 	public Date getSigningTime() {
 		return this.signingTime;
+	}
+
+	public String getRole() {
+		return this.role;
 	}
 }

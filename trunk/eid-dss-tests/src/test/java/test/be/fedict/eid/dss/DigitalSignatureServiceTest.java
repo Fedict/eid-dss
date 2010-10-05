@@ -212,7 +212,7 @@ public class DigitalSignatureServiceTest {
 				.toString().contains("Frank Cornelis"));
 		LOG.debug("signing time: " + signatureInfo.getSigningTime());
 	}
-	
+
 	@Test
 	public void testClaimedRole() throws Exception {
 		// setup
@@ -235,6 +235,8 @@ public class DigitalSignatureServiceTest {
 		assertTrue(signatureInfo.getSigner().getSubjectX500Principal()
 				.toString().contains("Frank Cornelis"));
 		LOG.debug("signing time: " + signatureInfo.getSigningTime());
+		LOG.debug("role: " + signatureInfo.getRole());
+		assertEquals("eID Architect", signatureInfo.getRole());
 	}
 
 	private void signDocument(Document document) throws IOException,

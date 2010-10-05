@@ -51,15 +51,21 @@ import be.fedict.eid.dss.ws.jaxb.dss.ObjectFactory;
 import be.fedict.eid.dss.ws.jaxb.dss.ResponseBaseType;
 import be.fedict.eid.dss.ws.jaxb.dss.Result;
 import be.fedict.eid.dss.ws.jaxb.dss.VerifyRequest;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.CertificatePathValidityType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.CertificatePathValidityVerificationDetailType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.CertificateStatusType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.CertificateValidityType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.DetailedSignatureReportType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.IndividualReportType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.PropertiesType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.SignatureValidityType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.SignedObjectIdentifierType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.SignedPropertiesType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.SignedSignaturePropertiesType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.SignerRoleType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.VerificationReportType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.VerificationResultType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.xades.ClaimedRolesListType;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.xmldsig.X509IssuerSerialType;
 
 import com.sun.xml.ws.developer.UsesJAXBContext;
@@ -89,6 +95,7 @@ public class DigitalSignatureServicePortImpl implements
 	private final be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory vrObjectFactory;
 	private final be.fedict.eid.dss.ws.profile.vr.jaxb.dss.ObjectFactory vrDssObjectFactory;
 	private final be.fedict.eid.dss.ws.profile.vr.jaxb.xmldsig.ObjectFactory vrXmldsigObjectFactory;
+	private final be.fedict.eid.dss.ws.profile.vr.jaxb.xades.ObjectFactory vrXadesObjectFactory;
 
 	private final Marshaller vrMarshaller;
 	private final DocumentBuilder documentBuilder;
@@ -100,6 +107,7 @@ public class DigitalSignatureServicePortImpl implements
 		this.vrObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory();
 		this.vrDssObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.dss.ObjectFactory();
 		this.vrXmldsigObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.xmldsig.ObjectFactory();
+		this.vrXadesObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.xades.ObjectFactory();
 
 		try {
 			JAXBContext vrJAXBContext = JAXBContext
@@ -256,49 +264,21 @@ public class DigitalSignatureServicePortImpl implements
 				be.fedict.eid.dss.ws.profile.vr.jaxb.dss.AnyType details = this.vrDssObjectFactory
 						.createAnyType();
 				individualReport.setDetails(details);
-				CertificateValidityType individualCertificateReport = this.vrObjectFactory
-						.createCertificateValidityType();
+
+				DetailedSignatureReportType detailedSignatureReport = this.vrObjectFactory
+						.createDetailedSignatureReportType();
 				details.getAny()
 						.add(this.vrObjectFactory
-								.createIndividualCertificateReport(individualCertificateReport));
-				X509IssuerSerialType certificateIdentifier = this.vrXmldsigObjectFactory
-						.createX509IssuerSerialType();
-				individualCertificateReport
-						.setCertificateIdentifier(certificateIdentifier);
-				certificateIdentifier.setX509IssuerName(signerCertificate
-						.getIssuerX500Principal().toString());
-				certificateIdentifier.setX509SerialNumber(signerCertificate
-						.getSerialNumber());
-				individualCertificateReport.setSubject(signerCertificate
-						.getSubjectX500Principal().toString());
-				VerificationResultType chainingOkVerificationResult = this.vrObjectFactory
+								.createDetailedSignatureReport(detailedSignatureReport));
+				VerificationResultType formatOKVerificationResult = this.vrObjectFactory
 						.createVerificationResultType();
-				individualCertificateReport
-						.setChainingOK(chainingOkVerificationResult);
-				chainingOkVerificationResult
+				formatOKVerificationResult
 						.setResultMajor(DigitalSignatureServiceConstants.VR_RESULT_MAJOR_VALID);
-				VerificationResultType validityPeriodOkVerificationResult = this.vrObjectFactory
-						.createVerificationResultType();
-				individualCertificateReport
-						.setValidityPeriodOK(validityPeriodOkVerificationResult);
-				validityPeriodOkVerificationResult
-						.setResultMajor(DigitalSignatureServiceConstants.VR_RESULT_MAJOR_VALID);
-				VerificationResultType extensionsOkVerificationResult = this.vrObjectFactory
-						.createVerificationResultType();
-				individualCertificateReport
-						.setExtensionsOK(extensionsOkVerificationResult);
-				extensionsOkVerificationResult
-						.setResultMajor(DigitalSignatureServiceConstants.VR_RESULT_MAJOR_VALID);
-				try {
-					individualCertificateReport
-							.setCertificateValue(signerCertificate.getEncoded());
-				} catch (CertificateEncodingException e) {
-					throw new RuntimeException("X509 encoding error: "
-							+ e.getMessage(), e);
-				}
+				detailedSignatureReport.setFormatOK(formatOKVerificationResult);
+
 				SignatureValidityType signatureOkSignatureValidity = this.vrObjectFactory
 						.createSignatureValidityType();
-				individualCertificateReport
+				detailedSignatureReport
 						.setSignatureOK(signatureOkSignatureValidity);
 				VerificationResultType sigMathOkVerificationResult = this.vrObjectFactory
 						.createVerificationResultType();
@@ -306,10 +286,101 @@ public class DigitalSignatureServicePortImpl implements
 						.setSigMathOK(sigMathOkVerificationResult);
 				sigMathOkVerificationResult
 						.setResultMajor(DigitalSignatureServiceConstants.VR_RESULT_MAJOR_VALID);
+
+				if (null != signatureInfo.getRole()) {
+					PropertiesType properties = this.vrObjectFactory
+							.createPropertiesType();
+					detailedSignatureReport.setProperties(properties);
+					SignedPropertiesType vrSignedProperties = this.vrObjectFactory
+							.createSignedPropertiesType();
+					properties.setSignedProperties(vrSignedProperties);
+					SignedSignaturePropertiesType vrSignedSignatureProperties = this.vrObjectFactory
+							.createSignedSignaturePropertiesType();
+					vrSignedProperties
+							.setSignedSignatureProperties(vrSignedSignatureProperties);
+					vrSignedSignatureProperties
+							.setSigningTime(this.datatypeFactory
+									.newXMLGregorianCalendar(calendar));
+					SignerRoleType signerRole = this.vrObjectFactory
+							.createSignerRoleType();
+					vrSignedSignatureProperties.setSignerRole(signerRole);
+					ClaimedRolesListType claimedRolesList = this.vrXadesObjectFactory
+							.createClaimedRolesListType();
+					signerRole.setClaimedRoles(claimedRolesList);
+					be.fedict.eid.dss.ws.profile.vr.jaxb.xades.AnyType claimedRoleAny = this.vrXadesObjectFactory
+							.createAnyType();
+					claimedRolesList.getClaimedRole().add(claimedRoleAny);
+					claimedRoleAny.getContent().add(signatureInfo.getRole());
+				}
+
+				CertificatePathValidityType certificatePathValidity = this.vrObjectFactory
+						.createCertificatePathValidityType();
+				detailedSignatureReport
+						.setCertificatePathValidity(certificatePathValidity);
+
+				VerificationResultType certPathVerificationResult = this.vrObjectFactory
+						.createVerificationResultType();
+				certPathVerificationResult
+						.setResultMajor(DigitalSignatureServiceConstants.VR_RESULT_MAJOR_VALID);
+				certificatePathValidity
+						.setPathValiditySummary(certPathVerificationResult);
+
+				X509IssuerSerialType certificateIdentifier = this.vrXmldsigObjectFactory
+						.createX509IssuerSerialType();
+				certificatePathValidity
+						.setCertificateIdentifier(certificateIdentifier);
+				certificateIdentifier.setX509IssuerName(signerCertificate
+						.getIssuerX500Principal().toString());
+				certificateIdentifier.setX509SerialNumber(signerCertificate
+						.getSerialNumber());
+
+				CertificatePathValidityVerificationDetailType certificatePathValidityVerificationDetail = this.vrObjectFactory
+						.createCertificatePathValidityVerificationDetailType();
+				certificatePathValidity
+						.setPathValidityDetail(certificatePathValidityVerificationDetail);
+				CertificateValidityType certificateValidity = this.vrObjectFactory
+						.createCertificateValidityType();
+				certificatePathValidityVerificationDetail
+						.getCertificateValidity().add(certificateValidity);
+				certificateValidity
+						.setCertificateIdentifier(certificateIdentifier);
+				certificateValidity.setSubject(signerCertificate
+						.getSubjectX500Principal().toString());
+
+				VerificationResultType chainingOkVerificationResult = this.vrObjectFactory
+						.createVerificationResultType();
+				certificateValidity.setChainingOK(chainingOkVerificationResult);
+				chainingOkVerificationResult
+						.setResultMajor(DigitalSignatureServiceConstants.VR_RESULT_MAJOR_VALID);
+
+				VerificationResultType validityPeriodOkVerificationResult = this.vrObjectFactory
+						.createVerificationResultType();
+				certificateValidity
+						.setValidityPeriodOK(validityPeriodOkVerificationResult);
+				validityPeriodOkVerificationResult
+						.setResultMajor(DigitalSignatureServiceConstants.VR_RESULT_MAJOR_VALID);
+
+				VerificationResultType extensionsOkVerificationResult = this.vrObjectFactory
+						.createVerificationResultType();
+				certificateValidity
+						.setExtensionsOK(extensionsOkVerificationResult);
+				extensionsOkVerificationResult
+						.setResultMajor(DigitalSignatureServiceConstants.VR_RESULT_MAJOR_VALID);
+
+				try {
+					certificateValidity.setCertificateValue(signerCertificate
+							.getEncoded());
+				} catch (CertificateEncodingException e) {
+					throw new RuntimeException("X509 encoding error: "
+							+ e.getMessage(), e);
+				}
+
+				certificateValidity
+						.setSignatureOK(signatureOkSignatureValidity);
+
 				CertificateStatusType certificateStatus = this.vrObjectFactory
 						.createCertificateStatusType();
-				individualCertificateReport
-						.setCertificateStatus(certificateStatus);
+				certificateValidity.setCertificateStatus(certificateStatus);
 				VerificationResultType certStatusOkVerificationResult = this.vrObjectFactory
 						.createVerificationResultType();
 				certificateStatus
