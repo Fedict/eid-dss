@@ -58,6 +58,9 @@ public class DocumentRepository {
 	public static final String ROLE_SESSION_ATTRIBUTE = DocumentRepository.class
 			.getName() + ".role";
 
+	public static final String INCLUDE_IDENTITY_SESSION_ATTRIBUTE = DocumentRepository.class
+			.getName() + ".includeIdentity";
+
 	public final HttpSession httpSession;
 
 	public DocumentRepository(HttpSession httpSession) {
@@ -71,6 +74,7 @@ public class DocumentRepository {
 		this.httpSession.removeAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE);
 		this.httpSession.removeAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE);
 		this.httpSession.removeAttribute(ROLE_SESSION_ATTRIBUTE);
+		this.httpSession.removeAttribute(INCLUDE_IDENTITY_SESSION_ATTRIBUTE);
 	}
 
 	public void setDocument(byte[] document) {
@@ -146,5 +150,16 @@ public class DocumentRepository {
 		String role = (String) this.httpSession
 				.getAttribute(ROLE_SESSION_ATTRIBUTE);
 		return role;
+	}
+
+	public void setIncludeIdentity(boolean includeIdentity) {
+		this.httpSession.setAttribute(INCLUDE_IDENTITY_SESSION_ATTRIBUTE,
+				(Boolean) includeIdentity);
+	}
+
+	public boolean getIncludeIdentity() {
+		boolean includeIdentity = (Boolean) this.httpSession
+				.getAttribute(INCLUDE_IDENTITY_SESSION_ATTRIBUTE);
+		return includeIdentity;
 	}
 }

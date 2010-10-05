@@ -44,7 +44,9 @@ import be.fedict.eid.applet.service.signer.odf.ODFURIDereferencer;
 import be.fedict.eid.applet.service.signer.odf.ODFUtil;
 import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
+import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureService;
+import be.fedict.eid.applet.service.spi.SignatureServiceEx;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DocumentVisualization;
@@ -82,16 +84,16 @@ public class ODFDSSDocumentService implements DSSDocumentService {
 		return null;
 	}
 
-	public SignatureService getSignatureService(
+	public SignatureServiceEx getSignatureService(
 			InputStream documentInputStream, TimeStampService timeStampService,
 			TimeStampServiceValidator timeStampServiceValidator,
 			RevocationDataService revocationDataService,
 			SignatureFacet signatureFacet, OutputStream documentOutputStream,
-			String role) throws Exception {
+			String role, IdentityDTO identity, byte[] photo) throws Exception {
 		LOG.debug("getSignatureService");
 		return new ODFSignatureService(timeStampServiceValidator,
 				revocationDataService, signatureFacet, documentInputStream,
-				documentOutputStream, timeStampService, role);
+				documentOutputStream, timeStampService, role, identity, photo);
 	}
 
 	public List<SignatureInfo> verifySignatures(byte[] document)

@@ -82,6 +82,10 @@
 		<servlet-name>AppletServiceServlet</servlet-name>
 		<servlet-class>be.fedict.eid.applet.service.AppletServiceServlet</servlet-class>
 		<init-param>
+			<param-name>IdentityService</param-name>
+			<param-value>fedict/eid/dss/AppletIdentityServiceBean</param-value>
+		</init-param>
+		<init-param>
 			<param-name>SignatureService</param-name>
 			<param-value>fedict/eid/dss/XMLSignatureServiceBean</param-value>
 		</init-param>

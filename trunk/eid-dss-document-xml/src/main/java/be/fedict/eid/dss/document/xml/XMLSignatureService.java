@@ -21,6 +21,9 @@ package be.fedict.eid.dss.document.xml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -32,12 +35,17 @@ import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.facets.CoSignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.KeyInfoSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
 import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
+import be.fedict.eid.applet.service.spi.AddressDTO;
+import be.fedict.eid.applet.service.spi.DigestInfo;
+import be.fedict.eid.applet.service.spi.IdentityDTO;
+import be.fedict.eid.applet.service.spi.SignatureServiceEx;
 
 /**
  * XML signature service. Will create XAdES-X-L v1.4.1 co-signatures.
@@ -45,7 +53,8 @@ import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
  * @author Frank Cornelis
  * 
  */
-public class XMLSignatureService extends AbstractXmlSignatureService {
+public class XMLSignatureService extends AbstractXmlSignatureService implements
+		SignatureServiceEx {
 
 	private final TemporaryDataStorage temporaryDataStorage;
 
@@ -57,7 +66,8 @@ public class XMLSignatureService extends AbstractXmlSignatureService {
 			RevocationDataService revocationDataService,
 			SignatureFacet signatureFacet, InputStream documentInputStream,
 			OutputStream documentOutputStream,
-			TimeStampService timeStampService, String role) {
+			TimeStampService timeStampService, String role,
+			IdentityDTO identity, byte[] photo) {
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		this.documentInputStream = documentInputStream;
 		this.documentOutputStream = documentOutputStream;
@@ -73,6 +83,12 @@ public class XMLSignatureService extends AbstractXmlSignatureService {
 		addSignatureFacet(signatureFacet);
 
 		setSignatureNamespacePrefix("ds");
+
+		if (null != identity) {
+			IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
+					identity, photo, "SHA-1");
+			addSignatureFacet(identitySignatureFacet);
+		}
 	}
 
 	@Override
@@ -99,5 +115,12 @@ public class XMLSignatureService extends AbstractXmlSignatureService {
 			throws ParserConfigurationException, IOException, SAXException {
 		Document document = loadDocument(this.documentInputStream);
 		return document;
+	}
+
+	public DigestInfo preSign(List<DigestInfo> digestInfos,
+			List<X509Certificate> signingCertificateChain,
+			IdentityDTO identity, AddressDTO address, byte[] photo)
+			throws NoSuchAlgorithmException {
+		return super.preSign(digestInfos, signingCertificateChain);
 	}
 }

@@ -28,10 +28,15 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.applet.service.signer.odf.ODFUtil;
 
 public class ZIPSignatureOutputStream extends ByteArrayOutputStream {
+
+	private static final Log LOG = LogFactory
+			.getLog(ZIPSignatureOutputStream.class);
 
 	private final File originalZipFile;
 
@@ -46,7 +51,9 @@ public class ZIPSignatureOutputStream extends ByteArrayOutputStream {
 	@Override
 	public void close() throws IOException {
 		super.close();
+
 		byte[] signatureData = toByteArray();
+
 		/*
 		 * Copy the original ZIP content.
 		 */
@@ -58,14 +65,17 @@ public class ZIPSignatureOutputStream extends ByteArrayOutputStream {
 		while (null != (zipEntry = zipInputStream.getNextEntry())) {
 			if (!zipEntry.getName().equals(ODFUtil.SIGNATURE_FILE)) {
 				zipOutputStream.putNextEntry(zipEntry);
+				LOG.debug("copying " + zipEntry.getName());
 				IOUtils.copy(zipInputStream, zipOutputStream);
 			}
 		}
 		zipInputStream.close();
+
 		/*
 		 * Add the XML signature file to the ZIP package.
 		 */
 		zipEntry = new ZipEntry(ODFUtil.SIGNATURE_FILE);
+		LOG.debug("writing " + zipEntry.getName());
 		zipOutputStream.putNextEntry(zipEntry);
 		IOUtils.write(signatureData, zipOutputStream);
 		zipOutputStream.close();

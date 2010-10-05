@@ -29,7 +29,7 @@ public interface XMLView {
 	 * Actions.
 	 */
 	String cancel();
-	
+
 	String sign();
 
 	void initLanguage();
@@ -40,6 +40,10 @@ public interface XMLView {
 	String getRole();
 
 	void setRole(String role);
+
+	boolean getIncludeIdentity();
+
+	void setIncludeIdentity(boolean includeIdentity);
 
 	/*
 	 * Lifecycle.

@@ -24,6 +24,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -40,12 +43,17 @@ import be.fedict.eid.applet.service.signer.AbstractXmlSignatureService;
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
+import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.KeyInfoSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
 import be.fedict.eid.applet.service.signer.odf.ODFUtil;
 import be.fedict.eid.applet.service.signer.time.TimeStampService;
+import be.fedict.eid.applet.service.spi.AddressDTO;
+import be.fedict.eid.applet.service.spi.DigestInfo;
+import be.fedict.eid.applet.service.spi.IdentityDTO;
+import be.fedict.eid.applet.service.spi.SignatureServiceEx;
 import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
 
 /**
@@ -55,7 +63,8 @@ import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
  * @author Frank Cornelis
  * 
  */
-public class ZIPSignatureService extends AbstractXmlSignatureService {
+public class ZIPSignatureService extends AbstractXmlSignatureService implements
+		SignatureServiceEx {
 
 	private final TemporaryDataStorage temporaryDataStorage;
 
@@ -66,7 +75,8 @@ public class ZIPSignatureService extends AbstractXmlSignatureService {
 	public ZIPSignatureService(InputStream documentInputStream,
 			SignatureFacet signatureFacet, OutputStream documentOutputStream,
 			RevocationDataService revocationDataService,
-			TimeStampService timeStampService, String role) throws IOException {
+			TimeStampService timeStampService, String role,
+			IdentityDTO identity, byte[] photo) throws IOException {
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		this.documentOutputStream = documentOutputStream;
 
@@ -84,6 +94,12 @@ public class ZIPSignatureService extends AbstractXmlSignatureService {
 		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
 				revocationDataService, "SHA-512"));
 		addSignatureFacet(signatureFacet);
+
+		if (null != identity) {
+			IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
+					identity, photo, "SHA-1");
+			addSignatureFacet(identitySignatureFacet);
+		}
 	}
 
 	public String getFilesDigestAlgorithm() {
@@ -143,5 +159,12 @@ public class ZIPSignatureService extends AbstractXmlSignatureService {
 	@Override
 	protected URIDereferencer getURIDereferencer() {
 		return new ZIPURIDereferencer(this.tmpFile);
+	}
+
+	public DigestInfo preSign(List<DigestInfo> digestInfos,
+			List<X509Certificate> signingCertificateChain,
+			IdentityDTO identity, AddressDTO address, byte[] photo)
+			throws NoSuchAlgorithmException {
+		return super.preSign(digestInfos, signingCertificateChain);
 	}
 }

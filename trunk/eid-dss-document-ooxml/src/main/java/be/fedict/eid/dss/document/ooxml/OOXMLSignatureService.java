@@ -25,17 +25,26 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
+import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
 import be.fedict.eid.applet.service.signer.ooxml.AbstractOOXMLSignatureService;
+import be.fedict.eid.applet.service.spi.AddressDTO;
+import be.fedict.eid.applet.service.spi.DigestInfo;
+import be.fedict.eid.applet.service.spi.IdentityDTO;
+import be.fedict.eid.applet.service.spi.SignatureServiceEx;
 import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
 
-public class OOXMLSignatureService extends AbstractOOXMLSignatureService {
+public class OOXMLSignatureService extends AbstractOOXMLSignatureService
+		implements SignatureServiceEx {
 
 	private final TemporaryDataStorage temporaryDataStorage;
 
@@ -45,7 +54,7 @@ public class OOXMLSignatureService extends AbstractOOXMLSignatureService {
 
 	public OOXMLSignatureService(InputStream documentInputStream,
 			OutputStream documentOutputStream, SignatureFacet signatureFacet,
-			String role) throws IOException {
+			String role, IdentityDTO identity, byte[] photo) throws IOException {
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		this.documentOutputStream = documentOutputStream;
 		this.tmpFile = File.createTempFile("eid-dss-", ".ooxml");
@@ -57,6 +66,12 @@ public class OOXMLSignatureService extends AbstractOOXMLSignatureService {
 		XAdESSignatureFacet xadesSignatureFacet = super
 				.getXAdESSignatureFacet();
 		xadesSignatureFacet.setRole(role);
+
+		if (null != identity) {
+			IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
+					identity, photo, "SHA-1");
+			addSignatureFacet(identitySignatureFacet);
+		}
 	}
 
 	@Override
@@ -83,5 +98,12 @@ public class OOXMLSignatureService extends AbstractOOXMLSignatureService {
 	@Override
 	protected TemporaryDataStorage getTemporaryDataStorage() {
 		return this.temporaryDataStorage;
+	}
+
+	public DigestInfo preSign(List<DigestInfo> digestInfos,
+			List<X509Certificate> signingCertificateChain,
+			IdentityDTO identity, AddressDTO address, byte[] photo)
+			throws NoSuchAlgorithmException {
+		return super.preSign(digestInfos, signingCertificateChain);
 	}
 }
