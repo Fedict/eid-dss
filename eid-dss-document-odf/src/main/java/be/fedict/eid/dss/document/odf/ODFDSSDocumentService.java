@@ -86,12 +86,12 @@ public class ODFDSSDocumentService implements DSSDocumentService {
 			InputStream documentInputStream, TimeStampService timeStampService,
 			TimeStampServiceValidator timeStampServiceValidator,
 			RevocationDataService revocationDataService,
-			SignatureFacet signatureFacet, OutputStream documentOutputStream)
-			throws Exception {
+			SignatureFacet signatureFacet, OutputStream documentOutputStream,
+			String role) throws Exception {
 		LOG.debug("getSignatureService");
 		return new ODFSignatureService(timeStampServiceValidator,
 				revocationDataService, signatureFacet, documentInputStream,
-				documentOutputStream, timeStampService);
+				documentOutputStream, timeStampService, role);
 	}
 
 	public List<SignatureInfo> verifySignatures(byte[] document)

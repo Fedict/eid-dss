@@ -35,6 +35,9 @@
 							<f:convertDateTime type="both" dateStyle="full" timeStyle="long"
 								timeZone="Europe/Brussels" />
 						</h:outputText>
+
+						<h:outputText value="Role:" rendered="#{not empty row.role}" />
+						<h:outputText value="#{row.role}" rendered="#{not empty row.role}" />
 					</h:panelGrid>
 				</rich:panel>
 				<f:facet name="footer">

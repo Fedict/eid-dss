@@ -31,6 +31,7 @@ import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
+import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
 import be.fedict.eid.applet.service.signer.odf.AbstractODFSignatureService;
 import be.fedict.eid.applet.service.signer.time.TimeStampService;
@@ -49,8 +50,8 @@ public class ODFSignatureService extends AbstractODFSignatureService {
 			TimeStampServiceValidator timeStampServiceValidator,
 			RevocationDataService revocationDataService,
 			SignatureFacet signatureFacet, InputStream documentInputStream,
-			OutputStream documentOutputStream, TimeStampService timeStampService)
-			throws Exception {
+			OutputStream documentOutputStream,
+			TimeStampService timeStampService, String role) throws Exception {
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		this.documentOutputStream = documentOutputStream;
 		this.tmpFile = File.createTempFile("eid-dss-", ".odf");
@@ -60,6 +61,10 @@ public class ODFSignatureService extends AbstractODFSignatureService {
 		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
 				revocationDataService, "SHA-512"));
 		addSignatureFacet(signatureFacet);
+
+		XAdESSignatureFacet xadesSignatureFacet = super
+				.getXAdESSignatureFacet();
+		xadesSignatureFacet.setRole(role);
 	}
 
 	@Override

@@ -92,10 +92,10 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 			InputStream documentInputStream, TimeStampService timeStampService,
 			TimeStampServiceValidator timeStampServiceValidator,
 			RevocationDataService revocationDataService,
-			SignatureFacet signatureFacet, OutputStream documentOutputStream)
-			throws Exception {
+			SignatureFacet signatureFacet, OutputStream documentOutputStream,
+			String role) throws Exception {
 		return new OOXMLSignatureService(documentInputStream,
-				documentOutputStream, signatureFacet);
+				documentOutputStream, signatureFacet, role);
 	}
 
 	public List<SignatureInfo> verifySignatures(byte[] document)

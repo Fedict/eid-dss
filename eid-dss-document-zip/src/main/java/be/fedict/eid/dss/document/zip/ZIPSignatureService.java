@@ -66,7 +66,7 @@ public class ZIPSignatureService extends AbstractXmlSignatureService {
 	public ZIPSignatureService(InputStream documentInputStream,
 			SignatureFacet signatureFacet, OutputStream documentOutputStream,
 			RevocationDataService revocationDataService,
-			TimeStampService timeStampService) throws IOException {
+			TimeStampService timeStampService, String role) throws IOException {
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		this.documentOutputStream = documentOutputStream;
 
@@ -76,7 +76,10 @@ public class ZIPSignatureService extends AbstractXmlSignatureService {
 		IOUtils.copy(documentInputStream, fileOutputStream);
 
 		addSignatureFacet(new ZIPSignatureFacet(this.tmpFile));
-		addSignatureFacet(new XAdESSignatureFacet("SHA-512"));
+		XAdESSignatureFacet xadesSignatureFacet = new XAdESSignatureFacet(
+				"SHA-512");
+		xadesSignatureFacet.setRole(role);
+		addSignatureFacet(xadesSignatureFacet);
 		addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
 		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
 				revocationDataService, "SHA-512"));

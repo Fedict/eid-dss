@@ -49,10 +49,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import be.fedict.eid.applet.service.signer.jaxb.xades132.AnyType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.CRLValuesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.CertIDListType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.CertIDType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.CertificateValuesType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.ClaimedRolesListType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.DigestAlgAndValueType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.EncapsulatedPKIDataType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.OCSPValuesType;
@@ -61,6 +63,7 @@ import be.fedict.eid.applet.service.signer.jaxb.xades132.QualifyingPropertiesTyp
 import be.fedict.eid.applet.service.signer.jaxb.xades132.RevocationValuesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.SignedPropertiesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.SignedSignaturePropertiesType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.SignerRoleType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.UnsignedPropertiesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.UnsignedSignaturePropertiesType;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
@@ -180,6 +183,30 @@ public class XAdESValidation {
 		}
 		LOG.debug("XAdES signing certificate OK");
 
+		/*
+		 * Get XAdES ClaimedRole.
+		 */
+		String role = null;
+		SignerRoleType signerRole = signedSignatureProperties.getSignerRole();
+		if (null != signerRole) {
+			ClaimedRolesListType claimedRolesList = signerRole
+					.getClaimedRoles();
+			if (null != claimedRolesList) {
+				List<AnyType> claimedRoles = claimedRolesList.getClaimedRole();
+				if (false == claimedRoles.isEmpty()) {
+					AnyType claimedRole = claimedRoles.get(0);
+					List<Object> claimedRoleContent = claimedRole.getContent();
+					for (Object claimedRoleContentItem : claimedRoleContent) {
+						if (claimedRoleContentItem instanceof String) {
+							role = (String) claimedRoleContentItem;
+							LOG.debug("XAdES claimed role: " + role);
+							break;
+						}
+					}
+				}
+			}
+		}
+
 		// TODO: validate XAdES timestamps
 
 		/*
@@ -262,7 +289,7 @@ public class XAdESValidation {
 				ocspResponses, crls);
 
 		SignatureInfo signatureInfo = new SignatureInfo(signingCertificate,
-				signingTime);
+				signingTime, role);
 		return signatureInfo;
 	}
 

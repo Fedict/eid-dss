@@ -212,6 +212,30 @@ public class DigitalSignatureServiceTest {
 				.toString().contains("Frank Cornelis"));
 		LOG.debug("signing time: " + signatureInfo.getSigningTime());
 	}
+	
+	@Test
+	public void testClaimedRole() throws Exception {
+		// setup
+		InputStream signedDocumentInputStream = DigitalSignatureServiceTest.class
+				.getResourceAsStream("/example-xades-claimed-role.xml");
+		String signedDocument = IOUtils.toString(signedDocumentInputStream);
+
+		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient();
+
+		// operate
+		List<SignatureInfo> signers = client.verifyWithSigners(
+				signedDocument.getBytes(), "text/xml");
+
+		// verify
+		assertNotNull(signers);
+		assertEquals(1, signers.size());
+		SignatureInfo signatureInfo = signers.get(0);
+		LOG.debug("signer: "
+				+ signatureInfo.getSigner().getSubjectX500Principal());
+		assertTrue(signatureInfo.getSigner().getSubjectX500Principal()
+				.toString().contains("Frank Cornelis"));
+		LOG.debug("signing time: " + signatureInfo.getSigningTime());
+	}
 
 	private void signDocument(Document document) throws IOException,
 			PKCS11Exception, InterruptedException, NoSuchFieldException,

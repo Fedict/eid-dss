@@ -20,7 +20,8 @@ package be.fedict.eid.dss.control.bean;
 
 import java.io.IOException;
 
-import javax.ejb.Stateless;
+import javax.ejb.Remove;
+import javax.ejb.Stateful;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpSession;
 
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
@@ -40,7 +42,7 @@ import be.fedict.eid.dss.control.XMLView;
 import be.fedict.eid.dss.model.DocumentRepository;
 import be.fedict.eid.dss.spi.SignatureStatus;
 
-@Stateless
+@Stateful
 @Name("xmlView")
 @LocalBinding(jndiBinding = "fedict/eid/dss/XMLViewBean")
 public class XMLViewBean implements XMLView {
@@ -53,6 +55,8 @@ public class XMLViewBean implements XMLView {
 
 	@In(value = XMLView.LANGUAGE_SESSION_ATTRIBUTE, scope = ScopeType.SESSION)
 	private String language;
+
+	private String role;
 
 	public String cancel() {
 		HttpSession httpSession = HttpSessionTemporaryDataStorage
@@ -84,5 +88,32 @@ public class XMLViewBean implements XMLView {
 			this.localeSelector.setLocaleString(language);
 			this.localeSelector.select();
 		}
+	}
+
+	@Override
+	public String getRole() {
+		return this.role;
+	}
+
+	@Override
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	@Remove
+	@Destroy
+	@Override
+	public void destroy() {
+		this.log.debug("destroy");
+	}
+
+	@Override
+	public String sign() {
+		HttpSession httpSession = HttpSessionTemporaryDataStorage
+				.getHttpSession();
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+		documentRepository.setRole(this.role);
+		return "sign";
 	}
 }

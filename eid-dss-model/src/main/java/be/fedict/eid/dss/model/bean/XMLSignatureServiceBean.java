@@ -137,6 +137,7 @@ public class XMLSignatureServiceBean implements SignatureService {
 		byte[] document = documentRepository.getDocument();
 		ByteArrayInputStream documentInputStream = new ByteArrayInputStream(
 				document);
+		String role = documentRepository.getRole();
 
 		OutputStream documentOutputStream = new DocumentRepositoryOutputStream();
 
@@ -147,7 +148,7 @@ public class XMLSignatureServiceBean implements SignatureService {
 			signatureService = documentService.getSignatureService(
 					documentInputStream, timeStampService,
 					timeStampServiceValidator, revocationDataService,
-					signatureFacet, documentOutputStream);
+					signatureFacet, documentOutputStream, role);
 		} catch (Exception e) {
 			throw new RuntimeException("error retrieving signature service: "
 					+ e.getMessage(), e);

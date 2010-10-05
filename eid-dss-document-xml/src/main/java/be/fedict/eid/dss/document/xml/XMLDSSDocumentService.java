@@ -124,10 +124,11 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 			InputStream documentInputStream, TimeStampService timeStampService,
 			TimeStampServiceValidator timeStampServiceValidator,
 			RevocationDataService revocationDataService,
-			SignatureFacet signatureFacet, OutputStream documentOutputStream) {
+			SignatureFacet signatureFacet, OutputStream documentOutputStream,
+			String role) {
 		return new XMLSignatureService(timeStampServiceValidator,
 				revocationDataService, signatureFacet, documentInputStream,
-				documentOutputStream, timeStampService);
+				documentOutputStream, timeStampService, role);
 	}
 
 	public DocumentVisualization visualizeDocument(byte[] document,
