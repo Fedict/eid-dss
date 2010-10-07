@@ -38,17 +38,32 @@ public class SignatureInfo implements Serializable {
 
 	private final String role;
 
-	/**
-	 * Main constructor.
-	 * 
-	 * @param signer
-	 * @param signingTime
-	 * @param role
-	 */
-	public SignatureInfo(X509Certificate signer, Date signingTime, String role) {
+	private final String firstName;
+
+	private final String name;
+
+	private final String middleName;
+
+	private final Gender gender;
+
+	private final byte[] photo;
+
+	public SignatureInfo(X509Certificate signer, Date signingTime, String role,
+			String firstName, String name, String middleName, Gender gender,
+			byte[] photo) {
 		this.signer = signer;
 		this.signingTime = signingTime;
 		this.role = role;
+
+		this.firstName = firstName;
+		this.name = name;
+		this.middleName = middleName;
+		this.gender = gender;
+		this.photo = photo;
+	}
+
+	public SignatureInfo(X509Certificate signer, Date signingTime, String role) {
+		this(signer, signingTime, role, null, null, null, null, null);
 	}
 
 	public SignatureInfo(X509Certificate signer, Date signingTime) {
@@ -65,5 +80,29 @@ public class SignatureInfo implements Serializable {
 
 	public String getRole() {
 		return this.role;
+	}
+
+	public String getFirstName() {
+		return this.firstName;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getMiddleName() {
+		return this.middleName;
+	}
+
+	public Gender getGender() {
+		return this.gender;
+	}
+
+	public byte[] getPhoto() {
+		return this.photo;
+	}
+
+	public static enum Gender {
+		MALE, FEMALE
 	}
 }
