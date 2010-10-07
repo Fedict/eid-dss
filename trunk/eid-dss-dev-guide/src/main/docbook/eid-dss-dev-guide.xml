@@ -13,7 +13,7 @@
 			<year>2009-2010</year>
 			<holder>FedICT</holder>
 		</copyright>
-		<releaseinfo>draft 21 Sep 2010</releaseinfo>
+		<releaseinfo>draft 7 Oct 2010</releaseinfo>
 		<authorgroup>
 			<author>
 				<firstname>Frank</firstname>
@@ -32,40 +32,68 @@
 	<section>
 		<title>Introduction</title>
 		<para>
-			The FedICT eID Digital Signature Service (eID DSS) is a web
-			service that can be used by web applications to integrate the
-			creation of eID based digital signatures in the business work-flows.
-			The eID Digital Signature Service offers different signature profiles
-			and protocols. The following sections will highlight the different
-			supported signature profiles and protocols.
+			The FedICT eID Digital Signature Service (eID DSS) is a web service
+			that can be used by web applications to integrate the creation of eID
+			based digital signatures in the business work-flows. The eID Digital
+			Signature Service supports different document and corresponding
+			signature formats. The supported signature formats are:
+			<itemizedlist>
+				<listitem>
+					<para>
+						XML documents using XML Signature with XAdES-X-L extension
+						and eID identity extension.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						ODF documents (OpenOffice), again using ODF XML Signatures
+						with XAdES-X-L extension and eID identity extension.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						OOXML documents (Microsoft Office 2007 and 2010), using OOXML
+						XML Signature with XAdES-X-L extension (recognized by Office
+						itself) and eID identity extension.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						ZIP container holding your files, using XML Signature with
+						XAdES-X-L extension and eID identity extension.
+					</para>
+				</listitem>
+			</itemizedlist>
+			The eID Digital Signature Service also supports different protocols.
+			The following sections will highlight the different supported
+			signature profiles and protocols.
 		</para>
 	</section>
 	<section>
 		<title>eID DSS Browser POST Protocol</title>
 		<para>
 			The eID Digital Signature Service Protocol POST Profile can be
-			used to sign XML based transactions and forms as part of web
-			application work-flows. The service offers basic visualization of the
-			XML data, and creation of the XMLDSig based XML signature with
-			XAdES-X-L v1.4.1 extension. The protocol is very lightweight to ease
-			integration within your web applications.
+			used to sign documents as part of web application work-flows. The
+			service offers basic visualization of the document, and creation of
+			the XAdES-X-L v1.4.1 signatures. The protocol is very lightweight to
+			ease integration within your web applications.
 		</para>
 		<section>
 			<title>Signature Request</title>
 			<para>
-				Suppose that the web application prepared an XML based
-				transaction or form that needs to be signed by the end-user as part
-				of some business work-flow. The web application sends the signature
-				request to the eID DSS web service using an HTTP POST via the web
-				browser of the client. The following POST parameters are available:
+				Suppose that the web application prepared document that needs
+				to be signed by the end-user as part of some business work-flow. The
+				web application sends the signature request to the eID DSS web
+				service using an HTTP POST via the web browser of the client. The
+				following POST parameters are available:
 			</para>
 			<itemizedlist>
 				<listitem>
 					<para>
 						The required
 						<code>SignatureRequest</code>
-						POST parameter should contain the base-64 encoded XML document
-						that needs to be signed.
+						POST parameter should contain the base-64 encoded document that
+						needs to be signed.
 					</para>
 				</listitem>
 				<listitem>
@@ -73,7 +101,7 @@
 						The required
 						<code>target</code>
 						POST parameter should contain the URL of the web application to
-						which to send back the signed XML document.
+						which to send back the signed document.
 					</para>
 				</listitem>
 				<listitem>
@@ -116,18 +144,18 @@
 				The eID Digital Signature Service will guarantee the correct
 				execution of the signature ceremony. The signature ceremony is
 				presented to the end-user via a web application interface. A first
-				screen visualizes the incoming XML document. Here the end-user can
-				choose to either sign the XML document, or to cancel the signing
-				process. The next screen loads an eID Applet to have the XML
-				document signed according to the W3C XMLDSig specification. The XML
-				signature also contains a XAdES-X-L v1.4.1 extension in accordance
-				with the recommendations of the expert group on the e-Signatures
-				Service Directive. The created XML signature is a co-signature,
-				meaning that multiple signatures can coexist within the same
-				document. The signature is appended as last child of the document
-				root element. At last the end-user's web browser is redirected to
-				the originating web application where the signed XML document can be
-				processed further.
+				screen visualizes the incoming document. Here the end-user can
+				choose to either sign the document, or to cancel the signing
+				process. The next screen loads an eID Applet to have the document
+				signed according to the W3C XMLDSig specification. The XML signature
+				also contains a XAdES-X-L v1.4.1 extension in accordance with the
+				recommendations of the expert group on the e-Signatures Service
+				Directive. The created XML signature is a co-signature, meaning that
+				multiple signatures can coexist within the same document. In case of
+				XML documents, the signature is appended as last child of the
+				document root element. At last the end-user's web browser is
+				redirected to the originating web application where the signed
+				document can be processed further.
 			</para>
 		</section>
 		<section>
@@ -162,7 +190,7 @@
 							<listitem>
 								<para>
 									<code>FILE_FORMAT</code>
-									in case the incoming file was not a well-formated XML document.
+									in case the incoming file was not a well-formated document.
 								</para>
 							</listitem>
 							<listitem>
@@ -177,7 +205,7 @@
 				<listitem>
 					<para>
 						<code>SignatureResponse</code>
-						contains the base-64 encoded signed XML document.
+						contains the base-64 encoded signed document.
 					</para>
 				</listitem>
 				<listitem>
@@ -453,11 +481,12 @@
 		<title>Document Visualization</title>
 		<para>
 			The eID Digital Signature Service features visualization of the
-			documents before they are signed. The Relying Party can register an
-			XML Schema and XML Style Sheet with the eID DSS hosting party to
-			visualize the XML data structure within the web browser as part of
-			the signature ceremony. This allows the Relying Party to define a
-			domain specific language for its transactions that need to be signed.
+			documents before they are signed. In case of XML documents, the
+			Relying Party can register an XML Schema and XML Style Sheet with the
+			eID DSS hosting party to visualize the XML data structure within the
+			web browser as part of the signature ceremony. This allows the
+			Relying Party to define a domain specific language for its
+			transactions that need to be signed.
 		</para>
 		<para>
 			For example, suppose the Relying Party defined a domain specific
@@ -680,6 +709,11 @@
 						<entry>21 Sep 2010</entry>
 						<entry>Frank Cornelis</entry>
 						<entry>XML schemas and XML style sheets</entry>
+					</row>
+					<row>
+						<entry>7 Oct 2010</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>ODF, OOXML, ZIP document formats.</entry>
 					</row>
 				</tbody>
 			</tgroup>
