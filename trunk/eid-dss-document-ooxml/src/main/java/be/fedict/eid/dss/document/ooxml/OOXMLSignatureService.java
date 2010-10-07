@@ -35,8 +35,11 @@ import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
 import be.fedict.eid.applet.service.signer.ooxml.AbstractOOXMLSignatureService;
+import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.spi.AddressDTO;
 import be.fedict.eid.applet.service.spi.DigestInfo;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
@@ -54,7 +57,9 @@ public class OOXMLSignatureService extends AbstractOOXMLSignatureService
 
 	public OOXMLSignatureService(InputStream documentInputStream,
 			OutputStream documentOutputStream, SignatureFacet signatureFacet,
-			String role, IdentityDTO identity, byte[] photo) throws IOException {
+			String role, IdentityDTO identity, byte[] photo,
+			RevocationDataService revocationDataService,
+			TimeStampService timeStampService) throws IOException {
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		this.documentOutputStream = documentOutputStream;
 		this.tmpFile = File.createTempFile("eid-dss-", ".ooxml");
@@ -62,6 +67,8 @@ public class OOXMLSignatureService extends AbstractOOXMLSignatureService
 		fileOutputStream = new FileOutputStream(this.tmpFile);
 		IOUtils.copy(documentInputStream, fileOutputStream);
 		addSignatureFacet(signatureFacet);
+		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
+				revocationDataService, "SHA-1"));
 
 		XAdESSignatureFacet xadesSignatureFacet = super
 				.getXAdESSignatureFacet();

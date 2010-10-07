@@ -22,27 +22,17 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.cert.X509Certificate;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.crypto.XMLStructure;
-import javax.xml.crypto.dom.DOMStructure;
-import javax.xml.crypto.dsig.SignatureProperties;
-import javax.xml.crypto.dsig.SignatureProperty;
-import javax.xml.crypto.dsig.XMLObject;
 import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.crypto.dsig.XMLSignatureFactory;
 import javax.xml.crypto.dsig.dom.DOMValidateContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.xpath.XPathAPI;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
@@ -54,12 +44,12 @@ import be.fedict.eid.applet.service.signer.ooxml.OOXMLURIDereferencer;
 import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
-import be.fedict.eid.applet.service.spi.SignatureService;
 import be.fedict.eid.applet.service.spi.SignatureServiceEx;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DocumentVisualization;
 import be.fedict.eid.dss.spi.SignatureInfo;
+import be.fedict.eid.dss.spi.utils.XAdESValidation;
 
 public class OOXMLDSSDocumentService implements DSSDocumentService {
 
@@ -97,7 +87,8 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 			SignatureFacet signatureFacet, OutputStream documentOutputStream,
 			String role, IdentityDTO identity, byte[] photo) throws Exception {
 		return new OOXMLSignatureService(documentInputStream,
-				documentOutputStream, signatureFacet, role, identity, photo);
+				documentOutputStream, signatureFacet, role, identity, photo,
+				revocationDataService, timeStampService);
 	}
 
 	public List<SignatureInfo> verifySignatures(byte[] document)
@@ -105,6 +96,8 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 		List<String> signatureResourceNames = OOXMLSignatureVerifier
 				.getSignatureResourceNames(new ByteArrayInputStream(document));
 		List<SignatureInfo> signatureInfos = new LinkedList<SignatureInfo>();
+		XAdESValidation xadesValidation = new XAdESValidation(
+				this.documentContext);
 		for (String signatureResourceName : signatureResourceNames) {
 			Document signatureDocument = OOXMLSignatureVerifier
 					.getSignatureDocument(new ByteArrayInputStream(document),
@@ -136,71 +129,10 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 				LOG.error("signature invalid");
 				continue;
 			}
-			X509Certificate signer = keySelector.getCertificate();
-			Date signingTime = null;
-			List<XMLObject> xmlObjects = xmlSignature.getObjects();
-			for (XMLObject xmlObject : xmlObjects) {
-				if (false == "idPackageObject".equals(xmlObject.getId())) {
-					continue;
-				}
-				List<XMLStructure> objectContentList = xmlObject.getContent();
-				for (XMLStructure objectContent : objectContentList) {
-					if (objectContent instanceof SignatureProperties) {
-						LOG.debug("SignatureProperties detected");
-						SignatureProperties signatureProperties = (SignatureProperties) objectContent;
-						List<SignatureProperty> signaturePropertyList = signatureProperties
-								.getProperties();
-						for (SignatureProperty signatureProperty : signaturePropertyList) {
-							List<XMLStructure> signaturePropertyContentList = signatureProperty
-									.getContent();
-							for (XMLStructure signaturePropertyContent : signaturePropertyContentList) {
-								if (signaturePropertyContent instanceof DOMStructure) {
-									DOMStructure signaturePropertyContentDomStructure = (DOMStructure) signaturePropertyContent;
-									Node node = signaturePropertyContentDomStructure
-											.getNode();
-									if (node instanceof Element) {
-										Element element = (Element) node;
-										LOG.debug("namespace: "
-												+ element.getNamespaceURI());
-										LOG.debug("local name: "
-												+ element.getLocalName());
-										if ("http://schemas.openxmlformats.org/package/2006/digital-signature"
-												.equals(element
-														.getNamespaceURI())
-												&& "SignatureTime"
-														.equals(element
-																.getLocalName())) {
-											LOG.debug("SignatureTime detected");
-											Node signingTimeValueNode = XPathAPI
-													.selectSingleNode(element,
-															"mdssi:Value");
-											if (null != signingTimeValueNode) {
-												LOG.debug("SignatureTime/Value detected");
-												String signingTimeStr = signingTimeValueNode
-														.getFirstChild()
-														.getTextContent();
-												LOG.debug("signing time string: "
-														+ signingTimeStr);
-												DateTimeFormatter parser = ISODateTimeFormat
-														.dateTimeParser();
-												signingTime = parser
-														.parseDateTime(
-																signingTimeStr)
-														.toDate();
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			if (null == signingTime) {
-				LOG.error("no siging time present");
-				continue;
-			}
-			SignatureInfo signatureInfo = new SignatureInfo(signer, signingTime);
+			X509Certificate signingCertificate = keySelector.getCertificate();
+			SignatureInfo signatureInfo = xadesValidation.validate(
+					signatureDocument, xmlSignature, signatureElement,
+					signingCertificate);
 			signatureInfos.add(signatureInfo);
 		}
 		return signatureInfos;
