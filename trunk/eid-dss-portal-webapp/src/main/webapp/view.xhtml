@@ -4,7 +4,8 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:a4j="http://richfaces.org/a4j"
-	xmlns:f="http://java.sun.com/jsf/core">
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:s="http://jboss.com/products/seam/taglib">
 <body>
 <ui:composition template="/WEB-INF/template.xhtml">
 	<ui:param name="activeMenu" value="view" />
@@ -27,17 +28,33 @@
 				</f:facet>
 				<rich:panel>
 					<h:panelGrid columns="2">
-						<h:outputText value="Signer:" />
-						<h:outputText value="#{row.signer.subjectX500Principal}" />
+						<s:graphicImage value="#{row.photo}"
+							rendered="#{not empty row.photo}" />
+						<h:panelGrid columns="2">
+							<h:outputText value="Signer:" />
+							<h:outputText value="#{row.signer.subjectX500Principal}" />
 
-						<h:outputText value="Signing Time:" />
-						<h:outputText value="#{row.signingTime}">
-							<f:convertDateTime type="both" dateStyle="full" timeStyle="long"
-								timeZone="Europe/Brussels" />
-						</h:outputText>
+							<h:outputText value="Signing Time:" />
+							<h:outputText value="#{row.signingTime}">
+								<f:convertDateTime type="both" dateStyle="full" timeStyle="long"
+									timeZone="Europe/Brussels" />
+							</h:outputText>
 
-						<h:outputText value="Role:" rendered="#{not empty row.role}" />
-						<h:outputText value="#{row.role}" rendered="#{not empty row.role}" />
+							<h:outputText value="Role:" rendered="#{not empty row.role}" />
+							<h:outputText value="#{row.role}"
+								rendered="#{not empty row.role}" />
+
+							<h:outputText value="Name:" rendered="#{not empty row.name}" />
+							<s:div rendered="#{not empty row.name}">
+								<h:outputText value="#{row.firstName} " />
+								<h:outputText value="#{row.name} " />
+								<h:outputText value="#{row.middleName}" />
+							</s:div>
+
+							<h:outputText value="Gender:" rendered="#{not empty row.gender}" />
+							<h:outputText value="#{row.gender}"
+								rendered="#{not empty row.gender}" />
+						</h:panelGrid>
 					</h:panelGrid>
 				</rich:panel>
 				<f:facet name="footer">

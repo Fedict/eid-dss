@@ -49,6 +49,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
+import be.fedict.eid.applet.service.signer.jaxb.identity.IdentityType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.AnyType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.CRLValuesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.CertIDListType;
@@ -80,7 +82,9 @@ public class XAdESValidation {
 
 	private static final Log LOG = LogFactory.getLog(XAdESValidation.class);
 
-	private final Unmarshaller unmarshaller;
+	private final Unmarshaller xadesUnmarshaller;
+
+	private final Unmarshaller identityUnmarshaller;
 
 	private final CertificateFactory certificateFactory;
 
@@ -89,13 +93,17 @@ public class XAdESValidation {
 	public XAdESValidation(DSSDocumentContext documentContext) {
 		this.documentContext = documentContext;
 
-		JAXBContext jaxbContext;
 		try {
-			jaxbContext = JAXBContext
+			JAXBContext xadesJaxbContext = JAXBContext
 					.newInstance(
 							ObjectFactory.class,
 							be.fedict.eid.applet.service.signer.jaxb.xades141.ObjectFactory.class);
-			this.unmarshaller = jaxbContext.createUnmarshaller();
+			this.xadesUnmarshaller = xadesJaxbContext.createUnmarshaller();
+
+			JAXBContext identityJaxbContext = JAXBContext
+					.newInstance(be.fedict.eid.applet.service.signer.jaxb.identity.ObjectFactory.class);
+			this.identityUnmarshaller = identityJaxbContext
+					.createUnmarshaller();
 		} catch (JAXBException e) {
 			throw new RuntimeException("JAXB error: " + e.getMessage(), e);
 		}
@@ -134,12 +142,14 @@ public class XAdESValidation {
 				Constants.SignatureSpecNS);
 		nsElement.setAttributeNS(Constants.NamespaceSpecNS, "xmlns:xades",
 				"http://uri.etsi.org/01903/v1.3.2#");
+		nsElement.setAttributeNS(Constants.NamespaceSpecNS, "xmlns:identity",
+				IdentitySignatureFacet.NAMESPACE_URI);
 		Node xadesQualifyingPropertiesNode = XPathAPI.selectSingleNode(
 				signatureElement,
 				"ds:Object/xades:QualifyingProperties[xades:SignedProperties/@Id='"
 						+ xadesSignedPropertiesId + "']", nsElement);
 
-		JAXBElement<QualifyingPropertiesType> qualifyingPropertiesElement = (JAXBElement<QualifyingPropertiesType>) this.unmarshaller
+		JAXBElement<QualifyingPropertiesType> qualifyingPropertiesElement = (JAXBElement<QualifyingPropertiesType>) this.xadesUnmarshaller
 				.unmarshal(xadesQualifyingPropertiesNode);
 		QualifyingPropertiesType qualifyingProperties = qualifyingPropertiesElement
 				.getValue();
@@ -288,8 +298,52 @@ public class XAdESValidation {
 		this.documentContext.validate(certificateChain, signingTime,
 				ocspResponses, crls);
 
+		/*
+		 * Retrieve the possible eID identity signature extension data.
+		 */
+		String firstName = null;
+		String name = null;
+		String middleName = null;
+		SignatureInfo.Gender gender = null;
+		byte[] photo = null;
+
+		String identityUri = null;
+		for (Reference reference : references) {
+			if (IdentitySignatureFacet.REFERENCE_TYPE.equals(reference
+					.getType())) {
+				identityUri = reference.getURI();
+				break;
+			}
+		}
+		if (null != identityUri) {
+			String identityId = identityUri.substring(1);
+			Node identityNode = XPathAPI.selectSingleNode(signatureElement,
+					"ds:Object[@Id = '" + identityId + "']/identity:Identity",
+					nsElement);
+			if (null != identityNode) {
+				JAXBElement<IdentityType> identityElement = (JAXBElement<IdentityType>) this.identityUnmarshaller
+						.unmarshal(identityNode);
+				IdentityType identity = identityElement.getValue();
+				firstName = identity.getFirstName();
+				name = identity.getName();
+				middleName = identity.getMiddleName();
+				switch (identity.getGender()) {
+				case MALE:
+					gender = SignatureInfo.Gender.MALE;
+					break;
+				case FEMALE:
+					gender = SignatureInfo.Gender.FEMALE;
+					break;
+				}
+				photo = identity.getPhoto().getValue();
+			}
+		}
+
+		/*
+		 * Return the result of the signature analysis.
+		 */
 		SignatureInfo signatureInfo = new SignatureInfo(signingCertificate,
-				signingTime, role);
+				signingTime, role, firstName, name, middleName, gender, photo);
 		return signatureInfo;
 	}
 
