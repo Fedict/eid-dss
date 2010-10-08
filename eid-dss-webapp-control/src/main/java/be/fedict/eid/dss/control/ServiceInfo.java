@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2010 Frank Cornelis.
+ * Copyright (C) 2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -16,28 +16,26 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.model;
-
-import java.io.InputStream;
-import java.util.List;
+package be.fedict.eid.dss.control;
 
 import javax.ejb.Local;
 
-import be.fedict.eid.dss.entity.XmlSchemaEntity;
-import be.fedict.eid.dss.model.exception.ExistingXmlSchemaException;
-import be.fedict.eid.dss.model.exception.InvalidXmlSchemaException;
-
 @Local
-public interface XmlSchemaManager {
+public interface ServiceInfo {
 
-	List<XmlSchemaEntity> getXmlSchemas();
+	/*
+	 * Lifecycle.
+	 */
+	void destroy();
 
-	void add(String revision, InputStream xsdInputStream)
-			throws InvalidXmlSchemaException, ExistingXmlSchemaException;
+	/*
+	 * Factories.
+	 */
+	void initDocumentFormatList();
 
-	void delete(String namespace);
+	void initXmlSchemaNamespacesList();
 
-	byte[] getXmlSchema(String namespace);
-
-	List<String> getXmlSchemaNamespaces();
+	void initXmlStyleSheetNamespacesList();
+	
+	public String getServiceFingerprint();
 }

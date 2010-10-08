@@ -21,6 +21,7 @@ package be.fedict.eid.dss.model.bean;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -122,5 +123,14 @@ public class XmlSchemaManagerBean implements XmlSchemaManager {
 			return null;
 		}
 		return xmlSchemaEntity.getXsd();
+	}
+
+	public List<String> getXmlSchemaNamespaces() {
+		List<XmlSchemaEntity> xmlSchemas = getXmlSchemas();
+		List<String> xmlSchemaNamespaces = new LinkedList<String>();
+		for (XmlSchemaEntity xmlSchema : xmlSchemas) {
+			xmlSchemaNamespaces.add(xmlSchema.getNamespace());
+		}
+		return xmlSchemaNamespaces;
 	}
 }

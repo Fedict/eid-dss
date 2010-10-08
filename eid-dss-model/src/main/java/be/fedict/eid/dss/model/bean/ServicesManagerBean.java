@@ -18,7 +18,10 @@
 
 package be.fedict.eid.dss.model.bean;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -66,5 +69,13 @@ public class ServicesManagerBean implements ServicesManager {
 
 	public DSSDocumentService getDocumentService(String contentType) {
 		return this.servicesManagerSingleton.getDocumentService(contentType);
+	}
+
+	public List<String> getSupportedDocumentFormats() {
+		Set<String> documentFormats = this.servicesManagerSingleton
+				.getSupportedDocumentFormats();
+		List<String> documentFormatsList = Collections.list(Collections
+				.enumeration(documentFormats));
+		return documentFormatsList;
 	}
 }

@@ -20,6 +20,7 @@ package be.fedict.eid.dss.model.bean;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -73,6 +74,15 @@ public class XmlStyleSheetManagerBean implements XmlStyleSheetManager {
 			return null;
 		}
 		return xmlStyleSheetEntity.getXsl();
+	}
+
+	public List<String> getXmlStyleSheetNamespaces() {
+		List<XmlStyleSheetEntity> xmlStyleSheets = getXmlStyleSheets();
+		List<String> xmlStyleSheetNamespaces = new LinkedList<String>();
+		for (XmlStyleSheetEntity xmlStyleSheet : xmlStyleSheets) {
+			xmlStyleSheetNamespaces.add(xmlStyleSheet.getNamespace());
+		}
+		return xmlStyleSheetNamespaces;
 	}
 
 }

@@ -37,4 +37,6 @@ public interface XmlStyleSheetManager {
 	void delete(String namespace);
 
 	byte[] getXmlStyleSheet(String namespace);
+
+	List<String> getXmlStyleSheetNamespaces();
 }
