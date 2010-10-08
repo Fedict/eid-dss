@@ -24,6 +24,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -134,6 +135,10 @@ public class ServicesManagerSingletonBean {
 
 	public Map<String, String> getDocumentServiceClassNames() {
 		return this.documentServiceClassNames;
+	}
+
+	public Set<String> getSupportedDocumentFormats() {
+		return this.documentServiceClassNames.keySet();
 	}
 
 	@SuppressWarnings("unchecked")

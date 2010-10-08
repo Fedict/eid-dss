@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.model;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Local;
@@ -46,6 +47,13 @@ public interface ServicesManager {
 	 * @return
 	 */
 	Map<String, String> getDocumentServiceClassNames();
+
+	/**
+	 * Gives back a list of supported document formats (mime-types).
+	 * 
+	 * @return
+	 */
+	List<String> getSupportedDocumentFormats();
 
 	/**
 	 * Gives back the current document service to be used. The content-type is

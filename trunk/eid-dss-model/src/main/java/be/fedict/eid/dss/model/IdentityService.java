@@ -19,6 +19,8 @@
 package be.fedict.eid.dss.model;
 
 import java.security.KeyStore;
+import java.security.cert.X509Certificate;
+import java.util.List;
 
 import javax.ejb.Local;
 
@@ -35,4 +37,8 @@ public interface IdentityService {
 	void reloadIdentity();
 
 	KeyStore.PrivateKeyEntry getIdentity();
+
+	String getIdentityFingerprint();
+
+	List<X509Certificate> getIdentityCertificateChain();
 }
