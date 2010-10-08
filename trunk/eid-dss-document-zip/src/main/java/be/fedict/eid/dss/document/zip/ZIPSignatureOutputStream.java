@@ -64,7 +64,8 @@ public class ZIPSignatureOutputStream extends ByteArrayOutputStream {
 		ZipEntry zipEntry;
 		while (null != (zipEntry = zipInputStream.getNextEntry())) {
 			if (!zipEntry.getName().equals(ODFUtil.SIGNATURE_FILE)) {
-				zipOutputStream.putNextEntry(zipEntry);
+				ZipEntry newZipEntry = new ZipEntry(zipEntry.getName());
+				zipOutputStream.putNextEntry(newZipEntry);
 				LOG.debug("copying " + zipEntry.getName());
 				IOUtils.copy(zipInputStream, zipOutputStream);
 			}
