@@ -81,6 +81,10 @@
 			<param-value>/view.seam</param-value>
 		</init-param>
 		<init-param>
+			<param-name>CancelPage</param-name>
+			<param-value>/view.seam</param-value>
+		</init-param>
+		<init-param>
 			<param-name>ErrorPage</param-name>
 			<param-value>/sign-error.seam</param-value>
 		</init-param>

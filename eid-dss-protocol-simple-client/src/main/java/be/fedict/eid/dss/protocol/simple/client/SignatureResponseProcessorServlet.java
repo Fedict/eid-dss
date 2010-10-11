@@ -71,6 +71,9 @@ import org.apache.commons.logging.LogFactory;
  * <li><tt>ServiceFingerprint</tt>: contains the hexadecimal encoded SHA1
  * fingerprint of the service certificate used to sign the DSS response. Use
  * this parameter when a very simple trust model is sufficient.</li>
+ * <li><tt>CancelPage</tt>: the page to be shown in case the user cancelled the
+ * eID DSS signature ceremony. If not present the user gets redirected towards
+ * the error page.</li>
  * </ul>
  * 
  * @author Frank Cornelis
@@ -87,6 +90,8 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 
 	public static final String ERROR_PAGE_INIT_PARAM = "ErrorPage";
 
+	public static final String CANCEL_PAGE_INIT_PARAM = "CancelPage";
+
 	public static final String ERROR_MESSAGE_SESSION_ATTRIBUTE_INIT_PARAM = "ErrorMessageSessionAttribute";
 
 	public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE_INIT_PARAM = "SignedDocumentSessionAttribute";
@@ -102,6 +107,8 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 	private String nextPage;
 
 	private String errorPage;
+
+	private String cancelPage;
 
 	private String errorMessageSessionAttribute;
 
@@ -160,6 +167,7 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 				.getInitParameter(TARGET_SESSION_ATTRIBUTE_INIT_PARAM);
 		this.signatureRequestSessionAttribute = config
 				.getInitParameter(SIGNATURE_REQUEST_SESSION_ATTRIBUTE_INIT_PARAM);
+		this.cancelPage = config.getInitParameter(CANCEL_PAGE_INIT_PARAM);
 	}
 
 	private String getRequiredInitParameter(ServletConfig config,
@@ -171,13 +179,23 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 		return paramValue;
 	}
 
-	private void clearAllSessionAttribute(HttpSession httpSession) {
+	/**
+	 * Clears the used session attributes. Also returns a reference to the
+	 * previously signed document.
+	 * 
+	 * @param httpSession
+	 * @return
+	 */
+	private byte[] clearAllSessionAttribute(HttpSession httpSession) {
 		httpSession.removeAttribute(this.errorMessageSessionAttribute);
+		byte[] signedDocument = (byte[]) httpSession
+				.getAttribute(this.signedDocumentSessionAttribute);
 		httpSession.removeAttribute(this.signedDocumentSessionAttribute);
 		if (null != this.signatureCertificateSessionAttribute) {
 			httpSession
 					.removeAttribute(this.signatureCertificateSessionAttribute);
 		}
+		return signedDocument;
 	}
 
 	@Override
@@ -192,7 +210,7 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 			HttpServletResponse response) throws ServletException, IOException {
 		LOG.debug("doPost");
 		HttpSession httpSession = request.getSession();
-		clearAllSessionAttribute(httpSession);
+		byte[] previousSignedDocument = clearAllSessionAttribute(httpSession);
 
 		String target = (String) httpSession
 				.getAttribute(this.targetSessionAttribute);
@@ -203,6 +221,21 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 		try {
 			signatureResponse = this.signatureResponseProcessor.process(
 					request, target, base64encodedSignatureRequest);
+		} catch (UserCancelledSignatureResponseProcessorException e) {
+			if (null != this.cancelPage) {
+				LOG.debug("redirecting to cancel page");
+				/*
+				 * In case of explicit user cancellation we preserve the signed
+				 * document session attribute.
+				 */
+				httpSession.setAttribute(this.signedDocumentSessionAttribute,
+						previousSignedDocument);
+				response.sendRedirect(request.getContextPath()
+						+ this.cancelPage);
+				return;
+			}
+			showErrorPage(e.getMessage(), request, response);
+			return;
 		} catch (SignatureResponseProcessorException e) {
 			showErrorPage(e.getMessage(), request, response);
 			return;

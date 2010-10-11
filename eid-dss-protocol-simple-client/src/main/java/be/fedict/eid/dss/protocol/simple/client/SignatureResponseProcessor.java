@@ -125,6 +125,10 @@ public class SignatureResponseProcessor {
 		if (false == "OK".equals(signatureStatus)) {
 			String msg = "invalid signature status: " + signatureStatus;
 			LOG.error(msg);
+			if ("USER_CANCELLED".equals(signatureStatus)) {
+				throw new UserCancelledSignatureResponseProcessorException(
+						"user cancelled");
+			}
 			throw new SignatureResponseProcessorException(msg);
 		}
 
