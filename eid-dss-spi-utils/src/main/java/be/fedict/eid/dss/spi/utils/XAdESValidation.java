@@ -318,7 +318,7 @@ public class XAdESValidation {
 		if (null != identityUri) {
 			String identityId = identityUri.substring(1);
 			Node identityNode = XPathAPI.selectSingleNode(signatureElement,
-					"ds:Object[@Id = '" + identityId + "']/identity:Identity",
+					"ds:Object/identity:Identity[@Id = '" + identityId + "']",
 					nsElement);
 			if (null != identityNode) {
 				JAXBElement<IdentityType> identityElement = (JAXBElement<IdentityType>) this.identityUnmarshaller
