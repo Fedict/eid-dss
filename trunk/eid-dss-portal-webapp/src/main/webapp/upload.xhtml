@@ -9,13 +9,12 @@
 <ui:composition template="/WEB-INF/template.xhtml">
 	<ui:param name="activeMenu" value="view" />
 	<ui:define name="body">
-		<h2>Upload document</h2>
-		<p>First you have to upload the document on which you want to
-		check the signatures or on which you want to add a signature.</p>
+		<h2>#{messages.uploadDocument}</h2>
+		<p>#{messages.uploadDocumentInfo}</p>
 		<a4j:form>
 			<rich:fileUpload autoclear="true" maxFilesQuantity="1"
 				fileUploadListener="#{dssUpload.listener}"
-				addControlLabel="Select document..." immediateUpload="true"
+				addControlLabel="#{messages.selectDocument}" immediateUpload="true"
 				allowFlash="false">
 				<a4j:support event="onuploadcomplete" action="#{dssUpload.done}" />
 				<f:facet name="label">

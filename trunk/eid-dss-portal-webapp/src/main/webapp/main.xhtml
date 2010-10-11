@@ -7,12 +7,9 @@
 	<ui:param name="activeMenu" value="main" />
 	<ui:define name="body">
 		<h2>#{messages.welcome}</h2>
-		<p>Welcome to the eID Digital Signature Service Portal. Via this
-		portal you can sign your documents and verify signatures on your
-		documents.</p>
+		<p>#{messages.welcomeInfo}</p>
 		<p><a
-			href="#{facesContext.externalContext.requestContextPath}/upload.seam">Click
-		here to continue.</a></p>
+			href="#{facesContext.externalContext.requestContextPath}/upload.seam">#{messages.clickToContinue}</a></p>
 	</ui:define>
 </ui:composition>
 </body>

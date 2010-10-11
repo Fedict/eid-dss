@@ -11,7 +11,7 @@
 <meta http-equiv="expires" content="0" />
 <meta http-equiv="cache-control" content="no-cache, no-store" />
 <meta http-equiv="pragma" content="no-cache" />
-<title>eID Digital Signature Service</title>
+<title>#{messages.title}</title>
 <link rel="stylesheet" type="text/css"
 	href="#{facesContext.externalContext.requestContextPath}/style.css" />
 </head>
@@ -30,7 +30,7 @@
 <div id="logo"><h:graphicImage id="logo" alt="Fedict Logo"
 	height="45" url="/images/fedict.png" /></div>
 
-<h1>eID Digital Signature Service Portal</h1>
+<h1>#{messages.title}</h1>
 
 </div>
 
@@ -42,7 +42,7 @@
 			href="#{facesContext.externalContext.requestContextPath}/main.seam">Home</a></li>
 
 		<li id="menu_item_view"><a
-			href="#{facesContext.externalContext.requestContextPath}/upload.seam">Sign/Verify</a></li>
+			href="#{facesContext.externalContext.requestContextPath}/upload.seam">#{messages.signVerify}</a></li>
 	</ul>
 	</div>
 	</div>

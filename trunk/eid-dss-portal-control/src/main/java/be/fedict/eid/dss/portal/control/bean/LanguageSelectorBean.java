@@ -19,6 +19,7 @@
 package be.fedict.eid.dss.portal.control.bean;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.ejb.Stateless;
 import javax.faces.model.SelectItem;
@@ -52,5 +53,10 @@ public class LanguageSelectorBean implements LanguageSelector {
 	@Override
 	public List<SelectItem> getSupportedLocales() {
 		return this.localeSelector.getSupportedLocales();
+	}
+
+	@Override
+	public Locale getLocale() {
+		return this.localeSelector.getLocale();
 	}
 }
