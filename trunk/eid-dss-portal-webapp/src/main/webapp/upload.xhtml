@@ -12,16 +12,17 @@
 		<h2>Upload document</h2>
 		<p>First you have to upload the document on which you want to
 		check the signatures or on which you want to add a signature.</p>
-		<h:form>
+		<a4j:form>
 			<rich:fileUpload autoclear="true" maxFilesQuantity="1"
 				fileUploadListener="#{dssUpload.listener}"
-				addControlLabel="Select document..." immediateUpload="true">
+				addControlLabel="Select document..." immediateUpload="true"
+				allowFlash="false">
 				<a4j:support event="onuploadcomplete" action="#{dssUpload.done}" />
 				<f:facet name="label">
 					<h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}" />
 				</f:facet>
 			</rich:fileUpload>
-		</h:form>
+		</a4j:form>
 	</ui:define>
 </ui:composition>
 </body>
