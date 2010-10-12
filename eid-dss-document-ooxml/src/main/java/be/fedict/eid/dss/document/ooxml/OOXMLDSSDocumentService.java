@@ -95,7 +95,7 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 			throws Exception {
 		OOXMLSignatureVerifier ooxmlSignatureVerifier = new OOXMLSignatureVerifier();
 		List<String> signatureResourceNames = ooxmlSignatureVerifier
-				.getSignatureResourceNames(new ByteArrayInputStream(document));
+				.getSignatureResourceNames(document);
 		List<SignatureInfo> signatureInfos = new LinkedList<SignatureInfo>();
 		XAdESValidation xadesValidation = new XAdESValidation(
 				this.documentContext);
