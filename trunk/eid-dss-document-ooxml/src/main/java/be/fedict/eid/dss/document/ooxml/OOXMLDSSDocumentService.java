@@ -93,13 +93,14 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 
 	public List<SignatureInfo> verifySignatures(byte[] document)
 			throws Exception {
-		List<String> signatureResourceNames = OOXMLSignatureVerifier
+		OOXMLSignatureVerifier ooxmlSignatureVerifier = new OOXMLSignatureVerifier();
+		List<String> signatureResourceNames = ooxmlSignatureVerifier
 				.getSignatureResourceNames(new ByteArrayInputStream(document));
 		List<SignatureInfo> signatureInfos = new LinkedList<SignatureInfo>();
 		XAdESValidation xadesValidation = new XAdESValidation(
 				this.documentContext);
 		for (String signatureResourceName : signatureResourceNames) {
-			Document signatureDocument = OOXMLSignatureVerifier
+			Document signatureDocument = ooxmlSignatureVerifier
 					.getSignatureDocument(new ByteArrayInputStream(document),
 							signatureResourceName);
 			if (null == signatureDocument) {
