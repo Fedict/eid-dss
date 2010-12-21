@@ -96,6 +96,30 @@
 			Signature Service. We refer to the eID Trust Service Administrator
 			Manual for all non eID DSS specific configuration aspects. 
 		</para>
+		<section>
+			<title>Database</title>
+			<para>
+				The eID Digital Signature Service comes with distributions for the
+				following database products:
+				<itemizedlist>
+					<listitem>
+						<para>MySQL</para>
+					</listitem>
+				</itemizedlist>
+			</para>
+			<section>
+				<title>MySQL</title>
+				<para>
+					The database initialization is similar to that of the eID Trust
+					Service product. The eID Digital Signature Service specific
+					database initialization script is called
+					<code>eid-dss-ddl-mysql.sql</code>
+					and is located under the
+					<code>sql</code>
+					directory.
+				</para>
+			</section>
+		</section>
 	</section>
 	<appendix id="links">
 		<title>Useful links</title>
