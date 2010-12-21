@@ -25,7 +25,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Query;
@@ -73,7 +72,6 @@ public class XmlSchemaEntity implements Serializable {
 		this.revision = revision;
 	}
 
-	@Lob
 	@Column(length = 100 * 1024)
 	public byte[] getXsd() {
 		return this.xsd;
