@@ -168,7 +168,7 @@
 				<artifactId>jboss-maven-plugin</artifactId>
 				<configuration>
 					<fileNames>
-						<fileName>${basedir}/target/${pom.artifactId}-${pom.version}.ear</fileName>
+						<fileName>${basedir}/target/${project.artifactId}-${project.version}.ear</fileName>
 					</fileNames>
 				</configuration>
 			</plugin>
