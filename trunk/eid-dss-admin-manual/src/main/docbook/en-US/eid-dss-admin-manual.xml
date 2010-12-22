@@ -121,6 +121,92 @@
 			</section>
 		</section>
 	</section>
+	<section>
+		<title>Deployment</title>
+		<para>
+			Deploy the eID Digital Signature Service the same way you deploy
+			the eID Trust Service.
+		</para>
+		<section>
+			<title>eID DSS Admin Portal</title>
+			<para>
+				The eID Digital Signature Service Administrator Portal is available
+				at
+				<code>$EID_DSS_ADDRESS/eid-dss-admin-portal/</code>
+				. After deployment of the eID Digital Signature Service you should
+				register an administrator by logging in into the admin portal. In
+				this admin portal you should at least configure the following under
+				<emphasis>PKI Validation</emphasis>
+				:
+				<itemizedlist>
+					<listitem>
+						<para>
+							eID Trust Service XKMS2 URL. For example
+							<code>https://www.e-contract.be/eid-trust-service-ws/xkms2</code>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Signature creation trust domain:
+							<code>BE</code>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Signature verification trust domain:
+							<code>BE</code>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							TSA trust domain:
+							<code>BE-TSA</code>
+						</para>
+					</listitem>
+				</itemizedlist>
+				Under
+				<emphasis>TSP</emphasis>
+				you should configure the time-stamp service used by the eID DSS to
+				create its XAdES-T and XAdES-X signatures.
+				<itemizedlist>
+					<listitem>
+						<para>
+							TSP server URL:
+							<code>http://tsa.belgium.be/connect</code>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</para>
+		</section>
+		<section>
+			<title>eID DSS Core</title>
+			<para>
+				The eID Digital Signature Service core is available at:
+				<code>$EID_DSS_ADDRESS/eid-dss/</code>
+				. Check this site to find out which document formats and signature
+				protocols are provided by the eID DSS runtime.
+			</para>
+		</section>
+		<section>
+			<title>eID DSS Validation Web Service</title>
+			<para>
+				The eID Digital Signature Service Validation Web Service is
+				available at:
+				<code>$EID_DSS_ADDRESS/eid-dss-ws/dss</code>
+				. Check this site to see whether the JAX-WS webservice stack is up
+				and running.
+			</para>
+		</section>
+		<section>
+			<title>eID DSS Portal</title>
+			<para>
+				The eID Digital Signature Service end-user portal is available at:
+				<code>$EID_DSS_ADDRESS/eid-dss-portal/</code>
+				. After configuring the eID DSS via the eID DSS admin portal, try to
+				sign a document using this portal.
+			</para>
+		</section>
+	</section>
 	<appendix id="links">
 		<title>Useful links</title>
 		<para>
