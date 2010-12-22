@@ -38,6 +38,42 @@
 							<hibernateDialect>org.hibernate.dialect.MySQLDialect</hibernateDialect>
 						</configuration>
 					</execution>
+					<execution>
+						<id>postgresql</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>generate-sql-ddl</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/classes</outputDirectory>
+							<outputName>eid-dss-ddl-postgresql.sql</outputName>
+							<artifactItems>
+								<artifactItem>
+									<groupId>be.fedict.eid-dss</groupId>
+									<artifactId>eid-dss-entity</artifactId>
+								</artifactItem>
+							</artifactItems>
+							<hibernateDialect>org.hibernate.dialect.PostgreSQLDialect</hibernateDialect>
+						</configuration>
+					</execution>
+					<execution>
+						<id>oracle</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>generate-sql-ddl</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/classes</outputDirectory>
+							<outputName>eid-dss-ddl-oracle.sql</outputName>
+							<artifactItems>
+								<artifactItem>
+									<groupId>be.fedict.eid-dss</groupId>
+									<artifactId>eid-dss-entity</artifactId>
+								</artifactItem>
+							</artifactItems>
+							<hibernateDialect>org.hibernate.dialect.Oracle10gDialect</hibernateDialect>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
