@@ -11,7 +11,7 @@
 			<year>2010</year>
 			<holder>Fedict</holder>
 		</copyright>
-		<releaseinfo>21 Dec 2010</releaseinfo>
+		<releaseinfo>22 Dec 2010</releaseinfo>
 		<authorgroup>
 			<author>
 				<firstname>Frank</firstname>
@@ -129,6 +129,9 @@
 					<listitem>
 						<para>PostgreSQL</para>
 					</listitem>
+					<listitem>
+						<para>Oracle</para>
+					</listitem>
 				</itemizedlist>
 			</para>
 			<section>
@@ -150,6 +153,18 @@
 					Service product. The eID Digital Signature Service specific
 					database initialization script is called
 					<code>eid-dss-ddl-postgresql.sql</code>
+					and is located under the
+					<code>sql</code>
+					directory.
+				</para>
+			</section>
+			<section>
+				<title>Oracle</title>
+				<para>
+					The database initialization is similar to that of the eID Trust
+					Service product. The eID Digital Signature Service specific
+					database initialization script is called
+					<code>eid-dss-ddl-oracle.sql</code>
 					and is located under the
 					<code>sql</code>
 					directory.
