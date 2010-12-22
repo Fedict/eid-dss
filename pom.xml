@@ -69,6 +69,24 @@
 				<module>eid-dss-sdk</module>
 			</modules>
 		</profile>
+		<profile>
+			<id>prod-mysql</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>prod-mysql</value>
+				</property>
+			</activation>
+			<modules>
+				<module>eid-dss-sql-ddl</module>
+				<module>eid-dss-admin-manual</module>
+				<module>eid-dss-mysql-distribution</module>
+			</modules>
+			<properties>
+				<hibernate.dialect>org.hibernate.dialect.MySQLDialect</hibernate.dialect>
+				<hibernate.hbm2ddl.auto>validate</hibernate.hbm2ddl.auto>
+			</properties>
+		</profile>
 	</profiles>
 	<dependencyManagement>
 		<dependencies>
