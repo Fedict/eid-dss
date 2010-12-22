@@ -96,6 +96,27 @@
 			Signature Service. We refer to the eID Trust Service Administrator
 			Manual for all non eID DSS specific configuration aspects. 
 		</para>
+		<para>
+			The eID Digital Signature Service distribution also bundles the
+			eID
+			Trust Service. If you do not want to deploy the eID Trust Service
+			along with the eID Digital Signature Service you can remove the
+			following files from the distribution:
+			<itemizedlist>
+				<listitem>
+					<para>
+						<code>jboss/server/default/deploy/eid-trust-service-deploy-1.0.0-SNAPSHOT.ear
+						</code>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<code>jboss/server/all/deploy/eid-trust-service-deploy-1.0.0-SNAPSHOT.ear
+						</code>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</para>
 		<section>
 			<title>Database</title>
 			<para>
@@ -104,6 +125,9 @@
 				<itemizedlist>
 					<listitem>
 						<para>MySQL</para>
+					</listitem>
+					<listitem>
+						<para>PostgreSQL</para>
 					</listitem>
 				</itemizedlist>
 			</para>
@@ -114,6 +138,18 @@
 					Service product. The eID Digital Signature Service specific
 					database initialization script is called
 					<code>eid-dss-ddl-mysql.sql</code>
+					and is located under the
+					<code>sql</code>
+					directory.
+				</para>
+			</section>
+			<section>
+				<title>PostgreSQL</title>
+				<para>
+					The database initialization is similar to that of the eID Trust
+					Service product. The eID Digital Signature Service specific
+					database initialization script is called
+					<code>eid-dss-ddl-postgresql.sql</code>
 					and is located under the
 					<code>sql</code>
 					directory.
