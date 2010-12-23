@@ -19,16 +19,14 @@
 package be.fedict.eid.dss.webapp;
 
 import javax.faces.component.UIViewRoot;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jboss.seam.web.Session;
 
 /**
  * Via this JSF phase listener we clean-up the HTTP session when the eID DSS
@@ -51,11 +49,8 @@ public class SessionCleanupPhaseListener implements PhaseListener {
 		LOG.debug("view ID: " + viewId);
 		if ("/protocol-response-post.xhtml".equals(viewId)) {
 			LOG.debug("invalidating the HTTP session");
-			ExternalContext externalContext = facesContext.getExternalContext();
-			HttpServletRequest httpRequest = (HttpServletRequest) externalContext
-					.getRequest();
-			HttpSession httpSession = httpRequest.getSession();
-			httpSession.invalidate();
+			Session seamSession = Session.getInstance();
+			seamSession.invalidate();
 		}
 	}
 
