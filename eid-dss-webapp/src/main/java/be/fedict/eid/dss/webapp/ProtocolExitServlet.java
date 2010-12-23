@@ -138,5 +138,9 @@ public class ProtocolExitServlet extends AbstractProtocolServiceServlet {
 			return;
 		}
 		LOG.debug("protocol service managed its own protocol response");
+		/*
+		 * Clean-up the session here as it is no longer used after this point.
+		 */
+		httpSession.invalidate();
 	}
 }

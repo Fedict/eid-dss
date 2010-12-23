@@ -311,12 +311,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.seam</groupId>
-			<artifactId>jboss-seam</artifactId>
-			<type>ejb</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>javax.persistence</groupId>
 			<artifactId>persistence-api</artifactId>
 			<scope>provided</scope>

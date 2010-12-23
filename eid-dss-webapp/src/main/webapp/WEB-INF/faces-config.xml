@@ -21,6 +21,7 @@
 
 	<lifecycle>
 		<phase-listener>be.fedict.eid.dss.webapp.CacheControlPhaseListener</phase-listener>
+		<phase-listener>be.fedict.eid.dss.webapp.SessionCleanupPhaseListener</phase-listener>
 	</lifecycle>
 
 	<navigation-rule>
