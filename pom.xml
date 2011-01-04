@@ -105,6 +105,43 @@
 				<hibernate.hbm2ddl.auto>validate</hibernate.hbm2ddl.auto>
 			</properties>
 		</profile>
+		<profile>
+			<id>prod-oracle</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>prod-oracle</value>
+				</property>
+			</activation>
+			<modules>
+				<module>eid-dss-sql-ddl</module>
+				<module>eid-dss-admin-manual</module>
+				<module>eid-dss-oracle-distribution</module>
+			</modules>
+			<properties>
+				<hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</hibernate.dialect>
+				<hibernate.hbm2ddl.auto>validate</hibernate.hbm2ddl.auto>
+			</properties>
+		</profile>
+		<profile>
+			<id>all</id>
+			<activation>
+				<property>
+					<name>env</name>
+					<value>all</value>
+				</property>
+			</activation>
+			<modules>
+				<module>eid-dss-dev-guide</module>
+				<module>eid-dss-sdk</module>
+				<module>eid-dss-sql-ddl</module>
+				<module>eid-dss-admin-manual</module>
+				<module>eid-dss-mysql-distribution</module>
+				<module>eid-dss-postgresql-distribution</module>
+				<module>eid-dss-oracle-distribution</module>
+				<module>eid-dss-tests</module>
+			</modules>
+		</profile>
 	</profiles>
 	<dependencyManagement>
 		<dependencies>
