@@ -7,7 +7,7 @@
 		<artifactId>eid-dss</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<name>FedICT eID Digital Signature Service Web Service Webapp</name>
+	<name>FedICT eID DSS Web Service Webapp</name>
 	<description>Web Service Runtime Web Application for eID Digital Signature Service</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-ws-webapp</artifactId>
