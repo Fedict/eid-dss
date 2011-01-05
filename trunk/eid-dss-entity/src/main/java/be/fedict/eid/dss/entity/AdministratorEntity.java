@@ -19,6 +19,7 @@
 package be.fedict.eid.dss.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,20 +32,27 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = Constants.DATABASE_TABLE_PREFIX + "admin")
-@NamedQueries({ @NamedQuery(name = AdministratorEntity.COUNT_ALL, query = "SELECT COUNT(*) FROM AdministratorEntity") })
+@NamedQueries({
+		@NamedQuery(name = AdministratorEntity.COUNT_ALL, query = "SELECT COUNT(*) FROM AdministratorEntity"),
+		@NamedQuery(name = AdministratorEntity.ALL, query = "SELECT admin FROM AdministratorEntity AS admin") })
 public class AdministratorEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	public static final String COUNT_ALL = "dss.admin.count.all";
 
+	public static final String ALL = "dss.admin.all";
+
 	private String id;
 
 	private String name;
 
-	public AdministratorEntity(String id, String name) {
+	private boolean pending;
+
+	public AdministratorEntity(String id, String name, boolean pending) {
 		this.id = id;
 		this.name = name;
+		this.pending = pending;
 	}
 
 	public AdministratorEntity() {
@@ -69,9 +77,24 @@ public class AdministratorEntity implements Serializable {
 		this.name = name;
 	}
 
+	public boolean isPending() {
+		return this.pending;
+	}
+
+	public void setPending(boolean pending) {
+		this.pending = pending;
+	}
+
 	public static boolean hasAdmins(EntityManager entityManager) {
 		Query query = entityManager.createNamedQuery(COUNT_ALL);
 		Long count = (Long) query.getSingleResult();
 		return 0 != count;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static List<AdministratorEntity> getAdmins(
+			EntityManager entityManager) {
+		Query query = entityManager.createNamedQuery(ALL);
+		return query.getResultList();
 	}
 }

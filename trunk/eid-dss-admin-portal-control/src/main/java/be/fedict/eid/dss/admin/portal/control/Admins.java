@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2010 Frank Cornelis.
+ * Copyright (C) 2011 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -16,23 +16,27 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.model;
-
-import java.security.cert.X509Certificate;
-import java.util.List;
+package be.fedict.eid.dss.admin.portal.control;
 
 import javax.ejb.Local;
 
-import be.fedict.eid.dss.entity.AdministratorEntity;
-
 @Local
-public interface AdministratorManager {
+public interface Admins {
 
-	boolean hasAdminRights(X509Certificate certificate);
+	/*
+	 * Actions.
+	 */
+	void delete();
 
-	List<AdministratorEntity> listAdmins();
+	void approve();
 
-	void removeAdmin(String adminId);
+	/*
+	 * Factories.
+	 */
+	void initList();
 
-	void approveAdmin(String adminId);
+	/*
+	 * Lifecycle.
+	 */
+	void destroy();
 }
