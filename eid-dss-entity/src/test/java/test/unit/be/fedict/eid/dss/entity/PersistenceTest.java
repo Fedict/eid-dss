@@ -84,7 +84,7 @@ public class PersistenceTest {
 		assertFalse(AdministratorEntity.hasAdmins(this.entityManager));
 
 		AdministratorEntity administratorEntity = new AdministratorEntity(
-				"foobar", "Mr. foobar");
+				"foobar", "Mr. foobar", true);
 		this.entityManager.persist(administratorEntity);
 
 		assertTrue(AdministratorEntity.hasAdmins(this.entityManager));
