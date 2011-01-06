@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core">
+<body>
+<ui:composition template="/WEB-INF/template.xhtml">
+	<ui:define name="body">
+		<h2>Welcome</h2>
+		<p>Welcome to the eID Digital Signature Service.</p>
+		<p>This service cannot be accessed directly using a web browser.</p>
+
+		<h3>Supported document formats</h3>
+		<h:form>
+			<rich:dataTable var="row" value="#{dssDocumentFormatList}" rows="10">
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Mime Type" />
+					</f:facet>
+					<h:outputText value="#{row}" />
+				</rich:column>
+				<f:facet name="footer">
+					<rich:datascroller />
+				</f:facet>
+			</rich:dataTable>
+		</h:form>
+
+		<h3>Supported protocols</h3>
+
+		<h3>Supported XML Schemas</h3>
+		<h:form>
+			<rich:dataTable var="row" value="#{dssXmlSchemaNamespaces}" rows="10">
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="XML namespace" />
+					</f:facet>
+					<h:outputText value="#{row}" />
+				</rich:column>
+				<f:facet name="footer">
+					<rich:datascroller />
+				</f:facet>
+			</rich:dataTable>
+		</h:form>
+
+		<h3>Supported XML Style Sheets</h3>
+		<h:form>
+			<rich:dataTable var="row" value="#{dssXmlStyleSheetNamespaces}"
+				rows="10">
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="XML namespace" />
+					</f:facet>
+					<h:outputText value="#{row}" />
+				</rich:column>
+				<f:facet name="footer">
+					<rich:datascroller />
+				</f:facet>
+			</rich:dataTable>
+		</h:form>
+
+		<h3>Service Digital Identity</h3>
+		<h:panelGrid columns="2" rendered="#{not empty dssServiceFingerprint}">
+			<h:outputText value="Certificate fingerprint:" />
+			<h:outputText value="#{dssServiceFingerprint}" />
+		</h:panelGrid>
+	</ui:define>
+</ui:composition>
+</body>
+</html>

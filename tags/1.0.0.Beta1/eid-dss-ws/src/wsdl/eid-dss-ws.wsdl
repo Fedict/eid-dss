@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+	targetNamespace="urn:be:fedict:eid:dss:ws" xmlns:tns="urn:be:fedict:eid:dss:ws"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:dss="urn:oasis:names:tc:dss:1.0:core:schema">
+
+	<types>
+		<schema xmlns="http://www.w3.org/2001/XMLSchema">
+			<import namespace="urn:oasis:names:tc:dss:1.0:core:schema"
+				schemaLocation="oasis-dss-core-schema-v1.0-os.xsd" />
+		</schema>
+	</types>
+
+	<message name="VerifyRequest">
+		<part name="VerifyRequest" element="dss:VerifyRequest" />
+	</message>
+
+	<message name="VerifyResponse">
+		<part name="VerifyResponse" element="dss:Response" />
+	</message>
+
+	<portType name="DigitalSignatureServicePortType">
+		<operation name="verify">
+			<input message="tns:VerifyRequest" />
+			<output message="tns:VerifyResponse" />
+		</operation>
+	</portType>
+
+	<binding name="DigitalSignatureServiceBinding" type="tns:DigitalSignatureServicePortType">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"
+			style="document" />
+		<operation name="verify">
+			<soap:operation />
+			<input>
+				<soap:body use="literal" />
+			</input>
+			<output>
+				<soap:body use="literal" />
+			</output>
+		</operation>
+	</binding>
+
+	<service name="DigitalSignatureService">
+		<port name="DigitalSignatureServicePort" binding="tns:DigitalSignatureServiceBinding">
+			<soap:address location="http://localhost:8080/eid-dss-ws/dss" />
+		</port>
+	</service>
+</definitions>
