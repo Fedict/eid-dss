@@ -13,7 +13,7 @@
 	<packaging>jar</packaging>
 	<profiles>
 		<profile>
-			<id>env-sdk</id>
+			<id>sdk</id>
 			<activation>
 				<property>
 					<name>env</name>
