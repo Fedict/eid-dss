@@ -6,7 +6,6 @@
 		<jta-data-source>java:/DefaultDS</jta-data-source>
 
 		<properties>
-			<property name="hibernate.dialect" value="${hibernate.dialect}" />
 			<property name="hibernate.hbm2ddl.auto" value="${hibernate.hbm2ddl.auto}" />
 			<property name="hibernate.jdbc.use_streams_for_binary" value="${hibernate.jdbc.use_streams_for_binary}" />
 		</properties>
