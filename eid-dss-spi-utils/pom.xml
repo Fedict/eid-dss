@@ -3,13 +3,13 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.0.0.Beta2</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 	<name>FedICT eID DSS SPI Utils</name>
 	<description>Utility classes for eID Digital Signature Service extension components</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-spi-utils</artifactId>
-	<version>1.0.0.Beta2</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
