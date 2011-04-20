@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>be.fedict</groupId>
+		<artifactId>eid-dss</artifactId>
+		<version>1.0.0.Beta2</version>
+	</parent>
+	<name>FedICT eID DSS OASIS DSS Protocol</name>
+	<description>DSS Protocol Service implementing an OASIS DSS Browser POST Profile</description>
+	<groupId>be.fedict.eid-dss</groupId>
+	<artifactId>eid-dss-protocol-oasis-dss-profile</artifactId>
+	<version>1.0.0.Beta2</version>
+	<packaging>jar</packaging>
+	<dependencies>
+		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-spi</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging-api</artifactId>
+		</dependency>
+	</dependencies>
+</project>
