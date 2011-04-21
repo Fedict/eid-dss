@@ -69,7 +69,7 @@
 		<servlet-class>be.fedict.eid.applet.service.AppletServiceServlet</servlet-class>
 		<init-param>
 			<param-name>AuthenticationService</param-name>
-			<param-value>be/fedict/eid/dss/admin/AuthenticationServiceBean</param-value>
+			<param-value>be/fedict/eid/dss/admin/webapp/AuthenticationServiceBean</param-value>
 		</init-param>
 		<init-param>
 			<param-name>IncludeCertificates</param-name>

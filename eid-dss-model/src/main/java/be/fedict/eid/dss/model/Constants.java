@@ -12,29 +12,13 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, see 
+ * License along with this software; if not, see
  * http://www.gnu.org/licenses/.
  */
 
 package be.fedict.eid.dss.model;
 
-import javax.ejb.Local;
-import java.util.List;
+public abstract class Constants {
 
-@Local
-public interface Configuration {
-
-    void setValue(ConfigProperty configProperty, String index, Object value);
-
-    void setValue(ConfigProperty configProperty, Object value);
-
-    <T> T getValue(ConfigProperty configProperty, String index, Class<T> type);
-
-    <T> T getValue(ConfigProperty configProperty, Class<T> type);
-
-    void removeValue(ConfigProperty configProperty, String index);
-
-    void removeValue(ConfigProperty configProperty);
-
-    List<String> getIndexes(ConfigProperty configProperty);
+    public static final String DSS_JNDI_CONTEXT = "be/fedict/eid/dss/";
 }

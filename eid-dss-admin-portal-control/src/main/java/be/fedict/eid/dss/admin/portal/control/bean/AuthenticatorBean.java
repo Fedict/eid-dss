@@ -17,13 +17,11 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.admin.portal.control;
+package be.fedict.eid.dss.admin.portal.control.bean;
 
-import java.security.cert.X509Certificate;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-
+import be.fedict.eid.dss.admin.portal.control.AdminConstants;
+import be.fedict.eid.dss.admin.portal.control.Authenticator;
+import be.fedict.eid.dss.model.AdministratorManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.ejb3.annotation.LocalBinding;
@@ -33,33 +31,35 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.security.Credentials;
 import org.jboss.seam.security.Identity;
 
-import be.fedict.eid.dss.model.AdministratorManager;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import java.security.cert.X509Certificate;
 
 @Name("authenticator")
 @Stateless
-@LocalBinding(jndiBinding = "fedict/eid/dss/admin/portal/AuthenticatorBean")
+@LocalBinding(jndiBinding = AdminConstants.ADMIN_JNDI_CONTEXT + "AuthenticatorBean")
 public class AuthenticatorBean implements Authenticator {
 
-	private static final Log LOG = LogFactory.getLog(AuthenticatorBean.class);
+    private static final Log LOG = LogFactory.getLog(AuthenticatorBean.class);
 
-	@In
-	Credentials credentials;
+    @In
+    Credentials credentials;
 
-	@In
-	Identity identity;
+    @In
+    Identity identity;
 
-	@In(value = "eid.certs.authn", scope = ScopeType.SESSION)
-	private X509Certificate authenticatedCertificate;
+    @In(value = "eid.certs.authn", scope = ScopeType.SESSION)
+    private X509Certificate authenticatedCertificate;
 
-	@EJB
-	private AdministratorManager administratorManager;
+    @EJB
+    private AdministratorManager administratorManager;
 
-	public boolean authenticate() {
-		LOG.debug("authenticate: " + this.credentials.getUsername());
-		if (this.administratorManager
-				.hasAdminRights(this.authenticatedCertificate)) {
-			this.identity.addRole("admin");
-		}
-		return true;
-	}
+    public boolean authenticate() {
+        LOG.debug("authenticate: " + this.credentials.getUsername());
+        if (this.administratorManager
+                .hasAdminRights(this.authenticatedCertificate)) {
+            this.identity.addRole("admin");
+        }
+        return true;
+    }
 }

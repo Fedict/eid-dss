@@ -62,23 +62,6 @@
 					<h:commandButton value="Save" action="#{dssConfig.save}" />
 				</rich:tab>
 
-				<rich:tab label="Service Identity">
-					<h:panelGrid columns="2">
-						<h:outputText value="Type: " />
-						<h:selectOneMenu value="#{dssConfig.keyStoreType}">
-							<s:selectItems value="#{dssConfig.keyStoreTypeArray}"
-								var="keyStoreType" label="#{keyStoreType}" />
-							<s:convertEnum />
-						</h:selectOneMenu>
-
-						<h:outputText value="Keystore path: " />
-						<h:inputText value="#{dssConfig.keyStorePath}" size="30" />
-
-						<h:outputText value="Keystore secret: " />
-						<h:inputText value="#{dssConfig.keyStoreSecret}" size="10" />
-					</h:panelGrid>
-					<h:commandButton value="Save" action="#{dssConfig.save}" />
-				</rich:tab>
 			</rich:tabPanel>
 
 		</h:form>

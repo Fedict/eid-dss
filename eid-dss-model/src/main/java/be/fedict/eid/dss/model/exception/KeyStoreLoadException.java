@@ -12,33 +12,32 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, see 
+ * License along with this software; if not, see
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.webapp;
+package be.fedict.eid.dss.model.exception;
 
-import be.fedict.eid.dss.model.IdentityService;
-import be.fedict.eid.dss.spi.DSSProtocolContext;
+import javax.ejb.ApplicationException;
 
-import java.security.KeyStore.PrivateKeyEntry;
-
-/**
- * Implementation of the DSS Protocol Context.
- *
- * @author Frank Cornelis
- */
-public class DSSProtocolContextImpl implements DSSProtocolContext {
+@ApplicationException(rollback = true)
+public class KeyStoreLoadException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    private final IdentityService identityService;
+    public KeyStoreLoadException(String message) {
 
-    public DSSProtocolContextImpl(IdentityService identityService) {
-        this.identityService = identityService;
+        super(message);
     }
 
-    public PrivateKeyEntry getIdentity() {
-        return this.identityService.findIdentity();
+    public KeyStoreLoadException(Throwable cause) {
+
+        super(cause);
     }
+
+    public KeyStoreLoadException(String message, Throwable cause) {
+
+        super(message, cause);
+    }
+
 }

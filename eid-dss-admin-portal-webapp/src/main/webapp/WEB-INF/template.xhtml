@@ -53,6 +53,11 @@
 					href="#{facesContext.externalContext.requestContextPath}/admin/config.seam">Config</a></li>
 			</s:div>
 
+            <s:div rendered="#{identity.isLoggedIn()}">
+                <li id="menu_item_identity"><a
+                    href="#{facesContext.externalContext.requestContextPath}/admin/identity.seam">Identity</a></li>
+            </s:div>
+
 			<s:div rendered="#{identity.isLoggedIn()}">
 				<li id="menu_item_xsd"><a
 					href="#{facesContext.externalContext.requestContextPath}/admin/xsd.seam">XML
