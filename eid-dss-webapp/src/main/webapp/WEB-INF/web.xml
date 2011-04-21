@@ -162,5 +162,15 @@
         <url-pattern>/protocol-exit</url-pattern>
     </servlet-mapping>
 
+    <!-- eID Identity Servlet -->
+    <servlet>
+        <servlet-name>IdentityServlet</servlet-name>
+        <servlet-class>be.fedict.eid.dss.webapp.IdentityServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>IdentityServlet</servlet-name>
+        <url-pattern>/identity.pem</url-pattern>
+    </servlet-mapping>
+
 
 </web-app>

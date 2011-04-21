@@ -1,5 +1,5 @@
 /*
- * eID Digital Signature Service Project.
+ * eID Identity Provider Project.
  * Copyright (C) 2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -12,32 +12,28 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, see 
+ * License along with this software; if not, see
  * http://www.gnu.org/licenses/.
  */
 
 package be.fedict.eid.dss.control;
 
-import javax.ejb.Local;
+public class ServiceEndpoint {
 
-@Local
-public interface ServiceInfo {
+    private final String name;
 
-	/*
-	 * Lifecycle.
-	 */
-	void destroy();
+    private final String path;
 
-	/*
-	 * Factories.
-	 */
-	void initDocumentFormatList();
+    public ServiceEndpoint(String name, String path) {
+        this.name = name;
+        this.path = path;
+    }
 
-    void initProtocolServices();
+    public String getName() {
+        return name;
+    }
 
-	void initXmlSchemaNamespacesList();
-
-	void initXmlStyleSheetNamespacesList();
-	
-	public String getServiceFingerprint();
+    public String getPath() {
+        return path;
+    }
 }

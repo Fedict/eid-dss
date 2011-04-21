@@ -7,16 +7,16 @@
 <body>
 <ui:composition template="/WEB-INF/template.xhtml">
 	<ui:define name="body">
-		<h2>Welcome</h2>
-		<p>Welcome to the eID Digital Signature Service.</p>
-		<p>This service cannot be accessed directly using a web browser.</p>
+		<h2>#{messages.welcome}</h2>
+		<p>#{messages.welcomeInfo1}</p>
+        <p>#{messages.welcomeInfo2}</p>
 
-		<h3>Supported document formats</h3>
+		<h3>#{messages.supportedDocumentFormats}</h3>
 		<h:form>
 			<rich:dataTable var="row" value="#{dssDocumentFormatList}" rows="10">
 				<rich:column>
 					<f:facet name="header">
-						<h:outputText value="Mime Type" />
+						<h:outputText value="#{messages.mimeType}" />
 					</f:facet>
 					<h:outputText value="#{row}" />
 				</rich:column>
@@ -26,14 +26,21 @@
 			</rich:dataTable>
 		</h:form>
 
-		<h3>Supported protocols</h3>
+        <h3>#{messages.supportedProtocols}</h3>
+        <rich:dataTable value="#{dssProtocolServices}" var="row">
+            <rich:column>
+                <h:outputLink value="#{row.path}">
+                    <h:outputText value="#{row.name}"/>
+                </h:outputLink>
+            </rich:column>
+        </rich:dataTable>
 
-		<h3>Supported XML Schemas</h3>
+		<h3>#{messages.supportedXmlSchemas}</h3>
 		<h:form>
 			<rich:dataTable var="row" value="#{dssXmlSchemaNamespaces}" rows="10">
 				<rich:column>
 					<f:facet name="header">
-						<h:outputText value="XML namespace" />
+						<h:outputText value="#{messages.xmlNamespace}" />
 					</f:facet>
 					<h:outputText value="#{row}" />
 				</rich:column>
@@ -43,13 +50,13 @@
 			</rich:dataTable>
 		</h:form>
 
-		<h3>Supported XML Style Sheets</h3>
+		<h3>#{messages.supportedXmlStyleSheets}</h3>
 		<h:form>
 			<rich:dataTable var="row" value="#{dssXmlStyleSheetNamespaces}"
 				rows="10">
 				<rich:column>
 					<f:facet name="header">
-						<h:outputText value="XML namespace" />
+						<h:outputText value="#{messages.xmlNamespace}" />
 					</f:facet>
 					<h:outputText value="#{row}" />
 				</rich:column>
@@ -59,11 +66,16 @@
 			</rich:dataTable>
 		</h:form>
 
-		<h3>Service Digital Identity</h3>
-		<h:panelGrid columns="2" rendered="#{not empty dssServiceFingerprint}">
-			<h:outputText value="Certificate fingerprint:" />
-			<h:outputText value="#{dssServiceFingerprint}" />
-		</h:panelGrid>
+        <h3>#{messages.serviceIdentity}</h3>
+        <p>#{messages.identityThumbprint} :
+            <h:outputText value="#{dssServiceFingerprint}"/>
+        </p>
+
+        <p>
+            <h:outputLink value="./identity.pem">
+                <h:outputText value="#{messages.identityCertificateChain}"/>
+            </h:outputLink>
+        </p>
 	</ui:define>
 </ui:composition>
 </body>
