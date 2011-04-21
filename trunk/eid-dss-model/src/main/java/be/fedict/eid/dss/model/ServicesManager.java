@@ -18,57 +18,51 @@
 
 package be.fedict.eid.dss.model;
 
+import be.fedict.eid.dss.spi.DSSDocumentService;
+import be.fedict.eid.dss.spi.protocol.DigitalSignatureServiceProtocolType;
+
+import javax.ejb.Local;
 import java.util.List;
 import java.util.Map;
 
-import javax.ejb.Local;
-
-import be.fedict.eid.dss.spi.DSSDocumentService;
-
 /**
  * Interface for component that manages the registered different services.
- * 
+ *
  * @author Frank Cornelis
- * 
  */
 @Local
 public interface ServicesManager {
 
-	/**
-	 * Gives back a map with (context path, protocol service class name) tuples.
-	 * 
-	 * @return
-	 */
-	Map<String, String> getProtocolServiceClassNames();
+    /**
+     * @return map with (context path, protocol service class name) tuples.
+     */
+    Map<String, String> getProtocolServiceClassNames();
 
-	/**
-	 * Gives back a map with (content type, document service class name) tuples.
-	 * 
-	 * @return
-	 */
-	Map<String, String> getDocumentServiceClassNames();
+    /**
+     * @return list of DSS Protocol Service types.
+     */
+    List<DigitalSignatureServiceProtocolType> getProtocolServices();
 
-	/**
-	 * Gives back a list of supported document formats (mime-types).
-	 * 
-	 * @return
-	 */
-	List<String> getSupportedDocumentFormats();
+    /**
+     * @return map with (content type, document service class name) tuples.
+     */
+    Map<String, String> getDocumentServiceClassNames();
 
-	/**
-	 * Gives back the current document service to be used. The content-type is
-	 * retrieved from the currently active document repository.
-	 * 
-	 * @return
-	 */
-	DSSDocumentService getDocumentService();
+    /**
+     * @return list of supported document formats (mime-types).
+     */
+    List<String> getSupportedDocumentFormats();
 
-	/**
-	 * Gives back the document service corresponding with the given content
-	 * type.
-	 * 
-	 * @param contentType
-	 * @return
-	 */
-	DSSDocumentService getDocumentService(String contentType);
+    /**
+     * @return the current document service to be used. The content-type is
+     *         retrieved from the currently active document repository.
+     */
+    DSSDocumentService getDocumentService();
+
+    /**
+     * @param contentType content type to get {@link DSSDocumentService} for.
+     * @return the document service corresponding with the given content
+     *         type.
+     */
+    DSSDocumentService getDocumentService(String contentType);
 }
