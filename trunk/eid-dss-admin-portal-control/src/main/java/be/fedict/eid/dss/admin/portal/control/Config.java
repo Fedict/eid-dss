@@ -18,82 +18,67 @@
 
 package be.fedict.eid.dss.admin.portal.control;
 
-import javax.ejb.Local;
-
-import be.fedict.eid.dss.model.KeyStoreType;
 import be.fedict.eid.dss.model.TSPDigestAlgo;
+
+import javax.ejb.Local;
 
 @Local
 public interface Config {
 
-	/*
-	 * Accessors.
-	 */
-	String getXkmsUrl();
+    /*
+      * Accessors.
+      */
+    String getXkmsUrl();
 
-	void setXkmsUrl(String xkmsUrl);
+    void setXkmsUrl(String xkmsUrl);
 
-	String getTspUrl();
+    String getTspUrl();
 
-	void setTspUrl(String tspUrl);
+    void setTspUrl(String tspUrl);
 
-	String getTspPolicyOid();
+    String getTspPolicyOid();
 
-	void setTspPolicyOid(String tspPolicyOid);
+    void setTspPolicyOid(String tspPolicyOid);
 
-	Boolean getHttpProxy();
+    Boolean getHttpProxy();
 
-	void setHttpProxy(Boolean httpProxy);
+    void setHttpProxy(Boolean httpProxy);
 
-	String getHttpProxyHost();
+    String getHttpProxyHost();
 
-	void setHttpProxyHost(String httpProxyHost);
+    void setHttpProxyHost(String httpProxyHost);
 
-	Integer getHttpProxyPort();
+    Integer getHttpProxyPort();
 
-	void setHttpProxyPort(Integer httpProxyPort);
+    void setHttpProxyPort(Integer httpProxyPort);
 
-	TSPDigestAlgo[] getTspDigestAlgoArray();
+    TSPDigestAlgo[] getTspDigestAlgoArray();
 
-	TSPDigestAlgo getTspDigestAlgo();
+    TSPDigestAlgo getTspDigestAlgo();
 
-	void setTspDigestAlgo(TSPDigestAlgo tspDigestAlgo);
+    void setTspDigestAlgo(TSPDigestAlgo tspDigestAlgo);
 
-	KeyStoreType[] getKeyStoreTypeArray();
+    String getSignTrustDomain();
 
-	KeyStoreType getKeyStoreType();
+    void setSignTrustDomain(String signTrustDomain);
 
-	void setKeyStoreType(KeyStoreType keyStoreType);
+    String getVerifyTrustDomain();
 
-	String getKeyStorePath();
+    void setVerifyTrustDomain(String verifyTrustDomain);
 
-	void setKeyStorePath(String keyStorePath);
+    String getTsaTrustDomain();
 
-	String getKeyStoreSecret();
+    void setTsaTrustDomain(String tsaTrustDomain);
 
-	void setKeyStoreSecret(String keyStoreSecret);
+    /*
+      * Actions.
+      */
+    String save();
 
-	String getSignTrustDomain();
+    /*
+      * Lifecycle.
+      */
+    void destroy();
 
-	void setSignTrustDomain(String signTrustDomain);
-
-	String getVerifyTrustDomain();
-
-	void setVerifyTrustDomain(String verifyTrustDomain);
-
-	String getTsaTrustDomain();
-
-	void setTsaTrustDomain(String tsaTrustDomain);
-
-	/*
-	 * Actions.
-	 */
-	String save();
-
-	/*
-	 * Lifecycle.
-	 */
-	void destroy();
-
-	void postConstruct();
+    void postConstruct();
 }

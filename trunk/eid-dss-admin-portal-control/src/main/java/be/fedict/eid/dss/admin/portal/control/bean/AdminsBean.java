@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.admin.portal.control;
+package be.fedict.eid.dss.admin.portal.control.bean;
 
 import java.util.List;
 
@@ -24,6 +24,7 @@ import javax.ejb.EJB;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
 
+import be.fedict.eid.dss.admin.portal.control.Admins;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;

@@ -18,27 +18,92 @@
 
 package be.fedict.eid.dss.model;
 
+import be.fedict.eid.dss.model.exception.KeyStoreLoadException;
+
+import javax.ejb.Local;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import javax.ejb.Local;
-
 /**
  * Interface for the identity service. The identity service maintains the
  * identity of the eID DSS service.
- * 
+ *
  * @author Frank Cornelis
- * 
  */
 @Local
 public interface IdentityService {
 
-	void reloadIdentity();
+    /**
+     * Reload the currently configured identity
+     *
+     * @throws KeyStoreLoadException failed to load keystore
+     */
+    void reloadIdentity() throws KeyStoreLoadException;
 
-	KeyStore.PrivateKeyEntry getIdentity();
+    /**
+     * Sets specified identity as the active eID IdP Identity
+     *
+     * @param name name of the identity to become active
+     * @throws KeyStoreLoadException failed to load the identity.
+     */
+    void setActiveIdentity(String name) throws KeyStoreLoadException;
 
-	String getIdentityFingerprint();
+    /**
+     * Update/add an eID IdP Identity
+     *
+     * @param dssIdentityConfig the identity configuration
+     * @return the identity
+     * @throws KeyStoreLoadException failed to load the identity.
+     */
+    KeyStore.PrivateKeyEntry setIdentity(DSSIdentityConfig dssIdentityConfig)
+            throws KeyStoreLoadException;
 
-	List<X509Certificate> getIdentityCertificateChain();
+    /**
+     * Test if specified IdP Identity configuration is valid.
+     *
+     * @param dssIdentityConfig the identity configuration
+     * @return the identity
+     * @throws KeyStoreLoadException failed to load the identity.
+     */
+    KeyStore.PrivateKeyEntry loadIdentity(DSSIdentityConfig dssIdentityConfig)
+            throws KeyStoreLoadException;
+
+    /**
+     * @return the currently active eID IdP Identity config
+     *         or <code>null</code> if none is active
+     */
+    DSSIdentityConfig findIdentityConfig();
+
+    /**
+     * @param name identity's name
+     * @return the identity config or <code>null</code> if not found.
+     */
+    DSSIdentityConfig findIdentityConfig(String name);
+
+    /**
+     * Remove specified identity configuration
+     *
+     * @param name name of the identity config to be removed
+     */
+    void removeIdentityConfig(String name);
+
+    /**
+     * @return all configured identity names
+     */
+    List<String> getIdentities();
+
+    /**
+     * @return if the IdP's identity is configured or not.
+     */
+    boolean isIdentityConfigured();
+
+    /**
+     * @return the identity of this eID IdP system.
+     */
+    KeyStore.PrivateKeyEntry findIdentity();
+
+    String getIdentityFingerprint();
+
+    List<X509Certificate> getIdentityCertificateChain();
 }

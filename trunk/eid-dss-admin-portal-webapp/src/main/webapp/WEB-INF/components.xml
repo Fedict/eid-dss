@@ -9,8 +9,7 @@
         http://jboss.com/products/seam/web http://www.jboss.com/products/seam/web-2.2.xsd
         http://jboss.com/products/seam/international http://jboss.com/products/seam/international-2.2.xsd">
 
-	<core:init jndi-pattern="fedict/eid/dss/admin/portal/#{ejbName}"
-		debug="true" />
+    <core:init jndi-pattern="be/fedict/eid/dss/admin/webapp/#{ejbName}"/>
 
 	<security:identity authenticate-method="#{authenticator.authenticate}" />
 
@@ -21,5 +20,10 @@
 	<event type="org.jboss.seam.security.loginSuccessful">
 		<action execute="#{redirect.returnToCapturedView}" />
 	</event>
+
+    <!-- Disable the "Transaction Failed" faces message -->
+    <component name="org.jboss.seam.transaction.facesTransactionEvents">
+        <property name="transactionFailedMessageEnabled">false</property>
+    </component>
 
 </components>
