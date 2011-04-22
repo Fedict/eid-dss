@@ -26,32 +26,20 @@ import be.fedict.eid.dss.spi.SignatureInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.utils.Constants;
-import org.apache.xpath.XPathAPI;
-import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.ocsp.OCSPResp;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.crypto.dsig.DigestMethod;
-import javax.xml.crypto.dsig.Reference;
-import javax.xml.crypto.dsig.SignedInfo;
 import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.transform.TransformerException;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.*;
+import java.security.cert.X509CRL;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -64,38 +52,10 @@ public class XAdESValidation {
 
     private static final Log LOG = LogFactory.getLog(XAdESValidation.class);
 
-    private final Unmarshaller xadesUnmarshaller;
-
-    private final Unmarshaller identityUnmarshaller;
-
-    private final CertificateFactory certificateFactory;
-
     private final DSSDocumentContext documentContext;
 
     public XAdESValidation(DSSDocumentContext documentContext) {
         this.documentContext = documentContext;
-
-        try {
-            JAXBContext xadesJaxbContext = JAXBContext
-                    .newInstance(
-                            ObjectFactory.class,
-                            be.fedict.eid.applet.service.signer.jaxb.xades141.ObjectFactory.class);
-            this.xadesUnmarshaller = xadesJaxbContext.createUnmarshaller();
-
-            JAXBContext identityJaxbContext = JAXBContext
-                    .newInstance(be.fedict.eid.applet.service.signer.jaxb.identity.ObjectFactory.class);
-            this.identityUnmarshaller = identityJaxbContext
-                    .createUnmarshaller();
-        } catch (JAXBException e) {
-            throw new RuntimeException("JAXB error: " + e.getMessage(), e);
-        }
-
-        try {
-            this.certificateFactory = CertificateFactory.getInstance("X.509");
-        } catch (CertificateException e) {
-            throw new RuntimeException("certificate factory error: "
-                    + e.getMessage(), e);
-        }
     }
 
     public SignatureInfo validate(Document document, XMLSignature xmlSignature,
@@ -106,8 +66,9 @@ public class XAdESValidation {
          */
         Element nsElement = getNsElement(document);
 
-        QualifyingPropertiesType qualifyingProperties = getQualifyingProperties(
-                nsElement, xmlSignature, signatureElement);
+        QualifyingPropertiesType qualifyingProperties =
+                XAdESUtils.getQualifyingProperties(nsElement, xmlSignature,
+                        signatureElement);
         SignedPropertiesType signedProperties = qualifyingProperties
                 .getSignedProperties();
         SignedSignaturePropertiesType signedSignatureProperties = signedProperties
@@ -173,40 +134,51 @@ public class XAdESValidation {
         }
 
 
-        // TODO: validate XAdES timestamps
-        XAdESTimeStampType signatureTimeStamp = findUnsignedSignatureProperty(
-                qualifyingProperties, XAdESTimeStampType.class, "SignatureTimeStamp");
-        if (null == signatureTimeStamp) {
-            LOG.error("No SignatureTimeStamp present");
-            throw new RuntimeException("No SignatureTimeStamp present");
-        }
-        validateTimeStampTokenTrust(signatureTimeStamp);
-
-        XAdESTimeStampType sigAndRefsTimeStamp = findUnsignedSignatureProperty(
+        // validate SigAndRefsTimeStamp
+        XAdESTimeStampType sigAndRefsTimeStamp = XAdESUtils.findUnsignedSignatureProperty(
                 qualifyingProperties, XAdESTimeStampType.class, "SigAndRefsTimeStamp");
         if (null == sigAndRefsTimeStamp) {
             LOG.error("No SigAndRefsTimeStamp present");
             throw new RuntimeException("No SigAndRefsTimeStamp present");
         }
-        validateTimeStampTokenTrust(sigAndRefsTimeStamp);
+        validateSigAndRefsTimeStamp(sigAndRefsTimeStamp);
+
+        // validate SignatureTimeStamp
+        XAdESTimeStampType signatureTimeStamp = XAdESUtils.findUnsignedSignatureProperty(
+                qualifyingProperties, XAdESTimeStampType.class, "SignatureTimeStamp");
+        if (null == signatureTimeStamp) {
+            LOG.error("No SignatureTimeStamp present");
+            throw new RuntimeException("No SignatureTimeStamp present");
+        }
+
+        List<TimeStampToken> signatureTimeStampTokens =
+                new XAdESSignatureTimeStampValidation().validate(
+                        signatureTimeStamp, signatureElement);
+
+        // trust validation
+        for (TimeStampToken signatureTimeStampToken : signatureTimeStampTokens) {
+            this.documentContext.validate(signatureTimeStampToken);
+        }
+
+        // TODO: time coherence validation
 
 
         /*
         * Retrieve certificate chain and revocation data from XAdES-X-L
         * extension for trust validation.
         */
-        RevocationValuesType revocationValues = findUnsignedSignatureProperty(
+        RevocationValuesType revocationValues = XAdESUtils.findUnsignedSignatureProperty(
                 qualifyingProperties, RevocationValuesType.class);
-        List<X509CRL> crls = getCrls(revocationValues);
-        List<OCSPResp> ocspResponses = getOCSPResponses(revocationValues);
+        List<X509CRL> crls = XAdESUtils.getCrls(revocationValues);
+        List<OCSPResp> ocspResponses = XAdESUtils.getOCSPResponses(revocationValues);
 
-        CertificateValuesType certificateValues = findUnsignedSignatureProperty(
+        CertificateValuesType certificateValues = XAdESUtils.findUnsignedSignatureProperty(
                 qualifyingProperties, CertificateValuesType.class);
         if (null == certificateValues) {
             LOG.error("no CertificateValuesType element found.");
             throw new RuntimeException("no CertificateValuesType element found.");
         }
-        List<X509Certificate> certificateChain = getCertificates(certificateValues);
+        List<X509Certificate> certificateChain = XAdESUtils.getCertificates(certificateValues);
         if (certificateChain.isEmpty()) {
             LOG.error("no certificate chain present in CertificateValuesType");
             throw new RuntimeException("no cert chain in CertificateValuesType");
@@ -237,7 +209,7 @@ public class XAdESValidation {
         SignatureInfo.Gender gender = null;
         byte[] photo = null;
 
-        IdentityType identity = findIdentity(nsElement, xmlSignature,
+        IdentityType identity = XAdESUtils.findIdentity(nsElement, xmlSignature,
                 signatureElement);
         if (null != identity) {
             firstName = identity.getFirstName();
@@ -261,44 +233,50 @@ public class XAdESValidation {
                 signingTime, role, firstName, name, middleName, gender, photo);
     }
 
-    private void validateTimeStampTokenTrust(XAdESTimeStampType timeStampToken)
+    private List<TimeStampToken> validateSigAndRefsTimeStamp(XAdESTimeStampType sigAndRefsTimeStamp)
             throws Exception {
 
-        if (timeStampToken.getEncapsulatedTimeStampOrXMLTimeStamp().isEmpty()) {
-            LOG.error("No encapsulated timestamp present in timestamp token");
-            throw new RuntimeException("No encapsulated timestamp present in timestamp token");
+        List<TimeStampToken> timeStampTokens = XAdESUtils.getTimeStampTokens(sigAndRefsTimeStamp);
+
+        // trust validation
+        if (timeStampTokens.isEmpty()) {
+            LOG.error("No timestamp tokens present in SignatureTimeStamp");
+            throw new RuntimeException("No timestamp tokens present in SignatureTimeStamp");
         }
-        EncapsulatedPKIDataType encapsulatedTimeStampToken =
-                (EncapsulatedPKIDataType) timeStampToken
-                        .getEncapsulatedTimeStampOrXMLTimeStamp().get(0);
-        byte[] encodedTimestampToken = encapsulatedTimeStampToken.getValue();
-        TimeStampToken timestampToken = new TimeStampToken(new CMSSignedData(
-                encodedTimestampToken));
-        this.documentContext.validate(timestampToken);
-
-    }
-
-    @SuppressWarnings("unchecked")
-    private IdentityType findIdentity(Element nsElement,
-                                      XMLSignature xmlSignature,
-                                      Element signatureElement)
-            throws JAXBException, TransformerException {
-
-        String identityUri = findReferenceUri(xmlSignature,
-                IdentitySignatureFacet.REFERENCE_TYPE);
-        if (null != identityUri) {
-            String identityId = identityUri.substring(1);
-            Node identityNode = XPathAPI.selectSingleNode(signatureElement,
-                    "ds:Object/identity:Identity[@Id = '" + identityId + "']",
-                    nsElement);
-            if (null != identityNode) {
-                JAXBElement<IdentityType> identityElement =
-                        (JAXBElement<IdentityType>) this.identityUnmarshaller
-                                .unmarshal(identityNode);
-                return identityElement.getValue();
-            }
+        for (TimeStampToken timeStampToken : timeStampTokens) {
+            this.documentContext.validate(timeStampToken);
         }
-        return null;
+
+        // TODO: validate SigAndRefsTimeStamp
+
+        // 1. verify signature in timestamp token
+
+        // 2. check all timestamped signed properties and regular elements present
+
+        // 3. take ds:SignatureValue, cannonicalize and concatenate bytes.
+
+        /*
+         * 4.   check CompleteCertificateRefs, CompleteRevocationRefs present in XAdES signature
+         *      check SignatureTimeStamp, AttributeCertificateRefs and AttributeRevocationRefs appear before SigAndRefsTimeStamp
+         */
+
+        /*
+         * 5. take following unsigned properties, canonicalize and concatenate bytes to bytestream from step 3.
+         *
+         * CompleteCertificateRefs, CompleteRevocationRefs, SignatureTimeStamp, AttributeCertificateRefs and AttributeRevocationRefs
+         */
+
+        // 6. compute digest and compare with token
+
+        /*
+         * 7. time coherence:
+         *
+         * posterior to SigningTime and AllDataObjectsTimeStamp, IndividualDataObjectsTimeStamp or SignatureTimeStamp,
+         *
+         * previous to times in tokens in ArchiveTimeStamp elements
+         */
+
+        return timeStampTokens;
     }
 
     public static String getDigestAlgo(String xmlDigestAlgo) {
@@ -315,130 +293,6 @@ public class XAdESValidation {
                 + xmlDigestAlgo);
     }
 
-    private List<X509Certificate> getCertificates(CertificateValuesType certificateValues)
-            throws CertificateException {
-
-        List<X509Certificate> certificates = new LinkedList<X509Certificate>();
-        List<Object> certificateValuesContent = certificateValues
-                .getEncapsulatedX509CertificateOrOtherCertificate();
-        for (Object certificateValueContent : certificateValuesContent) {
-            if (certificateValueContent instanceof EncapsulatedPKIDataType) {
-                EncapsulatedPKIDataType encapsulatedPkiData = (EncapsulatedPKIDataType) certificateValueContent;
-                byte[] encodedCertificate = encapsulatedPkiData
-                        .getValue();
-                X509Certificate certificate = (X509Certificate) this.certificateFactory
-                        .generateCertificate(new ByteArrayInputStream(
-                                encodedCertificate));
-                certificates.add(certificate);
-            }
-        }
-        return certificates;
-    }
-
-    private List<OCSPResp> getOCSPResponses(RevocationValuesType revocationValues)
-            throws IOException {
-
-        List<OCSPResp> ocspResponses = new LinkedList<OCSPResp>();
-        OCSPValuesType ocspValues = revocationValues.getOCSPValues();
-        List<EncapsulatedPKIDataType> ocspValuesList = ocspValues
-                .getEncapsulatedOCSPValue();
-        for (EncapsulatedPKIDataType ocspValue : ocspValuesList) {
-            byte[] encodedOcspResponse = ocspValue.getValue();
-            OCSPResp ocspResp = new OCSPResp(encodedOcspResponse);
-            ocspResponses.add(ocspResp);
-        }
-        return ocspResponses;
-    }
-
-    private List<X509CRL> getCrls(RevocationValuesType revocationValues)
-            throws CRLException {
-
-        List<X509CRL> crls = new LinkedList<X509CRL>();
-        CRLValuesType crlValues = revocationValues.getCRLValues();
-        List<EncapsulatedPKIDataType> crlValuesList = crlValues
-                .getEncapsulatedCRLValue();
-        for (EncapsulatedPKIDataType crlValue : crlValuesList) {
-            byte[] encodedCrl = crlValue.getValue();
-            X509CRL crl = (X509CRL) this.certificateFactory
-                    .generateCRL(new ByteArrayInputStream(encodedCrl));
-            crls.add(crl);
-        }
-        return crls;
-    }
-
-    private <T> T findUnsignedSignatureProperty(QualifyingPropertiesType qualifyingProperties,
-                                                Class<T> declaredType) {
-        return findUnsignedSignatureProperty(qualifyingProperties, declaredType, null);
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> T findUnsignedSignatureProperty(QualifyingPropertiesType qualifyingProperties,
-                                                Class<T> declaredType, String name) {
-
-        UnsignedPropertiesType unsignedProperties = qualifyingProperties
-                .getUnsignedProperties();
-        UnsignedSignaturePropertiesType unsignedSignatureProperties = unsignedProperties
-                .getUnsignedSignatureProperties();
-        List<Object> unsignedSignaturePropertiesContentList = unsignedSignatureProperties
-                .getCounterSignatureOrSignatureTimeStampOrCompleteCertificateRefs();
-        for (Object unsignedSignatureProperty : unsignedSignaturePropertiesContentList) {
-            if (!(unsignedSignatureProperty instanceof JAXBElement)) {
-                continue;
-            }
-            JAXBElement<?> unsignedSignaturePropertyElement = (JAXBElement<?>) unsignedSignatureProperty;
-            Object unsignedSignaturePropertyValue = unsignedSignaturePropertyElement
-                    .getValue();
-            if (unsignedSignaturePropertyValue.getClass().isAssignableFrom(declaredType)) {
-
-                if (null == name) {
-                    return (T) unsignedSignaturePropertyValue;
-                } else if (unsignedSignaturePropertyElement.getName().getLocalPart().equals(name)) {
-                    return (T) unsignedSignaturePropertyValue;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private String findReferenceUri(XMLSignature xmlSignature, String type) {
-
-        SignedInfo signedInfo = xmlSignature.getSignedInfo();
-        List<Reference> references = signedInfo.getReferences();
-        for (Reference reference : references) {
-            if (type.equals(reference.getType())) {
-                return reference.getURI();
-            }
-        }
-
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private QualifyingPropertiesType getQualifyingProperties(Element nsElement,
-                                                             XMLSignature xmlSignature,
-                                                             Element signatureElement)
-            throws TransformerException, JAXBException {
-
-        String xadesSignedPropertiesUri = findReferenceUri(xmlSignature,
-                "http://uri.etsi.org/01903#SignedProperties");
-        if (null == xadesSignedPropertiesUri) {
-            LOG.error("no XAdES SignedProperties as part of signed XML data");
-            throw new RuntimeException("no XAdES SignedProperties");
-        }
-
-        String xadesSignedPropertiesId = xadesSignedPropertiesUri.substring(1);
-        Node xadesQualifyingPropertiesNode = XPathAPI.selectSingleNode(
-                signatureElement,
-                "ds:Object/xades:QualifyingProperties[xades:SignedProperties/@Id='"
-                        + xadesSignedPropertiesId + "']", nsElement);
-
-        JAXBElement<QualifyingPropertiesType> qualifyingPropertiesElement =
-                (JAXBElement<QualifyingPropertiesType>) this.xadesUnmarshaller
-                        .unmarshal(xadesQualifyingPropertiesNode);
-        return qualifyingPropertiesElement.getValue();
-    }
 
     private Element getNsElement(Document document) {
 
