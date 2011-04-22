@@ -18,25 +18,26 @@
 
 package be.fedict.eid.dss.model;
 
+import be.fedict.trust.client.exception.RevocationDataNotFoundException;
+import be.fedict.trust.client.exception.TrustDomainNotFoundException;
+import be.fedict.trust.client.exception.ValidationFailedException;
+import org.bouncycastle.ocsp.OCSPResp;
+import org.bouncycastle.tsp.TimeStampToken;
+
+import javax.ejb.Local;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
 
-import javax.ejb.Local;
-
-import org.bouncycastle.ocsp.OCSPResp;
-
-import be.fedict.trust.client.exception.RevocationDataNotFoundException;
-import be.fedict.trust.client.exception.TrustDomainNotFoundException;
-import be.fedict.trust.client.exception.ValidationFailedException;
-
 @Local
 public interface TrustValidationService {
 
-	void validate(List<X509Certificate> certificateChain, Date validationDate,
-			List<OCSPResp> ocspResponses, List<X509CRL> crls)
-			throws CertificateEncodingException, TrustDomainNotFoundException,
-			RevocationDataNotFoundException, ValidationFailedException;
+    void validate(List<X509Certificate> certificateChain, Date validationDate,
+                  List<OCSPResp> ocspResponses, List<X509CRL> crls)
+            throws CertificateEncodingException, TrustDomainNotFoundException,
+            RevocationDataNotFoundException, ValidationFailedException;
+
+    void validate(TimeStampToken timeStampToken) throws CertificateEncodingException, ValidationFailedException, TrustDomainNotFoundException, RevocationDataNotFoundException;
 }
