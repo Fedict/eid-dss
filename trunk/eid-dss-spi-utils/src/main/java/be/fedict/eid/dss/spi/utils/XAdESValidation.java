@@ -27,7 +27,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.utils.Constants;
 import org.apache.xpath.XPathAPI;
+import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.ocsp.OCSPResp;
+import org.bouncycastle.tsp.TimeStampToken;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -100,8 +102,8 @@ public class XAdESValidation {
                                   Element signatureElement, X509Certificate signingCertificate)
             throws Exception {
         /*
-           * Get signing time from XAdES-BES extension.
-           */
+         * Get signing time from XAdES-BES extension.
+         */
         Element nsElement = getNsElement(document);
 
         QualifyingPropertiesType qualifyingProperties = getQualifyingProperties(
@@ -117,8 +119,8 @@ public class XAdESValidation {
         LOG.debug("XAdES signing time: " + signingTime);
 
         /*
-           * Check the XAdES signing certificate
-           */
+         * Check the XAdES signing certificate
+         */
         CertIDListType signingCertificateCertIDList = signedSignatureProperties
                 .getSigningCertificate();
         List<CertIDType> signingCertificateCertIDs = signingCertificateCertIDList
@@ -147,8 +149,8 @@ public class XAdESValidation {
         LOG.debug("XAdES signing certificate OK");
 
         /*
-           * Get XAdES ClaimedRole.
-           */
+         * Get XAdES ClaimedRole.
+         */
         String role = null;
         SignerRoleType signerRole = signedSignatureProperties.getSignerRole();
         if (null != signerRole) {
@@ -170,12 +172,29 @@ public class XAdESValidation {
             }
         }
 
+
         // TODO: validate XAdES timestamps
+        XAdESTimeStampType signatureTimeStamp = findUnsignedSignatureProperty(
+                qualifyingProperties, XAdESTimeStampType.class, "SignatureTimeStamp");
+        if (null == signatureTimeStamp) {
+            LOG.error("No SignatureTimeStamp present");
+            throw new RuntimeException("No SignatureTimeStamp present");
+        }
+        validateTimeStampTokenTrust(signatureTimeStamp);
+
+        XAdESTimeStampType sigAndRefsTimeStamp = findUnsignedSignatureProperty(
+                qualifyingProperties, XAdESTimeStampType.class, "SigAndRefsTimeStamp");
+        if (null == sigAndRefsTimeStamp) {
+            LOG.error("No SigAndRefsTimeStamp present");
+            throw new RuntimeException("No SigAndRefsTimeStamp present");
+        }
+        validateTimeStampTokenTrust(sigAndRefsTimeStamp);
+
 
         /*
-           * Retrieve certificate chain and revocation data from XAdES-X-L
-           * extension for trust validation.
-           */
+        * Retrieve certificate chain and revocation data from XAdES-X-L
+        * extension for trust validation.
+        */
         RevocationValuesType revocationValues = findUnsignedSignatureProperty(
                 qualifyingProperties, RevocationValuesType.class);
         List<X509CRL> crls = getCrls(revocationValues);
@@ -194,8 +213,8 @@ public class XAdESValidation {
         }
 
         /*
-           * Check certificate chain is indeed contains the signing certificate.
-           */
+         * Check certificate chain is indeed contains the signing certificate.
+         */
         if (!Arrays.equals(signingCertificate.getEncoded(),
                 certificateChain.get(0).getEncoded())) {
             throw new RuntimeException(
@@ -204,14 +223,14 @@ public class XAdESValidation {
         LOG.debug("XAdES certificate chain contains actual signing certificate");
 
         /*
-           * Perform trust validation via eID Trust Service
-           */
+         * Perform trust validation via eID Trust Service
+         */
         this.documentContext.validate(certificateChain, signingTime,
                 ocspResponses, crls);
 
         /*
-           * Retrieve the possible eID identity signature extension data.
-           */
+         * Retrieve the possible eID identity signature extension data.
+         */
         String firstName = null;
         String name = null;
         String middleName = null;
@@ -236,10 +255,27 @@ public class XAdESValidation {
         }
 
         /*
-           * Return the result of the signature analysis.
-           */
+         * Return the result of the signature analysis.
+         */
         return new SignatureInfo(signingCertificate,
                 signingTime, role, firstName, name, middleName, gender, photo);
+    }
+
+    private void validateTimeStampTokenTrust(XAdESTimeStampType timeStampToken)
+            throws Exception {
+
+        if (timeStampToken.getEncapsulatedTimeStampOrXMLTimeStamp().isEmpty()) {
+            LOG.error("No encapsulated timestamp present in timestamp token");
+            throw new RuntimeException("No encapsulated timestamp present in timestamp token");
+        }
+        EncapsulatedPKIDataType encapsulatedTimeStampToken =
+                (EncapsulatedPKIDataType) timeStampToken
+                        .getEncapsulatedTimeStampOrXMLTimeStamp().get(0);
+        byte[] encodedTimestampToken = encapsulatedTimeStampToken.getValue();
+        TimeStampToken timestampToken = new TimeStampToken(new CMSSignedData(
+                encodedTimestampToken));
+        this.documentContext.validate(timestampToken);
+
     }
 
     @SuppressWarnings("unchecked")
@@ -330,9 +366,14 @@ public class XAdESValidation {
         return crls;
     }
 
+    private <T> T findUnsignedSignatureProperty(QualifyingPropertiesType qualifyingProperties,
+                                                Class<T> declaredType) {
+        return findUnsignedSignatureProperty(qualifyingProperties, declaredType, null);
+    }
+
     @SuppressWarnings("unchecked")
     private <T> T findUnsignedSignatureProperty(QualifyingPropertiesType qualifyingProperties,
-                                                Class<T> clazz) {
+                                                Class<T> declaredType, String name) {
 
         UnsignedPropertiesType unsignedProperties = qualifyingProperties
                 .getUnsignedProperties();
@@ -347,8 +388,13 @@ public class XAdESValidation {
             JAXBElement<?> unsignedSignaturePropertyElement = (JAXBElement<?>) unsignedSignatureProperty;
             Object unsignedSignaturePropertyValue = unsignedSignaturePropertyElement
                     .getValue();
-            if (unsignedSignaturePropertyValue.getClass().isAssignableFrom(clazz)) {
-                return (T) unsignedSignaturePropertyValue;
+            if (unsignedSignaturePropertyValue.getClass().isAssignableFrom(declaredType)) {
+
+                if (null == name) {
+                    return (T) unsignedSignaturePropertyValue;
+                } else if (unsignedSignaturePropertyElement.getName().getLocalPart().equals(name)) {
+                    return (T) unsignedSignaturePropertyValue;
+                }
             }
         }
 
