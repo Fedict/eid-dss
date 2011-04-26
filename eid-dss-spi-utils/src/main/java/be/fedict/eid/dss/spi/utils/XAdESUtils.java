@@ -60,6 +60,9 @@ public abstract class XAdESUtils {
 
     private static final Log LOG = LogFactory.getLog(XAdESUtils.class);
 
+    public static final String XADES_132_NS_URI = "http://uri.etsi.org/01903/v1.3.2#";
+    public static final String XADES_141_NS_URI = "http://uri.etsi.org/01903/v1.4.1#";
+
     private static final CertificateFactory certificateFactory;
     private static final Unmarshaller xadesUnmarshaller;
     private static final Unmarshaller identityUnmarshaller;
