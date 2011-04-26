@@ -18,8 +18,8 @@
 
 package be.fedict.eid.dss.spi.utils;
 
-import org.apache.xml.security.signature.Reference;
-import org.apache.xml.security.signature.XMLSignatureException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.signature.XMLSignatureInput;
 import org.apache.xml.security.transforms.Transform;
 import org.w3c.dom.Document;
@@ -41,42 +41,29 @@ import java.io.OutputStream;
  */
 public class TimeStampDigestInput {
 
+    private static final Log LOG = LogFactory.getLog(TimeStampDigestInput.class);
+
     private final String canonMethodUri;
     private final ByteArrayOutputStream digestInput;
+
+    static {
+        org.apache.xml.security.Init.init();
+    }
 
     /**
      * @param canonMethodUri the canonicalization method to be used, if needed
      * @throws NullPointerException if {@code canonMethodUri} is {@code null}
      */
     public TimeStampDigestInput(String canonMethodUri) {
+
+        LOG.debug("canonMethodUri: " + canonMethodUri);
+
         if (null == canonMethodUri) {
             throw new NullPointerException();
         }
 
         this.canonMethodUri = canonMethodUri;
         this.digestInput = new ByteArrayOutputStream();
-    }
-
-    /**
-     * Adds a {@code Reference} to the input. It is processed and the result is
-     * canonicalized if it is a node-set.
-     *
-     * @param r the reference to be added
-     * @throws NullPointerException if {@code r} is {@code null}
-     */
-    public void addReference(Reference r) {
-
-        if (null == r) {
-            throw new NullPointerException();
-        }
-
-        try {
-            XMLSignatureInput refData = r.getContentsAfterTransformation();
-            addToDigestInput(refData, r.getDocument());
-
-        } catch (XMLSignatureException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
