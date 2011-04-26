@@ -21,13 +21,12 @@ package be.fedict.eid.dss.spi.utils;
 import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
 import be.fedict.eid.applet.service.signer.jaxb.identity.IdentityType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.*;
+import be.fedict.eid.dss.spi.utils.exception.XAdESValidationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xpath.XPathAPI;
-import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.ocsp.OCSPResp;
-import org.bouncycastle.tsp.TSPException;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -44,7 +43,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.cert.*;
 import java.util.Arrays;
 import java.util.Collection;
@@ -94,49 +92,55 @@ public abstract class XAdESUtils {
 
 
     public static List<TimeStampToken> getTimeStampTokens(XAdESTimeStampType xadesTimeStamp)
-            throws CMSException, TSPException, IOException {
+            throws XAdESValidationException {
 
-        List<TimeStampToken> timeStampTokens = new LinkedList<TimeStampToken>();
-        for (Object timeStampTokenObject : xadesTimeStamp.getEncapsulatedTimeStampOrXMLTimeStamp()) {
+        try {
+            List<TimeStampToken> timeStampTokens = new LinkedList<TimeStampToken>();
+            for (Object timeStampTokenObject : xadesTimeStamp.getEncapsulatedTimeStampOrXMLTimeStamp()) {
 
-            if (timeStampTokenObject instanceof EncapsulatedPKIDataType) {
+                if (timeStampTokenObject instanceof EncapsulatedPKIDataType) {
 
-                EncapsulatedPKIDataType encapsulatedTimeStampToken =
-                        (EncapsulatedPKIDataType) timeStampTokenObject;
-                byte[] encodedTimestampToken = encapsulatedTimeStampToken.getValue();
-                timeStampTokens.add(new TimeStampToken(new CMSSignedData(
-                        encodedTimestampToken)));
+                    EncapsulatedPKIDataType encapsulatedTimeStampToken =
+                            (EncapsulatedPKIDataType) timeStampTokenObject;
+                    byte[] encodedTimestampToken = encapsulatedTimeStampToken.getValue();
+                    timeStampTokens.add(new TimeStampToken(new CMSSignedData(
+                            encodedTimestampToken)));
 
-            } else {
-                throw new RuntimeException("Timestamp token of type: " +
-                        timeStampTokenObject.getClass() + " not supported.");
+                } else {
+                    throw new XAdESValidationException("Timestamp token of type: " +
+                            timeStampTokenObject.getClass() + " not supported.");
+                }
             }
-        }
 
-        return timeStampTokens;
+            return timeStampTokens;
+        } catch (Exception e) {
+            throw new XAdESValidationException(e);
+        }
     }
 
     public static void validateTimeStampTokenSignature(TimeStampToken timeStampToken)
-            throws CMSException, NoSuchProviderException,
-            NoSuchAlgorithmException, CertStoreException,
-            CertificateExpiredException, TSPException,
-            CertificateNotYetValidException {
+            throws XAdESValidationException {
 
-        List<X509Certificate> certificateChain = new LinkedList<X509Certificate>();
-        CertStore certStore = timeStampToken.getCertificatesAndCRLs(
-                "Collection", "BC");
-        Collection<? extends Certificate> certificates = certStore
-                .getCertificates(null);
-        for (Certificate certificate : certificates) {
-            certificateChain.add((X509Certificate) certificate);
+        try {
+            List<X509Certificate> certificateChain = new LinkedList<X509Certificate>();
+            CertStore certStore = timeStampToken.getCertificatesAndCRLs(
+                    "Collection", "BC");
+            Collection<? extends Certificate> certificates = certStore
+                    .getCertificates(null);
+            for (Certificate certificate : certificates) {
+                certificateChain.add((X509Certificate) certificate);
+            }
+            X509Certificate tsaCertificate = certificateChain.get(certificateChain.size() - 1);
+
+            timeStampToken.validate(tsaCertificate, "BC");
+        } catch (Exception e) {
+            throw new XAdESValidationException(e);
         }
-        X509Certificate tsaCertificate = certificateChain.get(certificateChain.size() - 1);
-
-        timeStampToken.validate(tsaCertificate, "BC");
     }
 
     public static void verifyTimeStampTokenDigest(TimeStampToken timeStampToken,
-                                                  TimeStampDigestInput digestInput) {
+                                                  TimeStampDigestInput digestInput)
+            throws XAdESValidationException {
 
         LOG.debug("digest verification: algo=" +
                 timeStampToken.getTimeStampInfo().getMessageImprintAlgOID());
@@ -145,65 +149,77 @@ public abstract class XAdESUtils {
             md = MessageDigest.getInstance(
                     timeStampToken.getTimeStampInfo().getMessageImprintAlgOID());
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new XAdESValidationException(e);
         }
 
         if (!Arrays.equals(md.digest(digestInput.getBytes()),
                 timeStampToken.getTimeStampInfo().getMessageImprintDigest())) {
-            throw new RuntimeException("Digest verification failure for " +
+            throw new XAdESValidationException("Digest verification failure for " +
                     "timestamp token in SignatureTimeStamp");
         }
     }
 
     public static List<X509Certificate> getCertificates(CertificateValuesType certificateValues)
-            throws CertificateException {
+            throws XAdESValidationException {
 
-        List<X509Certificate> certificates = new LinkedList<X509Certificate>();
-        List<Object> certificateValuesContent = certificateValues
-                .getEncapsulatedX509CertificateOrOtherCertificate();
-        for (Object certificateValueContent : certificateValuesContent) {
-            if (certificateValueContent instanceof EncapsulatedPKIDataType) {
-                EncapsulatedPKIDataType encapsulatedPkiData = (EncapsulatedPKIDataType) certificateValueContent;
-                byte[] encodedCertificate = encapsulatedPkiData
-                        .getValue();
-                X509Certificate certificate = (X509Certificate) certificateFactory
-                        .generateCertificate(new ByteArrayInputStream(
-                                encodedCertificate));
-                certificates.add(certificate);
+        try {
+            List<X509Certificate> certificates = new LinkedList<X509Certificate>();
+            List<Object> certificateValuesContent = certificateValues
+                    .getEncapsulatedX509CertificateOrOtherCertificate();
+            for (Object certificateValueContent : certificateValuesContent) {
+                if (certificateValueContent instanceof EncapsulatedPKIDataType) {
+                    EncapsulatedPKIDataType encapsulatedPkiData = (EncapsulatedPKIDataType) certificateValueContent;
+                    byte[] encodedCertificate = encapsulatedPkiData
+                            .getValue();
+                    X509Certificate certificate = (X509Certificate) certificateFactory
+                            .generateCertificate(new ByteArrayInputStream(
+                                    encodedCertificate));
+                    certificates.add(certificate);
+                }
             }
+            return certificates;
+        } catch (CertificateException e) {
+            throw new XAdESValidationException(e);
         }
-        return certificates;
     }
 
     public static List<OCSPResp> getOCSPResponses(RevocationValuesType revocationValues)
-            throws IOException {
+            throws XAdESValidationException {
 
-        List<OCSPResp> ocspResponses = new LinkedList<OCSPResp>();
-        OCSPValuesType ocspValues = revocationValues.getOCSPValues();
-        List<EncapsulatedPKIDataType> ocspValuesList = ocspValues
-                .getEncapsulatedOCSPValue();
-        for (EncapsulatedPKIDataType ocspValue : ocspValuesList) {
-            byte[] encodedOcspResponse = ocspValue.getValue();
-            OCSPResp ocspResp = new OCSPResp(encodedOcspResponse);
-            ocspResponses.add(ocspResp);
+        try {
+            List<OCSPResp> ocspResponses = new LinkedList<OCSPResp>();
+            OCSPValuesType ocspValues = revocationValues.getOCSPValues();
+            List<EncapsulatedPKIDataType> ocspValuesList = ocspValues
+                    .getEncapsulatedOCSPValue();
+            for (EncapsulatedPKIDataType ocspValue : ocspValuesList) {
+                byte[] encodedOcspResponse = ocspValue.getValue();
+                OCSPResp ocspResp = new OCSPResp(encodedOcspResponse);
+                ocspResponses.add(ocspResp);
+            }
+            return ocspResponses;
+        } catch (IOException e) {
+            throw new XAdESValidationException(e);
         }
-        return ocspResponses;
     }
 
     public static List<X509CRL> getCrls(RevocationValuesType revocationValues)
-            throws CRLException {
+            throws XAdESValidationException {
 
-        List<X509CRL> crls = new LinkedList<X509CRL>();
-        CRLValuesType crlValues = revocationValues.getCRLValues();
-        List<EncapsulatedPKIDataType> crlValuesList = crlValues
-                .getEncapsulatedCRLValue();
-        for (EncapsulatedPKIDataType crlValue : crlValuesList) {
-            byte[] encodedCrl = crlValue.getValue();
-            X509CRL crl = (X509CRL) certificateFactory
-                    .generateCRL(new ByteArrayInputStream(encodedCrl));
-            crls.add(crl);
+        try {
+            List<X509CRL> crls = new LinkedList<X509CRL>();
+            CRLValuesType crlValues = revocationValues.getCRLValues();
+            List<EncapsulatedPKIDataType> crlValuesList = crlValues
+                    .getEncapsulatedCRLValue();
+            for (EncapsulatedPKIDataType crlValue : crlValuesList) {
+                byte[] encodedCrl = crlValue.getValue();
+                X509CRL crl = (X509CRL) certificateFactory
+                        .generateCRL(new ByteArrayInputStream(encodedCrl));
+                crls.add(crl);
+            }
+            return crls;
+        } catch (CRLException e) {
+            throw new XAdESValidationException(e);
         }
-        return crls;
     }
 
     public static <T> T findUnsignedSignatureProperty(QualifyingPropertiesType qualifyingProperties,
@@ -259,48 +275,61 @@ public abstract class XAdESUtils {
     public static QualifyingPropertiesType getQualifyingProperties(Element nsElement,
                                                                    XMLSignature xmlSignature,
                                                                    Element signatureElement)
-            throws TransformerException, JAXBException {
+            throws XAdESValidationException {
 
-        String xadesSignedPropertiesUri = findReferenceUri(xmlSignature,
-                "http://uri.etsi.org/01903#SignedProperties");
-        if (null == xadesSignedPropertiesUri) {
-            LOG.error("no XAdES SignedProperties as part of signed XML data");
-            throw new RuntimeException("no XAdES SignedProperties");
+        try {
+            String xadesSignedPropertiesUri = findReferenceUri(xmlSignature,
+                    "http://uri.etsi.org/01903#SignedProperties");
+            if (null == xadesSignedPropertiesUri) {
+                LOG.error("no XAdES SignedProperties as part of signed XML data");
+                throw new XAdESValidationException("no XAdES SignedProperties");
+            }
+
+            String xadesSignedPropertiesId = xadesSignedPropertiesUri.substring(1);
+            Node xadesQualifyingPropertiesNode = XPathAPI.selectSingleNode(
+                    signatureElement,
+                    "ds:Object/xades:QualifyingProperties[xades:SignedProperties/@Id='"
+                            + xadesSignedPropertiesId + "']", nsElement);
+
+            JAXBElement<QualifyingPropertiesType> qualifyingPropertiesElement =
+                    (JAXBElement<QualifyingPropertiesType>) xadesUnmarshaller
+                            .unmarshal(xadesQualifyingPropertiesNode);
+            return qualifyingPropertiesElement.getValue();
+        } catch (TransformerException e) {
+            throw new XAdESValidationException(e);
+        } catch (JAXBException e) {
+            throw new XAdESValidationException(e);
         }
-
-        String xadesSignedPropertiesId = xadesSignedPropertiesUri.substring(1);
-        Node xadesQualifyingPropertiesNode = XPathAPI.selectSingleNode(
-                signatureElement,
-                "ds:Object/xades:QualifyingProperties[xades:SignedProperties/@Id='"
-                        + xadesSignedPropertiesId + "']", nsElement);
-
-        JAXBElement<QualifyingPropertiesType> qualifyingPropertiesElement =
-                (JAXBElement<QualifyingPropertiesType>) xadesUnmarshaller
-                        .unmarshal(xadesQualifyingPropertiesNode);
-        return qualifyingPropertiesElement.getValue();
     }
 
     @SuppressWarnings("unchecked")
     public static IdentityType findIdentity(Element nsElement,
                                             XMLSignature xmlSignature,
                                             Element signatureElement)
-            throws JAXBException, TransformerException {
+            throws XAdESValidationException {
 
-        String identityUri = XAdESUtils.findReferenceUri(xmlSignature,
-                IdentitySignatureFacet.REFERENCE_TYPE);
-        if (null != identityUri) {
-            String identityId = identityUri.substring(1);
-            Node identityNode = XPathAPI.selectSingleNode(signatureElement,
-                    "ds:Object/identity:Identity[@Id = '" + identityId + "']",
-                    nsElement);
-            if (null != identityNode) {
-                JAXBElement<IdentityType> identityElement =
-                        (JAXBElement<IdentityType>) identityUnmarshaller
-                                .unmarshal(identityNode);
-                return identityElement.getValue();
+        try {
+            String identityUri = XAdESUtils.findReferenceUri(xmlSignature,
+                    IdentitySignatureFacet.REFERENCE_TYPE);
+            if (null != identityUri) {
+                String identityId = identityUri.substring(1);
+                Node identityNode = XPathAPI.selectSingleNode(signatureElement,
+                        "ds:Object/identity:Identity[@Id = '" + identityId + "']",
+                        nsElement);
+                if (null != identityNode) {
+                    JAXBElement<IdentityType> identityElement =
+                            (JAXBElement<IdentityType>) identityUnmarshaller
+                                    .unmarshal(identityNode);
+                    return identityElement.getValue();
+                }
             }
+            return null;
+        } catch (TransformerException e) {
+            throw new XAdESValidationException(e);
+        } catch (JAXBException e) {
+            throw new XAdESValidationException(e);
         }
-        return null;
+
     }
 
 }
