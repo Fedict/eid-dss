@@ -26,10 +26,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import be.fedict.eid.dss.control.View;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import be.fedict.eid.dss.control.XMLView;
 import be.fedict.eid.dss.model.DocumentRepository;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DSSProtocolService;
@@ -183,10 +183,10 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 		 */
 		String language = dssRequest.getLanguage();
 		if (null != language) {
-			httpSession.setAttribute(XMLView.LANGUAGE_SESSION_ATTRIBUTE,
+			httpSession.setAttribute(View.LANGUAGE_SESSION_ATTRIBUTE,
 					language);
 		} else {
-			httpSession.removeAttribute(XMLView.LANGUAGE_SESSION_ATTRIBUTE);
+			httpSession.removeAttribute(View.LANGUAGE_SESSION_ATTRIBUTE);
 		}
 
 		/*

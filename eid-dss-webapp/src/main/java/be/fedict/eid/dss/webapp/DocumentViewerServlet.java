@@ -29,7 +29,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import be.fedict.eid.dss.control.XMLView;
+import be.fedict.eid.dss.control.View;
 import be.fedict.eid.dss.model.DocumentRepository;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DocumentVisualization;
@@ -66,7 +66,7 @@ public class DocumentViewerServlet extends AbstractProtocolServiceServlet {
 		if (null != documentService) {
 			LOG.debug("document visualization transformation");
 			String language = (String) httpSession
-					.getAttribute(XMLView.LANGUAGE_SESSION_ATTRIBUTE);
+					.getAttribute(View.LANGUAGE_SESSION_ATTRIBUTE);
 			DocumentVisualization documentVisualization;
 			try {
 				documentVisualization = documentService.visualizeDocument(

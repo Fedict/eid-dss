@@ -25,10 +25,10 @@
 	</lifecycle>
 
 	<navigation-rule>
-		<from-view-id>/view-xml.xhtml</from-view-id>
+		<from-view-id>/view.xhtml</from-view-id>
 		<navigation-case>
 			<from-outcome>sign</from-outcome>
-			<to-view-id>/sign-xml.xhtml</to-view-id>
+			<to-view-id>/sign.xhtml</to-view-id>
 		</navigation-case>
 	</navigation-rule>
 

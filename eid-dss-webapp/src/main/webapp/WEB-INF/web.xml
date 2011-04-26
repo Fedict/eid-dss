@@ -87,7 +87,7 @@
         </init-param>
         <init-param>
             <param-name>SignatureService</param-name>
-            <param-value>fedict/eid/dss/XMLSignatureServiceBean</param-value>
+            <param-value>fedict/eid/dss/SignatureServiceBean</param-value>
         </init-param>
         <init-param>
             <param-name>IncludeCertificates</param-name>
@@ -100,7 +100,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>AppletServiceServlet</servlet-name>
-        <url-pattern>/applet-xml-service</url-pattern>
+        <url-pattern>/applet-service</url-pattern>
     </servlet-mapping>
 
     <!-- DSS Protocol Servlets -->
@@ -121,7 +121,7 @@
         </init-param>
         <init-param>
             <param-name>NextPage</param-name>
-            <param-value>/view-xml.seam</param-value>
+            <param-value>/view.seam</param-value>
         </init-param>
         <init-param>
             <param-name>ExitPage</param-name>

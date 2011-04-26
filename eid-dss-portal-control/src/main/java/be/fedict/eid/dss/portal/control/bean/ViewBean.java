@@ -45,7 +45,7 @@ import be.fedict.eid.dss.portal.control.View;
 import be.fedict.eid.dss.spi.SignatureInfo;
 
 @Stateful
-@Name("dssView")
+@Name("dssPortalView")
 @LocalBinding(jndiBinding = "fedict/eid/dss/portal/ViewBean")
 public class ViewBean implements View {
 
