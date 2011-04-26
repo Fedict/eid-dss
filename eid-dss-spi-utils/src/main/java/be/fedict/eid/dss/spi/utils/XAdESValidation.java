@@ -176,13 +176,20 @@ public class XAdESValidation {
             for (TimeStampToken signatureTimeStampToken : signatureTimeStampTokens) {
 
                 if (signatureTimeStampToken.getTimeStampInfo().getGenTime().before(signingTime)) {
-                    throw new XAdESValidationException("SignatureTimeStamp generated before SigningTime ?!");
+                    throw new XAdESValidationException("SignatureTimeStamp ("
+                            + signatureTimeStampToken.getTimeStampInfo().getGenTime()
+                            + ") generated before SigningTime ("
+                            + signingTime + ")?!");
                 }
 
                 for (TimeStampToken sigAndRefsTimeStampToken : sigAndRefsTimeStampTokens) {
                     if (signatureTimeStampToken.getTimeStampInfo().getGenTime()
                             .after(sigAndRefsTimeStampToken.getTimeStampInfo().getGenTime())) {
-                        throw new XAdESValidationException("SignatureTimeStamp generated after SigAndRefsTimeStamp ?!");
+                        throw new XAdESValidationException("SignatureTimeStamp ("
+                                + signatureTimeStampToken.getTimeStampInfo().getGenTime()
+                                + ") generated after SigAndRefsTimeStamp ("
+                                + sigAndRefsTimeStampToken.getTimeStampInfo().getGenTime()
+                                + ") ?!");
                     }
                 }
             }
