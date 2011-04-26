@@ -141,7 +141,9 @@ public class XAdESValidation {
             LOG.error("No SigAndRefsTimeStamp present");
             throw new RuntimeException("No SigAndRefsTimeStamp present");
         }
-        validateSigAndRefsTimeStamp(sigAndRefsTimeStamp);
+        List<TimeStampToken> sigAndRefsTimeStampTokens =
+                XAdESSigAndRefsTimeStampValidation.validate(sigAndRefsTimeStamp,
+                        signatureElement);
 
         // validate SignatureTimeStamp
         XAdESTimeStampType signatureTimeStamp = XAdESUtils.findUnsignedSignatureProperty(
@@ -150,18 +152,36 @@ public class XAdESValidation {
             LOG.error("No SignatureTimeStamp present");
             throw new RuntimeException("No SignatureTimeStamp present");
         }
-
         List<TimeStampToken> signatureTimeStampTokens =
-                new XAdESSignatureTimeStampValidation().validate(
-                        signatureTimeStamp, signatureElement);
+                XAdESSignatureTimeStampValidation.validate(signatureTimeStamp,
+                        signatureElement);
 
-        // trust validation
+        // timestamp tokens trust validation
+        LOG.debug("validate SignatureTimeStamp's trust...");
         for (TimeStampToken signatureTimeStampToken : signatureTimeStampTokens) {
             this.documentContext.validate(signatureTimeStampToken);
         }
+        LOG.debug("validate SigAndRefsTimeStamp's trust...");
+        for (TimeStampToken sigAndRefsTimeStampToken : sigAndRefsTimeStampTokens) {
+            this.documentContext.validate(sigAndRefsTimeStampToken);
+        }
 
-        // TODO: time coherence validation
+        // timestamp tokens time coherence verification
+        LOG.debug("validate timestamp tokens time coherence...");
+        for (TimeStampToken signatureTimeStampToken : signatureTimeStampTokens) {
 
+            if (signatureTimeStampToken.getTimeStampInfo().getGenTime().before(signingTime)) {
+                // TODO: proper exception handling ( same for other RTEx's here... )
+                throw new RuntimeException("SignatureTimeStamp generated before SigningTime ?!");
+            }
+
+            for (TimeStampToken sigAndRefsTimeStampToken : sigAndRefsTimeStampTokens) {
+                if (signatureTimeStampToken.getTimeStampInfo().getGenTime()
+                        .after(sigAndRefsTimeStampToken.getTimeStampInfo().getGenTime())) {
+                    throw new RuntimeException("SignatureTimeStamp generated after SigAndRefsTimeStamp ?!");
+                }
+            }
+        }
 
         /*
         * Retrieve certificate chain and revocation data from XAdES-X-L
@@ -233,52 +253,6 @@ public class XAdESValidation {
                 signingTime, role, firstName, name, middleName, gender, photo);
     }
 
-    private List<TimeStampToken> validateSigAndRefsTimeStamp(XAdESTimeStampType sigAndRefsTimeStamp)
-            throws Exception {
-
-        List<TimeStampToken> timeStampTokens = XAdESUtils.getTimeStampTokens(sigAndRefsTimeStamp);
-
-        // trust validation
-        if (timeStampTokens.isEmpty()) {
-            LOG.error("No timestamp tokens present in SignatureTimeStamp");
-            throw new RuntimeException("No timestamp tokens present in SignatureTimeStamp");
-        }
-        for (TimeStampToken timeStampToken : timeStampTokens) {
-            this.documentContext.validate(timeStampToken);
-        }
-
-        // TODO: validate SigAndRefsTimeStamp
-
-        // 1. verify signature in timestamp token
-
-        // 2. check all timestamped signed properties and regular elements present
-
-        // 3. take ds:SignatureValue, cannonicalize and concatenate bytes.
-
-        /*
-         * 4.   check CompleteCertificateRefs, CompleteRevocationRefs present in XAdES signature
-         *      check SignatureTimeStamp, AttributeCertificateRefs and AttributeRevocationRefs appear before SigAndRefsTimeStamp
-         */
-
-        /*
-         * 5. take following unsigned properties, canonicalize and concatenate bytes to bytestream from step 3.
-         *
-         * CompleteCertificateRefs, CompleteRevocationRefs, SignatureTimeStamp, AttributeCertificateRefs and AttributeRevocationRefs
-         */
-
-        // 6. compute digest and compare with token
-
-        /*
-         * 7. time coherence:
-         *
-         * posterior to SigningTime and AllDataObjectsTimeStamp, IndividualDataObjectsTimeStamp or SignatureTimeStamp,
-         *
-         * previous to times in tokens in ArchiveTimeStamp elements
-         */
-
-        return timeStampTokens;
-    }
-
     public static String getDigestAlgo(String xmlDigestAlgo) {
         if (DigestMethod.SHA1.equals(xmlDigestAlgo)) {
             return "SHA-1";
@@ -300,7 +274,7 @@ public class XAdESValidation {
         nsElement.setAttributeNS(Constants.NamespaceSpecNS, "xmlns:ds",
                 Constants.SignatureSpecNS);
         nsElement.setAttributeNS(Constants.NamespaceSpecNS, "xmlns:xades",
-                "http://uri.etsi.org/01903/v1.3.2#");
+                XAdESUtils.XADES_132_NS_URI);
         nsElement.setAttributeNS(Constants.NamespaceSpecNS, "xmlns:identity",
                 IdentitySignatureFacet.NAMESPACE_URI);
         return nsElement;
