@@ -23,6 +23,7 @@ import be.fedict.eid.applet.service.signer.jaxb.identity.IdentityType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.*;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.SignatureInfo;
+import be.fedict.eid.dss.spi.utils.exception.XAdESValidationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.utils.Constants;
@@ -36,6 +37,7 @@ import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -59,198 +61,205 @@ public class XAdESValidation {
     }
 
     public SignatureInfo validate(Document document, XMLSignature xmlSignature,
-                                  Element signatureElement, X509Certificate signingCertificate)
-            throws Exception {
-        /*
-         * Get signing time from XAdES-BES extension.
-         */
-        Element nsElement = getNsElement(document);
+                                  Element signatureElement,
+                                  X509Certificate signingCertificate)
+            throws XAdESValidationException {
 
-        QualifyingPropertiesType qualifyingProperties =
-                XAdESUtils.getQualifyingProperties(nsElement, xmlSignature,
-                        signatureElement);
-        SignedPropertiesType signedProperties = qualifyingProperties
-                .getSignedProperties();
-        SignedSignaturePropertiesType signedSignatureProperties = signedProperties
-                .getSignedSignatureProperties();
-        XMLGregorianCalendar signingTimeXMLGregorianCalendar = signedSignatureProperties
-                .getSigningTime();
-        Date signingTime = signingTimeXMLGregorianCalendar
-                .toGregorianCalendar().getTime();
-        LOG.debug("XAdES signing time: " + signingTime);
-
-        /*
-         * Check the XAdES signing certificate
-         */
-        CertIDListType signingCertificateCertIDList = signedSignatureProperties
-                .getSigningCertificate();
-        List<CertIDType> signingCertificateCertIDs = signingCertificateCertIDList
-                .getCert();
-        CertIDType signingCertificateCertID = signingCertificateCertIDs.get(0);
-        DigestAlgAndValueType signingCertificateDigestAlgAndValue = signingCertificateCertID
-                .getCertDigest();
-        String certXmlDigestAlgo = signingCertificateDigestAlgAndValue
-                .getDigestMethod().getAlgorithm();
-        String certDigestAlgo = getDigestAlgo(certXmlDigestAlgo);
-        byte[] certDigestValue = signingCertificateDigestAlgAndValue
-                .getDigestValue();
-        MessageDigest messageDigest;
         try {
-            messageDigest = MessageDigest.getInstance(certDigestAlgo);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("message digest algo error: "
-                    + e.getMessage(), e);
-        }
-        byte[] actualCertDigestValue = messageDigest.digest(signingCertificate
-                .getEncoded());
-        if (!Arrays.equals(actualCertDigestValue, certDigestValue)) {
-            throw new RuntimeException(
-                    "XAdES signing certificate not corresponding with actual signing certificate");
-        }
-        LOG.debug("XAdES signing certificate OK");
+            /*
+            * Get signing time from XAdES-BES extension.
+            */
+            Element nsElement = getNsElement(document);
 
-        /*
-         * Get XAdES ClaimedRole.
-         */
-        String role = null;
-        SignerRoleType signerRole = signedSignatureProperties.getSignerRole();
-        if (null != signerRole) {
-            ClaimedRolesListType claimedRolesList = signerRole
-                    .getClaimedRoles();
-            if (null != claimedRolesList) {
-                List<AnyType> claimedRoles = claimedRolesList.getClaimedRole();
-                if (!claimedRoles.isEmpty()) {
-                    AnyType claimedRole = claimedRoles.get(0);
-                    List<Object> claimedRoleContent = claimedRole.getContent();
-                    for (Object claimedRoleContentItem : claimedRoleContent) {
-                        if (claimedRoleContentItem instanceof String) {
-                            role = (String) claimedRoleContentItem;
-                            LOG.debug("XAdES claimed role: " + role);
-                            break;
+            QualifyingPropertiesType qualifyingProperties =
+                    XAdESUtils.getQualifyingProperties(nsElement, xmlSignature,
+                            signatureElement);
+            SignedPropertiesType signedProperties = qualifyingProperties
+                    .getSignedProperties();
+            SignedSignaturePropertiesType signedSignatureProperties = signedProperties
+                    .getSignedSignatureProperties();
+            XMLGregorianCalendar signingTimeXMLGregorianCalendar = signedSignatureProperties
+                    .getSigningTime();
+            Date signingTime = signingTimeXMLGregorianCalendar
+                    .toGregorianCalendar().getTime();
+            LOG.debug("XAdES signing time: " + signingTime);
+
+            /*
+            * Check the XAdES signing certificate
+            */
+            CertIDListType signingCertificateCertIDList = signedSignatureProperties
+                    .getSigningCertificate();
+            List<CertIDType> signingCertificateCertIDs = signingCertificateCertIDList
+                    .getCert();
+            CertIDType signingCertificateCertID = signingCertificateCertIDs.get(0);
+            DigestAlgAndValueType signingCertificateDigestAlgAndValue = signingCertificateCertID
+                    .getCertDigest();
+            String certXmlDigestAlgo = signingCertificateDigestAlgAndValue
+                    .getDigestMethod().getAlgorithm();
+            String certDigestAlgo = getDigestAlgo(certXmlDigestAlgo);
+            byte[] certDigestValue = signingCertificateDigestAlgAndValue
+                    .getDigestValue();
+            MessageDigest messageDigest;
+            try {
+                messageDigest = MessageDigest.getInstance(certDigestAlgo);
+            } catch (NoSuchAlgorithmException e) {
+                throw new XAdESValidationException("message digest algo error: "
+                        + e.getMessage(), e);
+            }
+            byte[] actualCertDigestValue = messageDigest.digest(signingCertificate
+                    .getEncoded());
+            if (!Arrays.equals(actualCertDigestValue, certDigestValue)) {
+                throw new XAdESValidationException(
+                        "XAdES signing certificate not corresponding with actual signing certificate");
+            }
+            LOG.debug("XAdES signing certificate OK");
+
+            /*
+            * Get XAdES ClaimedRole.
+            */
+            String role = null;
+            SignerRoleType signerRole = signedSignatureProperties.getSignerRole();
+            if (null != signerRole) {
+                ClaimedRolesListType claimedRolesList = signerRole
+                        .getClaimedRoles();
+                if (null != claimedRolesList) {
+                    List<AnyType> claimedRoles = claimedRolesList.getClaimedRole();
+                    if (!claimedRoles.isEmpty()) {
+                        AnyType claimedRole = claimedRoles.get(0);
+                        List<Object> claimedRoleContent = claimedRole.getContent();
+                        for (Object claimedRoleContentItem : claimedRoleContent) {
+                            if (claimedRoleContentItem instanceof String) {
+                                role = (String) claimedRoleContentItem;
+                                LOG.debug("XAdES claimed role: " + role);
+                                break;
+                            }
                         }
                     }
                 }
             }
-        }
 
 
-        // validate SigAndRefsTimeStamp
-        XAdESTimeStampType sigAndRefsTimeStamp = XAdESUtils.findUnsignedSignatureProperty(
-                qualifyingProperties, XAdESTimeStampType.class, "SigAndRefsTimeStamp");
-        if (null == sigAndRefsTimeStamp) {
-            LOG.error("No SigAndRefsTimeStamp present");
-            throw new RuntimeException("No SigAndRefsTimeStamp present");
-        }
-        List<TimeStampToken> sigAndRefsTimeStampTokens =
-                XAdESSigAndRefsTimeStampValidation.validate(sigAndRefsTimeStamp,
-                        signatureElement);
+            // validate SigAndRefsTimeStamp
+            XAdESTimeStampType sigAndRefsTimeStamp = XAdESUtils.findUnsignedSignatureProperty(
+                    qualifyingProperties, XAdESTimeStampType.class, "SigAndRefsTimeStamp");
+            if (null == sigAndRefsTimeStamp) {
+                LOG.error("No SigAndRefsTimeStamp present");
+                throw new XAdESValidationException("No SigAndRefsTimeStamp present");
+            }
+            List<TimeStampToken> sigAndRefsTimeStampTokens =
+                    XAdESSigAndRefsTimeStampValidation.validate(sigAndRefsTimeStamp,
+                            signatureElement);
 
-        // validate SignatureTimeStamp
-        XAdESTimeStampType signatureTimeStamp = XAdESUtils.findUnsignedSignatureProperty(
-                qualifyingProperties, XAdESTimeStampType.class, "SignatureTimeStamp");
-        if (null == signatureTimeStamp) {
-            LOG.error("No SignatureTimeStamp present");
-            throw new RuntimeException("No SignatureTimeStamp present");
-        }
-        List<TimeStampToken> signatureTimeStampTokens =
-                XAdESSignatureTimeStampValidation.validate(signatureTimeStamp,
-                        signatureElement);
+            // validate SignatureTimeStamp
+            XAdESTimeStampType signatureTimeStamp = XAdESUtils.findUnsignedSignatureProperty(
+                    qualifyingProperties, XAdESTimeStampType.class, "SignatureTimeStamp");
+            if (null == signatureTimeStamp) {
+                LOG.error("No SignatureTimeStamp present");
+                throw new XAdESValidationException("No SignatureTimeStamp present");
+            }
+            List<TimeStampToken> signatureTimeStampTokens =
+                    XAdESSignatureTimeStampValidation.validate(signatureTimeStamp,
+                            signatureElement);
 
-        // timestamp tokens trust validation
-        LOG.debug("validate SignatureTimeStamp's trust...");
-        for (TimeStampToken signatureTimeStampToken : signatureTimeStampTokens) {
-            this.documentContext.validate(signatureTimeStampToken);
-        }
-        LOG.debug("validate SigAndRefsTimeStamp's trust...");
-        for (TimeStampToken sigAndRefsTimeStampToken : sigAndRefsTimeStampTokens) {
-            this.documentContext.validate(sigAndRefsTimeStampToken);
-        }
-
-        // timestamp tokens time coherence verification
-        LOG.debug("validate timestamp tokens time coherence...");
-        for (TimeStampToken signatureTimeStampToken : signatureTimeStampTokens) {
-
-            if (signatureTimeStampToken.getTimeStampInfo().getGenTime().before(signingTime)) {
-                // TODO: proper exception handling ( same for other RTEx's here... )
-                throw new RuntimeException("SignatureTimeStamp generated before SigningTime ?!");
+            // timestamp tokens trust validation
+            LOG.debug("validate SignatureTimeStamp's trust...");
+            for (TimeStampToken signatureTimeStampToken : signatureTimeStampTokens) {
+                this.documentContext.validate(signatureTimeStampToken);
+            }
+            LOG.debug("validate SigAndRefsTimeStamp's trust...");
+            for (TimeStampToken sigAndRefsTimeStampToken : sigAndRefsTimeStampTokens) {
+                this.documentContext.validate(sigAndRefsTimeStampToken);
             }
 
-            for (TimeStampToken sigAndRefsTimeStampToken : sigAndRefsTimeStampTokens) {
-                if (signatureTimeStampToken.getTimeStampInfo().getGenTime()
-                        .after(sigAndRefsTimeStampToken.getTimeStampInfo().getGenTime())) {
-                    throw new RuntimeException("SignatureTimeStamp generated after SigAndRefsTimeStamp ?!");
+            // timestamp tokens time coherence verification
+            LOG.debug("validate timestamp tokens time coherence...");
+            for (TimeStampToken signatureTimeStampToken : signatureTimeStampTokens) {
+
+                if (signatureTimeStampToken.getTimeStampInfo().getGenTime().before(signingTime)) {
+                    throw new XAdESValidationException("SignatureTimeStamp generated before SigningTime ?!");
+                }
+
+                for (TimeStampToken sigAndRefsTimeStampToken : sigAndRefsTimeStampTokens) {
+                    if (signatureTimeStampToken.getTimeStampInfo().getGenTime()
+                            .after(sigAndRefsTimeStampToken.getTimeStampInfo().getGenTime())) {
+                        throw new XAdESValidationException("SignatureTimeStamp generated after SigAndRefsTimeStamp ?!");
+                    }
                 }
             }
-        }
 
-        /*
-        * Retrieve certificate chain and revocation data from XAdES-X-L
-        * extension for trust validation.
-        */
-        RevocationValuesType revocationValues = XAdESUtils.findUnsignedSignatureProperty(
-                qualifyingProperties, RevocationValuesType.class);
-        List<X509CRL> crls = XAdESUtils.getCrls(revocationValues);
-        List<OCSPResp> ocspResponses = XAdESUtils.getOCSPResponses(revocationValues);
+            /*
+            * Retrieve certificate chain and revocation data from XAdES-X-L
+            * extension for trust validation.
+            */
+            RevocationValuesType revocationValues = XAdESUtils.findUnsignedSignatureProperty(
+                    qualifyingProperties, RevocationValuesType.class);
+            List<X509CRL> crls = XAdESUtils.getCrls(revocationValues);
+            List<OCSPResp> ocspResponses = XAdESUtils.getOCSPResponses(revocationValues);
 
-        CertificateValuesType certificateValues = XAdESUtils.findUnsignedSignatureProperty(
-                qualifyingProperties, CertificateValuesType.class);
-        if (null == certificateValues) {
-            LOG.error("no CertificateValuesType element found.");
-            throw new RuntimeException("no CertificateValuesType element found.");
-        }
-        List<X509Certificate> certificateChain = XAdESUtils.getCertificates(certificateValues);
-        if (certificateChain.isEmpty()) {
-            LOG.error("no certificate chain present in CertificateValuesType");
-            throw new RuntimeException("no cert chain in CertificateValuesType");
-        }
-
-        /*
-         * Check certificate chain is indeed contains the signing certificate.
-         */
-        if (!Arrays.equals(signingCertificate.getEncoded(),
-                certificateChain.get(0).getEncoded())) {
-            throw new RuntimeException(
-                    "XAdES certificate chain does not include actual signing certificate");
-        }
-        LOG.debug("XAdES certificate chain contains actual signing certificate");
-
-        /*
-         * Perform trust validation via eID Trust Service
-         */
-        this.documentContext.validate(certificateChain, signingTime,
-                ocspResponses, crls);
-
-        /*
-         * Retrieve the possible eID identity signature extension data.
-         */
-        String firstName = null;
-        String name = null;
-        String middleName = null;
-        SignatureInfo.Gender gender = null;
-        byte[] photo = null;
-
-        IdentityType identity = XAdESUtils.findIdentity(nsElement, xmlSignature,
-                signatureElement);
-        if (null != identity) {
-            firstName = identity.getFirstName();
-            name = identity.getName();
-            middleName = identity.getMiddleName();
-            switch (identity.getGender()) {
-                case MALE:
-                    gender = SignatureInfo.Gender.MALE;
-                    break;
-                case FEMALE:
-                    gender = SignatureInfo.Gender.FEMALE;
-                    break;
+            CertificateValuesType certificateValues = XAdESUtils.findUnsignedSignatureProperty(
+                    qualifyingProperties, CertificateValuesType.class);
+            if (null == certificateValues) {
+                LOG.error("no CertificateValuesType element found.");
+                throw new XAdESValidationException("no CertificateValuesType element found.");
             }
-            photo = identity.getPhoto().getValue();
-        }
+            List<X509Certificate> certificateChain = XAdESUtils.getCertificates(certificateValues);
+            if (certificateChain.isEmpty()) {
+                LOG.error("no certificate chain present in CertificateValuesType");
+                throw new XAdESValidationException("no cert chain in CertificateValuesType");
+            }
 
-        /*
-         * Return the result of the signature analysis.
-         */
-        return new SignatureInfo(signingCertificate,
-                signingTime, role, firstName, name, middleName, gender, photo);
+            /*
+            * Check certificate chain is indeed contains the signing certificate.
+            */
+            if (!Arrays.equals(signingCertificate.getEncoded(),
+                    certificateChain.get(0).getEncoded())) {
+                throw new XAdESValidationException(
+                        "XAdES certificate chain does not include actual signing certificate");
+            }
+            LOG.debug("XAdES certificate chain contains actual signing certificate");
+
+            /*
+            * Perform trust validation via eID Trust Service
+            */
+            this.documentContext.validate(certificateChain, signingTime,
+                    ocspResponses, crls);
+
+            /*
+            * Retrieve the possible eID identity signature extension data.
+            */
+            String firstName = null;
+            String name = null;
+            String middleName = null;
+            SignatureInfo.Gender gender = null;
+            byte[] photo = null;
+
+            IdentityType identity = XAdESUtils.findIdentity(nsElement, xmlSignature,
+                    signatureElement);
+            if (null != identity) {
+                firstName = identity.getFirstName();
+                name = identity.getName();
+                middleName = identity.getMiddleName();
+                switch (identity.getGender()) {
+                    case MALE:
+                        gender = SignatureInfo.Gender.MALE;
+                        break;
+                    case FEMALE:
+                        gender = SignatureInfo.Gender.FEMALE;
+                        break;
+                }
+                photo = identity.getPhoto().getValue();
+            }
+
+            /*
+            * Return the result of the signature analysis.
+            */
+            return new SignatureInfo(signingCertificate,
+                    signingTime, role, firstName, name, middleName, gender, photo);
+        } catch (CertificateEncodingException e) {
+            throw new XAdESValidationException(e);
+        } catch (Exception e) {
+            throw new XAdESValidationException(e);
+        }
     }
 
     public static String getDigestAlgo(String xmlDigestAlgo) {
