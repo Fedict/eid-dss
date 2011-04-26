@@ -9,18 +9,18 @@
 		<h2>#{messages.viewDocument}</h2>
 		<p>#{messages.viewDocumentInfo}</p>
 		<h:form>
-			<h:commandButton value="#{messages.sign}" action="#{xmlView.sign}" />
+			<h:commandButton value="#{messages.sign}" action="#{dssView.sign}" />
 			<h:commandButton value="#{messages.cancel}"
-				action="#{xmlView.cancel}" />
+				action="#{dssView.cancel}" />
 			<rich:spacer height="5" />
 			<rich:simpleTogglePanel switchType="client"
 				label="#{messages.options}" opened="false">
 				<h:panelGrid columns="2">
 					<h:outputText value="#{messages.role}:" />
-					<h:inputText value="#{xmlView.role}" size="50" />
+					<h:inputText value="#{dssView.role}" size="50" />
 				</h:panelGrid>
 				<h:panelGrid columns="2">
-					<h:selectBooleanCheckbox value="#{xmlView.includeIdentity}" />
+					<h:selectBooleanCheckbox value="#{dssView.includeIdentity}" />
 					<h:outputText value="#{messages.includeIdentity}" />
 				</h:panelGrid>
 			</rich:simpleTogglePanel>

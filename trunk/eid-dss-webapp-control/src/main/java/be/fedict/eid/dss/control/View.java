@@ -21,7 +21,7 @@ package be.fedict.eid.dss.control;
 import javax.ejb.Local;
 
 @Local
-public interface XMLView {
+public interface View {
 
 	public static final String LANGUAGE_SESSION_ATTRIBUTE = "Language";
 
