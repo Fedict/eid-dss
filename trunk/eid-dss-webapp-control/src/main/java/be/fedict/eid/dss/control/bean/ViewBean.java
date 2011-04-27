@@ -51,7 +51,7 @@ public class ViewBean implements View {
     @In
     private LocaleSelector localeSelector;
 
-    @In(value = View.LANGUAGE_SESSION_ATTRIBUTE, scope = ScopeType.SESSION)
+    @In(value = View.LANGUAGE_SESSION_ATTRIBUTE, scope = ScopeType.SESSION, required = false)
     private String language;
 
     private String role;

@@ -72,12 +72,14 @@ public class SignatureServiceBean implements SignatureServiceEx {
     public void postSign(byte[] signatureValue,
                          List<X509Certificate> signingCertificateChain)
             throws SecurityException {
+
         SignatureService signatureService = getSignatureService(null, null);
         signatureService.postSign(signatureValue, signingCertificateChain);
     }
 
     private SignatureServiceEx getSignatureService(IdentityDTO identity,
                                                    byte[] photo) {
+
         String tspUrl = this.configuration.getValue(ConfigProperty.TSP_URL,
                 String.class);
         String tspPolicyOid = this.configuration.getValue(
@@ -149,6 +151,7 @@ public class SignatureServiceBean implements SignatureServiceEx {
                               List<X509Certificate> signingCertificateChain,
                               IdentityDTO identity, AddressDTO address, byte[] photo)
             throws NoSuchAlgorithmException {
+
         SignatureServiceEx signatureService = getSignatureService(identity,
                 photo);
         return signatureService.preSign(digestInfos, signingCertificateChain,
