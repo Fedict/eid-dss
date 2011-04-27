@@ -18,7 +18,10 @@
 
 package be.fedict.eid.dss.protocol.simple.client;
 
-import java.io.IOException;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -26,15 +29,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.IOException;
 
 /**
  * Processes the response from the eID DSS simple protocol.
- * 
+ * <p/>
  * <p>
  * The following init-params are required:
  * </p>
@@ -48,7 +47,7 @@ import org.apache.commons.logging.LogFactory;
  * to use for reporting an error. This session attribute can be used on the
  * error page.</li>
  * </ul>
- * 
+ * <p/>
  * <p>
  * In case the eID DSS puts a service signature on the DSS response, the
  * following init-params become required for validation of the service
@@ -60,7 +59,7 @@ import org.apache.commons.logging.LogFactory;
  * containing the base64 encoded signature request.</li>
  * </ul>
  * </p>
- * 
+ * <p/>
  * <p>
  * The following init-params are optional:
  * </p>
@@ -75,193 +74,202 @@ import org.apache.commons.logging.LogFactory;
  * eID DSS signature ceremony. If not present the user gets redirected towards
  * the error page.</li>
  * </ul>
- * 
+ *
  * @author Frank Cornelis
- * 
  */
 public class SignatureResponseProcessorServlet extends HttpServlet {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private static final Log LOG = LogFactory
-			.getLog(SignatureResponseProcessorServlet.class);
+    private static final Log LOG = LogFactory
+            .getLog(SignatureResponseProcessorServlet.class);
 
-	public static final String NEXT_PAGE_INIT_PARAM = "NextPage";
+    public static final String NEXT_PAGE_INIT_PARAM = "NextPage";
 
-	public static final String ERROR_PAGE_INIT_PARAM = "ErrorPage";
+    public static final String ERROR_PAGE_INIT_PARAM = "ErrorPage";
 
-	public static final String CANCEL_PAGE_INIT_PARAM = "CancelPage";
+    public static final String CANCEL_PAGE_INIT_PARAM = "CancelPage";
 
-	public static final String ERROR_MESSAGE_SESSION_ATTRIBUTE_INIT_PARAM = "ErrorMessageSessionAttribute";
+    public static final String ERROR_MESSAGE_SESSION_ATTRIBUTE_INIT_PARAM = "ErrorMessageSessionAttribute";
 
-	public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE_INIT_PARAM = "SignedDocumentSessionAttribute";
+    public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE_INIT_PARAM = "SignedDocumentSessionAttribute";
 
-	public static final String SIGNATURE_CERTIFICATE_SESSION_ATTRIBUTE_INIT_PARAM = "SignatureCertificateSessionAttribute";
+    public static final String SIGNATURE_CERTIFICATE_SESSION_ATTRIBUTE_INIT_PARAM = "SignatureCertificateSessionAttribute";
 
-	public static final String SERVICE_FINGERPRINT_INIT_PARAM = "ServiceFingerprint";
+    public static final String SERVICE_FINGERPRINT_INIT_PARAM = "ServiceFingerprint";
 
-	public static final String TARGET_SESSION_ATTRIBUTE_INIT_PARAM = "TargetSessionAttribute";
+    public static final String TARGET_SESSION_ATTRIBUTE_INIT_PARAM = "TargetSessionAttribute";
 
-	public static final String SIGNATURE_REQUEST_SESSION_ATTRIBUTE_INIT_PARAM = "SignatureRequestSessionAttribute";
+    public static final String SIGNATURE_REQUEST_SESSION_ATTRIBUTE_INIT_PARAM = "SignatureRequestSessionAttribute";
 
-	private String nextPage;
+    public static final String RELAY_STATE_SESSION_ATTRIBUTE_INIT_PARAM = "RelayStateSessionAttribute";
 
-	private String errorPage;
+    private String nextPage;
 
-	private String cancelPage;
+    private String errorPage;
 
-	private String errorMessageSessionAttribute;
+    private String cancelPage;
 
-	private String signedDocumentSessionAttribute;
+    private String errorMessageSessionAttribute;
 
-	private String signatureCertificateSessionAttribute;
+    private String signedDocumentSessionAttribute;
 
-	private String targetSessionAttribute;
+    private String signatureCertificateSessionAttribute;
 
-	private String signatureRequestSessionAttribute;
+    private String targetSessionAttribute;
 
-	private SignatureResponseProcessor signatureResponseProcessor;
+    private String signatureRequestSessionAttribute;
 
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		LOG.debug("init");
-		this.nextPage = getRequiredInitParameter(config, NEXT_PAGE_INIT_PARAM);
-		LOG.debug("next page: " + this.nextPage);
+    private String relayStateSessionAttribute;
 
-		this.errorPage = getRequiredInitParameter(config, ERROR_PAGE_INIT_PARAM);
-		LOG.debug("error page: " + this.errorPage);
+    private SignatureResponseProcessor signatureResponseProcessor;
 
-		this.errorMessageSessionAttribute = getRequiredInitParameter(config,
-				ERROR_MESSAGE_SESSION_ATTRIBUTE_INIT_PARAM);
-		LOG.debug("error message session attribute: "
-				+ this.errorMessageSessionAttribute);
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        LOG.debug("init");
+        this.nextPage = getRequiredInitParameter(config, NEXT_PAGE_INIT_PARAM);
+        LOG.debug("next page: " + this.nextPage);
 
-		this.signedDocumentSessionAttribute = getRequiredInitParameter(config,
-				SIGNED_DOCUMENT_SESSION_ATTRIBUTE_INIT_PARAM);
-		LOG.debug("signed document session attribute: "
-				+ this.signedDocumentSessionAttribute);
+        this.errorPage = getRequiredInitParameter(config, ERROR_PAGE_INIT_PARAM);
+        LOG.debug("error page: " + this.errorPage);
 
-		this.signatureCertificateSessionAttribute = config
-				.getInitParameter(SIGNATURE_CERTIFICATE_SESSION_ATTRIBUTE_INIT_PARAM);
+        this.errorMessageSessionAttribute = getRequiredInitParameter(config,
+                ERROR_MESSAGE_SESSION_ATTRIBUTE_INIT_PARAM);
+        LOG.debug("error message session attribute: "
+                + this.errorMessageSessionAttribute);
 
-		String encodedServiceFingerprint = config
-				.getInitParameter(SERVICE_FINGERPRINT_INIT_PARAM);
-		byte[] serviceFingerprint;
-		if (null != encodedServiceFingerprint) {
-			LOG.debug("service fingerprint: " + encodedServiceFingerprint);
-			try {
-				serviceFingerprint = Hex.decodeHex(encodedServiceFingerprint
-						.toCharArray());
-			} catch (DecoderException e) {
-				throw new ServletException(
-						"service fingerprint decoding error: " + e.getMessage(),
-						e);
-			}
-		} else {
-			serviceFingerprint = null;
-		}
-		this.signatureResponseProcessor = new SignatureResponseProcessor(
-				serviceFingerprint);
+        this.signedDocumentSessionAttribute = getRequiredInitParameter(config,
+                SIGNED_DOCUMENT_SESSION_ATTRIBUTE_INIT_PARAM);
+        LOG.debug("signed document session attribute: "
+                + this.signedDocumentSessionAttribute);
 
-		this.targetSessionAttribute = config
-				.getInitParameter(TARGET_SESSION_ATTRIBUTE_INIT_PARAM);
-		this.signatureRequestSessionAttribute = config
-				.getInitParameter(SIGNATURE_REQUEST_SESSION_ATTRIBUTE_INIT_PARAM);
-		this.cancelPage = config.getInitParameter(CANCEL_PAGE_INIT_PARAM);
-	}
+        this.signatureCertificateSessionAttribute = config
+                .getInitParameter(SIGNATURE_CERTIFICATE_SESSION_ATTRIBUTE_INIT_PARAM);
 
-	private String getRequiredInitParameter(ServletConfig config,
-			String paramName) throws ServletException {
-		String paramValue = config.getInitParameter(paramName);
-		if (null == paramValue) {
-			throw new ServletException("missing init-param: " + paramName);
-		}
-		return paramValue;
-	}
+        String encodedServiceFingerprint = config
+                .getInitParameter(SERVICE_FINGERPRINT_INIT_PARAM);
+        byte[] serviceFingerprint;
+        if (null != encodedServiceFingerprint) {
+            LOG.debug("service fingerprint: " + encodedServiceFingerprint);
+            try {
+                serviceFingerprint = Hex.decodeHex(encodedServiceFingerprint
+                        .toCharArray());
+            } catch (DecoderException e) {
+                throw new ServletException(
+                        "service fingerprint decoding error: " + e.getMessage(),
+                        e);
+            }
+        } else {
+            serviceFingerprint = null;
+        }
+        this.signatureResponseProcessor = new SignatureResponseProcessor(
+                serviceFingerprint);
 
-	/**
-	 * Clears the used session attributes. Also returns a reference to the
-	 * previously signed document.
-	 * 
-	 * @param httpSession
-	 * @return
-	 */
-	private byte[] clearAllSessionAttribute(HttpSession httpSession) {
-		httpSession.removeAttribute(this.errorMessageSessionAttribute);
-		byte[] signedDocument = (byte[]) httpSession
-				.getAttribute(this.signedDocumentSessionAttribute);
-		httpSession.removeAttribute(this.signedDocumentSessionAttribute);
-		if (null != this.signatureCertificateSessionAttribute) {
-			httpSession
-					.removeAttribute(this.signatureCertificateSessionAttribute);
-		}
-		return signedDocument;
-	}
+        this.targetSessionAttribute = config
+                .getInitParameter(TARGET_SESSION_ATTRIBUTE_INIT_PARAM);
+        this.signatureRequestSessionAttribute = config
+                .getInitParameter(SIGNATURE_REQUEST_SESSION_ATTRIBUTE_INIT_PARAM);
+        this.relayStateSessionAttribute = config
+                .getInitParameter(RELAY_STATE_SESSION_ATTRIBUTE_INIT_PARAM);
+        this.cancelPage = config.getInitParameter(CANCEL_PAGE_INIT_PARAM);
+    }
 
-	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		showErrorPage("DSS response processor not available via GET", request,
-				response);
-	}
+    private String getRequiredInitParameter(ServletConfig config,
+                                            String paramName) throws ServletException {
+        String paramValue = config.getInitParameter(paramName);
+        if (null == paramValue) {
+            throw new ServletException("missing init-param: " + paramName);
+        }
+        return paramValue;
+    }
 
-	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		LOG.debug("doPost");
-		HttpSession httpSession = request.getSession();
-		byte[] previousSignedDocument = clearAllSessionAttribute(httpSession);
+    /**
+     * Clears the used session attributes. Also returns a reference to the
+     * previously signed document.
+     *
+     * @param httpSession the http session
+     * @return reference to previously signed document
+     */
+    private byte[] clearAllSessionAttribute(HttpSession httpSession) {
+        httpSession.removeAttribute(this.errorMessageSessionAttribute);
+        byte[] signedDocument = (byte[]) httpSession
+                .getAttribute(this.signedDocumentSessionAttribute);
+        httpSession.removeAttribute(this.signedDocumentSessionAttribute);
+        if (null != this.signatureCertificateSessionAttribute) {
+            httpSession
+                    .removeAttribute(this.signatureCertificateSessionAttribute);
+        }
+        return signedDocument;
+    }
 
-		String target = (String) httpSession
-				.getAttribute(this.targetSessionAttribute);
-		String base64encodedSignatureRequest = (String) httpSession
-				.getAttribute(this.signatureRequestSessionAttribute);
+    @Override
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response) throws ServletException, IOException {
+        showErrorPage("DSS response processor not available via GET", request,
+                response);
+    }
 
-		SignatureResponse signatureResponse;
-		try {
-			signatureResponse = this.signatureResponseProcessor.process(
-					request, target, base64encodedSignatureRequest);
-		} catch (UserCancelledSignatureResponseProcessorException e) {
-			if (null != this.cancelPage) {
-				LOG.debug("redirecting to cancel page");
-				/*
-				 * In case of explicit user cancellation we preserve the signed
-				 * document session attribute.
-				 */
-				httpSession.setAttribute(this.signedDocumentSessionAttribute,
-						previousSignedDocument);
-				response.sendRedirect(request.getContextPath()
-						+ this.cancelPage);
-				return;
-			}
-			showErrorPage(e.getMessage(), request, response);
-			return;
-		} catch (SignatureResponseProcessorException e) {
-			showErrorPage(e.getMessage(), request, response);
-			return;
-		}
+    @Override
+    protected void doPost(HttpServletRequest request,
+                          HttpServletResponse response) throws ServletException, IOException {
+        LOG.debug("doPost");
+        HttpSession httpSession = request.getSession();
+        byte[] previousSignedDocument = clearAllSessionAttribute(httpSession);
 
-		/*
-		 * Push data into the HTTP session.
-		 */
-		httpSession.setAttribute(this.signedDocumentSessionAttribute,
-				signatureResponse.getDecodedSignatureResponse());
-		if (null != this.signatureCertificateSessionAttribute) {
-			httpSession.setAttribute(this.signatureCertificateSessionAttribute,
-					signatureResponse.getSignatureCertificate());
-		}
+        String target = (String) httpSession
+                .getAttribute(this.targetSessionAttribute);
+        String base64encodedSignatureRequest = (String) httpSession
+                .getAttribute(this.signatureRequestSessionAttribute);
+        String relayState = (String) httpSession
+                .getAttribute(this.relayStateSessionAttribute);
+        LOG.debug("RelayState: " + relayState);
 
-		/*
-		 * Continue work-flow.
-		 */
-		response.sendRedirect(request.getContextPath() + this.nextPage);
-	}
 
-	private void showErrorPage(String errorMessage, HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
-		HttpSession httpSession = request.getSession();
-		httpSession.setAttribute(this.errorMessageSessionAttribute,
-				errorMessage);
-		response.sendRedirect(request.getContextPath() + this.errorPage);
-	}
+        SignatureResponse signatureResponse;
+        try {
+            signatureResponse = this.signatureResponseProcessor.process(
+                    request, target, base64encodedSignatureRequest, relayState);
+        } catch (UserCancelledSignatureResponseProcessorException e) {
+            if (null != this.cancelPage) {
+                LOG.debug("redirecting to cancel page");
+                /*
+                     * In case of explicit user cancellation we preserve the signed
+                     * document session attribute.
+                     */
+                httpSession.setAttribute(this.signedDocumentSessionAttribute,
+                        previousSignedDocument);
+                response.sendRedirect(request.getContextPath()
+                        + this.cancelPage);
+                return;
+            }
+            showErrorPage(e.getMessage(), request, response);
+            return;
+        } catch (SignatureResponseProcessorException e) {
+            showErrorPage(e.getMessage(), request, response);
+            return;
+        }
+
+        /*
+           * Push data into the HTTP session.
+           */
+        httpSession.setAttribute(this.signedDocumentSessionAttribute,
+                signatureResponse.getDecodedSignatureResponse());
+        if (null != this.signatureCertificateSessionAttribute) {
+            httpSession.setAttribute(this.signatureCertificateSessionAttribute,
+                    signatureResponse.getSignatureCertificate());
+        }
+
+        /*
+           * Continue work-flow.
+           */
+        response.sendRedirect(request.getContextPath() + this.nextPage);
+    }
+
+    private void showErrorPage(String errorMessage, HttpServletRequest request,
+                               HttpServletResponse response) throws IOException {
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute(this.errorMessageSessionAttribute,
+                errorMessage);
+        response.sendRedirect(request.getContextPath() + this.errorPage);
+    }
 }

@@ -100,6 +100,10 @@
 			<param-name>TargetSessionAttribute</param-name>
 			<param-value>target</param-value>
 		</init-param>
+        <init-param>
+            <param-name>RelayStateSessionAttribute</param-name>
+            <param-value>RelayState</param-value>
+        </init-param>
 		<init-param>
 			<param-name>SignatureRequestSessionAttribute</param-name>
 			<param-value>SignatureRequest</param-value>
