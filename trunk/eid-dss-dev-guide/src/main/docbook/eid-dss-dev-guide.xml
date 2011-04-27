@@ -122,6 +122,16 @@
 						.
 					</para>
 				</listitem>
+                <listitem>
+                    <para>
+                        The optional
+                        <code>RelayState</code>
+                        POST parameter is an opaque reference to state
+                        information maintained at the service provider.
+                        . The same value should be returned by the eID DSS
+                        service when returning.
+                    </para>
+                </listitem>
 			</itemizedlist>
 			<para>
 				The web application can construct the eID DSS Browser POST
@@ -132,6 +142,7 @@
     <input type="hidden" name="target" value="http://www.some-web-application.be/dss-landing-page" />
     <input type="hidden" name="language" value="nl" />
     <input type="hidden" name="ContentType" value="text/xml" />
+    <input type="hidden" name="RelayState" value="foo123" />
     <input type="submit" value="Submit" />
 </form>
 <script type="text/javascript">
