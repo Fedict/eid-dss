@@ -12,6 +12,7 @@
 			action="#{facesContext.externalContext.requestContextPath}/../eid-dss/protocol/simple">
 			<input type="hidden" name="SignatureRequest" value="#{SignatureRequest}" />
 			<input type="hidden" name="ContentType" value="#{ContentType}" />
+            <input type="hidden" name="RelayState" value="#{RelayState}" />
 			<input type="hidden" name="target" value="#{target}" />
 			<input type="hidden" name="language" value="#{language}" />
 			<input type="submit" value="Submit" />

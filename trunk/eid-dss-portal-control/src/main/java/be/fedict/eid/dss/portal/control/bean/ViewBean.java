@@ -18,108 +18,108 @@
 
 package be.fedict.eid.dss.portal.control.bean;
 
-import java.util.List;
+import be.fedict.eid.dss.model.SignatureVerificationService;
+import be.fedict.eid.dss.model.exception.DocumentFormatException;
+import be.fedict.eid.dss.model.exception.InvalidSignatureException;
+import be.fedict.eid.dss.portal.control.View;
+import be.fedict.eid.dss.spi.SignatureInfo;
+import org.bouncycastle.util.encoders.Base64;
+import org.jboss.ejb3.annotation.LocalBinding;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.*;
+import org.jboss.seam.annotations.datamodel.DataModel;
+import org.jboss.seam.international.LocaleSelector;
+import org.jboss.seam.log.Log;
 
 import javax.ejb.EJB;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-
-import org.bouncycastle.util.encoders.Base64;
-import org.jboss.ejb3.annotation.LocalBinding;
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Logger;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Out;
-import org.jboss.seam.annotations.datamodel.DataModel;
-import org.jboss.seam.international.LocaleSelector;
-import org.jboss.seam.log.Log;
-
-import be.fedict.eid.dss.model.SignatureVerificationService;
-import be.fedict.eid.dss.model.exception.DocumentFormatException;
-import be.fedict.eid.dss.model.exception.InvalidSignatureException;
-import be.fedict.eid.dss.portal.control.View;
-import be.fedict.eid.dss.spi.SignatureInfo;
+import java.util.List;
+import java.util.UUID;
 
 @Stateful
 @Name("dssPortalView")
 @LocalBinding(jndiBinding = "fedict/eid/dss/portal/ViewBean")
 public class ViewBean implements View {
 
-	@Logger
-	private Log log;
+    @Logger
+    private Log log;
 
-	@EJB
-	private SignatureVerificationService signatureVerificationService;
+    @EJB
+    private SignatureVerificationService signatureVerificationService;
 
-	@In(value = "document", scope = ScopeType.SESSION, required = true)
-	private byte[] document;
+    @In(value = "document", scope = ScopeType.SESSION, required = true)
+    private byte[] document;
 
-	@Out(value = "target", scope = ScopeType.SESSION, required = false)
-	private String target;
+    @Out(value = "target", scope = ScopeType.SESSION, required = false)
+    private String target;
 
-	@Out(value = "SignatureRequest", scope = ScopeType.SESSION, required = false)
-	private String signatureRequest;
+    @Out(value = "SignatureRequest", scope = ScopeType.SESSION, required = false)
+    private String signatureRequest;
 
-	@Out(value = "language", scope = ScopeType.SESSION, required = false)
-	private String language;
+    @Out(value = "language", scope = ScopeType.SESSION, required = false)
+    private String language;
 
-	@In(value = "filesize", scope = ScopeType.SESSION, required = false)
-	@Out(value = "filesize", scope = ScopeType.SESSION, required = false)
-	private Integer filesize;
+    @Out(value = "RelayState", scope = ScopeType.SESSION, required = false)
+    private String relayState;
 
-	@In(value = "ContentType", scope = ScopeType.SESSION, required = false)
-	private String contentType;
+    @In(value = "filesize", scope = ScopeType.SESSION, required = false)
+    @Out(value = "filesize", scope = ScopeType.SESSION, required = false)
+    private Integer filesize;
 
-	@DataModel
-	private List<SignatureInfo> signatureInfos;
+    @In(value = "ContentType", scope = ScopeType.SESSION, required = false)
+    private String contentType;
 
-	@In
-	private LocaleSelector localeSelector;
+    @DataModel
+    private List<SignatureInfo> signatureInfos;
 
-	@Remove
-	@Destroy
-	@Override
-	public void destroy() {
-		this.log.debug("destroy");
-	}
+    @In
+    private LocaleSelector localeSelector;
 
-	@Override
-	public void verifySignatures() {
-		this.filesize = this.document.length;
-		try {
-			this.signatureInfos = this.signatureVerificationService.verify(
-					this.document, this.contentType);
-		} catch (DocumentFormatException e) {
-			this.log.error("document format error: #0", e.getMessage());
-			return;
-		} catch (InvalidSignatureException e) {
-			this.log.error("invalid signature: #0", e.getMessage());
-			return;
-		}
-		this.log.debug("number of signatures: #0", this.signatureInfos.size());
-		for (SignatureInfo signatureInfo : this.signatureInfos) {
-			this.log.debug("signer: #0", signatureInfo.getSigner()
-					.getSubjectX500Principal());
-			this.log.debug("signing time: #0", signatureInfo.getSigningTime());
-		}
-	}
+    @Remove
+    @Destroy
+    @Override
+    public void destroy() {
+        this.log.debug("destroy");
+    }
 
-	@Override
-	public String sign() {
-		this.log.debug("sign");
-		this.signatureRequest = new String(Base64.encode(this.document));
+    @Override
+    public void verifySignatures() {
+        this.filesize = this.document.length;
+        try {
+            this.signatureInfos = this.signatureVerificationService.verify(
+                    this.document, this.contentType);
+        } catch (DocumentFormatException e) {
+            this.log.error("document format error: #0", e.getMessage());
+            return;
+        } catch (InvalidSignatureException e) {
+            this.log.error("invalid signature: #0", e.getMessage());
+            return;
+        }
+        this.log.debug("number of signatures: #0", this.signatureInfos.size());
+        for (SignatureInfo signatureInfo : this.signatureInfos) {
+            this.log.debug("signer: #0", signatureInfo.getSigner()
+                    .getSubjectX500Principal());
+            this.log.debug("signing time: #0", signatureInfo.getSigningTime());
+        }
+    }
 
-		FacesContext facesContext = FacesContext.getCurrentInstance();
-		ExternalContext externalContext = facesContext.getExternalContext();
-		String requestContextPath = externalContext.getRequestContextPath();
-		this.target = requestContextPath + "/dss-response";
+    @Override
+    public String sign() {
+        this.log.debug("sign");
+        this.signatureRequest = new String(Base64.encode(this.document));
 
-		this.language = this.localeSelector.getLanguage();
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        ExternalContext externalContext = facesContext.getExternalContext();
+        String requestContextPath = externalContext.getRequestContextPath();
+        this.target = requestContextPath + "/dss-response";
 
-		return "submit";
-	}
+        this.language = this.localeSelector.getLanguage();
+        this.relayState = UUID.randomUUID().toString();
+        this.log.debug("RelayState: " + relayState);
+
+        return "submit";
+    }
 }
