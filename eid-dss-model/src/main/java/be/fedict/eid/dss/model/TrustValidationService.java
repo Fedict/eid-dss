@@ -39,5 +39,7 @@ public interface TrustValidationService {
             throws CertificateEncodingException, TrustDomainNotFoundException,
             RevocationDataNotFoundException, ValidationFailedException;
 
-    void validate(TimeStampToken timeStampToken) throws CertificateEncodingException, ValidationFailedException, TrustDomainNotFoundException, RevocationDataNotFoundException;
+    void validate(TimeStampToken timeStampToken)
+            throws CertificateEncodingException, ValidationFailedException,
+            TrustDomainNotFoundException, RevocationDataNotFoundException;
 }
