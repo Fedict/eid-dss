@@ -35,7 +35,9 @@
                                     <outputDirectory>
                                         ${project.build.directory}/${project.artifactId}-${project.version}
                                     </outputDirectory>
-                                    <destFileName>eid-applet.jar</destFileName>
+                                    <destFileName>
+                                        eid-applet-package-${eid-applet.version}.jar
+                                    </destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -50,6 +52,10 @@
                         <resource>
                             <directory>src/main/webapp</directory>
                             <filtering>true</filtering>
+                            <includes>
+                                <include>login.xhtml</include>
+                                <include>admin/main.xhtml</include>
+                            </includes>
                         </resource>
                     </webResources>
                 </configuration>
