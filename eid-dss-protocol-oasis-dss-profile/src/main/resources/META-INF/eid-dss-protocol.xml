@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<DigitalSignatureServiceProtocol xmlns="urn:be:fedict:eid:dss:spi:protocol">
-	<Name>OASIS DSS Browser POST Profile protocol</Name>
-	<Description>A DSS protocol based on an OASIS DSS Browser POST Profile</Description>
-	<ProtocolServiceClass>be.fedict.eid.dss.protocol.oasis.OASISDSSProtocolService</ProtocolServiceClass>
-	<ContextPath>/oasis</ContextPath>
-</DigitalSignatureServiceProtocol>
