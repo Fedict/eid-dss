@@ -63,6 +63,8 @@ public class ConfigBean implements Config {
 
     private String verifyTrustDomain;
 
+    private String identityTrustDomain;
+
     private String tsaTrustDomain;
 
     @Override
@@ -90,6 +92,8 @@ public class ConfigBean implements Config {
                 ConfigProperty.SIGN_TRUST_DOMAIN, String.class);
         this.verifyTrustDomain = this.configuration.getValue(
                 ConfigProperty.VERIFY_TRUST_DOMAIN, String.class);
+        this.identityTrustDomain = this.configuration.getValue(
+                ConfigProperty.IDENTITY_TRUST_DOMAIN, String.class);
         this.tsaTrustDomain = this.configuration.getValue(
                 ConfigProperty.TSA_TRUST_DOMAIN, String.class);
     }
@@ -123,6 +127,8 @@ public class ConfigBean implements Config {
                 this.signTrustDomain);
         this.configuration.setValue(ConfigProperty.VERIFY_TRUST_DOMAIN,
                 this.verifyTrustDomain);
+        this.configuration.setValue(ConfigProperty.IDENTITY_TRUST_DOMAIN,
+                this.identityTrustDomain);
         this.configuration.setValue(ConfigProperty.TSA_TRUST_DOMAIN,
                 this.tsaTrustDomain);
         return null;
@@ -221,6 +227,16 @@ public class ConfigBean implements Config {
     @Override
     public void setVerifyTrustDomain(String verifyTrustDomain) {
         this.verifyTrustDomain = verifyTrustDomain;
+    }
+
+    @Override
+    public String getIdentityTrustDomain() {
+        return this.identityTrustDomain;
+    }
+
+    @Override
+    public void setIdentityTrustDomain(String identityTrustDomain) {
+        this.identityTrustDomain = identityTrustDomain;
     }
 
     @Override

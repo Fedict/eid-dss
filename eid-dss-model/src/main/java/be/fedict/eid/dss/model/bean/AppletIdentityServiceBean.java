@@ -18,44 +18,43 @@
 
 package be.fedict.eid.dss.model.bean;
 
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.servlet.http.HttpSession;
-
+import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
+import be.fedict.eid.applet.service.spi.IdentityRequest;
+import be.fedict.eid.applet.service.spi.IdentityService;
+import be.fedict.eid.dss.model.Constants;
+import be.fedict.eid.dss.model.DocumentRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.ejb3.annotation.LocalBinding;
 
-import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
-import be.fedict.eid.applet.service.spi.IdentityRequest;
-import be.fedict.eid.applet.service.spi.IdentityService;
-import be.fedict.eid.dss.model.DocumentRepository;
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+import javax.servlet.http.HttpSession;
 
 @Stateless
 @Local(IdentityService.class)
-@LocalBinding(jndiBinding = "fedict/eid/dss/AppletIdentityServiceBean")
+@LocalBinding(jndiBinding = Constants.DSS_JNDI_CONTEXT + "AppletIdentityServiceBean")
 public class AppletIdentityServiceBean implements IdentityService {
 
-	private static final Log LOG = LogFactory
-			.getLog(AppletIdentityServiceBean.class);
+    private static final Log LOG = LogFactory
+            .getLog(AppletIdentityServiceBean.class);
 
-	public IdentityRequest getIdentityRequest() {
-		HttpSession httpSession = HttpSessionTemporaryDataStorage
-				.getHttpSession();
-		DocumentRepository documentRepository = new DocumentRepository(
-				httpSession);
-		boolean includeIdentity;
-		boolean includePhoto;
-		if (documentRepository.getIncludeIdentity()) {
-			includeIdentity = true;
-			includePhoto = true;
-		} else {
-			includeIdentity = false;
-			includePhoto = false;
-		}
-		LOG.debug("include identity: " + includeIdentity);
-		IdentityRequest identityRequest = new IdentityRequest(includeIdentity,
-				false, includePhoto, true);
-		return identityRequest;
-	}
+    public IdentityRequest getIdentityRequest() {
+
+        HttpSession httpSession = HttpSessionTemporaryDataStorage
+                .getHttpSession();
+        DocumentRepository documentRepository = new DocumentRepository(
+                httpSession);
+        boolean includeIdentity;
+        boolean includePhoto;
+        if (documentRepository.getIncludeIdentity()) {
+            includeIdentity = true;
+            includePhoto = true;
+        } else {
+            includeIdentity = false;
+            includePhoto = false;
+        }
+        LOG.debug("include identity: " + includeIdentity);
+        return new IdentityRequest(includeIdentity, false, includePhoto, true);
+    }
 }

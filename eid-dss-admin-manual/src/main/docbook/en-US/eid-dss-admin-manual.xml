@@ -208,6 +208,12 @@
 							<code>BE</code>
 						</para>
 					</listitem>
+                    <listitem>
+                        <para>
+                            Signature identity trust domain:
+                            <code>BE-NAT-REG</code>
+                        </para>
+                    </listitem>
 					<listitem>
 						<para>
 							TSA trust domain:

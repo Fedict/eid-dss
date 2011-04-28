@@ -66,6 +66,10 @@ public interface Config {
 
     void setVerifyTrustDomain(String verifyTrustDomain);
 
+    String getIdentityTrustDomain();
+
+    void setIdentityTrustDomain(String identityTrustDomain);
+
     String getTsaTrustDomain();
 
     void setTsaTrustDomain(String tsaTrustDomain);
