@@ -18,13 +18,10 @@
 
 package be.fedict.eid.dss.admin.portal.control.bean;
 
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-
+import be.fedict.eid.dss.admin.portal.control.AdminConstants;
 import be.fedict.eid.dss.admin.portal.control.Admins;
+import be.fedict.eid.dss.entity.AdministratorEntity;
+import be.fedict.eid.dss.model.AdministratorManager;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
@@ -34,51 +31,53 @@ import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.jboss.seam.log.Log;
 
-import be.fedict.eid.dss.entity.AdministratorEntity;
-import be.fedict.eid.dss.model.AdministratorManager;
+import javax.ejb.EJB;
+import javax.ejb.Remove;
+import javax.ejb.Stateful;
+import java.util.List;
 
 @Stateful
 @Name("dssAdmins")
-@LocalBinding(jndiBinding = "fedict/eid/dss/admin/portal/AdminsBean")
+@LocalBinding(jndiBinding = AdminConstants.ADMIN_JNDI_CONTEXT + "AdminsBean")
 public class AdminsBean implements Admins {
 
-	@Logger
-	private Log log;
+    @Logger
+    private Log log;
 
-	@EJB
-	private AdministratorManager administratorManager;
+    @EJB
+    private AdministratorManager administratorManager;
 
-	@SuppressWarnings("unused")
-	@DataModel
-	private List<AdministratorEntity> dssAdminList;
+    @SuppressWarnings("unused")
+    @DataModel
+    private List<AdministratorEntity> dssAdminList;
 
-	@DataModelSelection
-	private AdministratorEntity selectedAdmin;
+    @DataModelSelection
+    private AdministratorEntity selectedAdmin;
 
-	@Override
-	public void delete() {
-		this.log.debug("delete: #0", this.selectedAdmin.getName());
-		this.administratorManager.removeAdmin(this.selectedAdmin.getId());
-		initList();
-	}
+    @Override
+    public void delete() {
+        this.log.debug("delete: #0", this.selectedAdmin.getName());
+        this.administratorManager.removeAdmin(this.selectedAdmin.getId());
+        initList();
+    }
 
-	@Override
-	public void approve() {
-		this.log.debug("approve: #0", this.selectedAdmin.getName());
-		this.administratorManager.approveAdmin(this.selectedAdmin.getId());
-		initList();
-	}
+    @Override
+    public void approve() {
+        this.log.debug("approve: #0", this.selectedAdmin.getName());
+        this.administratorManager.approveAdmin(this.selectedAdmin.getId());
+        initList();
+    }
 
-	@Remove
-	@Destroy
-	@Override
-	public void destroy() {
-		this.log.debug("destroy");
-	}
+    @Remove
+    @Destroy
+    @Override
+    public void destroy() {
+        this.log.debug("destroy");
+    }
 
-	@Override
-	@Factory("dssAdminList")
-	public void initList() {
-		this.dssAdminList = this.administratorManager.listAdmins();
-	}
+    @Override
+    @Factory("dssAdminList")
+    public void initList() {
+        this.dssAdminList = this.administratorManager.listAdmins();
+    }
 }

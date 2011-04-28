@@ -24,10 +24,7 @@ import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.eid.applet.service.signer.time.TSPTimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.spi.*;
-import be.fedict.eid.dss.model.ConfigProperty;
-import be.fedict.eid.dss.model.Configuration;
-import be.fedict.eid.dss.model.DocumentRepository;
-import be.fedict.eid.dss.model.ServicesManager;
+import be.fedict.eid.dss.model.*;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import org.jboss.ejb3.annotation.LocalBinding;
 
@@ -50,7 +47,7 @@ import java.util.List;
  */
 @Stateless
 @Local(SignatureServiceEx.class)
-@LocalBinding(jndiBinding = "fedict/eid/dss/SignatureServiceBean")
+@LocalBinding(jndiBinding = Constants.DSS_JNDI_CONTEXT + "SignatureServiceBean")
 public class SignatureServiceBean implements SignatureServiceEx {
 
     @EJB

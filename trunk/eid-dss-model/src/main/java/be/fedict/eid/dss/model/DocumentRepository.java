@@ -18,148 +18,137 @@
 
 package be.fedict.eid.dss.model;
 
-import java.security.cert.X509Certificate;
-
-import javax.servlet.http.HttpSession;
-
+import be.fedict.eid.dss.spi.SignatureStatus;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import be.fedict.eid.dss.spi.SignatureStatus;
+import javax.servlet.http.HttpSession;
+import java.security.cert.X509Certificate;
 
 /**
  * A document repository based on HTTP session storage.
- * 
+ *
  * @author Frank Cornelis
- * 
  */
 public class DocumentRepository {
 
-	private static final Log LOG = LogFactory.getLog(DocumentRepository.class);
+    private static final Log LOG = LogFactory.getLog(DocumentRepository.class);
 
-	public static final String DOCUMENT_SESSION_ATTRIBUTE = DocumentRepository.class
-			.getName() + ".document";
+    public static final String DOCUMENT_SESSION_ATTRIBUTE = DocumentRepository.class
+            .getName() + ".document";
 
-	public static final String DOCUMENT_CONTENT_TYPE_SESSION_ATTRIBUTE = DocumentRepository.class
-			.getName() + ".DocumentContentType";
+    public static final String DOCUMENT_CONTENT_TYPE_SESSION_ATTRIBUTE = DocumentRepository.class
+            .getName() + ".DocumentContentType";
 
-	public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE = DocumentRepository.class
-			.getName() + ".signedDocument";
+    public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE = DocumentRepository.class
+            .getName() + ".signedDocument";
 
-	public static final String TARGET_SESSION_ATTRIBUTE = DocumentRepository.class
-			.getName() + ".target";
+    public static final String TARGET_SESSION_ATTRIBUTE = DocumentRepository.class
+            .getName() + ".target";
 
-	public static final String SIGNATURE_STATUS_SESSION_ATTRIBUTE = DocumentRepository.class
-			.getName() + ".status";
+    public static final String SIGNATURE_STATUS_SESSION_ATTRIBUTE = DocumentRepository.class
+            .getName() + ".status";
 
-	public static final String SIGNER_CERTIFICATE_SESSION_ATTRIBUTE = DocumentRepository.class
-			.getName() + ".certificate";
+    public static final String SIGNER_CERTIFICATE_SESSION_ATTRIBUTE = DocumentRepository.class
+            .getName() + ".certificate";
 
-	public static final String ROLE_SESSION_ATTRIBUTE = DocumentRepository.class
-			.getName() + ".role";
+    public static final String ROLE_SESSION_ATTRIBUTE = DocumentRepository.class
+            .getName() + ".role";
 
-	public static final String INCLUDE_IDENTITY_SESSION_ATTRIBUTE = DocumentRepository.class
-			.getName() + ".includeIdentity";
+    public static final String INCLUDE_IDENTITY_SESSION_ATTRIBUTE = DocumentRepository.class
+            .getName() + ".includeIdentity";
 
-	public final HttpSession httpSession;
+    public final HttpSession httpSession;
 
-	public DocumentRepository(HttpSession httpSession) {
-		this.httpSession = httpSession;
-	}
+    public DocumentRepository(HttpSession httpSession) {
+        this.httpSession = httpSession;
+    }
 
-	public void reset() {
-		this.httpSession.removeAttribute(DOCUMENT_SESSION_ATTRIBUTE);
-		this.httpSession.removeAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE);
-		this.httpSession.removeAttribute(TARGET_SESSION_ATTRIBUTE);
-		this.httpSession.removeAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE);
-		this.httpSession.removeAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE);
-		this.httpSession.removeAttribute(ROLE_SESSION_ATTRIBUTE);
-		this.httpSession.removeAttribute(INCLUDE_IDENTITY_SESSION_ATTRIBUTE);
-	}
+    public void reset() {
+        this.httpSession.removeAttribute(DOCUMENT_SESSION_ATTRIBUTE);
+        this.httpSession.removeAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE);
+        this.httpSession.removeAttribute(TARGET_SESSION_ATTRIBUTE);
+        this.httpSession.removeAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE);
+        this.httpSession.removeAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE);
+        this.httpSession.removeAttribute(ROLE_SESSION_ATTRIBUTE);
+        this.httpSession.removeAttribute(INCLUDE_IDENTITY_SESSION_ATTRIBUTE);
+    }
 
-	public void setDocument(byte[] document) {
-		this.httpSession.setAttribute(DOCUMENT_SESSION_ATTRIBUTE, document);
-	}
+    public void setDocument(byte[] document) {
+        this.httpSession.setAttribute(DOCUMENT_SESSION_ATTRIBUTE, document);
+    }
 
-	public byte[] getDocument() {
-		byte[] document = (byte[]) this.httpSession
-				.getAttribute(DOCUMENT_SESSION_ATTRIBUTE);
-		return document;
-	}
+    public byte[] getDocument() {
+        return (byte[]) this.httpSession
+                .getAttribute(DOCUMENT_SESSION_ATTRIBUTE);
+    }
 
-	public void setDocumentContentType(String contentType) {
-		LOG.debug("set document content type: " + contentType);
-		this.httpSession.setAttribute(DOCUMENT_CONTENT_TYPE_SESSION_ATTRIBUTE,
-				contentType);
-	}
+    public void setDocumentContentType(String contentType) {
+        LOG.debug("set document content type: " + contentType);
+        this.httpSession.setAttribute(DOCUMENT_CONTENT_TYPE_SESSION_ATTRIBUTE,
+                contentType);
+    }
 
-	public String getDocumentContentType() {
-		String contentType = (String) this.httpSession
-				.getAttribute(DOCUMENT_CONTENT_TYPE_SESSION_ATTRIBUTE);
-		return contentType;
-	}
+    public String getDocumentContentType() {
+        return (String) this.httpSession
+                .getAttribute(DOCUMENT_CONTENT_TYPE_SESSION_ATTRIBUTE);
+    }
 
-	public void setSignedDocument(byte[] signedDocument) {
-		this.httpSession.setAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE,
-				signedDocument);
-	}
+    public void setSignedDocument(byte[] signedDocument) {
+        this.httpSession.setAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE,
+                signedDocument);
+    }
 
-	public byte[] getSignedDocument() {
-		byte[] signedDocument = (byte[]) this.httpSession
-				.getAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE);
-		return signedDocument;
-	}
+    public byte[] getSignedDocument() {
+        return (byte[]) this.httpSession
+                .getAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE);
+    }
 
-	public void setTarget(String target) {
-		this.httpSession.setAttribute(TARGET_SESSION_ATTRIBUTE, target);
-	}
+    public void setTarget(String target) {
+        this.httpSession.setAttribute(TARGET_SESSION_ATTRIBUTE, target);
+    }
 
-	public String getTarget() {
-		String target = (String) this.httpSession
-				.getAttribute(TARGET_SESSION_ATTRIBUTE);
-		return target;
-	}
+    public String getTarget() {
+        return (String) this.httpSession
+                .getAttribute(TARGET_SESSION_ATTRIBUTE);
+    }
 
-	public void setSignatureStatus(SignatureStatus signatureStatus) {
-		this.httpSession.setAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE,
-				signatureStatus);
-	}
+    public void setSignatureStatus(SignatureStatus signatureStatus) {
+        this.httpSession.setAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE,
+                signatureStatus);
+    }
 
-	public SignatureStatus getSignatureStatus() {
-		SignatureStatus signatureStatus = (SignatureStatus) this.httpSession
-				.getAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE);
-		return signatureStatus;
-	}
+    public SignatureStatus getSignatureStatus() {
+        return (SignatureStatus) this.httpSession
+                .getAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE);
+    }
 
-	public void setSignerCertificate(X509Certificate signerCertificate) {
-		this.httpSession.setAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE,
-				signerCertificate);
-	}
+    public void setSignerCertificate(X509Certificate signerCertificate) {
+        this.httpSession.setAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE,
+                signerCertificate);
+    }
 
-	public X509Certificate getSignerCertificate() {
-		X509Certificate signerCertificate = (X509Certificate) this.httpSession
-				.getAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE);
-		return signerCertificate;
-	}
+    public X509Certificate getSignerCertificate() {
+        return (X509Certificate) this.httpSession
+                .getAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE);
+    }
 
-	public void setRole(String role) {
-		this.httpSession.setAttribute(ROLE_SESSION_ATTRIBUTE, role);
-	}
+    public void setRole(String role) {
+        this.httpSession.setAttribute(ROLE_SESSION_ATTRIBUTE, role);
+    }
 
-	public String getRole() {
-		String role = (String) this.httpSession
-				.getAttribute(ROLE_SESSION_ATTRIBUTE);
-		return role;
-	}
+    public String getRole() {
+        return (String) this.httpSession
+                .getAttribute(ROLE_SESSION_ATTRIBUTE);
+    }
 
-	public void setIncludeIdentity(boolean includeIdentity) {
-		this.httpSession.setAttribute(INCLUDE_IDENTITY_SESSION_ATTRIBUTE,
-				(Boolean) includeIdentity);
-	}
+    public void setIncludeIdentity(boolean includeIdentity) {
+        this.httpSession.setAttribute(INCLUDE_IDENTITY_SESSION_ATTRIBUTE,
+                includeIdentity);
+    }
 
-	public boolean getIncludeIdentity() {
-		boolean includeIdentity = (Boolean) this.httpSession
-				.getAttribute(INCLUDE_IDENTITY_SESSION_ATTRIBUTE);
-		return includeIdentity;
-	}
+    public boolean getIncludeIdentity() {
+        return (Boolean) this.httpSession
+                .getAttribute(INCLUDE_IDENTITY_SESSION_ATTRIBUTE);
+    }
 }
