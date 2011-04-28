@@ -22,6 +22,7 @@ import be.fedict.eid.applet.service.spi.IdentityIntegrityService;
 import be.fedict.eid.dss.model.ConfigProperty;
 import be.fedict.eid.dss.model.Configuration;
 import be.fedict.eid.dss.model.Constants;
+import be.fedict.eid.dss.model.TrustValidationService;
 import be.fedict.trust.client.XKMS2Client;
 import be.fedict.trust.client.exception.ValidationFailedException;
 import org.apache.commons.logging.Log;
@@ -50,11 +51,16 @@ public class IdentityIntegrityServiceBean implements IdentityIntegrityService {
     @EJB
     private Configuration configuration;
 
+    @EJB
+    private TrustValidationService trustValidationService;
+
     public void checkNationalRegistrationCertificate(
             List<X509Certificate> certificateChain) throws SecurityException {
 
         LOG.debug("validate national registry certificate: "
                 + certificateChain.get(0).getSubjectX500Principal());
+
+        XKMS2Client xkms2Client = this.trustValidationService.getXkms2Client();
 
         String xkmsUrl = this.configuration.getValue(ConfigProperty.XKMS_URL,
                 String.class);
@@ -69,19 +75,6 @@ public class IdentityIntegrityServiceBean implements IdentityIntegrityService {
             xkmsTrustDomain = null;
         }
         LOG.debug("Trust domain=" + xkmsTrustDomain);
-
-        XKMS2Client xkms2Client = new XKMS2Client(xkmsUrl);
-
-        Boolean useHttpProxy = this.configuration.getValue(
-                ConfigProperty.HTTP_PROXY_ENABLED, Boolean.class);
-        if (null != useHttpProxy && useHttpProxy) {
-            String httpProxyHost = this.configuration.getValue(
-                    ConfigProperty.HTTP_PROXY_HOST, String.class);
-            int httpProxyPort = this.configuration.getValue(
-                    ConfigProperty.HTTP_PROXY_PORT, Integer.class);
-            LOG.debug("use proxy: " + httpProxyHost + ":" + httpProxyPort);
-            xkms2Client.setProxy(httpProxyHost, httpProxyPort);
-        }
 
         try {
             LOG.debug("validating certificate chain");

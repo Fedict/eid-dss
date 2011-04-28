@@ -26,6 +26,7 @@ import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.spi.*;
 import be.fedict.eid.dss.model.*;
 import be.fedict.eid.dss.spi.DSSDocumentService;
+import be.fedict.trust.client.XKMS2Client;
 import org.jboss.ejb3.annotation.LocalBinding;
 
 import javax.ejb.EJB;
@@ -56,6 +57,9 @@ public class SignatureServiceBean implements SignatureServiceEx {
     @EJB
     private ServicesManager servicesManager;
 
+    @EJB
+    private TrustValidationService trustValidationService;
+
     public String getFilesDigestAlgorithm() {
         return null;
     }
@@ -77,40 +81,33 @@ public class SignatureServiceBean implements SignatureServiceEx {
     private SignatureServiceEx getSignatureService(IdentityDTO identity,
                                                    byte[] photo) {
 
-        String tspUrl = this.configuration.getValue(ConfigProperty.TSP_URL,
-                String.class);
+        XKMS2Client xkms2Client = this.trustValidationService.getXkms2Client();
+
+        String tspUrl = this.configuration.getValue(
+                ConfigProperty.TSP_URL, String.class);
         String tspPolicyOid = this.configuration.getValue(
                 ConfigProperty.TSP_POLICY_OID, String.class);
 
-        Boolean useHttpProxy = this.configuration.getValue(
-                ConfigProperty.HTTP_PROXY_ENABLED, Boolean.class);
-        String httpProxyHost;
-        int httpProxyPort;
-        if (null != useHttpProxy && useHttpProxy) {
-            httpProxyHost = this.configuration.getValue(
-                    ConfigProperty.HTTP_PROXY_HOST, String.class);
-            httpProxyPort = this.configuration.getValue(
-                    ConfigProperty.HTTP_PROXY_PORT, Integer.class);
-        } else {
-            httpProxyHost = null;
-            httpProxyPort = 0;
-        }
-
-        String xkmsUrl = this.configuration.getValue(ConfigProperty.XKMS_URL,
-                String.class);
         String signTrustDomain = this.configuration.getValue(
                 ConfigProperty.SIGN_TRUST_DOMAIN, String.class);
         String tsaTrustDomain = this.configuration.getValue(
                 ConfigProperty.TSA_TRUST_DOMAIN, String.class);
 
-        RevocationDataService revocationDataService = new TrustServiceRevocationDataService(
-                xkmsUrl, httpProxyHost, httpProxyPort, signTrustDomain);
+        Boolean useHttpProxy = this.configuration.getValue(
+                ConfigProperty.HTTP_PROXY_ENABLED, Boolean.class);
+        String httpProxyHost = this.configuration.getValue(
+                ConfigProperty.HTTP_PROXY_HOST, String.class);
+        Integer httpProxyPort = this.configuration.getValue(
+                ConfigProperty.HTTP_PROXY_PORT, Integer.class);
+
+        RevocationDataService revocationDataService =
+                new TrustServiceRevocationDataService(xkms2Client, signTrustDomain);
         SignatureFacet signatureFacet = new SignerCertificateSignatureFacet();
-        TimeStampServiceValidator timeStampServiceValidator = new TrustServiceTimeStampServiceValidator(
-                xkmsUrl, httpProxyHost, httpProxyPort, tsaTrustDomain);
+        TimeStampServiceValidator timeStampServiceValidator =
+                new TrustServiceTimeStampServiceValidator(xkms2Client, tsaTrustDomain);
         TSPTimeStampService timeStampService = new TSPTimeStampService(tspUrl,
                 timeStampServiceValidator);
-        if (null != httpProxyHost) {
+        if (useHttpProxy) {
             timeStampService.setProxy(httpProxyHost, httpProxyPort);
         }
         if (null != tspPolicyOid && !tspPolicyOid.isEmpty()) {

@@ -18,12 +18,6 @@
 
 package be.fedict.eid.dss.model.bean;
 
-import java.security.cert.X509Certificate;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import be.fedict.eid.applet.service.signer.facets.RevocationData;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.trust.client.XKMS2Client;
@@ -31,54 +25,55 @@ import be.fedict.trust.client.jaxb.xades132.CRLValuesType;
 import be.fedict.trust.client.jaxb.xades132.EncapsulatedPKIDataType;
 import be.fedict.trust.client.jaxb.xades132.OCSPValuesType;
 import be.fedict.trust.client.jaxb.xades132.RevocationValuesType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.security.cert.X509Certificate;
+import java.util.List;
 
 public class TrustServiceTimeStampServiceValidator implements
-		TimeStampServiceValidator {
+        TimeStampServiceValidator {
 
-	private static final Log LOG = LogFactory
-			.getLog(TrustServiceTimeStampServiceValidator.class);
+    private static final Log LOG = LogFactory
+            .getLog(TrustServiceTimeStampServiceValidator.class);
 
-	private final XKMS2Client xkms2Client;
-	
-	private final String trustDomain;
+    private final XKMS2Client xkms2Client;
 
-	public TrustServiceTimeStampServiceValidator(String xkmsUrl,
-			String proxyHost, int proxyPort, String trustDomain) {
-		this.xkms2Client = new XKMS2Client(xkmsUrl);
-		if (null != proxyHost) {
-			this.xkms2Client.setProxy(proxyHost, proxyPort);
-		}
-		this.trustDomain = trustDomain;
-	}
+    private final String trustDomain;
 
-	public void validate(List<X509Certificate> certificateChain,
-			RevocationData revocationData) throws Exception {
-		LOG.debug("validating TSA certificate: "
-				+ certificateChain.get(0).getSubjectX500Principal());
-		this.xkms2Client.validate(this.trustDomain, certificateChain,
-				revocationData != null);
-		if (null == revocationData) {
-			return;
-		}
-		RevocationValuesType revocationValues = this.xkms2Client
-				.getRevocationValues();
-		CRLValuesType crlValues = revocationValues.getCRLValues();
-		if (null != crlValues) {
-			List<EncapsulatedPKIDataType> encapsulatedCrls = crlValues
-					.getEncapsulatedCRLValue();
-			for (EncapsulatedPKIDataType encapsulatedCrl : encapsulatedCrls) {
-				byte[] encodedCrl = encapsulatedCrl.getValue();
-				revocationData.addCRL(encodedCrl);
-			}
-		}
-		OCSPValuesType ocspValues = revocationValues.getOCSPValues();
-		if (null != ocspValues) {
-			List<EncapsulatedPKIDataType> encapsulatedOcsps = ocspValues
-					.getEncapsulatedOCSPValue();
-			for (EncapsulatedPKIDataType encapsulatedOcsp : encapsulatedOcsps) {
-				byte[] encodedOcsp = encapsulatedOcsp.getValue();
-				revocationData.addOCSP(encodedOcsp);
-			}
-		}
-	}
+    public TrustServiceTimeStampServiceValidator(XKMS2Client xkms2Client, String trustDomain) {
+        this.xkms2Client = xkms2Client;
+        this.trustDomain = trustDomain;
+    }
+
+    public void validate(List<X509Certificate> certificateChain,
+                         RevocationData revocationData) throws Exception {
+        LOG.debug("validating TSA certificate: "
+                + certificateChain.get(0).getSubjectX500Principal());
+        this.xkms2Client.validate(this.trustDomain, certificateChain,
+                revocationData != null);
+        if (null == revocationData) {
+            return;
+        }
+        RevocationValuesType revocationValues = this.xkms2Client
+                .getRevocationValues();
+        CRLValuesType crlValues = revocationValues.getCRLValues();
+        if (null != crlValues) {
+            List<EncapsulatedPKIDataType> encapsulatedCrls = crlValues
+                    .getEncapsulatedCRLValue();
+            for (EncapsulatedPKIDataType encapsulatedCrl : encapsulatedCrls) {
+                byte[] encodedCrl = encapsulatedCrl.getValue();
+                revocationData.addCRL(encodedCrl);
+            }
+        }
+        OCSPValuesType ocspValues = revocationValues.getOCSPValues();
+        if (null != ocspValues) {
+            List<EncapsulatedPKIDataType> encapsulatedOcsps = ocspValues
+                    .getEncapsulatedOCSPValue();
+            for (EncapsulatedPKIDataType encapsulatedOcsp : encapsulatedOcsps) {
+                byte[] encodedOcsp = encapsulatedOcsp.getValue();
+                revocationData.addOCSP(encodedOcsp);
+            }
+        }
+    }
 }

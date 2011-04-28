@@ -129,7 +129,7 @@ public class ConfigurationBean implements Configuration {
             return null;
         }
         String strValue = configPropertyEntity.getValue();
-        if (null == strValue) {
+        if (null == strValue || strValue.trim().length() == 0) {
             return null;
         }
         if (String.class == configProperty.getType()) {

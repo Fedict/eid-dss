@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.model;
 
+import be.fedict.trust.client.XKMS2Client;
 import be.fedict.trust.client.exception.RevocationDataNotFoundException;
 import be.fedict.trust.client.exception.TrustDomainNotFoundException;
 import be.fedict.trust.client.exception.ValidationFailedException;
@@ -42,4 +43,6 @@ public interface TrustValidationService {
     void validate(TimeStampToken timeStampToken)
             throws CertificateEncodingException, ValidationFailedException,
             TrustDomainNotFoundException, RevocationDataNotFoundException;
+
+    XKMS2Client getXkms2Client();
 }
