@@ -81,7 +81,10 @@ public class TrustValidationServiceBean implements TrustValidationService {
         getXkms2Client().validate(tsaTrustDomain, timeStampToken);
     }
 
-    private XKMS2Client getXkms2Client() {
+    /**
+     * {@inheritDoc}
+     */
+    public XKMS2Client getXkms2Client() {
 
         String xkmsUrl = this.configuration.getValue(ConfigProperty.XKMS_URL,
                 String.class);
