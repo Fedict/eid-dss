@@ -61,6 +61,10 @@ public class DigitalSignatureServiceClient {
     private static final Log LOG = LogFactory
             .getLog(DigitalSignatureServiceClient.class);
 
+    private static final QName detailedSignatureReportQName = new QName(
+            DigitalSignatureServiceConstants.VR_NAMESPACE,
+            "DetailedSignatureReport");
+
     private final String endpointAddress;
 
     private final ObjectFactory dssObjectFactory;
@@ -148,22 +152,11 @@ public class DigitalSignatureServiceClient {
      */
     public boolean verify(byte[] signedDocument, String mimeType)
             throws NotParseableXMLDocumentException {
+
         ResponseBaseType responseBase = doVerification(signedDocument,
                 mimeType, false, false);
 
-        Result result = responseBase.getResult();
-        String resultMajor = result.getResultMajor();
-        LOG.debug("result major: " + resultMajor);
-        String resultMinor = result.getResultMinor();
-        if (!DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS.equals(resultMajor)) {
-            LOG.warn("result minor: " + resultMinor);
-            if (null != resultMinor
-                    && DigitalSignatureServiceConstants.RESULT_MINOR_NOT_PARSEABLE_XML_DOCUMENT
-                    .equals(resultMinor)) {
-                throw new NotParseableXMLDocumentException();
-            }
-            throw new RuntimeException("unsuccessful result: " + resultMajor);
-        }
+        String resultMinor = validateResult(responseBase);
         if (null == resultMinor) {
             throw new RuntimeException("missing ResultMinor");
         }
@@ -178,41 +171,13 @@ public class DigitalSignatureServiceClient {
         return false;
     }
 
-    /**
-     * Verifies whether the given document has been signed and reports back on
-     * the signing parties.
-     *
-     * @param signedDocument signed document to verify
-     * @param mimeType       optional mime-type, default is "text/xml".
-     * @return a list of signature information objects detailing on the signing
-     *         parties.
-     * @throws NotParseableXMLDocumentException
-     *          XML document was not parseable.
-     */
     @SuppressWarnings("unchecked")
-    public List<SignatureInfo> verifyWithSigners(byte[] signedDocument,
-                                                 String mimeType) throws NotParseableXMLDocumentException {
-        ResponseBaseType responseBase = doVerification(signedDocument,
-                mimeType, false, true);
+    private VerificationReportType findVerificationReport(
+            ResponseBaseType responseBase) {
 
-        Result result = responseBase.getResult();
-        String resultMajor = result.getResultMajor();
-        LOG.debug("result major: " + resultMajor);
-        if (!DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS
-                .equals(resultMajor)) {
-            String resultMinor = result.getResultMinor();
-            if (null != resultMinor
-                    && DigitalSignatureServiceConstants.RESULT_MINOR_NOT_PARSEABLE_XML_DOCUMENT
-                    .equals(resultMinor)) {
-                throw new NotParseableXMLDocumentException();
-            }
-            throw new RuntimeException("unsuccessful result: " + resultMajor);
-        }
-
-        List<SignatureInfo> signers = new LinkedList<SignatureInfo>();
         AnyType optionalOutputs = responseBase.getOptionalOutputs();
         if (null == optionalOutputs) {
-            return signers;
+            return null;
         }
         List<Object> optionalOutputContent = optionalOutputs.getAny();
         for (Object optionalOutput : optionalOutputContent) {
@@ -232,88 +197,131 @@ public class DigitalSignatureServiceClient {
                                 "JAXB error parsing verification report: "
                                         + e.getMessage(), e);
                     }
-                    VerificationReportType verificationReport = verificationReportElement
-                            .getValue();
-                    List<IndividualReportType> individualReports = verificationReport
-                            .getIndividualReport();
-                    for (IndividualReportType individualReport : individualReports) {
-                        if (!DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS
-                                .equals(individualReport.getResult()
-                                        .getResultMajor())) {
-                            LOG.warn("some invalid VR result reported: "
-                                    + individualReport.getResult()
-                                    .getResultMajor());
-                            continue;
-                        }
-                        SignedObjectIdentifierType signedObjectIdentifier = individualReport
-                                .getSignedObjectIdentifier();
-                        Date signingTime = signedObjectIdentifier
-                                .getSignedProperties()
-                                .getSignedSignatureProperties()
-                                .getSigningTime().toGregorianCalendar()
-                                .getTime();
-                        List<Object> details = individualReport.getDetails()
-                                .getAny();
-                        X509Certificate signer = null;
-                        String role = null;
-                        for (Object detail : details) {
-                            if (detail instanceof JAXBElement<?>) {
-                                JAXBElement<?> detailElement = (JAXBElement<?>) detail;
-                                if (new QName(
-                                        DigitalSignatureServiceConstants.VR_NAMESPACE,
-                                        "DetailedSignatureReport")
-                                        .equals(detailElement.getName())) {
-                                    DetailedSignatureReportType detailedSignatureReport = (DetailedSignatureReportType) detailElement
-                                            .getValue();
-
-                                    List<CertificateValidityType> certificateValidities = detailedSignatureReport
-                                            .getCertificatePathValidity()
-                                            .getPathValidityDetail()
-                                            .getCertificateValidity();
-                                    CertificateValidityType certificateValidity = certificateValidities
-                                            .get(0);
-                                    byte[] encodedSigner = certificateValidity
-                                            .getCertificateValue();
-                                    try {
-                                        signer = (X509Certificate) this.certificateFactory
-                                                .generateCertificate(new ByteArrayInputStream(
-                                                        encodedSigner));
-                                    } catch (CertificateException e) {
-                                        throw new RuntimeException(
-                                                "cert decoding error: "
-                                                        + e.getMessage(), e);
-                                    }
-
-                                    PropertiesType properties = detailedSignatureReport
-                                            .getProperties();
-                                    if (null != properties) {
-                                        SignerRoleType signerRole = properties
-                                                .getSignedProperties()
-                                                .getSignedSignatureProperties()
-                                                .getSignerRole();
-                                        if (null != signerRole) {
-                                            role = (String) signerRole
-                                                    .getClaimedRoles()
-                                                    .getClaimedRole().get(0)
-                                                    .getContent().get(0);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (null == signer) {
-                            throw new RuntimeException(
-                                    "no signer certificate present in verification report");
-                        }
-                        SignatureInfo signatureInfo = new SignatureInfo(signer,
-                                signingTime, role);
-                        signers.add(signatureInfo);
-                    }
+                    return verificationReportElement.getValue();
                 }
             }
         }
 
+        return null;
+    }
+
+    /**
+     * Verifies whether the given document has been signed and reports back on
+     * the signing parties.
+     *
+     * @param signedDocument signed document to verify
+     * @param mimeType       optional mime-type, default is "text/xml".
+     * @return a list of signature information objects detailing on the signing
+     *         parties.
+     * @throws NotParseableXMLDocumentException
+     *          XML document was not parseable.
+     */
+    public List<SignatureInfo> verifyWithSigners(byte[] signedDocument,
+                                                 String mimeType) throws NotParseableXMLDocumentException {
+
+        ResponseBaseType responseBase = doVerification(signedDocument,
+                mimeType, false, true);
+
+        validateResult(responseBase);
+
+        // parse VerificationReport
+        List<SignatureInfo> signers = new LinkedList<SignatureInfo>();
+        VerificationReportType verificationReport =
+                findVerificationReport(responseBase);
+        if (null == verificationReport) {
+            return signers;
+        }
+
+        List<IndividualReportType> individualReports = verificationReport
+                .getIndividualReport();
+        for (IndividualReportType individualReport : individualReports) {
+
+            if (!DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS
+                    .equals(individualReport.getResult().getResultMajor())) {
+                LOG.warn("some invalid VR result reported: "
+                        + individualReport.getResult().getResultMajor());
+                continue;
+            }
+            SignedObjectIdentifierType signedObjectIdentifier = individualReport
+                    .getSignedObjectIdentifier();
+            Date signingTime = signedObjectIdentifier.getSignedProperties()
+                    .getSignedSignatureProperties()
+                    .getSigningTime().toGregorianCalendar().getTime();
+
+            List<Object> details = individualReport.getDetails().getAny();
+            X509Certificate signer = null;
+            String role = null;
+            for (Object detail : details) {
+                if (detail instanceof JAXBElement<?>) {
+                    JAXBElement<?> detailElement = (JAXBElement<?>) detail;
+                    if (detailedSignatureReportQName.equals(detailElement.getName())) {
+                        DetailedSignatureReportType detailedSignatureReport =
+                                (DetailedSignatureReportType) detailElement.getValue();
+
+                        List<CertificateValidityType> certificateValidities =
+                                detailedSignatureReport
+                                        .getCertificatePathValidity()
+                                        .getPathValidityDetail()
+                                        .getCertificateValidity();
+                        CertificateValidityType certificateValidity =
+                                certificateValidities.get(0);
+                        byte[] encodedSigner = certificateValidity
+                                .getCertificateValue();
+                        try {
+                            signer = (X509Certificate) this.certificateFactory
+                                    .generateCertificate(new ByteArrayInputStream(
+                                            encodedSigner));
+                        } catch (CertificateException e) {
+                            throw new RuntimeException("cert decoding error: "
+                                    + e.getMessage(), e);
+                        }
+
+                        PropertiesType properties = detailedSignatureReport
+                                .getProperties();
+                        if (null != properties) {
+                            SignerRoleType signerRole = properties
+                                    .getSignedProperties()
+                                    .getSignedSignatureProperties()
+                                    .getSignerRole();
+                            if (null != signerRole) {
+                                role = (String) signerRole
+                                        .getClaimedRoles()
+                                        .getClaimedRole().get(0)
+                                        .getContent().get(0);
+                            }
+                        }
+                    }
+                }
+            }
+            if (null == signer) {
+                throw new RuntimeException(
+                        "no signer certificate present in verification report");
+            }
+            SignatureInfo signatureInfo = new SignatureInfo(signer,
+                    signingTime, role);
+            signers.add(signatureInfo);
+        }
+
+
         return signers;
+    }
+
+    private String validateResult(ResponseBaseType responseBase) throws NotParseableXMLDocumentException {
+
+        Result result = responseBase.getResult();
+        String resultMajor = result.getResultMajor();
+        LOG.debug("result major: " + resultMajor);
+        String resultMinor = result.getResultMinor();
+        if (!DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS.equals(resultMajor)) {
+            LOG.warn("result minor: " + resultMinor);
+            if (null != resultMinor
+                    && DigitalSignatureServiceConstants.RESULT_MINOR_NOT_PARSEABLE_XML_DOCUMENT
+                    .equals(resultMinor)) {
+                throw new NotParseableXMLDocumentException();
+            }
+            throw new RuntimeException("unsuccessful result: " + resultMajor);
+        }
+        return resultMinor;
     }
 
     private ResponseBaseType doVerification(byte[] documentData,
