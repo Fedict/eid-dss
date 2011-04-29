@@ -1,60 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	version="2.5">
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
 
-	<display-name>eID DSS SP Test Web Application</display-name>
+    <display-name>eID DSS SP Test Web Application</display-name>
 
-	<!-- eID DSS Response Servlet -->
-	<servlet>
-		<servlet-name>DSSResponseProcessor</servlet-name>
-		<servlet-class>be.fedict.eid.dss.protocol.simple.client.SignatureResponseProcessorServlet</servlet-class>
-		<init-param>
-			<param-name>NextPage</param-name>
-			<param-value>/view.jsp</param-value>
-		</init-param>
-		<init-param>
-			<param-name>CancelPage</param-name>
-			<param-value>/view.jsp</param-value>
-		</init-param>
-		<init-param>
-			<param-name>ErrorPage</param-name>
-			<param-value>/sign-error.jsp</param-value>
-		</init-param>
-		<init-param>
-			<param-name>ErrorMessageSessionAttribute</param-name>
-			<param-value>SignatureErrorMessage</param-value>
-		</init-param>
-		<init-param>
-			<param-name>SignedDocumentSessionAttribute</param-name>
-			<param-value>document</param-value>
-		</init-param>
-		<init-param>
-			<param-name>TargetSessionAttribute</param-name>
-			<param-value>target</param-value>
-		</init-param>
+    <!-- eID DSS Response Servlet -->
+    <servlet>
+        <servlet-name>DSSResponseProcessor</servlet-name>
+        <servlet-class>
+            be.fedict.eid.dss.protocol.simple.client.SignatureResponseProcessorServlet
+        </servlet-class>
+        <init-param>
+            <param-name>NextPage</param-name>
+            <param-value>/view.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>CancelPage</param-name>
+            <param-value>/index.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ErrorPage</param-name>
+            <param-value>/sign-error.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ErrorMessageSessionAttribute</param-name>
+            <param-value>SignatureErrorMessage</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SignedDocumentSessionAttribute</param-name>
+            <param-value>document</param-value>
+        </init-param>
+        <init-param>
+            <param-name>TargetSessionAttribute</param-name>
+            <param-value>target</param-value>
+        </init-param>
         <init-param>
             <param-name>RelayStateSessionAttribute</param-name>
             <param-value>RelayState</param-value>
         </init-param>
-		<init-param>
-			<param-name>SignatureRequestSessionAttribute</param-name>
-			<param-value>SignatureRequest</param-value>
-		</init-param>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>DSSResponseProcessor</servlet-name>
-		<url-pattern>/dss-response</url-pattern>
-	</servlet-mapping>
+        <init-param>
+            <param-name>SignatureRequestSessionAttribute</param-name>
+            <param-value>SignatureRequest</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DSSResponseProcessor</servlet-name>
+        <url-pattern>/dss-response</url-pattern>
+    </servlet-mapping>
 
     <!-- Upload Servlet -->
     <servlet>
         <servlet-name>UploadServlet</servlet-name>
-        <servlet-class>be.fedict.eid.dss.sp.servlet.UploadServlet</servlet-class>
+        <servlet-class>be.fedict.eid.dss.sp.servlet.UploadServlet
+        </servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>UploadServlet</servlet-name>
         <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+
+    <!-- Download Servlet -->
+    <servlet>
+        <servlet-name>DownloadServlet</servlet-name>
+        <servlet-class>be.fedict.eid.dss.sp.servlet.DownloadServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DownloadServlet</servlet-name>
+        <url-pattern>/download</url-pattern>
     </servlet-mapping>
 
 </web-app>

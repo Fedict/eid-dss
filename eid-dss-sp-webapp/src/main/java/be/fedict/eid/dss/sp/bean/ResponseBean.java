@@ -37,6 +37,7 @@ public class ResponseBean {
     private String error;
     private byte[] signedDocument;
     private String contentType;
+    private List<SignatureInfo> signatureInfos = null;
 
     public ServletRequest getRequest() {
         return this.request;
@@ -61,8 +62,8 @@ public class ResponseBean {
 
             try {
                 LOG.debug("verify signed document");
-                List<SignatureInfo> signatureInfos =
-                        dssClient.verifyWithSigners(this.signedDocument, this.contentType);
+                signatureInfos = dssClient.verifyWithSigners(
+                        this.signedDocument, this.contentType);
 
                 for (SignatureInfo signatureInfo : signatureInfos) {
                     LOG.debug("SignatureInfo: " + signatureInfo.getSigner().toString()
@@ -77,10 +78,18 @@ public class ResponseBean {
     }
 
     public String getError() {
-        return error;
+        return this.error;
     }
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public List<SignatureInfo> getSignatureInfos() {
+        return this.signatureInfos;
+    }
+
+    public void setSignatureInfos(List<SignatureInfo> signatureInfos) {
+        this.signatureInfos = signatureInfos;
     }
 }
