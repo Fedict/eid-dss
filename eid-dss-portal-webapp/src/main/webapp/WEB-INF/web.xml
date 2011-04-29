@@ -1,135 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	version="2.5">
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
 
-	<display-name>eID Digital Signature Service Portal Web Application</display-name>
+    <display-name>eID Digital Signature Service Portal Web Application
+    </display-name>
 
-	<!-- JBoss Seam -->
-	<listener>
-		<listener-class>org.jboss.seam.servlet.SeamListener</listener-class>
-	</listener>
+    <!-- JBoss Seam -->
+    <listener>
+        <listener-class>org.jboss.seam.servlet.SeamListener</listener-class>
+    </listener>
 
-	<servlet>
-		<servlet-name>Seam Resource Servlet</servlet-name>
-		<servlet-class>org.jboss.seam.servlet.SeamResourceServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Seam Resource Servlet</servlet-name>
-		<url-pattern>/seam/resource/*</url-pattern>
-	</servlet-mapping>
+    <servlet>
+        <servlet-name>Seam Resource Servlet</servlet-name>
+        <servlet-class>org.jboss.seam.servlet.SeamResourceServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Seam Resource Servlet</servlet-name>
+        <url-pattern>/seam/resource/*</url-pattern>
+    </servlet-mapping>
 
-	<filter>
-		<filter-name>Seam Filter</filter-name>
-		<filter-class>org.jboss.seam.servlet.SeamFilter</filter-class>
-		<init-param>
-			<param-name>createTempFiles</param-name>
-			<param-value>false</param-value>
-		</init-param>
-		<init-param>
-			<param-name>maxRequestSize</param-name>
-			<param-value>5242880</param-value>
-			<!-- 1024*1024*5 = 5 MiB -->
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>Seam Filter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+    <filter>
+        <filter-name>Seam Filter</filter-name>
+        <filter-class>org.jboss.seam.servlet.SeamFilter</filter-class>
+        <init-param>
+            <param-name>createTempFiles</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <init-param>
+            <param-name>maxRequestSize</param-name>
+            <param-value>5242880</param-value>
+            <!-- 1024*1024*5 = 5 MiB -->
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>Seam Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
-	<!-- JBoss Richfaces -->
-	<context-param>
-		<param-name>org.richfaces.SKIN</param-name>
-		<param-value>DEFAULT</param-value>
-	</context-param>
-	<context-param>
-		<param-name>org.ajax4jsf.VIEW_HANDLERS</param-name>
-		<param-value>com.sun.facelets.FaceletViewHandler</param-value>
-	</context-param>
+    <!-- JBoss Richfaces -->
+    <context-param>
+        <param-name>org.richfaces.SKIN</param-name>
+        <param-value>DEFAULT</param-value>
+    </context-param>
+    <context-param>
+        <param-name>org.ajax4jsf.VIEW_HANDLERS</param-name>
+        <param-value>com.sun.facelets.FaceletViewHandler</param-value>
+    </context-param>
 
-	<!-- Facelets -->
-	<context-param>
-		<param-name>javax.faces.DEFAULT_SUFFIX</param-name>
-		<param-value>.xhtml</param-value>
-	</context-param>
-	<context-param>
-		<param-name>facelets.DEVELOPMENT</param-name>
-		<param-value>true</param-value>
-	</context-param>
-	<context-param>
-		<param-name>javax.faces.DISABLE_FACELET_JSF_VIEWHANDLER</param-name>
-		<param-value>true</param-value>
-	</context-param>
+    <!-- Facelets -->
+    <context-param>
+        <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+        <param-value>.xhtml</param-value>
+    </context-param>
+    <context-param>
+        <param-name>facelets.DEVELOPMENT</param-name>
+        <param-value>true</param-value>
+    </context-param>
+    <context-param>
+        <param-name>javax.faces.DISABLE_FACELET_JSF_VIEWHANDLER</param-name>
+        <param-value>true</param-value>
+    </context-param>
 
-	<!-- JSF -->
-	<servlet>
-		<servlet-name>Faces Servlet</servlet-name>
-		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Faces Servlet</servlet-name>
-		<url-pattern>*.seam</url-pattern>
-	</servlet-mapping>
+    <!-- JSF -->
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.seam</url-pattern>
+    </servlet-mapping>
 
-	<!-- eID DSS Response Servlet -->
-	<servlet>
-		<servlet-name>DSSResponseProcessor</servlet-name>
-		<servlet-class>be.fedict.eid.dss.protocol.simple.client.SignatureResponseProcessorServlet</servlet-class>
-		<init-param>
-			<param-name>NextPage</param-name>
-			<param-value>/view.seam</param-value>
-		</init-param>
-		<init-param>
-			<param-name>CancelPage</param-name>
-			<param-value>/view.seam</param-value>
-		</init-param>
-		<init-param>
-			<param-name>ErrorPage</param-name>
-			<param-value>/sign-error.seam</param-value>
-		</init-param>
-		<init-param>
-			<param-name>ErrorMessageSessionAttribute</param-name>
-			<param-value>SignatureErrorMessage</param-value>
-		</init-param>
-		<init-param>
-			<param-name>SignedDocumentSessionAttribute</param-name>
-			<param-value>document</param-value>
-		</init-param>
-		<init-param>
-			<param-name>TargetSessionAttribute</param-name>
-			<param-value>target</param-value>
-		</init-param>
+    <!-- eID DSS Response Servlet -->
+    <servlet>
+        <servlet-name>DSSResponseProcessor</servlet-name>
+        <servlet-class>
+            be.fedict.eid.dss.protocol.simple.client.SignatureResponseProcessorServlet
+        </servlet-class>
+        <init-param>
+            <param-name>NextPage</param-name>
+            <param-value>/view.seam</param-value>
+        </init-param>
+        <init-param>
+            <param-name>CancelPage</param-name>
+            <param-value>/view.seam</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ErrorPage</param-name>
+            <param-value>/sign-error.seam</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ErrorMessageSessionAttribute</param-name>
+            <param-value>SignatureErrorMessage</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SignedDocumentSessionAttribute</param-name>
+            <param-value>document</param-value>
+        </init-param>
+        <init-param>
+            <param-name>TargetSessionAttribute</param-name>
+            <param-value>target</param-value>
+        </init-param>
         <init-param>
             <param-name>RelayStateSessionAttribute</param-name>
             <param-value>RelayState</param-value>
         </init-param>
-		<init-param>
-			<param-name>SignatureRequestSessionAttribute</param-name>
-			<param-value>SignatureRequest</param-value>
-		</init-param>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>DSSResponseProcessor</servlet-name>
-		<url-pattern>/dss-response</url-pattern>
-	</servlet-mapping>
+        <init-param>
+            <param-name>SignatureRequestSessionAttribute</param-name>
+            <param-value>SignatureRequest</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DSSResponseProcessor</servlet-name>
+        <url-pattern>/dss-response</url-pattern>
+    </servlet-mapping>
 
-	<!-- Generic document downloader -->
-	<servlet>
-		<servlet-name>Downloader</servlet-name>
-		<servlet-class>be.fedict.eid.dss.portal.DownloadServlet</servlet-class>
-		<init-param>
-			<param-name>DocumentSessionAttribute</param-name>
-			<param-value>document</param-value>
-		</init-param>
-		<init-param>
-			<param-name>ContentTypeSessionAttribute</param-name>
-			<param-value>ContentType</param-value>
-		</init-param>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>Downloader</servlet-name>
-		<url-pattern>/download/*</url-pattern>
-	</servlet-mapping>
+    <!-- Generic document downloader -->
+    <servlet>
+        <servlet-name>Downloader</servlet-name>
+        <servlet-class>be.fedict.eid.dss.portal.DownloadServlet</servlet-class>
+        <init-param>
+            <param-name>DocumentSessionAttribute</param-name>
+            <param-value>document</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ContentTypeSessionAttribute</param-name>
+            <param-value>ContentType</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Downloader</servlet-name>
+        <url-pattern>/download/*</url-pattern>
+    </servlet-mapping>
 
 </web-app>

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5">
 
     <display-name>eID Digital Signature Service Web Application</display-name>
 
     <listener>
-        <listener-class>be.fedict.eid.dss.webapp.StartupServletContextListener</listener-class>
+        <listener-class>be.fedict.eid.dss.webapp.StartupServletContextListener
+        </listener-class>
     </listener>
 
     <!-- JBoss Seam -->
@@ -16,7 +18,8 @@
 
     <servlet>
         <servlet-name>Seam Resource Servlet</servlet-name>
-        <servlet-class>org.jboss.seam.servlet.SeamResourceServlet</servlet-class>
+        <servlet-class>org.jboss.seam.servlet.SeamResourceServlet
+        </servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Seam Resource Servlet</servlet-name>
@@ -70,7 +73,8 @@
     <!-- Document viewer servlet -->
     <servlet>
         <servlet-name>DocumentViewer</servlet-name>
-        <servlet-class>be.fedict.eid.dss.webapp.DocumentViewerServlet</servlet-class>
+        <servlet-class>be.fedict.eid.dss.webapp.DocumentViewerServlet
+        </servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DocumentViewer</servlet-name>
@@ -80,10 +84,12 @@
     <!-- eID Applet -->
     <servlet>
         <servlet-name>AppletServiceServlet</servlet-name>
-        <servlet-class>be.fedict.eid.applet.service.AppletServiceServlet</servlet-class>
+        <servlet-class>be.fedict.eid.applet.service.AppletServiceServlet
+        </servlet-class>
         <init-param>
             <param-name>IdentityService</param-name>
-            <param-value>be/fedict/eid/dss/AppletIdentityServiceBean</param-value>
+            <param-value>be/fedict/eid/dss/AppletIdentityServiceBean
+            </param-value>
         </init-param>
         <init-param>
             <param-name>SignatureService</param-name>
@@ -95,7 +101,8 @@
         </init-param>
         <init-param>
             <param-name>IdentityIntegrityService</param-name>
-            <param-value>be/fedict/eid/dss/IdentityIntegrityServiceBean</param-value>
+            <param-value>be/fedict/eid/dss/IdentityIntegrityServiceBean
+            </param-value>
         </init-param>
         <init-param>
             <param-name>SkipSecureConnectionCheck</param-name>
@@ -110,7 +117,8 @@
     <!-- DSS Protocol Servlets -->
     <servlet>
         <servlet-name>ProtocolEntryServlet</servlet-name>
-        <servlet-class>be.fedict.eid.dss.webapp.ProtocolEntryServlet</servlet-class>
+        <servlet-class>be.fedict.eid.dss.webapp.ProtocolEntryServlet
+        </servlet-class>
         <init-param>
             <param-name>UnknownProtocolPage</param-name>
             <param-value>/unknown-protocol.seam</param-value>
@@ -125,7 +133,7 @@
         </init-param>
         <init-param>
             <param-name>NextPage</param-name>
-            <param-value>/view.seam</param-value>
+            <param-value>/browserInfo.seam</param-value>
         </init-param>
         <init-param>
             <param-name>ExitPage</param-name>
@@ -139,7 +147,8 @@
 
     <servlet>
         <servlet-name>ProtocolExitServlet</servlet-name>
-        <servlet-class>be.fedict.eid.dss.webapp.ProtocolExitServlet</servlet-class>
+        <servlet-class>be.fedict.eid.dss.webapp.ProtocolExitServlet
+        </servlet-class>
         <init-param>
             <param-name>ProtocolErrorPage</param-name>
             <param-value>/protocol-error.seam</param-value>
@@ -176,5 +185,14 @@
         <url-pattern>/identity.pem</url-pattern>
     </servlet-mapping>
 
+    <!-- Plugins Servlet -->
+    <servlet>
+        <servlet-name>BrowserInfoServlet</servlet-name>
+        <servlet-class>be.fedict.eid.dss.webapp.BrowserInfoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BrowserInfoServlet</servlet-name>
+        <url-pattern>/browserInfo</url-pattern>
+    </servlet-mapping>
 
 </web-app>
