@@ -10,7 +10,7 @@
         <form enctype="multipart/form-data" action="upload" method="post">
 
             <center>
-                <table border="2">
+                <table border="1">
                     <tr>
                         <td>
                             <b>Choose the file To Upload:</b>

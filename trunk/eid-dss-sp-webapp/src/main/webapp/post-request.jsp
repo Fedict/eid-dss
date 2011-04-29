@@ -7,6 +7,8 @@
 </head>
 <body>
 
+    Uploading document for signing...
+
     <jsp:useBean id="sp" scope="request"
                  class="be.fedict.eid.dss.sp.bean.SPBean"/>
     <jsp:setProperty name="sp" property="request" value="<%= request %>"/>
