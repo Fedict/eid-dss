@@ -39,6 +39,7 @@
         <module>eid-dss-admin-portal-webapp</module>
         <module>eid-dss-deploy</module>
         <module>eid-dss-client</module>
+	<module>eid-dss-sp-webapp</module>
     </modules>
     <profiles>
         <profile>
