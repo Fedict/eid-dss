@@ -18,9 +18,7 @@
 
 package be.fedict.eid.dss.webapp;
 
-import be.fedict.eid.dss.model.IdentityService;
 import be.fedict.eid.dss.model.ServicesManager;
-import be.fedict.eid.dss.model.exception.KeyStoreLoadException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,13 +48,9 @@ public class StartupServletContextListener implements ServletContextListener {
     @EJB
     private ServicesManager servicesManager;
 
-    @EJB
-    private IdentityService identityService;
-
     public void contextInitialized(ServletContextEvent event) {
-        LOG.debug("contextInitialized");
 
-        initIdentity();
+        LOG.debug("contextInitialized");
 
         initProtocolServices(event);
 
@@ -65,17 +59,6 @@ public class StartupServletContextListener implements ServletContextListener {
 
     public void contextDestroyed(ServletContextEvent event) {
         LOG.debug("contextDestroyed");
-    }
-
-    private void initIdentity() {
-
-        if (this.identityService.isIdentityConfigured()) {
-            try {
-                this.identityService.reloadIdentity();
-            } catch (KeyStoreLoadException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     private void initProtocolServices(ServletContextEvent event) {
