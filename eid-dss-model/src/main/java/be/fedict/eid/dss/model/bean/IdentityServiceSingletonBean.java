@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import sun.security.pkcs11.SunPKCS11;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Singleton;
@@ -51,6 +52,18 @@ public class IdentityServiceSingletonBean {
 
     @EJB
     private Configuration configuration;
+
+    @PostConstruct
+    public void init() {
+
+        if (isIdentityConfigured()) {
+            try {
+                reloadIdentity();
+            } catch (KeyStoreLoadException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     /**
      * @return if an active identity is configured
