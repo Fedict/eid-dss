@@ -22,17 +22,41 @@ import be.fedict.eid.dss.entity.ConfigPropertyEntity;
 import be.fedict.eid.dss.model.ConfigProperty;
 import be.fedict.eid.dss.model.Configuration;
 
-import javax.ejb.Stateless;
+import javax.annotation.PostConstruct;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-@Stateless
+@Singleton
+@Startup
 public class ConfigurationBean implements Configuration {
+
+    private Map<String, String> properties;
+
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @PostConstruct
+    public void init() {
+
+        updateProperties();
+    }
+
+    private void updateProperties() {
+
+        properties = new HashMap<String, String>();
+        for (ConfigPropertyEntity configProperty :
+                ConfigPropertyEntity.listAll(this.entityManager)) {
+            properties.put(configProperty.getName(), configProperty.getValue());
+        }
+
+    }
 
     /**
      * {@inheritDoc}
@@ -79,6 +103,9 @@ public class ConfigurationBean implements Configuration {
         } else {
             configPropertyEntity.setValue(propertyValue);
         }
+
+        // update
+        updateProperties();
     }
 
     /**
@@ -87,6 +114,9 @@ public class ConfigurationBean implements Configuration {
     public void removeValue(ConfigProperty configProperty) {
 
         removeValue(configProperty, null);
+
+        // update
+        updateProperties();
     }
 
     /**
@@ -100,6 +130,9 @@ public class ConfigurationBean implements Configuration {
         if (null != configPropertyEntity) {
             this.entityManager.remove(configPropertyEntity);
         }
+
+        // update
+        updateProperties();
     }
 
     /**
@@ -123,29 +156,25 @@ public class ConfigurationBean implements Configuration {
 
         String propertyName = getPropertyName(configProperty, index);
 
-        ConfigPropertyEntity configPropertyEntity = this.entityManager.find(
-                ConfigPropertyEntity.class, propertyName);
-        if (null == configPropertyEntity) {
+        String value = properties.get(propertyName);
+        if (null == value || value.trim().length() == 0) {
             return null;
         }
-        String strValue = configPropertyEntity.getValue();
-        if (null == strValue || strValue.trim().length() == 0) {
-            return null;
-        }
+
         if (String.class == configProperty.getType()) {
-            return (T) strValue;
+            return (T) value;
         }
         if (Boolean.class == configProperty.getType()) {
-            Boolean value = Boolean.parseBoolean(strValue);
-            return (T) value;
+            Boolean booleanValue = Boolean.parseBoolean(value);
+            return (T) booleanValue;
         }
         if (Integer.class == configProperty.getType()) {
-            Integer value = Integer.parseInt(strValue);
-            return (T) value;
+            Integer integerValue = Integer.parseInt(value);
+            return (T) integerValue;
         }
         if (configProperty.getType().isEnum()) {
             Enum<?> e = (Enum<?>) configProperty.getType().getEnumConstants()[0];
-            return (T) Enum.valueOf(e.getClass(), strValue);
+            return (T) Enum.valueOf(e.getClass(), value);
         }
         throw new RuntimeException("unsupported type: "
                 + configProperty.getType().getName());
