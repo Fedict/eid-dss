@@ -22,6 +22,7 @@ import be.fedict.eid.dss.admin.portal.control.AdminConstants;
 import be.fedict.eid.dss.admin.portal.control.Config;
 import be.fedict.eid.dss.model.ConfigProperty;
 import be.fedict.eid.dss.model.Configuration;
+import be.fedict.eid.dss.model.SignatureDigestAlgo;
 import be.fedict.eid.dss.model.TSPDigestAlgo;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.annotations.Destroy;
@@ -67,6 +68,8 @@ public class ConfigBean implements Config {
 
     private String tsaTrustDomain;
 
+    private SignatureDigestAlgo signatureDigestAlgo;
+
     @Override
     @PostConstruct
     public void postConstruct() {
@@ -96,6 +99,9 @@ public class ConfigBean implements Config {
                 ConfigProperty.IDENTITY_TRUST_DOMAIN, String.class);
         this.tsaTrustDomain = this.configuration.getValue(
                 ConfigProperty.TSA_TRUST_DOMAIN, String.class);
+
+        this.signatureDigestAlgo = this.configuration.getValue(
+                ConfigProperty.SIGNATURE_DIGEST_ALGO, SignatureDigestAlgo.class);
     }
 
     @Remove
@@ -131,6 +137,9 @@ public class ConfigBean implements Config {
                 this.identityTrustDomain);
         this.configuration.setValue(ConfigProperty.TSA_TRUST_DOMAIN,
                 this.tsaTrustDomain);
+
+        this.configuration.setValue(ConfigProperty.SIGNATURE_DIGEST_ALGO,
+                this.signatureDigestAlgo);
         return null;
     }
 
@@ -247,5 +256,20 @@ public class ConfigBean implements Config {
     @Override
     public void setTsaTrustDomain(String tsaTrustDomain) {
         this.tsaTrustDomain = tsaTrustDomain;
+    }
+
+    @Override
+    public SignatureDigestAlgo[] getSignatureDigestAlgoArray() {
+        return SignatureDigestAlgo.values();
+    }
+
+    @Override
+    public SignatureDigestAlgo getSignatureDigestAlgo() {
+        return this.signatureDigestAlgo;
+    }
+
+    @Override
+    public void setSignatureDigestAlgo(SignatureDigestAlgo signatureDigestAlgo) {
+        this.signatureDigestAlgo = signatureDigestAlgo;
     }
 }

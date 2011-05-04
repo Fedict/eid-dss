@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.admin.portal.control;
 
+import be.fedict.eid.dss.model.SignatureDigestAlgo;
 import be.fedict.eid.dss.model.TSPDigestAlgo;
 
 import javax.ejb.Local;
@@ -74,9 +75,15 @@ public interface Config {
 
     void setTsaTrustDomain(String tsaTrustDomain);
 
+    SignatureDigestAlgo[] getSignatureDigestAlgoArray();
+
+    SignatureDigestAlgo getSignatureDigestAlgo();
+
+    void setSignatureDigestAlgo(SignatureDigestAlgo signatureDigestAlgo);
+
     /*
-      * Actions.
-      */
+    * Actions.
+    */
     String save();
 
     /*

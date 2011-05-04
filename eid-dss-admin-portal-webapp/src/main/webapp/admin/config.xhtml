@@ -33,6 +33,18 @@
 					<h:commandButton value="Save" action="#{dssConfig.save}" />
 				</rich:tab>
 
+                <rich:tab label="Signature">
+                    <h:panelGrid columns="2">
+                        <h:outputText value="Digest algorithm: " />
+                        <h:selectOneMenu value="#{dssConfig.signatureDigestAlgo}">
+                            <s:selectItems value="#{dssConfig.signatureDigestAlgoArray}"
+                                var="signatureDigestAlgo" label="#{signatureDigestAlgo.algoId}" />
+                            <s:convertEnum />
+                        </h:selectOneMenu>
+                    </h:panelGrid>
+                    <h:commandButton value="Save" action="#{dssConfig.save}" />
+                </rich:tab>
+
 				<rich:tab label="TSP">
 					<h:panelGrid columns="2">
 						<h:outputText value="TSP server URL:" />

@@ -18,6 +18,21 @@
 
 package be.fedict.eid.dss.document.xml;
 
+import be.fedict.eid.applet.service.signer.AbstractXmlSignatureService;
+import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
+import be.fedict.eid.applet.service.signer.SignatureFacet;
+import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
+import be.fedict.eid.applet.service.signer.facets.*;
+import be.fedict.eid.applet.service.signer.time.TimeStampService;
+import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
+import be.fedict.eid.applet.service.spi.AddressDTO;
+import be.fedict.eid.applet.service.spi.DigestInfo;
+import be.fedict.eid.applet.service.spi.IdentityDTO;
+import be.fedict.eid.applet.service.spi.SignatureServiceEx;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,102 +40,88 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import be.fedict.eid.applet.service.signer.AbstractXmlSignatureService;
-import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
-import be.fedict.eid.applet.service.signer.SignatureFacet;
-import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
-import be.fedict.eid.applet.service.signer.facets.CoSignatureFacet;
-import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
-import be.fedict.eid.applet.service.signer.facets.KeyInfoSignatureFacet;
-import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
-import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
-import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
-import be.fedict.eid.applet.service.signer.time.TimeStampService;
-import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
-import be.fedict.eid.applet.service.spi.AddressDTO;
-import be.fedict.eid.applet.service.spi.DigestInfo;
-import be.fedict.eid.applet.service.spi.IdentityDTO;
-import be.fedict.eid.applet.service.spi.SignatureServiceEx;
-
 /**
  * XML signature service. Will create XAdES-X-L v1.4.1 co-signatures.
- * 
+ *
  * @author Frank Cornelis
- * 
  */
 public class XMLSignatureService extends AbstractXmlSignatureService implements
-		SignatureServiceEx {
+        SignatureServiceEx {
 
-	private final TemporaryDataStorage temporaryDataStorage;
+    private final String signatureDigestAlgo;
 
-	private final InputStream documentInputStream;
+    private final TemporaryDataStorage temporaryDataStorage;
 
-	private final OutputStream documentOutputStream;
+    private final InputStream documentInputStream;
 
-	public XMLSignatureService(TimeStampServiceValidator validator,
-			RevocationDataService revocationDataService,
-			SignatureFacet signatureFacet, InputStream documentInputStream,
-			OutputStream documentOutputStream,
-			TimeStampService timeStampService, String role,
-			IdentityDTO identity, byte[] photo) {
-		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
-		this.documentInputStream = documentInputStream;
-		this.documentOutputStream = documentOutputStream;
+    private final OutputStream documentOutputStream;
 
-		addSignatureFacet(new CoSignatureFacet("SHA-512"));
-		addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
-		XAdESSignatureFacet xadesSignatureFacet = new XAdESSignatureFacet(
-				"SHA-512");
-		xadesSignatureFacet.setRole(role);
-		addSignatureFacet(xadesSignatureFacet);
-		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
-				revocationDataService, "SHA-512"));
-		addSignatureFacet(signatureFacet);
+    public XMLSignatureService(TimeStampServiceValidator validator,
+                               RevocationDataService revocationDataService,
+                               SignatureFacet signatureFacet, InputStream documentInputStream,
+                               OutputStream documentOutputStream,
+                               TimeStampService timeStampService, String role,
+                               IdentityDTO identity, byte[] photo,
+                               String signatureDigestAlgo) {
 
-		setSignatureNamespacePrefix("ds");
+        this.signatureDigestAlgo = signatureDigestAlgo;
+        this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
+        this.documentInputStream = documentInputStream;
+        this.documentOutputStream = documentOutputStream;
 
-		if (null != identity) {
-			IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
-					identity, photo, "SHA-1");
-			addSignatureFacet(identitySignatureFacet);
-		}
-	}
+        addSignatureFacet(new CoSignatureFacet("SHA-512"));
+        addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
+        XAdESSignatureFacet xadesSignatureFacet = new XAdESSignatureFacet(
+                "SHA-512");
+        xadesSignatureFacet.setRole(role);
+        addSignatureFacet(xadesSignatureFacet);
+        addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
+                revocationDataService, "SHA-512"));
+        addSignatureFacet(signatureFacet);
 
-	@Override
-	protected OutputStream getSignedDocumentOutputStream() {
-		return this.documentOutputStream;
-	}
+        setSignatureNamespacePrefix("ds");
 
-	@Override
-	protected TemporaryDataStorage getTemporaryDataStorage() {
-		return this.temporaryDataStorage;
-	}
+        if (null != identity) {
+            IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
+                    identity, photo, "SHA-1");
+            addSignatureFacet(identitySignatureFacet);
+        }
+    }
 
-	public String getFilesDigestAlgorithm() {
-		return null;
-	}
+    @Override
+    protected OutputStream getSignedDocumentOutputStream() {
+        return this.documentOutputStream;
+    }
 
-	@Override
-	protected String getSignatureDigestAlgorithm() {
-		return "SHA-512";
-	}
+    @Override
+    protected TemporaryDataStorage getTemporaryDataStorage() {
+        return this.temporaryDataStorage;
+    }
 
-	@Override
-	protected Document getEnvelopingDocument()
-			throws ParserConfigurationException, IOException, SAXException {
-		Document document = loadDocument(this.documentInputStream);
-		return document;
-	}
+    public String getFilesDigestAlgorithm() {
+        return null;
+    }
 
-	public DigestInfo preSign(List<DigestInfo> digestInfos,
-			List<X509Certificate> signingCertificateChain,
-			IdentityDTO identity, AddressDTO address, byte[] photo)
-			throws NoSuchAlgorithmException {
-		return super.preSign(digestInfos, signingCertificateChain);
-	}
+    @Override
+    protected String getSignatureDigestAlgorithm() {
+
+        if (null != this.signatureDigestAlgo) {
+            return this.signatureDigestAlgo;
+        }
+        return "SHA-512";
+    }
+
+    @Override
+    protected Document getEnvelopingDocument()
+            throws ParserConfigurationException, IOException, SAXException {
+        Document document = loadDocument(this.documentInputStream);
+        return document;
+    }
+
+    public DigestInfo preSign(List<DigestInfo> digestInfos,
+                              List<X509Certificate> signingCertificateChain,
+                              IdentityDTO identity, AddressDTO address, byte[] photo)
+            throws NoSuchAlgorithmException {
+        return super.preSign(digestInfos, signingCertificateChain);
+    }
 }
