@@ -36,7 +36,7 @@ import java.util.Map;
 @Startup
 public class ConfigurationBean implements Configuration {
 
-    private Map<String, String> properties;
+    private Map<String, String> properties = new HashMap<String, String>();
 
 
     @PersistenceContext
@@ -50,10 +50,10 @@ public class ConfigurationBean implements Configuration {
 
     private void updateProperties() {
 
-        properties = new HashMap<String, String>();
+        this.properties.clear();
         for (ConfigPropertyEntity configProperty :
                 ConfigPropertyEntity.listAll(this.entityManager)) {
-            properties.put(configProperty.getName(), configProperty.getValue());
+            this.properties.put(configProperty.getName(), configProperty.getValue());
         }
 
     }
@@ -156,7 +156,7 @@ public class ConfigurationBean implements Configuration {
 
         String propertyName = getPropertyName(configProperty, index);
 
-        String value = properties.get(propertyName);
+        String value = this.properties.get(propertyName);
         if (null == value || value.trim().length() == 0) {
             return null;
         }
