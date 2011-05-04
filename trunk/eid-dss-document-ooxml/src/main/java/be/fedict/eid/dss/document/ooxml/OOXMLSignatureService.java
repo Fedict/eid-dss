@@ -18,19 +18,6 @@
 
 package be.fedict.eid.dss.document.ooxml;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
-
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
@@ -45,72 +32,96 @@ import be.fedict.eid.applet.service.spi.DigestInfo;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureServiceEx;
 import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
+import org.apache.commons.io.IOUtils;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.List;
 
 public class OOXMLSignatureService extends AbstractOOXMLSignatureService
-		implements SignatureServiceEx {
+        implements SignatureServiceEx {
 
-	private final TemporaryDataStorage temporaryDataStorage;
+    private final String signatureDigestAlgo;
 
-	private final OutputStream documentOutputStream;
+    private final TemporaryDataStorage temporaryDataStorage;
 
-	private final File tmpFile;
+    private final OutputStream documentOutputStream;
 
-	public OOXMLSignatureService(InputStream documentInputStream,
-			OutputStream documentOutputStream, SignatureFacet signatureFacet,
-			String role, IdentityDTO identity, byte[] photo,
-			RevocationDataService revocationDataService,
-			TimeStampService timeStampService) throws IOException {
-		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
-		this.documentOutputStream = documentOutputStream;
-		this.tmpFile = File.createTempFile("eid-dss-", ".ooxml");
-		FileOutputStream fileOutputStream;
-		fileOutputStream = new FileOutputStream(this.tmpFile);
-		IOUtils.copy(documentInputStream, fileOutputStream);
-		addSignatureFacet(signatureFacet);
-		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
-				revocationDataService, "SHA-1"));
+    private final File tmpFile;
 
-		XAdESSignatureFacet xadesSignatureFacet = super
-				.getXAdESSignatureFacet();
-		xadesSignatureFacet.setRole(role);
+    public OOXMLSignatureService(InputStream documentInputStream,
+                                 OutputStream documentOutputStream,
+                                 SignatureFacet signatureFacet,
+                                 String role, IdentityDTO identity, byte[] photo,
+                                 RevocationDataService revocationDataService,
+                                 TimeStampService timeStampService,
+                                 String signatureDigestAlgo)
+            throws IOException {
 
-		if (null != identity) {
-			IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
-					identity, photo, "SHA-1");
-			addSignatureFacet(identitySignatureFacet);
-		}
-	}
+        this.signatureDigestAlgo = signatureDigestAlgo;
+        this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
+        this.documentOutputStream = documentOutputStream;
+        this.tmpFile = File.createTempFile("eid-dss-", ".ooxml");
+        FileOutputStream fileOutputStream;
+        fileOutputStream = new FileOutputStream(this.tmpFile);
+        IOUtils.copy(documentInputStream, fileOutputStream);
+        addSignatureFacet(signatureFacet);
+        addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
+                revocationDataService, "SHA-1"));
 
-	@Override
-	protected URL getOfficeOpenXMLDocumentURL() {
-		try {
-			return this.tmpFile.toURI().toURL();
-		} catch (MalformedURLException e) {
-			throw new RuntimeException("URL error: " + e.getMessage(), e);
-		}
-	}
+        XAdESSignatureFacet xadesSignatureFacet = super
+                .getXAdESSignatureFacet();
+        xadesSignatureFacet.setRole(role);
 
-	@Override
-	protected OutputStream getSignedOfficeOpenXMLDocumentOutputStream() {
-		return new CloseActionOutputStream(this.documentOutputStream,
-				new CloseAction());
-	}
+        if (null != identity) {
+            IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
+                    identity, photo, "SHA-1");
+            addSignatureFacet(identitySignatureFacet);
+        }
+    }
 
-	private class CloseAction implements Runnable {
-		public void run() {
-			OOXMLSignatureService.this.tmpFile.delete();
-		}
-	}
+    @Override
+    protected String getSignatureDigestAlgorithm() {
 
-	@Override
-	protected TemporaryDataStorage getTemporaryDataStorage() {
-		return this.temporaryDataStorage;
-	}
+        if (null != this.signatureDigestAlgo) {
+            return this.signatureDigestAlgo;
+        }
+        return "SHA-512";
+    }
 
-	public DigestInfo preSign(List<DigestInfo> digestInfos,
-			List<X509Certificate> signingCertificateChain,
-			IdentityDTO identity, AddressDTO address, byte[] photo)
-			throws NoSuchAlgorithmException {
-		return super.preSign(digestInfos, signingCertificateChain);
-	}
+    @Override
+    protected URL getOfficeOpenXMLDocumentURL() {
+        try {
+            return this.tmpFile.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("URL error: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    protected OutputStream getSignedOfficeOpenXMLDocumentOutputStream() {
+        return new CloseActionOutputStream(this.documentOutputStream,
+                new CloseAction());
+    }
+
+    private class CloseAction implements Runnable {
+        public void run() {
+            OOXMLSignatureService.this.tmpFile.delete();
+        }
+    }
+
+    @Override
+    protected TemporaryDataStorage getTemporaryDataStorage() {
+        return this.temporaryDataStorage;
+    }
+
+    public DigestInfo preSign(List<DigestInfo> digestInfos,
+                              List<X509Certificate> signingCertificateChain,
+                              IdentityDTO identity, AddressDTO address, byte[] photo)
+            throws NoSuchAlgorithmException {
+        return super.preSign(digestInfos, signingCertificateChain);
+    }
 }

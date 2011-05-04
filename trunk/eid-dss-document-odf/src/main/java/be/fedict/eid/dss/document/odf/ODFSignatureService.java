@@ -18,18 +18,6 @@
 
 package be.fedict.eid.dss.document.odf;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
-
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
@@ -45,74 +33,100 @@ import be.fedict.eid.applet.service.spi.DigestInfo;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureServiceEx;
 import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
+import org.apache.commons.io.IOUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.List;
 
 public class ODFSignatureService extends AbstractODFSignatureService implements
-		SignatureServiceEx {
+        SignatureServiceEx {
 
-	private final TemporaryDataStorage temporaryDataStorage;
 
-	private final OutputStream documentOutputStream;
+    private final String signatureDigestAlgo;
 
-	private final File tmpFile;
+    private final TemporaryDataStorage temporaryDataStorage;
 
-	public ODFSignatureService(
-			TimeStampServiceValidator timeStampServiceValidator,
-			RevocationDataService revocationDataService,
-			SignatureFacet signatureFacet, InputStream documentInputStream,
-			OutputStream documentOutputStream,
-			TimeStampService timeStampService, String role,
-			IdentityDTO identity, byte[] photo) throws Exception {
-		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
-		this.documentOutputStream = documentOutputStream;
-		this.tmpFile = File.createTempFile("eid-dss-", ".odf");
-		FileOutputStream fileOutputStream;
-		fileOutputStream = new FileOutputStream(this.tmpFile);
-		IOUtils.copy(documentInputStream, fileOutputStream);
-		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
-				revocationDataService, "SHA-512"));
-		addSignatureFacet(signatureFacet);
+    private final OutputStream documentOutputStream;
 
-		XAdESSignatureFacet xadesSignatureFacet = super
-				.getXAdESSignatureFacet();
-		xadesSignatureFacet.setRole(role);
+    private final File tmpFile;
 
-		if (null != identity) {
-			IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
-					identity, photo, "SHA-1");
-			addSignatureFacet(identitySignatureFacet);
-		}
-	}
+    public ODFSignatureService(
+            TimeStampServiceValidator timeStampServiceValidator,
+            RevocationDataService revocationDataService,
+            SignatureFacet signatureFacet, InputStream documentInputStream,
+            OutputStream documentOutputStream,
+            TimeStampService timeStampService, String role,
+            IdentityDTO identity, byte[] photo, String signatureDigestAlgo)
+            throws Exception {
 
-	@Override
-	protected URL getOpenDocumentURL() {
-		try {
-			return this.tmpFile.toURI().toURL();
-		} catch (MalformedURLException e) {
-			throw new RuntimeException("URL error: " + e.getMessage(), e);
-		}
-	}
+        this.signatureDigestAlgo = signatureDigestAlgo;
+        this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
+        this.documentOutputStream = documentOutputStream;
+        this.tmpFile = File.createTempFile("eid-dss-", ".odf");
+        FileOutputStream fileOutputStream;
+        fileOutputStream = new FileOutputStream(this.tmpFile);
+        IOUtils.copy(documentInputStream, fileOutputStream);
+        addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
+                revocationDataService, "SHA-512"));
+        addSignatureFacet(signatureFacet);
 
-	@Override
-	protected OutputStream getSignedOpenDocumentOutputStream() {
-		return new CloseActionOutputStream(this.documentOutputStream,
-				new CloseAction());
-	}
+        XAdESSignatureFacet xadesSignatureFacet = super
+                .getXAdESSignatureFacet();
+        xadesSignatureFacet.setRole(role);
 
-	private class CloseAction implements Runnable {
-		public void run() {
-			ODFSignatureService.this.tmpFile.delete();
-		}
-	}
+        if (null != identity) {
+            IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
+                    identity, photo, "SHA-1");
+            addSignatureFacet(identitySignatureFacet);
+        }
+    }
 
-	@Override
-	protected TemporaryDataStorage getTemporaryDataStorage() {
-		return this.temporaryDataStorage;
-	}
+    @Override
+    protected String getSignatureDigestAlgorithm() {
 
-	public DigestInfo preSign(List<DigestInfo> digestInfos,
-			List<X509Certificate> signingCertificateChain,
-			IdentityDTO identity, AddressDTO address, byte[] photo)
-			throws NoSuchAlgorithmException {
-		return super.preSign(digestInfos, signingCertificateChain);
-	}
+        if (null != this.signatureDigestAlgo) {
+            return this.signatureDigestAlgo;
+        }
+        return "SHA-512";
+    }
+
+    @Override
+    protected URL getOpenDocumentURL() {
+        try {
+            return this.tmpFile.toURI().toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("URL error: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    protected OutputStream getSignedOpenDocumentOutputStream() {
+        return new CloseActionOutputStream(this.documentOutputStream,
+                new CloseAction());
+    }
+
+    private class CloseAction implements Runnable {
+        public void run() {
+            ODFSignatureService.this.tmpFile.delete();
+        }
+    }
+
+    @Override
+    protected TemporaryDataStorage getTemporaryDataStorage() {
+        return this.temporaryDataStorage;
+    }
+
+    public DigestInfo preSign(List<DigestInfo> digestInfos,
+                              List<X509Certificate> signingCertificateChain,
+                              IdentityDTO identity, AddressDTO address, byte[] photo)
+            throws NoSuchAlgorithmException {
+        return super.preSign(digestInfos, signingCertificateChain);
+    }
 }

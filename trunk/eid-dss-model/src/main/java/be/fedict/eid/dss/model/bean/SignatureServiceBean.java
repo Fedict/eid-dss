@@ -27,6 +27,8 @@ import be.fedict.eid.applet.service.spi.*;
 import be.fedict.eid.dss.model.*;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.trust.client.XKMS2Client;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jboss.ejb3.annotation.LocalBinding;
 
 import javax.ejb.EJB;
@@ -50,6 +52,8 @@ import java.util.List;
 @Local(SignatureServiceEx.class)
 @LocalBinding(jndiBinding = Constants.DSS_JNDI_CONTEXT + "SignatureServiceBean")
 public class SignatureServiceBean implements SignatureServiceEx {
+
+    private static final Log LOG = LogFactory.getLog(SignatureServiceBean.class);
 
     @EJB
     private Configuration configuration;
@@ -100,6 +104,11 @@ public class SignatureServiceBean implements SignatureServiceEx {
         Integer httpProxyPort = this.configuration.getValue(
                 ConfigProperty.HTTP_PROXY_PORT, Integer.class);
 
+        SignatureDigestAlgo signatureDigestAlgo = this.configuration.getValue(
+                ConfigProperty.SIGNATURE_DIGEST_ALGO, SignatureDigestAlgo.class);
+
+        LOG.debug("signatureDigestAlgo: " + signatureDigestAlgo);
+
         RevocationDataService revocationDataService =
                 new TrustServiceRevocationDataService(xkms2Client, signTrustDomain);
         SignatureFacet signatureFacet = new SignerCertificateSignatureFacet();
@@ -133,7 +142,7 @@ public class SignatureServiceBean implements SignatureServiceEx {
                     .getSignatureService(documentInputStream, timeStampService,
                             timeStampServiceValidator, revocationDataService,
                             signatureFacet, documentOutputStream, role,
-                            identity, photo);
+                            identity, photo, signatureDigestAlgo.getAlgoId());
         } catch (Exception e) {
             throw new RuntimeException("error retrieving signature service: "
                     + e.getMessage(), e);
