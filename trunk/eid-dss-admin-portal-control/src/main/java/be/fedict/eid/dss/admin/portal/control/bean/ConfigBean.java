@@ -70,6 +70,8 @@ public class ConfigBean implements Config {
 
     private SignatureDigestAlgo signatureDigestAlgo;
 
+    private Integer documentStorageExpiration;
+
     @Override
     @PostConstruct
     public void postConstruct() {
@@ -102,6 +104,9 @@ public class ConfigBean implements Config {
 
         this.signatureDigestAlgo = this.configuration.getValue(
                 ConfigProperty.SIGNATURE_DIGEST_ALGO, SignatureDigestAlgo.class);
+
+        this.documentStorageExpiration = this.configuration.getValue(
+                ConfigProperty.DOCUMENT_STORAGE_EXPIRATION, Integer.class);
     }
 
     @Remove
@@ -140,6 +145,9 @@ public class ConfigBean implements Config {
 
         this.configuration.setValue(ConfigProperty.SIGNATURE_DIGEST_ALGO,
                 this.signatureDigestAlgo);
+
+        this.configuration.setValue(ConfigProperty.DOCUMENT_STORAGE_EXPIRATION,
+                this.documentStorageExpiration);
         return null;
     }
 
@@ -271,5 +279,15 @@ public class ConfigBean implements Config {
     @Override
     public void setSignatureDigestAlgo(SignatureDigestAlgo signatureDigestAlgo) {
         this.signatureDigestAlgo = signatureDigestAlgo;
+    }
+
+    @Override
+    public Integer getDocumentStorageExpiration() {
+        return this.documentStorageExpiration;
+    }
+
+    @Override
+    public void setDocumentStorageExpiration(Integer documentStorageExpiration) {
+        this.documentStorageExpiration = documentStorageExpiration;
     }
 }

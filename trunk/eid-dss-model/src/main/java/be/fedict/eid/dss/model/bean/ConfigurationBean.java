@@ -21,6 +21,8 @@ package be.fedict.eid.dss.model.bean;
 import be.fedict.eid.dss.entity.ConfigPropertyEntity;
 import be.fedict.eid.dss.model.ConfigProperty;
 import be.fedict.eid.dss.model.Configuration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -36,6 +38,8 @@ import java.util.Map;
 @Startup
 public class ConfigurationBean implements Configuration {
 
+    private static final Log LOG = LogFactory.getLog(ConfigurationBean.class);
+
     private Map<String, String> properties = new HashMap<String, String>();
 
 
@@ -46,6 +50,25 @@ public class ConfigurationBean implements Configuration {
     public void init() {
 
         updateProperties();
+
+        initProperties();
+    }
+
+    private void initProperties() {
+
+        for (ConfigProperty configProperty : ConfigProperty.values()) {
+
+            if (!properties.containsKey(configProperty.getName())) {
+
+                // check if default value specified, if so initialize
+                if (null != configProperty.getDefaultValue()) {
+                    LOG.debug("Initialize " + configProperty.getName() + " with " +
+                            "default value=" + configProperty.getDefaultValue());
+                    setValue(configProperty, configProperty.getDefaultValue());
+
+                }
+            }
+        }
     }
 
     private void updateProperties() {
