@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE article PUBLIC 
+<!DOCTYPE article PUBLIC
 	"-//OASIS//DTD DocBook XML V4.5//EN"
 	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <article lang="en">
@@ -282,6 +282,83 @@
 			</tip>
 		</section>
 	</section>
+    <section>
+        <title>eID DSS Artifact Binding</title>
+        <para>
+            In the eID DSS Artifact Binding the to be signed document and the
+            signed document are transmitted by reference. The actual documents
+            are transmitted using a seperate synchronous binding, being SOAP.
+            The flow is as follows:
+            <orderedlist>
+                <listitem>
+                    <para>
+                        The to be signed document is transmitted to the eID DSS
+                        service over its SOAP web service. The eID DSS Service
+                        stores the document and returns a unique document ID in
+                        the response to the web application. Also
+                        <code>notBefore</code> and <code>notAfter</code> time
+                        fields are returned, indicating the valitity of the
+                        temporarily stored document at the eID DSS Service.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        The application "posts" a signature request (similar to
+                        2.1) to the eID DSS Service, replacing the
+                        <code>SignatureRequest</code> with a
+                        <code>SignatureRequestId</code> POST parameter for
+                        sending over the document ID.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        The eID DSS Service executes the signature ceremony as
+                        explained in 2.2.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        The eID DSS Service stores the signed document
+                        internally and responds back to the web application with
+                        a similar HTTP Post as in 2.3 via the web browser of the
+                        client. The <code>SignatureResponse</code> POST
+                        parameter is replaced with the
+                        <code>SignatureResponseId</code>
+                        POST paramter, which contains the document ID of the
+                        signed document.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        If the signing was successful, the web application
+                        can now retrieve the signed document using the eID DSS
+                        SOAP web service and the returned document ID.
+                    </para>
+                </listitem>
+            </orderedlist>
+        </para>
+        <tip>
+            <title>Java SDK component</title>
+            <para>
+                The "store" and "retrieve" operations on the eID DSS web service
+                can be performed using the WS client available in the
+                <code>eid-dss-client</code>
+                artifact. The corresponding javadoc documentation is also part of
+                the eID DSS SDK.
+            </para>
+        </tip>
+        <tip>
+            <title>Java SDK component</title>
+            <para>
+                To ease the handling of DSS response messages according to the
+                described protocol we've provided eID DSS SDK components. These can
+                be found within the
+                <code>eid-dss-protocol-simple-client</code>
+                artifact. The corresponding javadoc documentation is also part of
+                the eID DSS SDK.
+            </para>
+        </tip>
+    </section>
 	<section>
 		<title>OASIS DSS Web Service</title>
 		<para>
@@ -726,6 +803,11 @@
 						<entry>Frank Cornelis</entry>
 						<entry>ODF, OOXML, ZIP document formats.</entry>
 					</row>
+                    <row>
+                        <entry>9 May 2011</entry>
+                        <entry>Wim Vandenhaute</entry>
+                        <entry>eID DSS Artifact Binding</entry>
+                    </row>
 				</tbody>
 			</tgroup>
 		</table>
