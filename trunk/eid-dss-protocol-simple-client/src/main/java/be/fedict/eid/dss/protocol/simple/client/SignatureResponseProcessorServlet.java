@@ -41,9 +41,6 @@ import java.io.IOException;
  * </p>
  * <ul>
  * <li><tt>NextPage</tt>: indicates the page where the flow continues.</li>
- * <li><tt>SignedDocumentSessionAttribute</tt>: indicates which session
- * attribute to use to push in the signed document as byte array as returned by
- * the eID DSS.</li>
  * <li><tt>ErrorPage</tt>: indicates the page to be shown in case of errors.</li>
  * <li><tt>ErrorMessageSessionAttribute</tt>: indicates which session attribute
  * to use for reporting an error. This session attribute can be used on the
@@ -57,8 +54,10 @@ import java.io.IOException;
  * <ul>
  * <li><tt>TargetSessionAttribute</tt>: refers to the session attribute
  * containing the target page of the DSS signature request.</li>
- * <li><tt>SignatureRequestSessionAttribute</tt>: refers to session attribute
- * containing the base64 encoded signature request.</li>
+ * <li><tt>SignatureRequestSessionAttribute</tt> or
+ * <tt>SignatureRequestIdSessionAttribute</tt>: refers to session attribute
+ * containing the base64 encoded signature request respectively the signature
+ * request ID case artifact binding is used.</li>
  * </ul>
  * </p>
  * <p/>
@@ -66,6 +65,14 @@ import java.io.IOException;
  * The following init-params are optional:
  * </p>
  * <ul>
+ * <li><tt>SignedDocumentSessionAttribute</tt>: indicates which session
+ * attribute to use to push in the signed document as byte array as returned by
+ * the eID DSS. If not specified, it assumer a response for the DSS Artifact
+ * Binding where the application wishes to manually call the eID DSS Web Service
+ * for retrieval of the signed document. This implies the
+ * <tt>SignatureResponseIdSessionAttribute</tt> param to be required, which
+ * will hold the id of the signed document, temporarily stored at the eID DSS
+ * web service.</li>
  * <li><tt>SignatureCertificateSessionAttribute</tt>: indicates which session
  * attribute to use to push in the signature certificate as returned by the eID
  * DSS.</li>
