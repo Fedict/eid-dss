@@ -81,6 +81,10 @@ public interface Config {
 
     void setSignatureDigestAlgo(SignatureDigestAlgo signatureDigestAlgo);
 
+    Integer getDocumentStorageExpiration();
+
+    void setDocumentStorageExpiration(Integer documentStorageExpiration);
+
     /*
     * Actions.
     */

@@ -45,6 +45,17 @@
                     <h:commandButton value="Save" action="#{dssConfig.save}" />
                 </rich:tab>
 
+                <rich:tab label="Artifacts">
+                    <h:panelGrid columns="2">
+
+                        <h:outputText value="Document Storage Expiration (minutes)" />
+                        <h:inputText value="#{dssConfig.documentStorageExpiration}"
+                                     size="10" />
+
+                    </h:panelGrid>
+                    <h:commandButton value="Save" action="#{dssConfig.save}" />
+                </rich:tab>
+
 				<rich:tab label="TSP">
 					<h:panelGrid columns="2">
 						<h:outputText value="TSP server URL:" />

@@ -131,12 +131,13 @@ public class DocumentServiceBean implements DocumentService {
         Integer documentStorageExpiration =
                 this.configuration.getValue(
                         ConfigProperty.DOCUMENT_STORAGE_EXPIRATION, Integer.class);
-        int validity = 5;
-        if (null != documentStorageExpiration && documentStorageExpiration > 0) {
-            validity = documentStorageExpiration;
+
+        if (null == documentStorageExpiration || documentStorageExpiration <= 0) {
+            throw new RuntimeException("Invalid document storage validity: " +
+                    documentStorageExpiration);
         }
 
-        return new DateTime().plus(validity * 60 * 1000)
+        return new DateTime().plus(documentStorageExpiration * 60 * 1000)
                 .toDateTime(ISOChronology.getInstanceUTC());
 
     }

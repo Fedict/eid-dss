@@ -26,7 +26,7 @@ package be.fedict.eid.dss.model;
  */
 public enum ConfigProperty {
 
-    TSP_URL("tsp-url", String.class),
+    TSP_URL("tsp-url", String.class, "http://tsa.belgium.be/connect"),
     TSP_POLICY_OID("tsp-policy-oid", String.class),
     TSP_DIGEST_ALGO("tsp-digest-algo", TSPDigestAlgo.class),
 
@@ -43,22 +43,32 @@ public enum ConfigProperty {
     KEY_ENTRY_SECRET("key-entry-secret", String.class),
     KEY_ENTRY_ALIAS("key-entry-alias", String.class),
 
-    SIGN_TRUST_DOMAIN("sign-trust-domain", String.class),
-    VERIFY_TRUST_DOMAIN("verify-trust-domain", String.class),
-    IDENTITY_TRUST_DOMAIN("identity-trust-domain", String.class),
-    TSA_TRUST_DOMAIN("tsa-trust-domain", String.class),
+    SIGN_TRUST_DOMAIN("sign-trust-domain", String.class, "BE"),
+    VERIFY_TRUST_DOMAIN("verify-trust-domain", String.class, "BE"),
+    IDENTITY_TRUST_DOMAIN("identity-trust-domain", String.class, "BE-NAT-REG"),
+    TSA_TRUST_DOMAIN("tsa-trust-domain", String.class, "BE-TSA"),
 
-    SIGNATURE_DIGEST_ALGO("signature-digest-algo", SignatureDigestAlgo.class),
+    SIGNATURE_DIGEST_ALGO("signature-digest-algo", SignatureDigestAlgo.class,
+            SignatureDigestAlgo.SHA512),
 
-    DOCUMENT_STORAGE_EXPIRATION("document-storage-expiration", Integer.class);
+    DOCUMENT_STORAGE_EXPIRATION("document-storage-expiration", Integer.class, 5);
 
     private final String name;
 
     private final Class<?> type;
 
+    private final Object defaultValue;
+
     private ConfigProperty(String name, Class<?> type) {
         this.name = name;
         this.type = type;
+        this.defaultValue = null;
+    }
+
+    private ConfigProperty(String name, Class<?> type, Object defaultValue) {
+        this.name = name;
+        this.type = type;
+        this.defaultValue = defaultValue;
     }
 
     public String getName() {
@@ -67,5 +77,9 @@ public enum ConfigProperty {
 
     public Class<?> getType() {
         return this.type;
+    }
+
+    public Object getDefaultValue() {
+        return this.defaultValue;
     }
 }
