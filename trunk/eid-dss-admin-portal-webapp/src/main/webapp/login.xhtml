@@ -17,9 +17,16 @@
                 width :600,
                 height :300
         };
+        var javaArgs = '';
+        if (navigator.userAgent.indexOf('Mac OS X 10_6') != -1 ||
+            navigator.userAgent.indexOf('Mac OS X 10.6') != -1) {
+              javaArgs += '-d32';
+        }
+
         var parameters = {
                 TargetPage :'postLogin.seam?conversationId=#{conversation.id}',
-                AppletService :'applet-service-authentication'
+                AppletService :'applet-service-authentication',
+                java_arguments: javaArgs
         };
         var version = '1.6';
         deployJava.runApplet(attributes, parameters, version);
