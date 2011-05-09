@@ -23,16 +23,13 @@ import java.security.KeyStore;
 
 /**
  * Interface for Digital Signature Service context.
- * 
+ *
  * @author Frank Cornelis
- * 
  */
 public interface DSSProtocolContext extends Serializable {
 
-	/**
-	 * Gives back the identity of the eID DSS service.
-	 * 
-	 * @return
-	 */
-	KeyStore.PrivateKeyEntry getIdentity();
+    /**
+     * @return the identity of the eID DSS service.
+     */
+    KeyStore.PrivateKeyEntry getIdentity();
 }

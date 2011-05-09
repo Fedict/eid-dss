@@ -6,7 +6,7 @@
 
     <display-name>eID DSS SP Test Web Application</display-name>
 
-    <!-- eID DSS Response Servlet -->
+    <!-- eID DSS Response Servlet for regular HTTP Post -->
     <servlet>
         <servlet-name>DSSResponseProcessor</servlet-name>
         <servlet-class>
@@ -50,15 +50,86 @@
         <url-pattern>/dss-response</url-pattern>
     </servlet-mapping>
 
+    <!-- eID DSS Response Servlet for Artifact Binding -->
+    <servlet>
+        <servlet-name>DSSRArtifactesponseProcessor</servlet-name>
+        <servlet-class>
+            be.fedict.eid.dss.protocol.simple.client.SignatureResponseProcessorServlet
+        </servlet-class>
+        <init-param>
+            <param-name>NextPage</param-name>
+            <param-value>/view.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>CancelPage</param-name>
+            <param-value>/index.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ErrorPage</param-name>
+            <param-value>/sign-error.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ErrorMessageSessionAttribute</param-name>
+            <param-value>SignatureErrorMessage</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SignedDocumentSessionAttribute</param-name>
+            <param-value>document</param-value>
+        </init-param>
+        <init-param>
+            <param-name>TargetSessionAttribute</param-name>
+            <param-value>target</param-value>
+        </init-param>
+        <init-param>
+            <param-name>RelayStateSessionAttribute</param-name>
+            <param-value>RelayState</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SignatureRequestIdSessionAttribute</param-name>
+            <param-value>SignatureRequestId</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SignatureRequestIdSessionAttribute</param-name>
+            <param-value>SignatureRequestId</param-value>
+        </init-param>
+        <init-param>
+            <param-name>DssWSUrl</param-name>
+            <param-value>http://localhost:8080/eid-dss-ws/dss</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DSSRArtifactesponseProcessor</servlet-name>
+        <url-pattern>/dss-response-artifact</url-pattern>
+    </servlet-mapping>
+
     <!-- Upload Servlet -->
     <servlet>
         <servlet-name>UploadServlet</servlet-name>
         <servlet-class>be.fedict.eid.dss.sp.servlet.UploadServlet
         </servlet-class>
+        <init-param>
+            <param-name>PostPage</param-name>
+            <param-value>/post-request.jsp</param-value>
+        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>UploadServlet</servlet-name>
         <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+
+    <!-- Upload Artifact Servlet -->
+    <servlet>
+        <servlet-name>UploadArtifactServlet</servlet-name>
+        <servlet-class>be.fedict.eid.dss.sp.servlet.UploadServlet
+        </servlet-class>
+        <init-param>
+            <param-name>PostPage</param-name>
+            <param-value>/post-request-artifact.jsp</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadArtifactServlet</servlet-name>
+        <url-pattern>/uploadartifact</url-pattern>
     </servlet-mapping>
 
     <!-- Download Servlet -->

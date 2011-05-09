@@ -22,57 +22,65 @@ import java.io.Serializable;
 
 /**
  * Represents a DSS request after unmarshalling by the DSSProtocolService.
- * 
+ *
  * @author Frank Cornelis
- * 
  */
 public class DSSRequest implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final byte[] documentData;
+    private final byte[] documentData;
+    private final String contentType;
 
-	private final String contentType;
+    private final String documentId;
 
-	private final String language;
+    private final String language;
 
-	/**
-	 * Main constructor.
-	 * 
-	 * @param documentData
-	 * @param contentType
-	 * @param language
-	 */
-	public DSSRequest(byte[] documentData, String contentType, String language) {
-		this.documentData = documentData;
-		this.contentType = contentType;
-		this.language = language;
-	}
+    /**
+     * Main constructor.
+     *
+     * @param documentData document data, if <code>null</code>
+     *                     documentId needs to be specified
+     * @param contentType  document content type, if <code>null</code>
+     *                     documentId needs to be specified
+     * @param documentId   document's ID, if <code>null</code>
+     *                     documentData needs to be specified
+     * @param language     optional language
+     */
+    public DSSRequest(byte[] documentData, String contentType, String documentId,
+                      String language) {
 
-	/**
-	 * The data bytes of the document to be signed.
-	 * 
-	 * @return
-	 */
-	public byte[] getDocumentData() {
-		return this.documentData;
-	}
+        this.documentData = documentData;
+        this.contentType = contentType;
+        this.documentId = documentId;
+        this.language = language;
+    }
 
-	/**
-	 * The content type of the document to be signed.
-	 * 
-	 * @return
-	 */
-	public String getContentType() {
-		return this.contentType;
-	}
+    /**
+     * @return the data bytes of the document to be signed.
+     */
+    public byte[] getDocumentData() {
+        return this.documentData;
+    }
 
-	/**
-	 * The language to be used on the GUI for signing the document.
-	 * 
-	 * @return
-	 */
-	public String getLanguage() {
-		return this.language;
-	}
+    /**
+     * @return the content type of the document to be signed.
+     */
+    public String getContentType() {
+        return this.contentType;
+    }
+
+    /**
+     * @return the language to be used on the GUI for signing the document.
+     */
+    public String getLanguage() {
+        return this.language;
+    }
+
+    /**
+     * @return the document's ID.
+     */
+    public String getDocumentId() {
+        return documentId;
+    }
 }

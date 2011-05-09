@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <title>SP Post DSS Request</title>
+    <title>SP Artifact DSS Request</title>
 </head>
 <body>
 
@@ -11,12 +11,11 @@
 
     <jsp:useBean id="sp" scope="request"
                  class="be.fedict.eid.dss.sp.bean.SPBean"/>
-    <jsp:setProperty name="sp" property="postRequest" value="<%= request %>"/>
+    <jsp:setProperty name="sp" property="artifactRequest" value="<%= request %>"/>
 
     <form id="dss-request-form" method="post" action="${sp.destination}">
-        <input type="hidden" name="SignatureRequest"
-               value="${sp.signatureRequest}"/>
-        <input type="hidden" name="ContentType" value="${sp.contentType}"/>
+        <input type="hidden" name="SignatureRequestId"
+               value="${sp.signatureRequestId}"/>
         <input type="hidden" name="RelayState" value="${sp.relayState}"/>
         <input type="hidden" name="target" value="${sp.target}"/>
         <input type="hidden" name="language" value="${sp.language}"/>

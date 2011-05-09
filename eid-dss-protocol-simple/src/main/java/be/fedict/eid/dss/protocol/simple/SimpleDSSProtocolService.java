@@ -47,14 +47,17 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 
     public static final String TARGET_PARAMETER = "target";
     public static final String SIGNATURE_REQUEST_PARAMETER = "SignatureRequest";
+    public static final String SIGNATURE_REQUEST_ID_PARAMETER = "SignatureRequestId";
     public static final String LANGUAGE_PARAMETER = "language";
     public static final String CONTENT_TYPE_PARAMETER = "ContentType";
     public static final String RELAY_STATE_PARAMETER = "RelayState";
 
     public static final String TARGET_SESSION_ATTRIBUTE = SimpleDSSProtocolService.class
             .getName() + ".Target";
-    public static final String SIGNATURE_REQUEST_SESSION_ATTRIBUTE = SimpleDSSProtocolService.class
-            .getName() + ".SignatureRequest";
+    public static final String SIGNATURE_REQUEST_SESSION_ATTRIBUTE =
+            SimpleDSSProtocolService.class.getName() + ".SignatureRequest";
+    public static final String SIGNATURE_REQUEST_ID_SESSION_ATTRIBUTE =
+            SimpleDSSProtocolService.class.getName() + ".SignatureRequestId";
 
     private DSSProtocolContext dssContext;
 
@@ -75,30 +78,46 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 
         String signatureRequest = request
                 .getParameter(SIGNATURE_REQUEST_PARAMETER);
-        if (null == signatureRequest) {
-            throw new IllegalArgumentException("missing parameter: "
-                    + SIGNATURE_REQUEST_PARAMETER);
+        String signatureRequestId = request
+                .getParameter(SIGNATURE_REQUEST_ID_PARAMETER);
+        if (null == signatureRequest && null == signatureRequestId) {
+            throw new IllegalArgumentException("Need or "
+                    + SIGNATURE_REQUEST_PARAMETER + " or "
+                    + SIGNATURE_REQUEST_ID_PARAMETER);
         }
-        /*
-           * Needed during response for service signature.
-           */
-        storeSignatureRequest(signatureRequest, httpSession);
 
-        byte[] decodedSignatureRequest = Base64.decodeBase64(signatureRequest);
-
-        String contentType = request.getParameter(CONTENT_TYPE_PARAMETER);
-        if (null == contentType) {
-            contentType = "text/xml";
+        byte[] decodedSignatureRequest = null;
+        String contentType = null;
+        if (null != signatureRequest) {
+            /*
+            * Needed during response for service signature.
+            */
+            storeSignatureRequest(signatureRequest, httpSession);
+            decodedSignatureRequest = Base64.decodeBase64(signatureRequest);
+            contentType = request.getParameter(CONTENT_TYPE_PARAMETER);
+            if (null == contentType) {
+                contentType = "text/xml";
+            }
+            LOG.debug("content type: " + contentType);
+        } else {
+            /*
+            * Needed during response for service signature.
+            */
+            storeSignatureRequestId(signatureRequestId, httpSession);
         }
-        LOG.debug("content type: " + contentType);
 
-        return new DSSRequest(decodedSignatureRequest, contentType, language);
+        return new DSSRequest(decodedSignatureRequest, contentType,
+                signatureRequestId, language);
     }
 
     public BrowserPOSTResponse handleResponse(SignatureStatus signatureStatus,
-                                              byte[] signedDocument, X509Certificate signerCertificate,
-                                              HttpSession httpSession, HttpServletRequest request,
+                                              byte[] signedDocument,
+                                              String artifact,
+                                              X509Certificate signerCertificate,
+                                              HttpSession httpSession,
+                                              HttpServletRequest request,
                                               HttpServletResponse response) throws Exception {
+
         LOG.debug("handleResponse");
         String target = retrieveTarget(httpSession);
         BrowserPOSTResponse browserPOSTResponse = new BrowserPOSTResponse(
@@ -115,10 +134,22 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
         }
 
         if (SignatureStatus.OK == signatureStatus) {
-            String encodedSignedDocument = Base64
-                    .encodeBase64String(signedDocument);
-            browserPOSTResponse.addAttribute("SignatureResponse",
-                    encodedSignedDocument);
+
+            String signatureRequest = retrieveSignatureRequest(httpSession);
+            String signatureRequestId = retrieveSignatureRequestId(httpSession);
+            String encodedSignedDocument = Base64.encodeBase64String(signedDocument);
+
+            if (null != signatureRequest) {
+
+                browserPOSTResponse.addAttribute("SignatureResponse",
+                        encodedSignedDocument);
+            } else {
+
+                browserPOSTResponse.addAttribute("SignatureResponseId",
+                        artifact);
+
+            }
+
             byte[] derSignerCertificate = signerCertificate.getEncoded();
             String encodedSignatureCertificate = Base64
                     .encodeBase64String(derSignerCertificate);
@@ -129,28 +160,52 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
                     .getIdentity();
             if (null != identityPrivateKeyEntry) {
                 LOG.debug("signing the response");
-                browserPOSTResponse
-                        .addAttribute(
-                                "ServiceSigned",
-                                URLEncoder
-                                        .encode("target,SignatureRequest,SignatureResponse,SignatureCertificate",
-                                                "UTF-8"));
 
+                if (null != signatureRequest) {
+                    browserPOSTResponse
+                            .addAttribute(
+                                    "ServiceSigned",
+                                    URLEncoder.encode(
+                                            "target,SignatureRequest," +
+                                                    "SignatureResponse," +
+                                                    "SignatureCertificate",
+                                            "UTF-8"));
+                } else {
+                    browserPOSTResponse
+                            .addAttribute(
+                                    "ServiceSigned",
+                                    URLEncoder.encode(
+                                            "target,SignatureRequestId," +
+                                                    "SignatureResponseId," +
+                                                    "SignatureCertificate",
+                                            "UTF-8"));
+                }
+
+                // service signature
                 Signature serviceSignature = Signature
                         .getInstance("SHA1withRSA");
                 serviceSignature.initSign(identityPrivateKeyEntry
                         .getPrivateKey());
                 serviceSignature.update(target.getBytes());
-                serviceSignature.update(retrieveSignatureRequest(httpSession)
-                        .getBytes());
-                serviceSignature.update(encodedSignedDocument.getBytes());
+
+                if (null != signatureRequest) {
+                    serviceSignature.update(signatureRequest.getBytes());
+                    serviceSignature.update(encodedSignedDocument.getBytes());
+                } else {
+                    serviceSignature.update(signatureRequestId.getBytes());
+                    serviceSignature.update(artifact.getBytes());
+                }
+
                 serviceSignature.update(encodedSignatureCertificate.getBytes());
+
                 byte[] serviceSignatureValue = serviceSignature.sign();
+
                 String encodedServiceSignature = Base64
                         .encodeBase64String(serviceSignatureValue);
                 browserPOSTResponse.addAttribute("ServiceSignature",
                         encodedServiceSignature);
 
+                // service certificate chain
                 Certificate[] serviceCertificateChain = identityPrivateKeyEntry
                         .getCertificateChain();
                 browserPOSTResponse.addAttribute("ServiceCertificateChainSize",
@@ -189,6 +244,16 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 
     private String retrieveSignatureRequest(HttpSession httpSession) {
         return (String) httpSession.getAttribute(SIGNATURE_REQUEST_SESSION_ATTRIBUTE);
+    }
+
+    private void storeSignatureRequestId(String signatureRequestId,
+                                         HttpSession httpSession) {
+        httpSession.setAttribute(SIGNATURE_REQUEST_ID_SESSION_ATTRIBUTE,
+                signatureRequestId);
+    }
+
+    private String retrieveSignatureRequestId(HttpSession httpSession) {
+        return (String) httpSession.getAttribute(SIGNATURE_REQUEST_ID_SESSION_ATTRIBUTE);
     }
 
     private void storeRelayState(String relayState, HttpSession httpSession) {

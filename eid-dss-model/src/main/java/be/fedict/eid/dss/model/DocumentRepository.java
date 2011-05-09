@@ -40,6 +40,9 @@ public class DocumentRepository {
     public static final String DOCUMENT_CONTENT_TYPE_SESSION_ATTRIBUTE = DocumentRepository.class
             .getName() + ".DocumentContentType";
 
+    public static final String DOCUMENT_ID_SESSION_ATTRIBUTE = DocumentRepository.class
+            .getName() + ".DocumentId";
+
     public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE = DocumentRepository.class
             .getName() + ".signedDocument";
 
@@ -66,6 +69,8 @@ public class DocumentRepository {
 
     public void reset() {
         this.httpSession.removeAttribute(DOCUMENT_SESSION_ATTRIBUTE);
+        this.httpSession.removeAttribute(DOCUMENT_CONTENT_TYPE_SESSION_ATTRIBUTE);
+        this.httpSession.removeAttribute(DOCUMENT_ID_SESSION_ATTRIBUTE);
         this.httpSession.removeAttribute(SIGNED_DOCUMENT_SESSION_ATTRIBUTE);
         this.httpSession.removeAttribute(TARGET_SESSION_ATTRIBUTE);
         this.httpSession.removeAttribute(SIGNATURE_STATUS_SESSION_ATTRIBUTE);
@@ -92,6 +97,16 @@ public class DocumentRepository {
     public String getDocumentContentType() {
         return (String) this.httpSession
                 .getAttribute(DOCUMENT_CONTENT_TYPE_SESSION_ATTRIBUTE);
+    }
+
+    public void setDocumentId(String documentId) {
+        this.httpSession.setAttribute(DOCUMENT_ID_SESSION_ATTRIBUTE,
+                documentId);
+    }
+
+    public String getDocumentId() {
+        return (String) this.httpSession
+                .getAttribute(DOCUMENT_ID_SESSION_ATTRIBUTE);
     }
 
     public void setSignedDocument(byte[] signedDocument) {

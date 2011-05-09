@@ -18,50 +18,63 @@
 
 package be.fedict.eid.dss.ws;
 
+import be.fedict.eid.dss.model.DocumentService;
+import be.fedict.eid.dss.model.SignatureVerificationService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import be.fedict.eid.dss.model.SignatureVerificationService;
-
 /**
  * Service Consumer Servlet Context Listener. For the moment this is the only
  * way to retrieve the EJB session bean references in JAX-WS RI under JBoss AS
  * 5.
- * 
+ *
  * @author Frank Cornelis
- * 
  */
 public class ServiceConsumerServletContextListener implements
-		ServletContextListener {
+        ServletContextListener {
 
-	@EJB
-	private SignatureVerificationService signatureVerificationService;
+    @EJB
+    private SignatureVerificationService signatureVerificationService;
 
-	private static final Log LOG = LogFactory
-			.getLog(ServiceConsumerServletContextListener.class);
+    @EJB
+    private DocumentService documentService;
 
-	public void contextDestroyed(ServletContextEvent event) {
-		LOG.debug("context destroyed");
-	}
+    private static final Log LOG = LogFactory
+            .getLog(ServiceConsumerServletContextListener.class);
 
-	public void contextInitialized(ServletContextEvent event) {
-		LOG.debug("context initialized");
-		ServletContext servletContext = event.getServletContext();
-		LOG.debug("SignatureVerificationService ref available: "
-				+ (null != this.signatureVerificationService));
-		servletContext.setAttribute(SignatureVerificationService.class
-				.getName(), this.signatureVerificationService);
-	}
+    public void contextDestroyed(ServletContextEvent event) {
+        LOG.debug("context destroyed");
+    }
 
-	public static SignatureVerificationService getSignatureVerificationService(
-			ServletContext context) {
-		SignatureVerificationService service = (SignatureVerificationService) context
-				.getAttribute(SignatureVerificationService.class.getName());
-		return service;
-	}
+    public void contextInitialized(ServletContextEvent event) {
+
+        LOG.debug("context initialized");
+        ServletContext servletContext = event.getServletContext();
+
+        LOG.debug("SignatureVerificationService ref available: "
+                + (null != this.signatureVerificationService));
+        servletContext.setAttribute(SignatureVerificationService.class.getName(),
+                this.signatureVerificationService);
+
+        LOG.debug("DocumentService ref available: "
+                + (null != this.documentService));
+        servletContext.setAttribute(DocumentService.class.getName(),
+                this.documentService);
+    }
+
+    public static SignatureVerificationService getSignatureVerificationService(
+            ServletContext context) {
+        return (SignatureVerificationService) context
+                .getAttribute(SignatureVerificationService.class.getName());
+    }
+
+    public static DocumentService getDocumentService(ServletContext context) {
+
+        return (DocumentService) context.getAttribute(DocumentService.class.getName());
+    }
 }
