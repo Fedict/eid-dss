@@ -52,6 +52,11 @@
                         <h:inputText value="#{dssConfig.documentStorageExpiration}"
                                      size="10" />
 
+                        <h:outputText value="Document Cleanup Task Cron Schedule" />
+                        <h:inputText id="documentCleanupTaskCronSchedule"
+                                     value="#{dssConfig.documentCleanupTaskCronSchedule}"
+                                     size="10" />
+
                     </h:panelGrid>
                     <h:commandButton value="Save" action="#{dssConfig.save}" />
                 </rich:tab>

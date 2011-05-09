@@ -85,6 +85,10 @@ public interface Config {
 
     void setDocumentStorageExpiration(Integer documentStorageExpiration);
 
+    String getDocumentCleanupTaskCronSchedule();
+
+    void setDocumentCleanupTaskCronSchedule(String documentCleanupTaskCronSchedule);
+
     /*
     * Actions.
     */

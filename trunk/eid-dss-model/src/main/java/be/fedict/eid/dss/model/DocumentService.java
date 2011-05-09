@@ -21,9 +21,11 @@ package be.fedict.eid.dss.model;
 
 import be.fedict.eid.dss.entity.DocumentEntity;
 import be.fedict.eid.dss.model.exception.DocumentNotFoundException;
+import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
 import org.joda.time.DateTime;
 
 import javax.ejb.Local;
+import javax.ejb.Timer;
 
 /**
  * Interface for the document service. The document service maintains the
@@ -68,4 +70,36 @@ public interface DocumentService {
      */
     DocumentEntity update(String documentId, byte[] data)
             throws DocumentNotFoundException;
+
+    /**
+     * Timer has timeout, fire cleanup.
+     *
+     * @param timer the timer that has timed out.
+     */
+    void timeOut(Timer timer);
+
+    /**
+     * Start the timer for the cleanup "task" of the document service.
+     *
+     * @throws InvalidCronExpressionException Invalid cron schedule,
+     *                                        timer was not started.
+     */
+    void startTimer() throws InvalidCronExpressionException;
+
+    /**
+     * Start the timer for the cleanup "task" of the document service.
+     *
+     * @param cronSchedule cron schedule
+     * @throws InvalidCronExpressionException Invalid cron schedule,
+     *                                        timer was not started.
+     */
+    void startTimer(String cronSchedule) throws InvalidCronExpressionException;
+
+    /**
+     * Cleanup all expired temporary documents.
+     *
+     * @return the # of removals.
+     */
+    int cleanup();
+
 }

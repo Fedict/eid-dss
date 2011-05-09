@@ -20,16 +20,20 @@ package be.fedict.eid.dss.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = Constants.DATABASE_TABLE_PREFIX + "documents")
-@NamedQueries({@NamedQuery(name = DocumentEntity.ALL, query = "FROM DocumentEntity")})
+@NamedQueries({@NamedQuery(name = DocumentEntity.ALL, query = "FROM DocumentEntity"),
+        @NamedQuery(name = DocumentEntity.REMOVE_EXPIRED, query = "DELETE " +
+                "FROM DocumentEntity AS d WHERE :now > d.expiration")})
 public class DocumentEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     public static final String ALL = "dss.doc.all";
+    public static final String REMOVE_EXPIRED = "dss.doc.rem.expired";
 
     private String id;
 
@@ -37,14 +41,14 @@ public class DocumentEntity implements Serializable {
 
     private byte[] data;
 
-    private long expiration;
+    private Date expiration;
 
     public DocumentEntity() {
         super();
     }
 
     public DocumentEntity(String id, String contentType, byte[] data,
-                          long expiration) {
+                          Date expiration) {
 
         this.id = id;
         this.contentType = contentType;
@@ -78,11 +82,11 @@ public class DocumentEntity implements Serializable {
         this.data = data;
     }
 
-    public long getExpiration() {
+    public Date getExpiration() {
         return expiration;
     }
 
-    public void setExpiration(long expiration) {
+    public void setExpiration(Date expiration) {
         this.expiration = expiration;
     }
 
@@ -90,6 +94,14 @@ public class DocumentEntity implements Serializable {
     public static List<DocumentEntity> getAll(EntityManager entityManager) {
         Query query = entityManager.createNamedQuery(ALL);
         return query.getResultList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static int removeExpired(EntityManager entityManager) {
+
+        Date now = new Date();
+        Query query = entityManager.createNamedQuery(REMOVE_EXPIRED).setParameter("now", now);
+        return query.executeUpdate();
     }
 
 }
