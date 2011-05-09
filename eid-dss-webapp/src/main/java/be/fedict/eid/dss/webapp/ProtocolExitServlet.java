@@ -114,6 +114,10 @@ public class ProtocolExitServlet extends AbstractProtocolServiceServlet {
                 error(request, response, "Document not found!", null);
                 return;
             }
+        } else if (null != documentId) {
+
+            // document artifact needs to be removed, user cancelled signing...
+            this.documentService.remove(documentId);
         }
 
         SignatureStatus signatureStatus = documentRepository
