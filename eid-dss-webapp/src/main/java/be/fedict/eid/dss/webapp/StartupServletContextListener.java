@@ -18,7 +18,9 @@
 
 package be.fedict.eid.dss.webapp;
 
+import be.fedict.eid.dss.model.DocumentService;
 import be.fedict.eid.dss.model.ServicesManager;
+import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -48,9 +50,14 @@ public class StartupServletContextListener implements ServletContextListener {
     @EJB
     private ServicesManager servicesManager;
 
+    @EJB
+    private DocumentService documentService;
+
     public void contextInitialized(ServletContextEvent event) {
 
         LOG.debug("contextInitialized");
+
+        initCleanupTask();
 
         initProtocolServices(event);
 
@@ -59,6 +66,17 @@ public class StartupServletContextListener implements ServletContextListener {
 
     public void contextDestroyed(ServletContextEvent event) {
         LOG.debug("contextDestroyed");
+    }
+
+    private void initCleanupTask() {
+
+        LOG.debug("init cleanup task");
+
+        try {
+            this.documentService.startTimer();
+        } catch (InvalidCronExpressionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void initProtocolServices(ServletContextEvent event) {

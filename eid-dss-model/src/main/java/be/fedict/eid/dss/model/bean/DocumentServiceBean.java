@@ -24,23 +24,31 @@ import be.fedict.eid.dss.model.ConfigProperty;
 import be.fedict.eid.dss.model.Configuration;
 import be.fedict.eid.dss.model.DocumentService;
 import be.fedict.eid.dss.model.exception.DocumentNotFoundException;
+import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.joda.time.chrono.ISOChronology;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import javax.annotation.Resource;
+import javax.ejb.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Collection;
 
 @Stateless
 public class DocumentServiceBean implements DocumentService {
 
     private static final Log LOG = LogFactory.getLog(DocumentServiceBean.class);
 
+    private static final String TIMER_ID = DocumentServiceBean.class.getName()
+            + ".Timer";
+
     @EJB
     private Configuration configuration;
+
+    @Resource
+    private TimerService timerService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -50,11 +58,11 @@ public class DocumentServiceBean implements DocumentService {
      */
     public DateTime store(String documentId, byte[] data, String contentType) {
 
-        LOG.debug("store document: " + documentId + " data=" + data);
+        LOG.debug("store document: " + documentId);
 
         DateTime expiration = getExpiration();
         DocumentEntity document = new DocumentEntity(documentId, contentType,
-                data, expiration.getMillis());
+                data, expiration.toDate());
         this.entityManager.persist(document);
         return expiration;
     }
@@ -110,6 +118,128 @@ public class DocumentServiceBean implements DocumentService {
         }
         document.setData(data);
         return document;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Timeout
+    public void timeOut(Timer timer) {
+
+        String timerInfo = (String) timer.getInfo();
+        LOG.debug("timeout: " + timerInfo);
+        if (null == timerInfo) {
+            LOG.error("no timer info ?? cancel timer");
+            timer.cancel();
+            return;
+        }
+
+        if (timerInfo.equals(TIMER_ID)) {
+            cleanup();
+            LOG.debug("Next cleanup: " + timer.getNextTimeout());
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void startTimer() throws InvalidCronExpressionException {
+
+        String cronSchedule = this.configuration.getValue(
+                ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE, String.class);
+        startTimer(cronSchedule);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void startTimer(String cronSchedule) throws InvalidCronExpressionException {
+
+        LOG.debug("start document service's cleanup task timer");
+
+        if (null == cronSchedule || cronSchedule.isEmpty()) {
+            // TODO: error message sufficient? or explode here?...
+            LOG.error("No interval set for document service cleanup task!");
+            return;
+        }
+
+        // remove old timers
+        cancelTimers();
+
+        TimerConfig timerConfig = new TimerConfig();
+        timerConfig.setInfo(TIMER_ID);
+        timerConfig.setPersistent(true);
+
+        ScheduleExpression schedule = getScheduleExpression(cronSchedule);
+
+        Timer timer;
+        try {
+            timer = this.timerService.createCalendarTimer(schedule, timerConfig);
+        } catch (Exception e) {
+            LOG.error("Exception while creating timer for document service " +
+                    "cleanup task: " + e.getMessage(), e);
+            throw new InvalidCronExpressionException(e);
+        }
+
+        LOG.debug("created timer for document service cleanup task: next="
+                + timer.getNextTimeout().toString());
+    }
+
+    public void cancelTimers() {
+
+        Collection<Timer> timers = this.timerService.getTimers();
+        for (Timer timer : timers) {
+            if (timer.getInfo() != null) {
+                if (timer.getInfo().equals(TIMER_ID)) {
+                    timer.cancel();
+                    LOG.debug("cancel timer: " + TIMER_ID);
+                }
+            }
+        }
+    }
+
+    private ScheduleExpression getScheduleExpression(String cronSchedule) {
+
+        ScheduleExpression schedule = new ScheduleExpression();
+        String[] fields = cronSchedule.split(" ");
+        if (fields.length > 8) {
+            throw new IllegalArgumentException("Too many fields in cronexpression: " + cronSchedule);
+        }
+        if (fields.length > 1) {
+            schedule.second(fields[0]);
+        }
+        if (fields.length > 2) {
+            schedule.minute(fields[1]);
+        }
+        if (fields.length > 3) {
+            schedule.hour(fields[2]);
+        }
+        if (fields.length > 4) {
+            schedule.dayOfMonth(fields[3]);
+        }
+        if (fields.length > 5) {
+            schedule.month(fields[4]);
+        }
+        if (fields.length > 6) {
+            schedule.dayOfWeek(fields[5]);
+        }
+        if (fields.length > 7) {
+            schedule.year(fields[6]);
+        }
+
+        return schedule;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public int cleanup() {
+
+        LOG.debug("document cleanup");
+        int removals = DocumentEntity.removeExpired(this.entityManager);
+        LOG.debug("# of removals: " + removals);
+        return removals;
     }
 
     private void remove(DocumentEntity document) {

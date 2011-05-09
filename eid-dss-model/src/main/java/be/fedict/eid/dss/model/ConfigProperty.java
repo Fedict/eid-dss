@@ -51,7 +51,9 @@ public enum ConfigProperty {
     SIGNATURE_DIGEST_ALGO("signature-digest-algo", SignatureDigestAlgo.class,
             SignatureDigestAlgo.SHA512),
 
-    DOCUMENT_STORAGE_EXPIRATION("document-storage-expiration", Integer.class, 5);
+    DOCUMENT_STORAGE_EXPIRATION("document-storage-expiration", Integer.class, 5),
+    DOCUMENT_CLEANUP_TASK_SCHEDULE("document-cleanup-task-schedule", String.class,
+            "0 0/15 * * * *");
 
     private final String name;
 

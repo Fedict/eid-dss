@@ -20,14 +20,15 @@ package be.fedict.eid.dss.admin.portal.control.bean;
 
 import be.fedict.eid.dss.admin.portal.control.AdminConstants;
 import be.fedict.eid.dss.admin.portal.control.Config;
-import be.fedict.eid.dss.model.ConfigProperty;
-import be.fedict.eid.dss.model.Configuration;
-import be.fedict.eid.dss.model.SignatureDigestAlgo;
-import be.fedict.eid.dss.model.TSPDigestAlgo;
+import be.fedict.eid.dss.model.*;
+import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.jboss.seam.log.Log;
 
 import javax.annotation.PostConstruct;
@@ -43,8 +44,14 @@ public class ConfigBean implements Config {
     @Logger
     private Log log;
 
+    @In
+    FacesMessages facesMessages;
+
     @EJB
     private Configuration configuration;
+
+    @EJB
+    private DocumentService documentService;
 
     private String xkmsUrl;
 
@@ -71,6 +78,8 @@ public class ConfigBean implements Config {
     private SignatureDigestAlgo signatureDigestAlgo;
 
     private Integer documentStorageExpiration;
+
+    private String documentCleanupTaskCronSchedule;
 
     @Override
     @PostConstruct
@@ -107,6 +116,8 @@ public class ConfigBean implements Config {
 
         this.documentStorageExpiration = this.configuration.getValue(
                 ConfigProperty.DOCUMENT_STORAGE_EXPIRATION, Integer.class);
+        this.documentCleanupTaskCronSchedule = this.configuration.getValue(
+                ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE, String.class);
     }
 
     @Remove
@@ -118,6 +129,7 @@ public class ConfigBean implements Config {
 
     @Override
     public String save() {
+
         this.log.debug("save");
         this.configuration.setValue(ConfigProperty.XKMS_URL, this.xkmsUrl);
 
@@ -148,6 +160,18 @@ public class ConfigBean implements Config {
 
         this.configuration.setValue(ConfigProperty.DOCUMENT_STORAGE_EXPIRATION,
                 this.documentStorageExpiration);
+
+        // start document cleanup task timer
+        try {
+            this.documentService.startTimer(this.documentCleanupTaskCronSchedule);
+        } catch (InvalidCronExpressionException e) {
+            this.facesMessages.addToControl("documentCleanupTaskCronSchedule",
+                    StatusMessage.Severity.ERROR, "Invalid cron schedule");
+            return null;
+        }
+        this.configuration.setValue(ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE,
+                this.documentCleanupTaskCronSchedule);
+
         return null;
     }
 
@@ -290,4 +314,15 @@ public class ConfigBean implements Config {
     public void setDocumentStorageExpiration(Integer documentStorageExpiration) {
         this.documentStorageExpiration = documentStorageExpiration;
     }
+
+    @Override
+    public String getDocumentCleanupTaskCronSchedule() {
+        return this.documentCleanupTaskCronSchedule;
+    }
+
+    @Override
+    public void setDocumentCleanupTaskCronSchedule(String documentCleanupTaskCronSchedule) {
+        this.documentCleanupTaskCronSchedule = documentCleanupTaskCronSchedule;
+    }
+
 }
