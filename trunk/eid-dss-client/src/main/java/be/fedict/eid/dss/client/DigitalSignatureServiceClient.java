@@ -18,12 +18,14 @@
 
 package be.fedict.eid.dss.client;
 
+import be.fedict.eid.dss.ws.DSSConstants;
 import be.fedict.eid.dss.ws.DigitalSignatureService;
-import be.fedict.eid.dss.ws.DigitalSignatureServiceConstants;
 import be.fedict.eid.dss.ws.DigitalSignatureServiceFactory;
 import be.fedict.eid.dss.ws.DigitalSignatureServicePortType;
 import be.fedict.eid.dss.ws.jaxb.dss.*;
 import be.fedict.eid.dss.ws.jaxb.dss.ObjectFactory;
+import be.fedict.eid.dss.ws.profile.artifact.jaxb.ReturnStoredDocument;
+import be.fedict.eid.dss.ws.profile.artifact.jaxb.StorageInfo;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.*;
 import be.fedict.eid.dss.ws.profile.vr.jaxb.PropertiesType;
 import org.apache.commons.logging.Log;
@@ -44,10 +46,7 @@ import java.net.ProxySelector;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Client for the OASIS DSS verification web service.
@@ -62,17 +61,23 @@ public class DigitalSignatureServiceClient {
             .getLog(DigitalSignatureServiceClient.class);
 
     private static final QName detailedSignatureReportQName = new QName(
-            DigitalSignatureServiceConstants.VR_NAMESPACE,
+            DSSConstants.VR_NAMESPACE,
             "DetailedSignatureReport");
+
+    private DigitalSignatureServicePortType port;
 
     private final String endpointAddress;
 
     private final ObjectFactory dssObjectFactory;
-
     private final be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory vrObjectFactory;
+    private final be.fedict.eid.dss.ws.profile.artifact.jaxb.ObjectFactory artifactObjectFactory
+            = new be.fedict.eid.dss.ws.profile.artifact.jaxb.ObjectFactory();
 
     private final Marshaller vrMarshaller;
     private final Unmarshaller vrUnmarshaller;
+
+    private final Marshaller artifactMarshaller;
+    private final Unmarshaller artifactUnmarshaller;
 
     private final DocumentBuilder documentBuilder;
 
@@ -100,6 +105,11 @@ public class DigitalSignatureServiceClient {
                     .newInstance(be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory.class);
             this.vrMarshaller = vrJAXBContext.createMarshaller();
             this.vrUnmarshaller = vrJAXBContext.createUnmarshaller();
+
+            JAXBContext artifactJAXBContext = JAXBContext
+                    .newInstance(be.fedict.eid.dss.ws.profile.artifact.jaxb.ObjectFactory.class);
+            this.artifactMarshaller = artifactJAXBContext.createMarshaller();
+            this.artifactUnmarshaller = artifactJAXBContext.createUnmarshaller();
         } catch (JAXBException e) {
             throw new RuntimeException("JAXB error: " + e.getMessage(), e);
         }
@@ -120,6 +130,8 @@ public class DigitalSignatureServiceClient {
             throw new RuntimeException("X509 factory error: " + e.getMessage(),
                     e);
         }
+
+        this.port = getPort();
     }
 
     /**
@@ -127,6 +139,20 @@ public class DigitalSignatureServiceClient {
      */
     public DigitalSignatureServiceClient() {
         this(DEFAULT_ENDPOINT_ADDRESS);
+    }
+
+    private DigitalSignatureServicePortType getPort() {
+
+        DigitalSignatureService digitalSignatureService = DigitalSignatureServiceFactory
+                .getInstance();
+        DigitalSignatureServicePortType digitalSignatureServicePort = digitalSignatureService
+                .getDigitalSignatureServicePort();
+
+        BindingProvider bindingProvider = (BindingProvider) digitalSignatureServicePort;
+        bindingProvider.getRequestContext()
+                .put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+                        this.endpointAddress);
+        return digitalSignatureServicePort;
     }
 
     /**
@@ -138,6 +164,57 @@ public class DigitalSignatureServiceClient {
     public void setProxy(String proxyHost, int proxyPort) {
         DigitalSignatureServiceClient.proxySelector.setProxy(this.endpointAddress,
                 proxyHost, proxyPort);
+    }
+
+    /**
+     * Enables/disables logging of all SOAP requests/responses.
+     *
+     * @param logging   logging or not
+     * @param logToFile log to file if logging is enabled
+     */
+    public void setLogging(boolean logging, boolean logToFile) {
+
+        if (logging) {
+            registerLoggerHandler(logToFile);
+        } else {
+            removeLoggerHandler();
+        }
+    }
+
+    /**
+     * Registers the logging SOAP handler on the given JAX-WS port component.
+     *
+     * @param logToFile log to file or not
+     */
+    protected void registerLoggerHandler(boolean logToFile) {
+
+        BindingProvider bindingProvider = (BindingProvider) this.port;
+
+        Binding binding = bindingProvider.getBinding();
+        @SuppressWarnings("unchecked")
+        List<Handler> handlerChain = binding.getHandlerChain();
+        handlerChain.add(new LoggingSoapHandler(logToFile));
+        binding.setHandlerChain(handlerChain);
+    }
+
+    /**
+     * Unregister possible logging SOAP handlers on the given JAX-WS port component.
+     */
+    protected void removeLoggerHandler() {
+
+        BindingProvider bindingProvider = (BindingProvider) this.port;
+
+        Binding binding = bindingProvider.getBinding();
+        @SuppressWarnings("unchecked")
+        List<Handler> handlerChain = binding.getHandlerChain();
+        Iterator<Handler> iter = handlerChain.iterator();
+        while (iter.hasNext()) {
+            Handler handler = iter.next();
+            if (handler instanceof LoggingSoapHandler) {
+                iter.remove();
+            }
+
+        }
     }
 
     /**
@@ -153,56 +230,21 @@ public class DigitalSignatureServiceClient {
     public boolean verify(byte[] signedDocument, String mimeType)
             throws NotParseableXMLDocumentException {
 
-        ResponseBaseType responseBase = doVerification(signedDocument,
-                mimeType, false, false);
+        ResponseBaseType response = doVerification(signedDocument, mimeType, false, false);
 
-        String resultMinor = validateResult(responseBase);
+        String resultMinor = validateResult(response);
         if (null == resultMinor) {
             throw new RuntimeException("missing ResultMinor");
         }
-        if (DigitalSignatureServiceConstants.RESULT_MINOR_VALID_SIGNATURE
+        if (DSSConstants.RESULT_MINOR_VALID_SIGNATURE
                 .equals(resultMinor)) {
             return true;
         }
-        if (DigitalSignatureServiceConstants.RESULT_MINOR_VALID_MULTI_SIGNATURES
+        if (DSSConstants.RESULT_MINOR_VALID_MULTI_SIGNATURES
                 .equals(resultMinor)) {
             return true;
         }
         return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    private VerificationReportType findVerificationReport(
-            ResponseBaseType responseBase) {
-
-        AnyType optionalOutputs = responseBase.getOptionalOutputs();
-        if (null == optionalOutputs) {
-            return null;
-        }
-        List<Object> optionalOutputContent = optionalOutputs.getAny();
-        for (Object optionalOutput : optionalOutputContent) {
-            if (optionalOutput instanceof Element) {
-                Element optionalOutputElement = (Element) optionalOutput;
-                if (DigitalSignatureServiceConstants.VR_NAMESPACE
-                        .equals(optionalOutputElement.getNamespaceURI())
-                        && "VerificationReport".equals(optionalOutputElement
-                        .getLocalName())) {
-                    JAXBElement<VerificationReportType> verificationReportElement;
-                    try {
-                        verificationReportElement =
-                                (JAXBElement<VerificationReportType>)
-                                        this.vrUnmarshaller.unmarshal(optionalOutputElement);
-                    } catch (JAXBException e) {
-                        throw new RuntimeException(
-                                "JAXB error parsing verification report: "
-                                        + e.getMessage(), e);
-                    }
-                    return verificationReportElement.getValue();
-                }
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -217,7 +259,8 @@ public class DigitalSignatureServiceClient {
      *          XML document was not parseable.
      */
     public List<SignatureInfo> verifyWithSigners(byte[] signedDocument,
-                                                 String mimeType) throws NotParseableXMLDocumentException {
+                                                 String mimeType)
+            throws NotParseableXMLDocumentException {
 
         ResponseBaseType responseBase = doVerification(signedDocument,
                 mimeType, false, true);
@@ -236,7 +279,7 @@ public class DigitalSignatureServiceClient {
                 .getIndividualReport();
         for (IndividualReportType individualReport : individualReports) {
 
-            if (!DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS
+            if (!DSSConstants.RESULT_MAJOR_SUCCESS
                     .equals(individualReport.getResult().getResultMajor())) {
                 LOG.warn("some invalid VR result reported: "
                         + individualReport.getResult().getResultMajor());
@@ -306,44 +349,15 @@ public class DigitalSignatureServiceClient {
         return signers;
     }
 
-    private String validateResult(ResponseBaseType responseBase) throws NotParseableXMLDocumentException {
-
-        Result result = responseBase.getResult();
-        String resultMajor = result.getResultMajor();
-        LOG.debug("result major: " + resultMajor);
-        String resultMinor = result.getResultMinor();
-        if (!DigitalSignatureServiceConstants.RESULT_MAJOR_SUCCESS.equals(resultMajor)) {
-            LOG.warn("result minor: " + resultMinor);
-            if (null != resultMinor
-                    && DigitalSignatureServiceConstants.RESULT_MINOR_NOT_PARSEABLE_XML_DOCUMENT
-                    .equals(resultMinor)) {
-                throw new NotParseableXMLDocumentException();
-            }
-            throw new RuntimeException("unsuccessful result: " + resultMajor);
-        }
-        return resultMinor;
-    }
-
     private ResponseBaseType doVerification(byte[] documentData,
-                                            String mimeType, boolean returnSignerIdentity,
-                                            boolean returnVerificationReport) {
+                                            String mimeType,
+                                            boolean returnSignerIdentity,
+                                            boolean returnVerificationReport)
+            throws NotParseableXMLDocumentException {
+
         LOG.debug("verify");
-        String requestId = "dss-request-" + UUID.randomUUID().toString();
-        DigitalSignatureService digitalSignatureService = DigitalSignatureServiceFactory
-                .getInstance();
-        DigitalSignatureServicePortType digitalSignatureServicePort = digitalSignatureService
-                .getDigitalSignatureServicePort();
 
-        BindingProvider bindingProvider = (BindingProvider) digitalSignatureServicePort;
-        bindingProvider.getRequestContext()
-                .put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-                        this.endpointAddress);
-
-        Binding binding = bindingProvider.getBinding();
-        List<Handler> handlerChain = binding.getHandlerChain();
-        handlerChain.add(new LoggingSoapHandler());
-        binding.setHandlerChain(handlerChain);
-
+        String requestId = "dss-verify-request-" + UUID.randomUUID().toString();
         VerifyRequest verifyRequest = this.dssObjectFactory
                 .createVerifyRequest();
         verifyRequest.setRequestID(requestId);
@@ -366,7 +380,7 @@ public class DigitalSignatureServiceClient {
                     .setReportDetailLevel("urn:oasis:names:tc:dss-x:1.0:profiles:verificationreport:reportdetail:noDetails");
 
             Document document = this.documentBuilder.newDocument();
-            Element newElement = (Element) document.createElement("newNode");
+            Element newElement = document.createElement("newNode");
             try {
                 this.vrMarshaller.marshal(jaxbReturnVerificationReport,
                         newElement);
@@ -380,6 +394,162 @@ public class DigitalSignatureServiceClient {
         if (!optionalInputs.getAny().isEmpty()) {
             verifyRequest.setOptionalInputs(optionalInputs);
         }
+
+        verifyRequest.setInputDocuments(getInputDocuments(documentData, mimeType));
+
+        // operate
+        ResponseBaseType response = port.verify(verifyRequest);
+
+        // check response
+        checkResponse(response, requestId);
+
+        return response;
+    }
+
+    /**
+     * Send specified document to the eID DSS WS for temp storage. The WS will
+     * return {@link StorageInfoDO} containing the artifact ID for the uploaded
+     * document.
+     *
+     * @param documentData document to be signed
+     * @param contentType  content type of document to be signed.
+     * @return document storage information object.
+     */
+    public StorageInfoDO store(byte[] documentData, String contentType) {
+
+        // create request
+        String requestId = "dss-sign-request-" + UUID.randomUUID().toString();
+        SignRequest signRequest = this.dssObjectFactory.createSignRequest();
+        signRequest.setRequestID(requestId);
+        signRequest.setProfile(DSSConstants.ARTIFACT_NAMESPACE);
+
+        // add "ReturnStoreInfo" optional input
+        AnyType optionalInputs = this.dssObjectFactory.createAnyType();
+        JAXBElement<Object> returnStorageInfoElement = this.artifactObjectFactory
+                .createReturnStorageInfo(null);
+        optionalInputs.getAny().add(returnStorageInfoElement);
+        signRequest.setOptionalInputs(optionalInputs);
+
+        // add document
+        signRequest.setInputDocuments(getInputDocuments(documentData, contentType));
+
+        // operate
+        SignResponse signResponse = this.port.sign(signRequest);
+
+        // parse response
+        checkResponse(signResponse, requestId);
+
+        try {
+            validateResult(signResponse);
+        } catch (NotParseableXMLDocumentException e) {
+            throw new RuntimeException(e);
+        }
+
+        // check profile
+        if (!signResponse.getProfile().equals(DSSConstants.ARTIFACT_NAMESPACE)) {
+            throw new RuntimeException("Unexpected SignResponse.profile: " +
+                    signResponse.getProfile());
+        }
+
+        // parse StorageInfo
+        StorageInfo storageInfo = findStorageInfo(signResponse);
+        if (null == storageInfo) {
+            throw new RuntimeException("Missing StorageInfo");
+        }
+
+        Date notBefore = storageInfo.getValidity().getNotBefore()
+                .toGregorianCalendar().getTime();
+        Date notAfter = storageInfo.getValidity().getNotAfter()
+                .toGregorianCalendar().getTime();
+        String artifact = storageInfo.getIdentifier();
+
+        LOG.debug("Artifact: " + artifact + " notBefore=" + notBefore +
+                " notAfter=" + notAfter);
+
+        return new StorageInfoDO(artifact, notBefore, notAfter);
+    }
+
+    /**
+     * Retrieve the document specified by the given ID from the eID DSS service.
+     *
+     * @param documentId the ID of the document to fetch.
+     * @return the decoded document data.
+     * @throws DocumentNotFoundException no document was returned
+     */
+    public byte[] retrieve(String documentId) throws DocumentNotFoundException {
+
+        // create request
+        String requestId = "dss-sign-request-" + UUID.randomUUID().toString();
+        SignRequest signRequest = this.dssObjectFactory.createSignRequest();
+        signRequest.setRequestID(requestId);
+        signRequest.setProfile(DSSConstants.ARTIFACT_NAMESPACE);
+
+        // add "ReturnStoredDocument" optional input
+        AnyType optionalInputs = this.dssObjectFactory.createAnyType();
+        ReturnStoredDocument returnStoredDocument =
+                this.artifactObjectFactory.createReturnStoredDocument();
+        returnStoredDocument.setIdentifier(documentId);
+        optionalInputs.getAny().add(
+                getReturnStoredDocumentElement(returnStoredDocument));
+        signRequest.setOptionalInputs(optionalInputs);
+
+        // operate
+        SignResponse signResponse = this.port.sign(signRequest);
+
+        // parse response
+        checkResponse(signResponse, requestId);
+
+        try {
+            validateResult(signResponse);
+        } catch (NotParseableXMLDocumentException e) {
+            throw new RuntimeException(e);
+        }
+
+        // check profile
+        if (!signResponse.getProfile().equals(DSSConstants.ARTIFACT_NAMESPACE)) {
+            throw new RuntimeException("Unexpected SignResponse.profile: " +
+                    signResponse.getProfile());
+        }
+
+        // get document
+        DocumentWithSignature documentWithSignature =
+                findDocumentWithSignature(signResponse);
+        if (null == documentWithSignature ||
+                null == documentWithSignature.getDocument()) {
+            throw new DocumentNotFoundException();
+        }
+        Base64Data base64Data = documentWithSignature.getDocument().getBase64Data();
+        byte[] documentData;
+        if (null != base64Data) {
+            documentData = base64Data.getValue();
+        } else {
+            documentData = documentWithSignature.getDocument().getBase64XML();
+        }
+
+        if (null == documentData) {
+            throw new DocumentNotFoundException();
+        }
+        return documentData;
+    }
+
+    public Element getReturnStoredDocumentElement(
+            ReturnStoredDocument returnStoredDocument) {
+
+        Document newDocument = this.documentBuilder.newDocument();
+        Element newElement = newDocument.createElement("newNode");
+        try {
+            this.artifactMarshaller.marshal(this.artifactObjectFactory
+                    .createReturnStoredDocument(returnStoredDocument),
+                    newElement);
+        } catch (JAXBException e) {
+            throw new RuntimeException("JAXB error: " + e.getMessage(), e);
+        }
+        return (Element) newElement.getFirstChild();
+    }
+
+
+    private InputDocuments getInputDocuments(byte[] documentData,
+                                             String mimeType) {
 
         InputDocuments inputDocuments = this.dssObjectFactory
                 .createInputDocuments();
@@ -395,22 +565,125 @@ public class DigitalSignatureServiceClient {
             document.setBase64Data(base64Data);
         }
         documents.add(document);
-        verifyRequest.setInputDocuments(inputDocuments);
+        return inputDocuments;
+    }
 
-        ResponseBaseType responseBase = digitalSignatureServicePort
-                .verify(verifyRequest);
+    private void checkResponse(ResponseBaseType response, String requestId) {
 
-        if (null == responseBase) {
-            throw new RuntimeException("missing Response");
+        if (null == response) {
+            throw new RuntimeException("No response returned!");
         }
-        String responseRequestId = responseBase.getRequestID();
+        String responseRequestId = response.getRequestID();
         if (null == responseRequestId) {
             throw new RuntimeException("missing response RequestID");
         }
         if (!requestId.equals(responseRequestId)) {
             throw new RuntimeException("incorrect response RequestID");
         }
+    }
 
-        return responseBase;
+    private String validateResult(ResponseBaseType response)
+            throws NotParseableXMLDocumentException {
+
+        Result result = response.getResult();
+        String resultMajor = result.getResultMajor();
+        LOG.debug("result major: " + resultMajor);
+        String resultMinor = result.getResultMinor();
+        if (!DSSConstants.RESULT_MAJOR_SUCCESS.equals(resultMajor)) {
+            LOG.warn("result minor: " + resultMinor);
+            if (null != resultMinor
+                    && DSSConstants.RESULT_MINOR_NOT_PARSEABLE_XML_DOCUMENT
+                    .equals(resultMinor)) {
+                throw new NotParseableXMLDocumentException();
+            }
+            throw new RuntimeException("unsuccessful result: " + resultMajor);
+        }
+        return resultMinor;
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private VerificationReportType findVerificationReport(ResponseBaseType responseBase) {
+
+        AnyType optionalOutputs = responseBase.getOptionalOutputs();
+        if (null == optionalOutputs) {
+            return null;
+        }
+        List<Object> optionalOutputContent = optionalOutputs.getAny();
+        for (Object optionalOutput : optionalOutputContent) {
+
+            if (optionalOutput instanceof Element) {
+                Element optionalOutputElement = (Element) optionalOutput;
+                if (DSSConstants.VR_NAMESPACE.equals(optionalOutputElement.getNamespaceURI())
+                        && "VerificationReport".equals(optionalOutputElement.getLocalName())) {
+                    JAXBElement<VerificationReportType> verificationReportElement;
+                    try {
+                        verificationReportElement =
+                                (JAXBElement<VerificationReportType>)
+                                        this.vrUnmarshaller.unmarshal(optionalOutputElement);
+                    } catch (JAXBException e) {
+                        throw new RuntimeException(
+                                "JAXB error parsing verification report: "
+                                        + e.getMessage(), e);
+                    }
+                    return verificationReportElement.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private StorageInfo findStorageInfo(SignResponse signeResponse) {
+
+        AnyType optionalOutputs = signeResponse.getOptionalOutputs();
+        if (null == optionalOutputs) {
+            return null;
+        }
+        List<Object> optionalOutputContent = optionalOutputs.getAny();
+        for (Object optionalOutput : optionalOutputContent) {
+
+            if (optionalOutput instanceof Element) {
+
+                Element optionalOutputElement = (Element) optionalOutput;
+                if (DSSConstants.ARTIFACT_NAMESPACE.equals(
+                        optionalOutputElement.getNamespaceURI())
+                        && "StorageInfo".equals(
+                        optionalOutputElement.getLocalName())) {
+                    JAXBElement<StorageInfo> storageInfoElement;
+                    try {
+                        storageInfoElement =
+                                (JAXBElement<StorageInfo>)
+                                        this.artifactUnmarshaller.unmarshal(
+                                                optionalOutputElement);
+                    } catch (JAXBException e) {
+                        throw new RuntimeException(
+                                "JAXB error parsing storage info: "
+                                        + e.getMessage(), e);
+                    }
+                    return storageInfoElement.getValue();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private DocumentWithSignature findDocumentWithSignature(SignResponse signeResponse) {
+
+        AnyType optionalOutputs = signeResponse.getOptionalOutputs();
+        if (null == optionalOutputs) {
+            return null;
+        }
+        List<Object> optionalOutputContent = optionalOutputs.getAny();
+        for (Object optionalOutput : optionalOutputContent) {
+
+            if (optionalOutput instanceof DocumentWithSignature) {
+                return (DocumentWithSignature) optionalOutput;
+            }
+        }
+
+        return null;
     }
 }

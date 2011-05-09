@@ -18,67 +18,69 @@
 
 package be.fedict.eid.dss.client;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Set;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Set;
 
 /**
  * Logging JAX-WS SOAP handler.
- * 
+ *
  * @author Frank Cornelis
- * 
  */
 public class LoggingSoapHandler implements SOAPHandler<SOAPMessageContext> {
 
-	private static final Log LOG = LogFactory.getLog(LoggingSoapHandler.class);
+    private static final Log LOG = LogFactory.getLog(LoggingSoapHandler.class);
 
-	private static final boolean LOG_TO_FILE = true;
+    private final boolean logToFile;
 
-	public Set<QName> getHeaders() {
-		return null;
-	}
+    public LoggingSoapHandler(boolean logToFile) {
+        this.logToFile = logToFile;
+    }
 
-	public void close(MessageContext context) {
-		LOG.debug("close");
-	}
+    public Set<QName> getHeaders() {
+        return null;
+    }
 
-	public boolean handleFault(SOAPMessageContext context) {
-		return true;
-	}
+    public void close(MessageContext context) {
+        LOG.debug("close");
+    }
 
-	public boolean handleMessage(SOAPMessageContext context) {
-		LOG.debug("handle message");
-		Boolean outboundProperty = (Boolean) context
-				.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-		LOG.debug("outbound message: " + outboundProperty);
-		SOAPMessage soapMessage = context.getMessage();
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			if (LOG_TO_FILE) {
-				File tmpFile = File.createTempFile("eid-dss-soap-"
-						+ (outboundProperty ? "outbound" : "inbound") + "-",
-						".xml");
-				FileOutputStream fileOutputStream = new FileOutputStream(
-						tmpFile);
-				soapMessage.writeTo(fileOutputStream);
-				fileOutputStream.close();
-				LOG.debug("tmp file: " + tmpFile.getAbsolutePath());
-			}
-			soapMessage.writeTo(output);
-		} catch (Exception e) {
-			LOG.error("SOAP error: " + e.getMessage());
-		}
-		LOG.debug("SOAP message: " + output.toString());
-		return true;
-	}
+    public boolean handleFault(SOAPMessageContext context) {
+        return true;
+    }
+
+    public boolean handleMessage(SOAPMessageContext context) {
+        LOG.debug("handle message");
+        Boolean outboundProperty = (Boolean) context
+                .get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+        LOG.debug("outbound message: " + outboundProperty);
+        SOAPMessage soapMessage = context.getMessage();
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        try {
+            if (this.logToFile) {
+                File tmpFile = File.createTempFile("eid-dss-soap-"
+                        + (outboundProperty ? "outbound" : "inbound") + "-",
+                        ".xml");
+                FileOutputStream fileOutputStream = new FileOutputStream(
+                        tmpFile);
+                soapMessage.writeTo(fileOutputStream);
+                fileOutputStream.close();
+                LOG.debug("tmp file: " + tmpFile.getAbsolutePath());
+            }
+            soapMessage.writeTo(output);
+        } catch (Exception e) {
+            LOG.error("SOAP error: " + e.getMessage());
+        }
+        LOG.debug("SOAP message: " + output.toString());
+        return true;
+    }
 }

@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2010 FedICT.
+ * Copyright (C) 2009-2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -16,30 +16,15 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.webapp;
-
-import be.fedict.eid.dss.model.IdentityService;
-import be.fedict.eid.dss.spi.DSSProtocolContext;
-
-import java.security.KeyStore.PrivateKeyEntry;
+package be.fedict.eid.dss.client;
 
 /**
- * Implementation of the DSS Protocol Context.
+ * Thrown in case no document was returned.
  *
- * @author Frank Cornelis
+ * @author Wim Vandenhaute
  */
-public class DSSProtocolContextImpl implements DSSProtocolContext {
+public class DocumentNotFoundException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    private final IdentityService identityService;
-
-    public DSSProtocolContextImpl(IdentityService identityService) {
-
-        this.identityService = identityService;
-    }
-
-    public PrivateKeyEntry getIdentity() {
-        return this.identityService.findIdentity();
-    }
 }

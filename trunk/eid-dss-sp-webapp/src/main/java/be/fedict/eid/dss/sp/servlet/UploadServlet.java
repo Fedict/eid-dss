@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -48,6 +49,18 @@ public class UploadServlet extends HttpServlet {
             UploadServlet.class.getName() + ".Document";
     public static final String CONTENT_TYPE_SESSION_ATTRIBUTE =
             UploadServlet.class.getName() + ".ContentType";
+
+    private static final String POST_PAGE_INIT_PARAM = "PostPage";
+
+    private String postPage;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+
+        super.init(config);
+
+        this.postPage = config.getInitParameter(POST_PAGE_INIT_PARAM);
+    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -98,7 +111,7 @@ public class UploadServlet extends HttpServlet {
         request.getSession().setAttribute(DOCUMENT_SESSION_ATTRIBUTE, document);
         request.getSession().setAttribute(CONTENT_TYPE_SESSION_ATTRIBUTE, contentType);
 
-        response.sendRedirect("./post-request.jsp");
+        response.sendRedirect(request.getContextPath() + this.postPage);
     }
 
     private static final Map<String, String> supportedFileExtensions;

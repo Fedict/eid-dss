@@ -48,7 +48,9 @@ public enum ConfigProperty {
     IDENTITY_TRUST_DOMAIN("identity-trust-domain", String.class),
     TSA_TRUST_DOMAIN("tsa-trust-domain", String.class),
 
-    SIGNATURE_DIGEST_ALGO("signature-digest-algo", SignatureDigestAlgo.class);
+    SIGNATURE_DIGEST_ALGO("signature-digest-algo", SignatureDigestAlgo.class),
+
+    DOCUMENT_STORAGE_EXPIRATION("document-storage-expiration", Integer.class);
 
     private final String name;
 

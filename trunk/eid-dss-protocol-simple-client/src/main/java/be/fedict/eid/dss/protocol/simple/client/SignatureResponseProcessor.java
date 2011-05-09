@@ -51,6 +51,8 @@ public class SignatureResponseProcessor {
 
     public static final String SIGNATURE_RESPONSE_PARAMETER = "SignatureResponse";
 
+    public static final String SIGNATURE_RESPONSE_ID_PARAMETER = "SignatureResponseId";
+
     public static final String SIGNATURE_STATUS_PARAMETER = "SignatureStatus";
 
     public static final String SIGNATURE_CERTIFICATE_PARAMETER = "SignatureCertificate";
@@ -98,8 +100,10 @@ public class SignatureResponseProcessor {
      *
      * @param request                       the HTTP servlet request that holds the DSS response.
      * @param target                        our target URL used for validation of the service signature.
-     * @param base64encodedSignatureRequest our base64 encoded signature request used for validation of
-     *                                      the service signature.
+     * @param base64encodedSignatureRequest optional base64 encoded signature request used for validation of
+     *                                      the service signature. If <code>null</code> meaning artifact binding was used,
+     *                                      signatureRequestId becomes required.
+     * @param signatureRequestId            optional signature request ID case artifact binding was used.
      * @param relayState                    optional relayState param
      * @return the signature response DTO.
      * @throws SignatureResponseProcessorException
@@ -107,6 +111,7 @@ public class SignatureResponseProcessor {
      */
     public SignatureResponse process(HttpServletRequest request, String target,
                                      String base64encodedSignatureRequest,
+                                     String signatureRequestId,
                                      String relayState)
             throws SignatureResponseProcessorException {
         /*
@@ -132,9 +137,12 @@ public class SignatureResponseProcessor {
 
         String signatureResponse = request
                 .getParameter(SIGNATURE_RESPONSE_PARAMETER);
-        if (null == signatureResponse) {
-            String msg = SIGNATURE_RESPONSE_PARAMETER
-                    + " parameter not present";
+        String signatureResponseId = request
+                .getParameter(SIGNATURE_RESPONSE_ID_PARAMETER);
+
+        if (null == signatureResponse && null == signatureResponseId) {
+            String msg = "No " + SIGNATURE_RESPONSE_PARAMETER + " or " +
+                    SIGNATURE_RESPONSE_ID_PARAMETER + " parameter found!";
             LOG.error(msg);
             throw new SignatureResponseProcessorException(msg);
         }
@@ -214,13 +222,15 @@ public class SignatureResponseProcessor {
                         "target parameter required for validation of service signature");
             }
 
-            if (null == base64encodedSignatureRequest) {
+            if (null == base64encodedSignatureRequest && null == signatureRequestId) {
                 throw new SignatureResponseProcessorException(
-                        "base64encodedSignatureRequest required for validation of service signature");
+                        "base64encodedSignatureRequest or signatureRequestId " +
+                                "required for validation of service signature");
             }
             try {
                 verifyServiceSignature(serviceSigned, target,
-                        base64encodedSignatureRequest, signatureResponse,
+                        base64encodedSignatureRequest, signatureRequestId,
+                        signatureResponse, signatureResponseId,
                         encodedSignatureCertificate, serviceSignatureValue,
                         serviceCertificateChain);
             } catch (Exception e) {
@@ -242,9 +252,12 @@ public class SignatureResponseProcessor {
         /*
          * Parse all incoming data.
          */
-        byte[] decodedSignatureResponse = Base64.decode(signatureResponse);
-        LOG.debug("decoded signature response size: "
-                + decodedSignatureResponse.length);
+        byte[] decodedSignatureResponse = null;
+        if (null != signatureResponse) {
+            decodedSignatureResponse = Base64.decode(signatureResponse);
+            LOG.debug("decoded signature response size: "
+                    + decodedSignatureResponse.length);
+        }
 
         byte[] decodedSignatureCertificate = Base64
                 .decode(encodedSignatureCertificate);
@@ -264,15 +277,20 @@ public class SignatureResponseProcessor {
          * Construct result DTO.
          */
         return new SignatureResponse(decodedSignatureResponse,
-                signatureCertificate);
+                signatureResponseId, signatureCertificate);
     }
 
     private void verifyServiceSignature(String serviceSigned, String target,
-                                        String signatureRequest, String signatureResponse,
-                                        String encodedSignatureCertificate, byte[] serviceSignatureValue,
+                                        String signatureRequest,
+                                        String signatureRequestId,
+                                        String signatureResponse,
+                                        String signatureResponseId,
+                                        String encodedSignatureCertificate,
+                                        byte[] serviceSignatureValue,
                                         List<X509Certificate> serviceCertificateChain)
             throws CertificateException, NoSuchAlgorithmException,
             InvalidKeyException, SignatureException {
+
         LOG.debug("verifying service signature");
         X509Certificate serviceCertificate = serviceCertificateChain.get(0);
         LOG.debug("service identity: "
@@ -291,8 +309,12 @@ public class SignatureResponseProcessor {
                 data = target.getBytes();
             } else if ("SignatureRequest".equals(serviceSignedElement)) {
                 data = signatureRequest.getBytes();
+            } else if ("SignatureRequestId".equals(serviceSignedElement)) {
+                data = signatureRequestId.getBytes();
             } else if ("SignatureResponse".equals(serviceSignedElement)) {
                 data = signatureResponse.getBytes();
+            } else if ("SignatureResponseId".equals(serviceSignedElement)) {
+                data = signatureResponseId.getBytes();
             } else if ("SignatureCertificate".equals(serviceSignedElement)) {
                 data = encodedSignatureCertificate.getBytes();
             } else {

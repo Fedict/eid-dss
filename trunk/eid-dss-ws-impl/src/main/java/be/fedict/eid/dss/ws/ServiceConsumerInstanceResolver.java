@@ -18,70 +18,84 @@
 
 package be.fedict.eid.dss.ws;
 
-import java.lang.reflect.Field;
+import be.fedict.eid.dss.model.DocumentService;
+import be.fedict.eid.dss.model.SignatureVerificationService;
+import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.server.AbstractMultiInstanceResolver;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
 import javax.xml.ws.handler.MessageContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import be.fedict.eid.dss.model.SignatureVerificationService;
-
-import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.server.AbstractMultiInstanceResolver;
+import java.lang.reflect.Field;
 
 /**
  * JAX-WS RI Instance Resolver implementation to inject services into JAX-WS
  * endpoints.
- * 
- * @author Frank Cornelis
- * 
+ *
  * @param <T>
+ * @author Frank Cornelis
  */
 public class ServiceConsumerInstanceResolver<T> extends
-		AbstractMultiInstanceResolver<T> {
+        AbstractMultiInstanceResolver<T> {
 
-	private static final Log LOG = LogFactory
-			.getLog(ServiceConsumerInstanceResolver.class);
+    private static final Log LOG = LogFactory
+            .getLog(ServiceConsumerInstanceResolver.class);
 
-	public ServiceConsumerInstanceResolver(Class<T> clazz) {
-		super(clazz);
-	}
+    public ServiceConsumerInstanceResolver(Class<T> clazz) {
+        super(clazz);
+    }
 
-	@Override
-	public T resolve(Packet request) {
-		T endpoint = create();
+    @Override
+    public T resolve(Packet request) {
+        T endpoint = create();
 
-		ServletContext servletContext = (ServletContext) request
-				.get(MessageContext.SERVLET_CONTEXT);
-		SignatureVerificationService signatureVerificationService = ServiceConsumerServletContextListener
-				.getSignatureVerificationService(servletContext);
+        ServletContext servletContext = (ServletContext) request
+                .get(MessageContext.SERVLET_CONTEXT);
 
-		injectServices(endpoint, signatureVerificationService);
+        SignatureVerificationService signatureVerificationService =
+                ServiceConsumerServletContextListener
+                        .getSignatureVerificationService(servletContext);
 
-		return endpoint;
-	}
+        DocumentService documentService = ServiceConsumerServletContextListener
+                .getDocumentService(servletContext);
 
-	private void injectServices(T endpoint,
-			SignatureVerificationService signatureVerificationService) {
-		LOG.debug("injecting services into JAX-WS endpoint...");
-		Field[] fields = endpoint.getClass().getDeclaredFields();
-		for (Field field : fields) {
-			EJB ejbAnnotation = field.getAnnotation(EJB.class);
-			if (null == ejbAnnotation) {
-				continue;
-			}
-			if (field.getType().equals(SignatureVerificationService.class)) {
-				field.setAccessible(true);
-				try {
-					field.set(endpoint, signatureVerificationService);
-				} catch (Exception e) {
-					throw new RuntimeException("injection error: "
-							+ e.getMessage(), e);
-				}
-			}
-		}
-	}
+        injectServices(endpoint, signatureVerificationService, documentService);
+
+        return endpoint;
+    }
+
+    private void injectServices(T endpoint,
+                                SignatureVerificationService signatureVerificationService,
+                                DocumentService documentService) {
+
+        LOG.debug("injecting services into JAX-WS endpoint...");
+        Field[] fields = endpoint.getClass().getDeclaredFields();
+        for (Field field : fields) {
+
+            EJB ejbAnnotation = field.getAnnotation(EJB.class);
+            if (null == ejbAnnotation) {
+                continue;
+            }
+            if (field.getType().equals(SignatureVerificationService.class)) {
+                field.setAccessible(true);
+                try {
+                    field.set(endpoint, signatureVerificationService);
+                } catch (Exception e) {
+                    throw new RuntimeException("injection error: "
+                            + e.getMessage(), e);
+                }
+            } else if (field.getType().equals(DocumentService.class)) {
+                field.setAccessible(true);
+                try {
+                    field.set(endpoint, documentService);
+                } catch (Exception e) {
+                    throw new RuntimeException("injection error: "
+                            + e.getMessage(), e);
+                }
+            }
+
+        }
+    }
 }

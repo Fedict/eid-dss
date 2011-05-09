@@ -18,6 +18,8 @@
 
 package be.fedict.eid.dss.sp.bean;
 
+import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
+import be.fedict.eid.dss.client.StorageInfoDO;
 import be.fedict.eid.dss.sp.servlet.UploadServlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +36,7 @@ public class SPBean {
     private ServletRequest request;
 
     private String signatureRequest;
+    private String signatureRequestId;
     private String contentType;
 
     private String relayState;
@@ -41,37 +44,78 @@ public class SPBean {
 
     private String destination;
     private String target;
+    private String targetArtifact;
 
-    public ServletRequest getRequest() {
+    public ServletRequest getPostRequest() {
         return this.request;
     }
 
-    public void setRequest(ServletRequest request) {
+    public ServletRequest getArtifactRequest() {
+        return this.request;
+    }
+
+    public void setPostRequest(ServletRequest request) {
 
         this.request = request;
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
-        byte[] document = (byte[]) httpServletRequest.getSession().getAttribute(
-                UploadServlet.DOCUMENT_SESSION_ATTRIBUTE);
+        byte[] document = setRequest(httpServletRequest, "en",
+                httpServletRequest.getContextPath() + "/dss-response");
+
         if (null != document) {
 
             this.signatureRequest = new String(Base64.encode(document));
-            this.contentType = (String) httpServletRequest.getSession().getAttribute(
-                    UploadServlet.CONTENT_TYPE_SESSION_ATTRIBUTE);
-
-            this.relayState = UUID.randomUUID().toString();
-            LOG.debug("RelayState: " + this.relayState);
-            this.language = "en";
-
-            this.destination = "../eid-dss/protocol/simple";
-            this.target = httpServletRequest.getContextPath() + "/dss-response";
-
-            // store data on session for response handling
-            httpServletRequest.getSession().setAttribute("ContentType", this.contentType);
-            httpServletRequest.getSession().setAttribute("target", this.target);
-            httpServletRequest.getSession().setAttribute("RelayState", this.relayState);
             httpServletRequest.getSession().setAttribute("SignatureRequest", this.signatureRequest);
+            httpServletRequest.getSession().setAttribute("ContentType", this.contentType);
         }
+    }
+
+    public void setArtifactRequest(ServletRequest request) {
+
+        this.request = request;
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+
+        byte[] document = setRequest(httpServletRequest, "nl",
+                httpServletRequest.getContextPath() + "/dss-response-artifact");
+
+        if (null != document) {
+
+            // SignRequest to DSS WS
+            DigitalSignatureServiceClient dssClient =
+                    new DigitalSignatureServiceClient();
+            dssClient.setLogging(true, true);
+
+            StorageInfoDO storageInfoDO = dssClient.store(document, this.contentType);
+
+            LOG.debug("StorageInfo.notBefore: " + storageInfoDO.getNotBefore());
+            LOG.debug("StorageInfo.notAfter: " + storageInfoDO.getNotAfter());
+
+            this.signatureRequestId = storageInfoDO.getArtifact();
+            httpServletRequest.getSession().setAttribute("SignatureRequestId",
+                    this.signatureRequestId);
+        }
+    }
+
+    private byte[] setRequest(HttpServletRequest httpServletRequest,
+                              String language, String target) {
+
+        byte[] document = (byte[]) httpServletRequest.getSession().getAttribute(
+                UploadServlet.DOCUMENT_SESSION_ATTRIBUTE);
+
+        this.language = language;
+        this.contentType = (String) httpServletRequest.getSession().getAttribute(
+                UploadServlet.CONTENT_TYPE_SESSION_ATTRIBUTE);
+        this.relayState = UUID.randomUUID().toString();
+        LOG.debug("RelayState: " + this.relayState);
+
+        this.destination = "../eid-dss/protocol/simple";
+        this.target = target;
+
+        // store data on session for response handling
+        httpServletRequest.getSession().setAttribute("target", this.target);
+        httpServletRequest.getSession().setAttribute("RelayState", this.relayState);
+
+        return document;
     }
 
     public String getSignatureRequest() {
@@ -120,5 +164,13 @@ public class SPBean {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public String getSignatureRequestId() {
+        return signatureRequestId;
+    }
+
+    public void setSignatureRequestId(String signatureRequestId) {
+        this.signatureRequestId = signatureRequestId;
     }
 }

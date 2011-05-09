@@ -22,37 +22,46 @@ import java.security.cert.X509Certificate;
 
 /**
  * Signature response DTO.
- * 
+ *
  * @author Frank Cornelis
- * 
  */
 public class SignatureResponse {
 
-	private final byte[] decodedSignatureResponse;
+    private final byte[] decodedSignatureResponse;
 
-	private final X509Certificate signatureCertificate;
+    private final String signatureResponseId;
 
-	public SignatureResponse(byte[] decodedSignatureResponse,
-			X509Certificate signatureCertificate) {
-		this.decodedSignatureResponse = decodedSignatureResponse;
-		this.signatureCertificate = signatureCertificate;
-	}
+    private final X509Certificate signatureCertificate;
 
-	/**
-	 * Gives back the signed document.
-	 * 
-	 * @return
-	 */
-	public byte[] getDecodedSignatureResponse() {
-		return this.decodedSignatureResponse;
-	}
+    public SignatureResponse(byte[] decodedSignatureResponse,
+                             String signatureResponseId,
+                             X509Certificate signatureCertificate) {
 
-	/**
-	 * Gives back the X509 certificate of the signatory.
-	 * 
-	 * @return
-	 */
-	public X509Certificate getSignatureCertificate() {
-		return this.signatureCertificate;
-	}
+        this.decodedSignatureResponse = decodedSignatureResponse;
+        this.signatureResponseId = signatureResponseId;
+        this.signatureCertificate = signatureCertificate;
+    }
+
+    /**
+     * @return the signed document or <code>null</code> if signature response
+     *         ID is passed
+     */
+    public byte[] getDecodedSignatureResponse() {
+        return this.decodedSignatureResponse;
+    }
+
+    /**
+     * @return the X509 certificate of the signatory.
+     */
+    public X509Certificate getSignatureCertificate() {
+        return this.signatureCertificate;
+    }
+
+    /**
+     * @return the signature response ID or <code>null</code> case signature
+     *         response was not null.
+     */
+    public String getSignatureResponseId() {
+        return signatureResponseId;
+    }
 }

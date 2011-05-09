@@ -18,6 +18,8 @@
 
 package be.fedict.eid.dss.protocol.simple.client;
 
+import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
+import be.fedict.eid.dss.client.DocumentNotFoundException;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.logging.Log;
@@ -84,67 +86,102 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
     private static final Log LOG = LogFactory
             .getLog(SignatureResponseProcessorServlet.class);
 
+    // Flow
     public static final String NEXT_PAGE_INIT_PARAM = "NextPage";
-
     public static final String ERROR_PAGE_INIT_PARAM = "ErrorPage";
-
     public static final String CANCEL_PAGE_INIT_PARAM = "CancelPage";
+    public static final String ERROR_MESSAGE_SESSION_ATTRIBUTE_INIT_PARAM =
+            "ErrorMessageSessionAttribute";
 
-    public static final String ERROR_MESSAGE_SESSION_ATTRIBUTE_INIT_PARAM = "ErrorMessageSessionAttribute";
+    // Response
+    public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE_INIT_PARAM =
+            "SignedDocumentSessionAttribute";
+    public static final String SIGNATURE_RESPONSE_ID_SESSION_ATTRIBUTE_INIT_PARAM =
+            "SignatureResponseIdSessionAttribute";
+    public static final String SIGNATURE_CERTIFICATE_SESSION_ATTRIBUTE_INIT_PARAM =
+            "SignatureCertificateSessionAttribute";
+    public static final String SERVICE_FINGERPRINT_INIT_PARAM =
+            "ServiceFingerprint";
 
-    public static final String SIGNED_DOCUMENT_SESSION_ATTRIBUTE_INIT_PARAM = "SignedDocumentSessionAttribute";
+    // WS Client
+    public static final String DSS_WS_URL_INIT_PARAM = "DssWSUrl";
+    public static final String DSS_WS_PROXY_HOST_INIT_PARAM = "DssWSProxyHost";
+    public static final String DSS_WS_PROXY_PORT_INIT_PARAM = "DssWSProxyPort";
 
-    public static final String SIGNATURE_CERTIFICATE_SESSION_ATTRIBUTE_INIT_PARAM = "SignatureCertificateSessionAttribute";
+    // Request
+    public static final String TARGET_SESSION_ATTRIBUTE_INIT_PARAM =
+            "TargetSessionAttribute";
+    public static final String SIGNATURE_REQUEST_SESSION_ATTRIBUTE_INIT_PARAM =
+            "SignatureRequestSessionAttribute";
+    public static final String SIGNATURE_REQUEST_ID_SESSION_ATTRIBUTE_INIT_PARAM =
+            "SignatureRequestIdSessionAttribute";
+    public static final String RELAY_STATE_SESSION_ATTRIBUTE_INIT_PARAM =
+            "RelayStateSessionAttribute";
 
-    public static final String SERVICE_FINGERPRINT_INIT_PARAM = "ServiceFingerprint";
-
-    public static final String TARGET_SESSION_ATTRIBUTE_INIT_PARAM = "TargetSessionAttribute";
-
-    public static final String SIGNATURE_REQUEST_SESSION_ATTRIBUTE_INIT_PARAM = "SignatureRequestSessionAttribute";
-
-    public static final String RELAY_STATE_SESSION_ATTRIBUTE_INIT_PARAM = "RelayStateSessionAttribute";
-
+    // Flow config
     private String nextPage;
-
     private String errorPage;
-
     private String cancelPage;
-
     private String errorMessageSessionAttribute;
 
+    // Response config
     private String signedDocumentSessionAttribute;
-
+    private String signatureResponseIdSessionAttribute;
     private String signatureCertificateSessionAttribute;
 
+    // WS CLient config
+    private String dssWSUrl;
+    private String dssWSProxyHost;
+    private int dssWSProxyPort;
+
+    // Request config
     private String targetSessionAttribute;
-
     private String signatureRequestSessionAttribute;
-
+    private String signatureRequestIdSessionAttribute;
     private String relayStateSessionAttribute;
 
     private SignatureResponseProcessor signatureResponseProcessor;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
+
+        // flow
         LOG.debug("init");
         this.nextPage = getRequiredInitParameter(config, NEXT_PAGE_INIT_PARAM);
         LOG.debug("next page: " + this.nextPage);
-
+        this.cancelPage = config.getInitParameter(CANCEL_PAGE_INIT_PARAM);
         this.errorPage = getRequiredInitParameter(config, ERROR_PAGE_INIT_PARAM);
         LOG.debug("error page: " + this.errorPage);
-
         this.errorMessageSessionAttribute = getRequiredInitParameter(config,
                 ERROR_MESSAGE_SESSION_ATTRIBUTE_INIT_PARAM);
         LOG.debug("error message session attribute: "
                 + this.errorMessageSessionAttribute);
 
-        this.signedDocumentSessionAttribute = getRequiredInitParameter(config,
-                SIGNED_DOCUMENT_SESSION_ATTRIBUTE_INIT_PARAM);
-        LOG.debug("signed document session attribute: "
-                + this.signedDocumentSessionAttribute);
+        // WS client config
+        this.dssWSUrl = config.getInitParameter(DSS_WS_URL_INIT_PARAM);
+        this.dssWSProxyHost = config.getInitParameter(DSS_WS_PROXY_HOST_INIT_PARAM);
+        String dssWSProxyPortString = config.getInitParameter(DSS_WS_PROXY_PORT_INIT_PARAM);
+        if (null != dssWSProxyPortString) {
+            this.dssWSProxyPort = Integer.parseInt(dssWSProxyPortString);
+        }
+        if (null != dssWSUrl) {
+            LOG.debug("DSS WS: " + this.dssWSUrl + " (proxy=" +
+                    this.dssWSProxyHost + ":" + this.dssWSProxyPort + ")");
+        }
 
-        this.signatureCertificateSessionAttribute = config
-                .getInitParameter(SIGNATURE_CERTIFICATE_SESSION_ATTRIBUTE_INIT_PARAM);
+        // Response Config
+        this.signedDocumentSessionAttribute = config.getInitParameter(
+                SIGNED_DOCUMENT_SESSION_ATTRIBUTE_INIT_PARAM);
+        this.signatureResponseIdSessionAttribute = config.getInitParameter(
+                SIGNATURE_RESPONSE_ID_SESSION_ATTRIBUTE_INIT_PARAM);
+        this.signatureCertificateSessionAttribute = config.getInitParameter(
+                SIGNATURE_CERTIFICATE_SESSION_ATTRIBUTE_INIT_PARAM);
+
+        if (null == this.signedDocumentSessionAttribute &&
+                null == this.signatureResponseIdSessionAttribute) {
+            throw new ServletException("Need \"" + SIGNED_DOCUMENT_SESSION_ATTRIBUTE_INIT_PARAM
+                    + "\" or \"" + SIGNATURE_RESPONSE_ID_SESSION_ATTRIBUTE_INIT_PARAM + "\" init params");
+        }
 
         String encodedServiceFingerprint = config
                 .getInitParameter(SERVICE_FINGERPRINT_INIT_PARAM);
@@ -162,16 +199,20 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
         } else {
             serviceFingerprint = null;
         }
-        this.signatureResponseProcessor = new SignatureResponseProcessor(
-                serviceFingerprint);
 
+        // Request Config
         this.targetSessionAttribute = config
                 .getInitParameter(TARGET_SESSION_ATTRIBUTE_INIT_PARAM);
         this.signatureRequestSessionAttribute = config
                 .getInitParameter(SIGNATURE_REQUEST_SESSION_ATTRIBUTE_INIT_PARAM);
+        this.signatureRequestIdSessionAttribute = config
+                .getInitParameter(SIGNATURE_REQUEST_ID_SESSION_ATTRIBUTE_INIT_PARAM);
         this.relayStateSessionAttribute = config
                 .getInitParameter(RELAY_STATE_SESSION_ATTRIBUTE_INIT_PARAM);
-        this.cancelPage = config.getInitParameter(CANCEL_PAGE_INIT_PARAM);
+
+        // Construct response processor
+        this.signatureResponseProcessor = new SignatureResponseProcessor(
+                serviceFingerprint);
     }
 
     private String getRequiredInitParameter(ServletConfig config,
@@ -220,6 +261,8 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
                 .getAttribute(this.targetSessionAttribute);
         String base64encodedSignatureRequest = (String) httpSession
                 .getAttribute(this.signatureRequestSessionAttribute);
+        String signatureRequestId = (String) httpSession
+                .getAttribute(this.signatureRequestIdSessionAttribute);
         String relayState = (String) httpSession
                 .getAttribute(this.relayStateSessionAttribute);
         LOG.debug("RelayState: " + relayState);
@@ -228,7 +271,8 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
         SignatureResponse signatureResponse;
         try {
             signatureResponse = this.signatureResponseProcessor.process(
-                    request, target, base64encodedSignatureRequest, relayState);
+                    request, target, base64encodedSignatureRequest,
+                    signatureRequestId, relayState);
         } catch (UserCancelledSignatureResponseProcessorException e) {
             if (null != this.cancelPage) {
                 LOG.debug("redirecting to cancel page");
@@ -249,19 +293,71 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
             return;
         }
 
+        byte[] decodedSignatureResponse = signatureResponse.getDecodedSignatureResponse();
+        String signatureResponseId = signatureResponse.getSignatureResponseId();
+
         /*
-           * Push data into the HTTP session.
-           */
+        * Check signed document passed along, if not signatureResponseId
+        * should be present.
+        *
+        * If configuration is available for DSS WS Client fetch the signed
+        * document here, else SP has to do it himself via signatureResponseId
+        * pushed on session.
+        */
+        if (null == decodedSignatureResponse) {
+
+            if (null == signatureResponseId) {
+                showErrorPage("No signed document nor response ID found!",
+                        request, response);
+                return;
+            }
+
+            // check WS client config available
+            if (null != this.dssWSUrl) {
+
+                DigitalSignatureServiceClient dssClient =
+                        new DigitalSignatureServiceClient(this.dssWSUrl);
+                // TODO: disable logging when finished
+                dssClient.setLogging(true, false);
+                if (null != this.dssWSProxyHost) {
+                    dssClient.setProxy(this.dssWSProxyHost, this.dssWSProxyPort);
+                }
+                try {
+                    decodedSignatureResponse = dssClient.retrieve(signatureResponseId);
+                } catch (DocumentNotFoundException e) {
+                    showErrorPage("Document not found at the eID DSS WS.",
+                            request, response);
+                    return;
+                }
+
+
+            } else {
+
+                if (null == this.signatureResponseIdSessionAttribute) {
+                    showErrorPage("No SignatureResponseId session attribute " +
+                            "specified, aborting...", request, response);
+                    return;
+                }
+                // push response ID on session
+                httpSession.setAttribute(this.signatureResponseIdSessionAttribute,
+                        signatureResponseId);
+
+            }
+        }
+
+        /*
+        * Push data into the HTTP session.
+        */
         httpSession.setAttribute(this.signedDocumentSessionAttribute,
-                signatureResponse.getDecodedSignatureResponse());
+                decodedSignatureResponse);
         if (null != this.signatureCertificateSessionAttribute) {
             httpSession.setAttribute(this.signatureCertificateSessionAttribute,
                     signatureResponse.getSignatureCertificate());
         }
 
         /*
-           * Continue work-flow.
-           */
+         * Continue work-flow.
+         */
         response.sendRedirect(request.getContextPath() + this.nextPage);
     }
 

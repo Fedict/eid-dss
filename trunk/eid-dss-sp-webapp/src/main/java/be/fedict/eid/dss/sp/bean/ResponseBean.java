@@ -59,6 +59,7 @@ public class ResponseBean {
 
             DigitalSignatureServiceClient dssClient =
                     new DigitalSignatureServiceClient();
+            dssClient.setLogging(true, true);
 
             try {
                 LOG.debug("verify signed document");
