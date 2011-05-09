@@ -123,6 +123,47 @@ public class DocumentServiceBean implements DocumentService {
     /**
      * {@inheritDoc}
      */
+    public void remove(String documentId) {
+
+        DocumentEntity document = find(documentId);
+        if (null != document) {
+            remove(document);
+        }
+    }
+
+    private void remove(DocumentEntity document) {
+
+        LOG.debug("remove document: " + document.getId());
+        DocumentEntity attachedDocument =
+                this.entityManager.find(DocumentEntity.class, document.getId());
+        this.entityManager.remove(attachedDocument);
+    }
+
+    private boolean isExpired(DocumentEntity document) {
+
+        return new DateTime(document.getExpiration(),
+                ISOChronology.getInstanceUTC()).isBeforeNow();
+    }
+
+    private DateTime getExpiration() {
+
+        Integer documentStorageExpiration =
+                this.configuration.getValue(
+                        ConfigProperty.DOCUMENT_STORAGE_EXPIRATION, Integer.class);
+
+        if (null == documentStorageExpiration || documentStorageExpiration <= 0) {
+            throw new RuntimeException("Invalid document storage validity: " +
+                    documentStorageExpiration);
+        }
+
+        return new DateTime().plus(documentStorageExpiration * 60 * 1000)
+                .toDateTime(ISOChronology.getInstanceUTC());
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Timeout
     public void timeOut(Timer timer) {
 
@@ -240,35 +281,5 @@ public class DocumentServiceBean implements DocumentService {
         int removals = DocumentEntity.removeExpired(this.entityManager);
         LOG.debug("# of removals: " + removals);
         return removals;
-    }
-
-    private void remove(DocumentEntity document) {
-
-        LOG.debug("remove document: " + document.getId());
-        DocumentEntity attachedDocument =
-                this.entityManager.find(DocumentEntity.class, document.getId());
-        this.entityManager.remove(attachedDocument);
-    }
-
-    private boolean isExpired(DocumentEntity document) {
-
-        return new DateTime(document.getExpiration(),
-                ISOChronology.getInstanceUTC()).isBeforeNow();
-    }
-
-    private DateTime getExpiration() {
-
-        Integer documentStorageExpiration =
-                this.configuration.getValue(
-                        ConfigProperty.DOCUMENT_STORAGE_EXPIRATION, Integer.class);
-
-        if (null == documentStorageExpiration || documentStorageExpiration <= 0) {
-            throw new RuntimeException("Invalid document storage validity: " +
-                    documentStorageExpiration);
-        }
-
-        return new DateTime().plus(documentStorageExpiration * 60 * 1000)
-                .toDateTime(ISOChronology.getInstanceUTC());
-
     }
 }

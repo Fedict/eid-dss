@@ -72,6 +72,13 @@ public interface DocumentService {
             throws DocumentNotFoundException;
 
     /**
+     * Remove specified document if present.
+     *
+     * @param documentId the ID of the document to remove
+     */
+    void remove(String documentId);
+
+    /**
      * Timer has timeout, fire cleanup.
      *
      * @param timer the timer that has timed out.
