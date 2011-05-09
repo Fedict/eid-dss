@@ -288,6 +288,8 @@
             In the eID DSS Artifact Binding the to be signed document and the
             signed document are transmitted by reference. The actual documents
             are transmitted using a seperate synchronous binding, being SOAP.
+            A custom OASIS DSS Web Service is used for this, more detail can be
+            found in the wsdl file.
             The flow is as follows:
             <orderedlist>
                 <listitem>
@@ -338,7 +340,7 @@
             </orderedlist>
         </para>
         <tip>
-            <title>Java SDK component</title>
+            <title>Java WS SDK component</title>
             <para>
                 The "store" and "retrieve" operations on the eID DSS web service
                 can be performed using the WS client available in the
@@ -356,6 +358,13 @@
                 <code>eid-dss-protocol-simple-client</code>
                 artifact. The corresponding javadoc documentation is also part of
                 the eID DSS SDK.
+            </para>
+        </tip>
+        <tip>
+            <title>Java SDK Example</title>
+            <para>
+                A complete example showing the usage of the Java SDK can be
+                found in the <code>eid-dss-sp-webapp</code> artifact.
             </para>
         </tip>
     </section>
