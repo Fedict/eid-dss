@@ -195,7 +195,7 @@ public abstract class SignatureRequestUtil {
         // construct service signed
         String serviceSigned = "target";
         if (null != signatureRequest) {
-            serviceSigned += ",signatureRequest";
+            serviceSigned += ",SignatureRequest";
         } else {
             serviceSigned += ",SignatureRequestId";
         }

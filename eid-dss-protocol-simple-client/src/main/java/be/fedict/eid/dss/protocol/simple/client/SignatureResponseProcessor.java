@@ -58,11 +58,8 @@ public class SignatureResponseProcessor {
     public static final String SIGNATURE_CERTIFICATE_PARAMETER = "SignatureCertificate";
 
     public static final String SERVICE_SIGNED_PARAMETER = "ServiceSigned";
-
     public static final String SERVICE_SIGNATURE_PARAMETER = "ServiceSignature";
-
     public static final String SERVICE_CERTIFICATE_CHAIN_SIZE_PARAMETER = "ServiceCertificateChainSize";
-
     public static final String SERVICE_CERTIFICATE_PARAMETER_PREFIX = "ServiceCertificate.";
 
     public static final String RELAY_STATE_PARAMETER = "RelayState";

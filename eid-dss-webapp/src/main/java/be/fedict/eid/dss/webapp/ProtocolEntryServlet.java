@@ -26,6 +26,7 @@ import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DSSProtocolService;
 import be.fedict.eid.dss.spi.DSSRequest;
 import be.fedict.eid.dss.spi.SignatureStatus;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,6 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
 
 /**
  * The main entry point for DSS protocols. This servlet serves as a broker
@@ -138,6 +141,24 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
         } catch (Exception e) {
             error(request, response, e.getMessage(), e);
             return;
+        }
+
+        if (null != dssRequest.getServiceCertificateChain()) {
+            // verify optional service certificate chain
+            // TODO: for now first using fingerprint of value of leaf certificate, expand later for service key rollover scenarios.
+
+            X509Certificate serviceCertificate =
+                    dssRequest.getServiceCertificateChain().get(0);
+            try {
+                byte[] actualServiceFingerprint = DigestUtils
+                        .sha(serviceCertificate.getEncoded());
+                LOG.debug("actualServiceFingerprint: " + actualServiceFingerprint.toString());
+                // TODO: identify SP
+            } catch (CertificateEncodingException e) {
+                throw new ServletException(e);
+            }
+
+
         }
 
         // get document data, either from artifact map or direct
