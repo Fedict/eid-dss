@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.sp.servlet;
 
+import be.fedict.eid.dss.protocol.simple.client.SignatureRequestServlet;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -27,6 +28,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.util.encoders.Base64;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -47,8 +49,6 @@ public class UploadServlet extends HttpServlet {
 
     public static final String DOCUMENT_SESSION_ATTRIBUTE =
             UploadServlet.class.getName() + ".Document";
-    public static final String CONTENT_TYPE_SESSION_ATTRIBUTE =
-            UploadServlet.class.getName() + ".ContentType";
 
     private static final String POST_PAGE_INIT_PARAM = "PostPage";
 
@@ -108,8 +108,11 @@ public class UploadServlet extends HttpServlet {
         LOG.debug("File name: " + fileName);
         LOG.debug("Content Type: " + contentType);
 
+        String signatureRequest = new String(Base64.encode(document));
+
         request.getSession().setAttribute(DOCUMENT_SESSION_ATTRIBUTE, document);
-        request.getSession().setAttribute(CONTENT_TYPE_SESSION_ATTRIBUTE, contentType);
+        request.getSession().setAttribute("SignatureRequest", signatureRequest);
+        request.getSession().setAttribute("ContentType", contentType);
 
         response.sendRedirect(request.getContextPath() + this.postPage);
     }

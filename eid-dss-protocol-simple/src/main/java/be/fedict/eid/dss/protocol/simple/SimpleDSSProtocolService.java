@@ -106,6 +106,11 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
             storeSignatureRequestId(signatureRequestId, httpSession);
         }
 
+        // TODO: request service signature validation
+        String serviceSigned = request.getParameter("ServiceSigned");
+        LOG.debug("ServiceSigned: " + serviceSigned);
+
+
         return new DSSRequest(decodedSignatureRequest, contentType,
                 signatureRequestId, language);
     }
