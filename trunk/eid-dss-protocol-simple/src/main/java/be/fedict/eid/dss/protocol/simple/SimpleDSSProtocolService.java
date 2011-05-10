@@ -27,11 +27,16 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
-import java.security.KeyStore;
-import java.security.Signature;
+import java.security.*;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Implementation of a very simple DSS protocol.
@@ -52,6 +57,12 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
     public static final String CONTENT_TYPE_PARAMETER = "ContentType";
     public static final String RELAY_STATE_PARAMETER = "RelayState";
 
+    // service signature
+    public static final String SERVICE_SIGNED_PARAMETER = "ServiceSigned";
+    public static final String SERVICE_SIGNATURE_PARAMETER = "ServiceSignature";
+    public static final String SERVICE_CERTIFICATE_CHAIN_SIZE_PARAMETER = "ServiceCertificateChainSize";
+    public static final String SERVICE_CERTIFICATE_PARAMETER_PREFIX = "ServiceCertificate.";
+
     public static final String TARGET_SESSION_ATTRIBUTE = SimpleDSSProtocolService.class
             .getName() + ".Target";
     public static final String SIGNATURE_REQUEST_SESSION_ATTRIBUTE =
@@ -60,6 +71,23 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
             SimpleDSSProtocolService.class.getName() + ".SignatureRequestId";
 
     private DSSProtocolContext dssContext;
+
+    private CertificateFactory certificateFactory;
+
+    public void init(ServletContext servletContext,
+                     DSSProtocolContext dssContext) {
+        LOG.debug("init");
+        this.dssContext = dssContext;
+
+        try {
+            this.certificateFactory = CertificateFactory.getInstance("X.509");
+        } catch (CertificateException e) {
+            throw new RuntimeException(
+                    "could not create certificate factory instance: "
+                            + e.getMessage(), e);
+        }
+    }
+
 
     public DSSRequest handleIncomingRequest(HttpServletRequest request,
                                             HttpServletResponse response) throws Exception {
@@ -106,13 +134,100 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
             storeSignatureRequestId(signatureRequestId, httpSession);
         }
 
-        // TODO: request service signature validation
-        String serviceSigned = request.getParameter("ServiceSigned");
-        LOG.debug("ServiceSigned: " + serviceSigned);
+        List<X509Certificate> serviceCertificateChain = null;
+        String serviceSigned = request.getParameter(SERVICE_SIGNED_PARAMETER);
+        if (null != serviceSigned) {
+
+            // request service signature validation
+            LOG.debug("ServiceSigned: " + serviceSigned);
+
+            serviceCertificateChain = new LinkedList<X509Certificate>();
+            String encodedServiceSignature = request.getParameter(SERVICE_SIGNATURE_PARAMETER);
+            byte[] serviceSignatureValue = Base64.decodeBase64(encodedServiceSignature);
+
+            /*
+             * Parse the service certificate chain.
+             */
+            int serviceCertificateChainSize = Integer.parseInt(request
+                    .getParameter(SERVICE_CERTIFICATE_CHAIN_SIZE_PARAMETER));
+            for (int idx = 1; idx <= serviceCertificateChainSize; idx++) {
+                String encodedCertificate = request
+                        .getParameter(SERVICE_CERTIFICATE_PARAMETER_PREFIX
+                                + idx);
+                byte[] certificateData = Base64.decodeBase64(encodedCertificate);
+                X509Certificate certificate;
+                try {
+                    certificate = (X509Certificate) this.certificateFactory
+                            .generateCertificate(new ByteArrayInputStream(
+                                    certificateData));
+                } catch (CertificateException e) {
+                    throw new IllegalArgumentException("cert decoding error: "
+                            + e.getMessage());
+                }
+                serviceCertificateChain.add(certificate);
+
+                // verify signature
+                verifyServiceSignature(serviceSigned, target, signatureRequest,
+                        signatureRequestId, contentType, language, relayState,
+                        serviceSignatureValue, serviceCertificateChain);
+
+            }
+
+        }
 
 
         return new DSSRequest(decodedSignatureRequest, contentType,
-                signatureRequestId, language);
+                signatureRequestId, language, serviceCertificateChain);
+    }
+
+    private void verifyServiceSignature(String serviceSigned, String target,
+                                        String signatureRequest,
+                                        String signatureRequestId,
+                                        String contentType,
+                                        String language,
+                                        String relayState,
+                                        byte[] serviceSignatureValue,
+                                        List<X509Certificate> serviceCertificateChain)
+            throws CertificateException, NoSuchAlgorithmException,
+            InvalidKeyException, SignatureException {
+
+        LOG.debug("verifying service signature");
+        X509Certificate serviceCertificate = serviceCertificateChain.get(0);
+        LOG.debug("service identity: "
+                + serviceCertificate.getSubjectX500Principal());
+        Signature serviceSignature = Signature.getInstance("SHA1withRSA");
+        serviceSignature.initVerify(serviceCertificate);
+
+        StringTokenizer serviceSignedStringTokenizer = new StringTokenizer(
+                serviceSigned, ",");
+        while (serviceSignedStringTokenizer.hasMoreTokens()) {
+            String serviceSignedElement = serviceSignedStringTokenizer
+                    .nextToken();
+            LOG.debug("service signed: " + serviceSignedElement);
+            byte[] data;
+            if ("target".equals(serviceSignedElement)) {
+                data = target.getBytes();
+            } else if ("SignatureRequest".equals(serviceSignedElement)) {
+                data = signatureRequest.getBytes();
+            } else if ("SignatureRequestId".equals(serviceSignedElement)) {
+                data = signatureRequestId.getBytes();
+            } else if ("ContentType".equals(serviceSignedElement)) {
+                data = contentType.getBytes();
+            } else if ("language".equals(serviceSignedElement)) {
+                data = language.getBytes();
+            } else if ("RelayState".equals(serviceSignedElement)) {
+                data = relayState.getBytes();
+            } else {
+                throw new SecurityException("service signed unknown element: "
+                        + serviceSignedElement);
+            }
+            serviceSignature.update(data);
+        }
+
+        boolean valid = serviceSignature.verify(serviceSignatureValue);
+        if (!valid) {
+            throw new SecurityException("service signature not valid");
+        }
     }
 
     public BrowserPOSTResponse handleResponse(SignatureStatus signatureStatus,
@@ -225,12 +340,6 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
             }
         }
         return browserPOSTResponse;
-    }
-
-    public void init(ServletContext servletContext,
-                     DSSProtocolContext dssContext) {
-        LOG.debug("init");
-        this.dssContext = dssContext;
     }
 
     private void storeTarget(String target, HttpSession httpSession) {

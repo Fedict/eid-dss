@@ -64,7 +64,7 @@
 
             #if($ServiceCertificates)
                 #foreach( $ServiceCertificate in $ServiceCertificates )
-                    <input type="hidden" name="ServiceCertificate.${foreach.count}" value="${ServiceCertificate}"/>
+                    <input type="hidden" name="ServiceCertificate.${velocityCount}" value="${ServiceCertificate}"/>
                 #end
             #end
 

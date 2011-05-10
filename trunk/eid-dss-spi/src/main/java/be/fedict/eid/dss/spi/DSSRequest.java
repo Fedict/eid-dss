@@ -19,6 +19,8 @@
 package be.fedict.eid.dss.spi;
 
 import java.io.Serializable;
+import java.security.cert.X509Certificate;
+import java.util.List;
 
 /**
  * Represents a DSS request after unmarshalling by the DSSProtocolService.
@@ -36,24 +38,30 @@ public class DSSRequest implements Serializable {
 
     private final String language;
 
+    private final List<X509Certificate> serviceCertificateChain;
+
     /**
      * Main constructor.
      *
-     * @param documentData document data, if <code>null</code>
-     *                     documentId needs to be specified
-     * @param contentType  document content type, if <code>null</code>
-     *                     documentId needs to be specified
-     * @param documentId   document's ID, if <code>null</code>
-     *                     documentData needs to be specified
-     * @param language     optional language
+     * @param documentData            document data, if <code>null</code>
+     *                                documentId needs to be specified
+     * @param contentType             document content type, if <code>null</code>
+     *                                documentId needs to be specified
+     * @param documentId              document's ID, if <code>null</code>
+     *                                documentData needs to be specified
+     * @param language                optional language
+     * @param serviceCertificateChain optional service certificate chain case
+     *                                DSS request was signed
      */
     public DSSRequest(byte[] documentData, String contentType, String documentId,
-                      String language) {
+                      String language,
+                      List<X509Certificate> serviceCertificateChain) {
 
         this.documentData = documentData;
         this.contentType = contentType;
         this.documentId = documentId;
         this.language = language;
+        this.serviceCertificateChain = serviceCertificateChain;
     }
 
     /**
@@ -82,5 +90,12 @@ public class DSSRequest implements Serializable {
      */
     public String getDocumentId() {
         return documentId;
+    }
+
+    /**
+     * @return the SP service certificate chain, case the DSS request was signed.
+     */
+    public List<X509Certificate> getServiceCertificateChain() {
+        return this.serviceCertificateChain;
     }
 }

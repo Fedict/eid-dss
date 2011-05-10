@@ -68,5 +68,10 @@
 
         </form>
 
+        <h2>SP Identity</h2>
+
+        Download the Test Service Provider's Certificate
+        <a href="./pki">here</a>
+
     </body>
 </html>
