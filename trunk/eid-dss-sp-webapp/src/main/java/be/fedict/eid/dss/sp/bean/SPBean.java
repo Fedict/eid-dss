@@ -104,7 +104,7 @@ public class SPBean {
 
         this.language = language;
         this.contentType = (String) httpServletRequest.getSession().getAttribute(
-                UploadServlet.CONTENT_TYPE_SESSION_ATTRIBUTE);
+                "ContentType");
         this.relayState = UUID.randomUUID().toString();
         LOG.debug("RelayState: " + this.relayState);
 
