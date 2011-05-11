@@ -177,7 +177,7 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 
 
         return new DSSRequest(decodedSignatureRequest, contentType,
-                signatureRequestId, language, serviceCertificateChain);
+                signatureRequestId, language, target, serviceCertificateChain);
     }
 
     private void verifyServiceSignature(String serviceSigned, String target,

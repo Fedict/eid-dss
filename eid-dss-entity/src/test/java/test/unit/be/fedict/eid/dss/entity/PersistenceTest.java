@@ -21,6 +21,7 @@ package test.unit.be.fedict.eid.dss.entity;
 import be.fedict.eid.dss.entity.AdministratorEntity;
 import be.fedict.eid.dss.entity.ConfigPropertyEntity;
 import be.fedict.eid.dss.entity.DocumentEntity;
+import be.fedict.eid.dss.entity.RPEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.ejb.Ejb3Configuration;
@@ -56,6 +57,7 @@ public class PersistenceTest {
         configuration.addAnnotatedClass(AdministratorEntity.class);
         configuration.addAnnotatedClass(ConfigPropertyEntity.class);
         configuration.addAnnotatedClass(DocumentEntity.class);
+        configuration.addAnnotatedClass(RPEntity.class);
 
         EntityManagerFactory entityManagerFactory = configuration
                 .buildEntityManagerFactory();

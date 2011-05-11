@@ -60,7 +60,7 @@ public class SPBean {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
         byte[] document = setRequest(httpServletRequest, "en",
-                httpServletRequest.getContextPath() + "/dss-response");
+                "dss-response");
 
         if (null != document) {
 
@@ -76,7 +76,7 @@ public class SPBean {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
         byte[] document = setRequest(httpServletRequest, "nl",
-                httpServletRequest.getContextPath() + "/dss-response-artifact");
+                "dss-response-artifact");
 
         if (null != document) {
 
@@ -109,7 +109,10 @@ public class SPBean {
         LOG.debug("RelayState: " + this.relayState);
 
         this.destination = "../eid-dss/protocol/simple";
-        this.target = target;
+        this.target = httpServletRequest.getScheme() + "://"
+                + httpServletRequest.getServerName() + ":"
+                + httpServletRequest.getServerPort()
+                + httpServletRequest.getContextPath() + "/" + target;
 
         // store data on session for response handling
         httpServletRequest.getSession().setAttribute("target", this.target);

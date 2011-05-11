@@ -38,6 +38,7 @@ public class DSSRequest implements Serializable {
 
     private final String language;
 
+    private final String domain;
     private final List<X509Certificate> serviceCertificateChain;
 
     /**
@@ -50,17 +51,19 @@ public class DSSRequest implements Serializable {
      * @param documentId              document's ID, if <code>null</code>
      *                                documentData needs to be specified
      * @param language                optional language
+     * @param domain                  domain, used for identifying a specific RP.
      * @param serviceCertificateChain optional service certificate chain case
      *                                DSS request was signed
      */
     public DSSRequest(byte[] documentData, String contentType, String documentId,
-                      String language,
+                      String language, String domain,
                       List<X509Certificate> serviceCertificateChain) {
 
         this.documentData = documentData;
         this.contentType = contentType;
         this.documentId = documentId;
         this.language = language;
+        this.domain = domain;
         this.serviceCertificateChain = serviceCertificateChain;
     }
 
@@ -89,11 +92,18 @@ public class DSSRequest implements Serializable {
      * @return the document's ID.
      */
     public String getDocumentId() {
-        return documentId;
+        return this.documentId;
     }
 
     /**
-     * @return the SP service certificate chain, case the DSS request was signed.
+     * @return the RP domain
+     */
+    public String getDomain() {
+        return this.domain;
+    }
+
+    /**
+     * @return the RP service certificate chain, case the DSS request was signed.
      */
     public List<X509Certificate> getServiceCertificateChain() {
         return this.serviceCertificateChain;

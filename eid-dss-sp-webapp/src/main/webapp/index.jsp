@@ -48,7 +48,7 @@
 
         </form>
 
-        <h2>HTTP Post Binding with SDK Request Servlet</h2>
+        <h2>Signed HTTP Post Bindingwith SDK Request Servlet</h2>
 
         <form enctype="multipart/form-data" action="uploadsdk" method="post">
 
