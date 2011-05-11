@@ -46,11 +46,45 @@ public abstract class SignatureRequestUtil {
 
     private static final String POST_BINDING_TEMPLATE = "be/fedict/eid/dss/protocol/simple/client/dss-post-binding.vm";
 
-    // TODO: document me
+    /**
+     * Creates a Signature Request and posts it to the eID DSS Service. If a SP
+     * identity is specified, a service signature will be added.
+     *
+     * @param signatureRequest   optional signature request containing the
+     *                           base64 encoded document to be siged.
+     *                           If <code>null</code> signatureRequestId becomes
+     *                           required.
+     * @param signatureRequestId optional signature request ID, which is the ID
+     *                           returned by the eID DSS Web Service after a
+     *                           "store" operation.
+     *                           If <code>null</code> signatureRequest becomes required.
+     * @param contentType        optional content type of the document to be
+     *                           signed
+     * @param dssDestination     eID DSS Protocol Entry point which will handle
+     *                           the signature request.
+     * @param spDestination      SP destination that will handle the returned
+     *                           DSS Signature Response.
+     * @param relayState         optional relayState to be included
+     *                           (if not <code>null</code>) in the signature
+     *                           request.
+     * @param spIdentity         optional SP Identity, if present the signature
+     *                           request will be signed.
+     * @param response           HTTP Servlet Response used for posting the
+     *                           signature request.
+     * @param language           optional language indication which the eID DSS
+     *                           will use.
+     * @throws SignatureException           exception setting signature.
+     * @throws InvalidKeyException          SP Identity key is invalid
+     * @throws NoSuchAlgorithmException     Signature algorithm not available
+     * @throws CertificateEncodingException failed to encode the certificate
+     *                                      chain of the SP Identity
+     * @throws IOException                  IO Exception
+     */
     public static void sendRequest(String signatureRequest,
                                    String signatureRequestId,
                                    String contentType,
-                                   String target, String spDestination,
+                                   String dssDestination,
+                                   String spDestination,
                                    String relayState,
                                    KeyStore.PrivateKeyEntry spIdentity,
                                    HttpServletResponse response,
@@ -63,7 +97,7 @@ public abstract class SignatureRequestUtil {
         ServiceSignatureDO serviceSignature = null;
         if (null != spIdentity) {
             serviceSignature = getServiceSignature(spIdentity, signatureRequest,
-                    signatureRequestId, target, language, contentType, relayState);
+                    signatureRequestId, dssDestination, language, contentType, relayState);
         }
 
         Properties velocityProperties = new Properties();
@@ -80,7 +114,7 @@ public abstract class SignatureRequestUtil {
             throw new RuntimeException("could not initialize velocity engine", e);
         }
         VelocityContext velocityContext = new VelocityContext();
-        velocityContext.put("action", spDestination);
+        velocityContext.put("action", dssDestination);
         if (null != signatureRequest) {
             velocityContext.put("SignatureRequest", signatureRequest);
         }
@@ -93,8 +127,8 @@ public abstract class SignatureRequestUtil {
         if (null != relayState) {
             velocityContext.put("RelayState", relayState);
         }
-        if (null != target) {
-            velocityContext.put("Target", target);
+        if (null != dssDestination) {
+            velocityContext.put("Target", spDestination);
         }
         if (null != language) {
             velocityContext.put("Language", language);
@@ -152,6 +186,7 @@ public abstract class SignatureRequestUtil {
             String language,
             String contentType,
             String relayState)
+
             throws NoSuchAlgorithmException, InvalidKeyException,
             SignatureException, CertificateEncodingException {
 

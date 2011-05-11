@@ -29,7 +29,7 @@
 
         <h2>HTTP Post / Artifact Binding</h2>
 
-        <form enctype="multipart/form-data" action="uploadartifact"
+        <form enctype="multipart/form-data" action="upload-artifact"
               method="post">
 
             <table border="1">
@@ -48,9 +48,30 @@
 
         </form>
 
-        <h2>Signed HTTP Post Bindingwith SDK Request Servlet</h2>
+        <h2>Signed HTTP Post Binding with SDK Request Servlet</h2>
 
-        <form enctype="multipart/form-data" action="uploadsdk" method="post">
+        <form enctype="multipart/form-data" action="upload-sdk" method="post">
+
+            <table border="1">
+                <tr>
+                    <td>
+                        <b>Choose the file To Upload:</b>
+                    </td>
+                    <td>
+                        <input name="upload" type="file"/>
+                    </td>
+                    <td align="right">
+                        <input type="submit" value="Sign"/>
+                    </td>
+                </tr>
+            </table>
+
+        </form>
+
+        <h2>Signed HTTP Post / Artifact Binding</h2>
+
+        <form enctype="multipart/form-data" action="upload-artifact-signed"
+              method="post">
 
             <table border="1">
                 <tr>
