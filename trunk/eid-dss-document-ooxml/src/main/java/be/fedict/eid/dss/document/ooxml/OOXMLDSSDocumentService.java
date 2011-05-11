@@ -136,6 +136,13 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
                 LOG.error("signature invalid");
                 continue;
             }
+
+             // check OOXML's XML DSig/XAdES requirements
+            if (!ooxmlSignatureVerifier.isValidOOXMLSignature(xmlSignature, document)) {
+                LOG.error("Invalid OOXML Signature");
+                continue;
+            }
+
             X509Certificate signingCertificate = keySelector.getCertificate();
             SignatureInfo signatureInfo = xadesValidation.validate(
                     signatureDocument, xmlSignature, signatureElement,

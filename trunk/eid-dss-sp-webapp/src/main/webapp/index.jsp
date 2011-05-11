@@ -7,7 +7,7 @@
     <body>
         <h1>eID DSS - Test Service Provider (SP)</h1>
 
-        <h2>Sign using HTTP Post Binding</h2>
+        <h2>HTTP Post Binding</h2>
 
         <form enctype="multipart/form-data" action="upload" method="post">
 
@@ -27,7 +27,7 @@
 
         </form>
 
-        <h2>Sign using Artifact Binding</h2>
+        <h2>HTTP Post / Artifact Binding</h2>
 
         <form enctype="multipart/form-data" action="uploadartifact"
               method="post">
@@ -48,7 +48,7 @@
 
         </form>
 
-        <h2>Sign using HTTP Post Binding and SDK Request Servlet</h2>
+        <h2>HTTP Post Binding with SDK Request Servlet</h2>
 
         <form enctype="multipart/form-data" action="uploadsdk" method="post">
 
