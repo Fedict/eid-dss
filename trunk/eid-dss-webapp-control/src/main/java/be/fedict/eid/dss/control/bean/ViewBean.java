@@ -20,6 +20,7 @@ package be.fedict.eid.dss.control.bean;
 
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.dss.control.View;
+import be.fedict.eid.dss.entity.RPEntity;
 import be.fedict.eid.dss.model.DocumentRepository;
 import be.fedict.eid.dss.spi.SignatureStatus;
 import org.jboss.ejb3.annotation.LocalBinding;
@@ -28,6 +29,7 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
+import org.jboss.seam.contexts.SessionContext;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.log.Log;
 
@@ -39,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.OutputStream;
 
 @Stateful
 @Name("dssView")
@@ -47,6 +50,9 @@ public class ViewBean implements View {
 
     @Logger
     private Log log;
+
+    @In(create = true)
+    private SessionContext sessionContext;
 
     @In
     private LocaleSelector localeSelector;
@@ -59,6 +65,7 @@ public class ViewBean implements View {
     private boolean includeIdentity;
 
     public String cancel() {
+
         HttpSession httpSession = HttpSessionTemporaryDataStorage
                 .getHttpSession();
         DocumentRepository documentRepository = new DocumentRepository(
@@ -127,4 +134,41 @@ public class ViewBean implements View {
     public void setIncludeIdentity(boolean includeIdentity) {
         this.includeIdentity = includeIdentity;
     }
+
+    @Override
+    public String getRp() {
+
+        RPEntity rp = (RPEntity) this.sessionContext.get(RP_SESSION_ATTRIBUTE);
+        if (null != rp) {
+            return rp.getName();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isRpLogo() {
+
+        RPEntity rp = (RPEntity) this.sessionContext.get(RP_SESSION_ATTRIBUTE);
+        return null != rp && null != rp.getLogo();
+
+    }
+
+    @Override
+    public void paint(OutputStream stream, Object object) throws IOException {
+
+        RPEntity rp = (RPEntity) this.sessionContext.get(RP_SESSION_ATTRIBUTE);
+
+        if (null != rp && null != rp.getLogo()) {
+            this.log.debug("paint logo");
+            stream.write(rp.getLogo());
+            stream.close();
+        }
+    }
+
+    @Override
+    public long getTimeStamp() {
+
+        return System.currentTimeMillis();
+    }
+
 }

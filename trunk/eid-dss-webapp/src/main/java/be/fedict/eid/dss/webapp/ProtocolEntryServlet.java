@@ -20,8 +20,10 @@ package be.fedict.eid.dss.webapp;
 
 import be.fedict.eid.dss.control.View;
 import be.fedict.eid.dss.entity.DocumentEntity;
+import be.fedict.eid.dss.entity.RPEntity;
 import be.fedict.eid.dss.model.DocumentRepository;
 import be.fedict.eid.dss.model.DocumentService;
+import be.fedict.eid.dss.model.RPService;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DSSProtocolService;
 import be.fedict.eid.dss.spi.DSSRequest;
@@ -69,6 +71,9 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 
     @EJB
     private DocumentService documentService;
+
+    @EJB
+    private RPService rpService;
 
     public ProtocolEntryServlet() {
         super(true, true);
@@ -143,21 +148,14 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
             return;
         }
 
-        if (null != dssRequest.getServiceCertificateChain()) {
-            // verify optional service certificate chain
-            // TODO: for now first using fingerprint of value of leaf certificate, expand later for service key rollover scenarios.
+        // try to identify a RP from the domain
+        LOG.debug("DSS Request domain: " + dssRequest.getDomain());
+        RPEntity rp = this.rpService.find(dssRequest.getDomain());
+        if (null != rp) {
 
-            X509Certificate serviceCertificate =
-                    dssRequest.getServiceCertificateChain().get(0);
-            try {
-                byte[] actualServiceFingerprint = DigestUtils
-                        .sha(serviceCertificate.getEncoded());
-                LOG.debug("actualServiceFingerprint: " + actualServiceFingerprint.toString());
-                // TODO: identify SP
-            } catch (CertificateEncodingException e) {
-                throw new ServletException(e);
+            if (!isValid(rp, dssRequest, request, response)) {
+                return;
             }
-
 
         }
 
@@ -236,6 +234,56 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
            * Goto the next eID DSS page.
            */
         response.sendRedirect(request.getContextPath() + this.nextPageInitParam);
+    }
+
+    private boolean isValid(RPEntity rp, DSSRequest dssRequest,
+                            HttpServletRequest request,
+                            HttpServletResponse response) throws IOException {
+
+        LOG.debug("found RP: " + rp.getName());
+
+        if (rp.isRequestSigningRequired()) {
+            if (null == dssRequest.getServiceCertificateChain()) {
+                error(request, response,
+                        "Request was not signed, which is required for this SP!");
+                return false;
+            }
+        }
+
+        X509Certificate serviceCertificate =
+                dssRequest.getServiceCertificateChain().get(0);
+
+        if (null != serviceCertificate && null != rp.getEncodedCertificate()) {
+
+            // verify fingerprint
+            // TODO: for now first using fingerprint of value of leaf certificate, expand later for service key rollover scenarios.
+            try {
+                String rpFingerprint =
+                        DigestUtils.shaHex(rp.getEncodedCertificate());
+                String requestFingerPrint =
+                        DigestUtils.shaHex(serviceCertificate.getEncoded());
+
+                if (!rpFingerprint.equals(requestFingerPrint)) {
+                    error(request, response,
+                            "Request was not signed with the correct keystore!");
+                    return false;
+                }
+            } catch (CertificateEncodingException e) {
+                return false;
+            }
+
+        }
+
+        request.getSession().setAttribute(
+                View.RP_SESSION_ATTRIBUTE, rp);
+        return true;
+    }
+
+    private void error(HttpServletRequest request, HttpServletResponse response,
+                       String errorMessage)
+            throws IOException {
+
+        error(request, response, errorMessage, null);
     }
 
     private void error(HttpServletRequest request, HttpServletResponse response,

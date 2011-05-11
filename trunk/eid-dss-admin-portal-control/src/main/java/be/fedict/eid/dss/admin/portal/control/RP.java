@@ -1,6 +1,6 @@
 /*
- * eID Digital Signature Service Project.
- * Copyright (C) 2009 FedICT.
+ * eID Identity Provider Project.
+ * Copyright (C) 2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -16,48 +16,60 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.control;
+package be.fedict.eid.dss.admin.portal.control;
+
+import org.richfaces.event.UploadEvent;
 
 import javax.ejb.Local;
 import java.io.IOException;
 import java.io.OutputStream;
 
 @Local
-public interface View {
-
-    public static final String LANGUAGE_SESSION_ATTRIBUTE = "Language";
-    public static final String RP_SESSION_ATTRIBUTE = "RelyingParty";
+public interface RP {
 
     /*
-      * Actions.
-      */
-    String cancel();
+    * Accessors
+    */
+    String getSelectedTab();
 
-    String sign();
-
-    void initLanguage();
-
-    /*
-      * Accessors
-      */
-    String getRole();
-
-    void setRole(String role);
-
-    boolean getIncludeIdentity();
-
-    void setIncludeIdentity(boolean includeIdentity);
-
-    String getRp();
-
-    boolean isRpLogo();
+    void setSelectedTab(String selectedTab);
 
     void paint(OutputStream stream, Object object) throws IOException;
 
     long getTimeStamp();
 
+
+    /*
+    * Listeners.
+    */
+    void uploadListener(UploadEvent event) throws IOException;
+
+    void uploadListenerLogo(UploadEvent event) throws IOException;
+
+    /*
+    * Factories
+    */
+    void rpListFactory();
+
+    /*
+    * Actions.
+    */
+    String add();
+
+    String modify();
+
+    String save();
+
+    String remove();
+
+    String removeCertificate();
+
+    String back();
+
     /*
     * Lifecycle.
     */
     void destroy();
+
+    void postConstruct();
 }
