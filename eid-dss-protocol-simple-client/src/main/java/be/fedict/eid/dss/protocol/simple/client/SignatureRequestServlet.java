@@ -132,7 +132,7 @@ public class SignatureRequestServlet extends HttpServlet {
         String contentType = (String) request.getSession()
                 .getAttribute(this.contentTypeSessionAttribute);
 
-        String target;
+        String dssDestination;
         String relayState;
         KeyStore.PrivateKeyEntry spIdentity = null;
         String language;
@@ -140,12 +140,12 @@ public class SignatureRequestServlet extends HttpServlet {
         SignatureRequestService service =
                 this.signatureRequestServiceServiceLocator.locateService();
         if (null != service) {
-            target = service.getTarget();
+            dssDestination = service.getDssDestination();
             relayState = service.getRelayState(request.getParameterMap());
             spIdentity = service.getSPIdentity();
             language = service.getLanguage();
         } else {
-            target = this.target;
+            dssDestination = this.target;
             relayState = null;
             language = this.language;
         }
@@ -171,7 +171,7 @@ public class SignatureRequestServlet extends HttpServlet {
         // generate and send a signature request
         try {
             SignatureRequestUtil.sendRequest(signatureRequest, signatureRequestId,
-                    contentType, target, spDestination, relayState,
+                    contentType, dssDestination, spDestination, relayState,
                     spIdentity, response, language);
         } catch (Exception e) {
             throw new ServletException(e);
@@ -179,7 +179,7 @@ public class SignatureRequestServlet extends HttpServlet {
 
         // save state on session
         setRelayState(relayState, request.getSession());
-        setTarget(target, request.getSession());
+        setTarget(dssDestination, request.getSession());
 
     }
 

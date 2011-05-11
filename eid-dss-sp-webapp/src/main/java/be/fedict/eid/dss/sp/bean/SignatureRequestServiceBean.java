@@ -34,12 +34,12 @@ public class SignatureRequestServiceBean implements SignatureRequestService, Ser
 
     @Override
     public String getSPDestination() {
-        return "../eid-dss/protocol/simple";
+        return "../eid-dss-sp/dss-response";
     }
 
     @Override
-    public String getTarget() {
-        return "../eid-dss-sp/dss-response";
+    public String getDssDestination() {
+        return "../eid-dss/protocol/simple";
     }
 
     @Override

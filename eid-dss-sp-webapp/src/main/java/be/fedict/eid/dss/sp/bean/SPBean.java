@@ -20,6 +20,9 @@ package be.fedict.eid.dss.sp.bean;
 
 import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
 import be.fedict.eid.dss.client.StorageInfoDO;
+import be.fedict.eid.dss.protocol.simple.client.ServiceSignatureDO;
+import be.fedict.eid.dss.protocol.simple.client.SignatureRequestUtil;
+import be.fedict.eid.dss.sp.servlet.PkiServlet;
 import be.fedict.eid.dss.sp.servlet.UploadServlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,13 +47,18 @@ public class SPBean {
 
     private String destination;
     private String target;
-    private String targetArtifact;
+
+    private ServiceSignatureDO serviceSignature;
 
     public ServletRequest getPostRequest() {
         return this.request;
     }
 
     public ServletRequest getArtifactRequest() {
+        return this.request;
+    }
+
+    public ServletRequest getArtifactRequestSigned() {
         return this.request;
     }
 
@@ -93,6 +101,41 @@ public class SPBean {
             this.signatureRequestId = storageInfoDO.getArtifact();
             httpServletRequest.getSession().setAttribute("SignatureRequestId",
                     this.signatureRequestId);
+        }
+    }
+
+    public void setArtifactRequestSigned(ServletRequest request) {
+
+        this.request = request;
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+
+        byte[] document = setRequest(httpServletRequest, "nl",
+                "dss-response-artifact");
+
+        if (null != document) {
+
+            // SignRequest to DSS WS
+            DigitalSignatureServiceClient dssClient =
+                    new DigitalSignatureServiceClient();
+            dssClient.setLogging(true, true);
+
+            StorageInfoDO storageInfoDO = dssClient.store(document, this.contentType);
+
+            LOG.debug("StorageInfo.notBefore: " + storageInfoDO.getNotBefore());
+            LOG.debug("StorageInfo.notAfter: " + storageInfoDO.getNotAfter());
+
+            this.signatureRequestId = storageInfoDO.getArtifact();
+            httpServletRequest.getSession().setAttribute("SignatureRequestId",
+                    this.signatureRequestId);
+
+            try {
+                this.serviceSignature = SignatureRequestUtil.getServiceSignature(
+                        PkiServlet.getPrivateKeyEntry(),
+                        null, this.signatureRequestId, this.target,
+                        this.language, null, this.relayState);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -175,5 +218,37 @@ public class SPBean {
 
     public void setSignatureRequestId(String signatureRequestId) {
         this.signatureRequestId = signatureRequestId;
+    }
+
+    /*
+     * Service Signature getters
+     */
+
+    public String getServiceSigned() {
+        if (null != this.serviceSignature) {
+            return this.serviceSignature.getServiceSigned();
+        }
+        return null;
+    }
+
+    public String getServiceSignature() {
+        if (null != this.serviceSignature) {
+            return this.serviceSignature.getServiceSignature();
+        }
+        return null;
+    }
+
+    public String getServiceCertificateChainSize() {
+        if (null != this.serviceSignature) {
+            return this.serviceSignature.getServiceCertificateChainSize();
+        }
+        return null;
+    }
+
+    public String getServiceCertificate() {
+        if (null != this.serviceSignature) {
+            return this.serviceSignature.getServiceCertificates().get(0);
+        }
+        return null;
     }
 }

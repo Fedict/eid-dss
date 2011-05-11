@@ -168,7 +168,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>UploadArtifactServlet</servlet-name>
-        <url-pattern>/uploadartifact</url-pattern>
+        <url-pattern>/upload-artifact</url-pattern>
     </servlet-mapping>
 
     <!-- Upload via SDK Servlet -->
@@ -183,7 +183,22 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>UploadSDKServlet</servlet-name>
-        <url-pattern>/uploadsdk</url-pattern>
+        <url-pattern>/upload-sdk</url-pattern>
+    </servlet-mapping>
+
+    <!-- Upload Artifact Signed Servlet -->
+    <servlet>
+        <servlet-name>UploadArtifactSignedServlet</servlet-name>
+        <servlet-class>be.fedict.eid.dss.sp.servlet.UploadServlet
+        </servlet-class>
+        <init-param>
+            <param-name>PostPage</param-name>
+            <param-value>/post-request-artifact-signed.jsp</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadArtifactSignedServlet</servlet-name>
+        <url-pattern>/upload-artifact-signed</url-pattern>
     </servlet-mapping>
 
     <!-- Download Servlet -->

@@ -45,7 +45,7 @@ public interface SignatureRequestService {
      *
      * @return eID DSS Simple protocol entry point
      */
-    String getTarget();
+    String getDssDestination();
 
     /**
      * Gives back the relay state to be used towards the eID DSS Simple protocol
