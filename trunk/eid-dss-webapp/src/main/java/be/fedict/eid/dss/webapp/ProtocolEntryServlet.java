@@ -21,6 +21,7 @@ package be.fedict.eid.dss.webapp;
 import be.fedict.eid.dss.control.View;
 import be.fedict.eid.dss.entity.DocumentEntity;
 import be.fedict.eid.dss.entity.RPEntity;
+import be.fedict.eid.dss.model.AccountingService;
 import be.fedict.eid.dss.model.DocumentRepository;
 import be.fedict.eid.dss.model.DocumentService;
 import be.fedict.eid.dss.model.RPService;
@@ -74,6 +75,9 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 
     @EJB
     private RPService rpService;
+
+    @EJB
+    AccountingService accountingService;
 
     public ProtocolEntryServlet() {
         super(true, true);
@@ -215,13 +219,13 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
         }
 
         /*
-           * Store the relevant data into the HTTP session document repository.
-           */
+         * Store the relevant data into the HTTP session document repository.
+         */
         documentRepository.setDocument(documentData);
 
         /*
-           * i18n
-           */
+         * i18n
+         */
         String language = dssRequest.getLanguage();
         if (null != language) {
             httpSession.setAttribute(View.LANGUAGE_SESSION_ATTRIBUTE,
@@ -230,9 +234,12 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
             httpSession.removeAttribute(View.LANGUAGE_SESSION_ATTRIBUTE);
         }
 
+        // accounting
+        accountingService.addRequest(dssRequest.getDomain());
+
         /*
-           * Goto the next eID DSS page.
-           */
+         * Goto the next eID DSS page.
+         */
         response.sendRedirect(request.getContextPath() + this.nextPageInitParam);
     }
 
