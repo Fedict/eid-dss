@@ -146,7 +146,8 @@ public class SignatureRequestServlet extends HttpServlet {
             language = service.getLanguage();
         } else {
             dssDestination = this.target;
-            relayState = null;
+            relayState = (String) request.getSession()
+                    .getAttribute(this.relayStateSessionAttribute);
             language = this.language;
         }
 
@@ -178,7 +179,9 @@ public class SignatureRequestServlet extends HttpServlet {
         }
 
         // save state on session
-        setRelayState(relayState, request.getSession());
+        if (null != relayState) {
+            setRelayState(relayState, request.getSession());
+        }
         setTarget(dssDestination, request.getSession());
 
     }
