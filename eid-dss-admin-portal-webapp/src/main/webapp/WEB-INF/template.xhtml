@@ -73,6 +73,12 @@
 					href="#{facesContext.externalContext.requestContextPath}/admin/admins.seam">Admins</a></li>
 			</s:div>
 
+            <s:div rendered="#{identity.isLoggedIn()}">
+                <li id="menu_item_accounting"><a
+                        href="#{facesContext.externalContext.requestContextPath}/admin/accounting.seam">Accounting</a>
+                </li>
+            </s:div>
+
 			<s:div rendered="#{identity.isLoggedIn()}">
 				<li><s:link value="Logout" view="/main.xhtml"
 					action="#{identity.logout}" /></li>
