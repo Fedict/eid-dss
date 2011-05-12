@@ -182,7 +182,7 @@ public class SignatureRequestServlet extends HttpServlet {
         if (null != relayState) {
             setRelayState(relayState, request.getSession());
         }
-        setTarget(dssDestination, request.getSession());
+        setTarget(spDestination, request.getSession());
 
     }
 

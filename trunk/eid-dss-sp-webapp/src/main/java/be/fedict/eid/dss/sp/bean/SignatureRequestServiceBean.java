@@ -23,6 +23,9 @@ import be.fedict.eid.dss.sp.servlet.PkiServlet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import javax.security.jacc.PolicyContext;
+import javax.security.jacc.PolicyContextException;
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.security.KeyStore;
 import java.util.Map;
@@ -34,7 +37,15 @@ public class SignatureRequestServiceBean implements SignatureRequestService, Ser
 
     @Override
     public String getSPDestination() {
-        return "../eid-dss-sp/dss-response";
+
+        HttpServletRequest httpServletRequest = getHttpServletRequest();
+
+        return httpServletRequest.getScheme() + "://"
+                + httpServletRequest.getServerName() + ":"
+                + httpServletRequest.getServerPort()
+                + httpServletRequest.getContextPath() + "/dss-response";
+
+//        return "../eid-dss-sp/dss-response";
     }
 
     @Override
@@ -66,4 +77,17 @@ public class SignatureRequestServiceBean implements SignatureRequestService, Ser
     public String getLanguage() {
         return "fr";
     }
+
+    private static HttpServletRequest getHttpServletRequest() {
+        HttpServletRequest httpServletRequest;
+        try {
+            httpServletRequest = (HttpServletRequest) PolicyContext
+                    .getContext("javax.servlet.http.HttpServletRequest");
+        } catch (PolicyContextException e) {
+            throw new RuntimeException("JACC error: " + e.getMessage());
+        }
+
+        return httpServletRequest;
+    }
+
 }

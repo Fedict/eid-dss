@@ -86,5 +86,12 @@
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>javax.security</groupId>
+            <artifactId>jacc</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 </project>
