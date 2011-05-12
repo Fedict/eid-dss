@@ -97,7 +97,7 @@ public abstract class SignatureRequestUtil {
         ServiceSignatureDO serviceSignature = null;
         if (null != spIdentity) {
             serviceSignature = getServiceSignature(spIdentity, signatureRequest,
-                    signatureRequestId, dssDestination, language, contentType, relayState);
+                    signatureRequestId, spDestination, language, contentType, relayState);
         }
 
         Properties velocityProperties = new Properties();

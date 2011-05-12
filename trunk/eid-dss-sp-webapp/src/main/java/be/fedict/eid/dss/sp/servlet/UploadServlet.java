@@ -18,7 +18,6 @@
 
 package be.fedict.eid.dss.sp.servlet;
 
-import be.fedict.eid.dss.protocol.simple.client.SignatureRequestServlet;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;

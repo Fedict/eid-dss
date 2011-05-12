@@ -137,7 +137,9 @@
 				The web application can construct the eID DSS Browser POST
 				Protocol signature request via the following piece of HTML code.
 			</para>
-			<programlisting role="XML"><![CDATA[<form id="dss-request-form" method="post" action="https://www.e-contract.be/eid-dss/protocol/simple">
+			<programlisting role="XML">
+                <![CDATA[
+<form id="dss-request-form" method="post" action="https://www.e-contract.be/eid-dss/protocol/simple">
     <input type="hidden" name="SignatureRequest" value="..." />
     <input type="hidden" name="target" value="http://www.some-web-application.be/dss-landing-page" />
     <input type="hidden" name="language" value="nl" />
@@ -147,7 +149,206 @@
 </form>
 <script type="text/javascript">
     document.getElementById('dss-request-form').submit();
-</script>]]></programlisting>
+</script>
+                ]]>
+            </programlisting>
+            <section>
+                <title>Signing</title>
+                <para>
+                    Optionally a Relying Party can  add a service signature to the
+                    signature request. Following group of POST parameters should
+                    be added in that case:
+                </para>
+                <itemizedlist>
+                    <listitem>
+                        <para>
+                            <code>ServiceSigned</code> contains the URL encoded
+                            comma-seperated list of POST parameters signed by
+                            the RP. This should at least include the following
+                            elements: <code>SignatureRequest</code>,
+                            <code>target</code>, and if available
+                            <code>language</code>, <code>ContentType</code>,
+                            <code>RelayState</code>.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            <code>ServiceSignature</code> contains the base64
+                            encoded signature created by the RP. This signature
+                            can be used by the eID DSS Service to verify the
+                            integrity and the authenticity of the signed
+                            document.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            <code>ServiceCertificateChainSize</code> contains
+                            the length as an integer string of the certificate
+                            chain used by the RP to sign the request/response
+                            protocol parameters.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            <code>ServiceCertificate.n</code> contains the
+                            base64 encoded n-th certificate of the RP service
+                            certificate chain. n goes from 1 to the size of the
+                            certificate chain. The RP end entity certificate has
+                            number 1.
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                <para>
+                    Following is an example of such a signed eID DSS Browser
+                    Post Protocol signature request.
+                </para>
+                <programlisting role="XML">
+                    <![CDATA[
+    <form id="dss-signed-request-form" method="post" action="https://www.e-contract.be/eid-dss/protocol/simple">
+
+        <input type="hidden" name="SignatureRequest" value="..." />
+        <input type="hidden" name="target" value="http://www.some-web-application.be/dss-landing-page" />
+        <input type="hidden" name="language" value="nl" />
+        <input type="hidden" name="ContentType" value="text/xml" />
+        <input type="hidden" name="RelayState" value="foo123" />
+
+        <input type="hidden" name="ServiceSigned" value="target,SignatureRequest,language,ContentType,RelayState" />
+        <input type="hidden" name="ServiceSignature" value="..." />
+        <input type="hidden" name="ServiceCertificateChainSize" value="3" />
+        <input type="hidden" name="ServiceCertificate.1" value="..." />
+        <input type="hidden" name="ServiceCertificate.2" value="..." />
+        <input type="hidden" name="ServiceCertificate.3" value="..." />
+
+        <input type="submit" value="Submit" />
+    </form>
+    <script type="text/javascript">
+        document.getElementById('dss-signed-request-form').submit();
+    </script>
+                    ]]>
+                </programlisting>
+            </section>
+            <section>
+                <title>Java SDK</title>
+                <para>
+                    For easy integration, a <code>SignatureRequestServlet</code>
+                    has been provided in the
+                    <code>eid-dss-protocol-simple-client</code> artifact. This
+                    servlet will, given the necessary configuration and session
+                    attributes, construct a signature request and send it to the
+                    eD DSS Service. An example of its usage can be found in the
+                    <code>eid-dss-sp-webapp</code> artifact.
+                </para>
+                <para>
+                    Some configuration servlet of the servlet can be acheived
+                    either by providing:
+                    <itemizedlist>
+                        <listitem>
+                            <para>
+                                <code>SignatureRequestService(Class)</code>
+                                Optional JNDI location (or Class reference) of
+                                an implementation of the
+                                SignatureRequestService interface. This
+                                implementation can provide an optional SP
+                                identity used for signing the signature
+                                request, optional relay state, DSS destination,
+                                SP destination and optional language to display
+                                the FedICT eID DSS webapp in.
+                            </para>
+                        </listitem>
+                    </itemizedlist>
+                    or by providing following init parameters:
+                    <itemizedlist>
+                        <listitem>
+                            <para>
+                                <code>Target</code>
+                                The location of the FedICT eID DSSlanding servlet.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                <code>SPDestination</code>
+                                The absolute location of the Service Providers's
+                                DSS landing servlet, which will handle the
+                                incoming signature response.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                <code>SPDestinationPage</code>
+                                The location of the Service Providers's DSS
+                                landing servlet, which will handle the
+                                incoming signature response. Absolute path
+                                will be constructed automatically from the
+                                servlet's context.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                <code>Language</code>
+                                Optional language to display the FedICT eID DSS
+                                webapp in. Available locales are<code>nl, fr,
+                                en</code>. If an unsupported locale is used,
+                                the browsers' default locale will be used.
+                            </para>
+                        </listitem>
+                    </itemizedlist>
+                </para>
+                <para>
+                    The document to be signed or document ID in case of artifact
+                    binding, along with the content type needs to be put on the
+                    HTTP Session, the names of the session attribute need to be
+                    specified in web.xml as shown below.
+                </para>
+                <para>
+                    Following is a snippet of the <code>web.xml</code> for
+                    configuring the servlet.
+                </para>
+                <programlisting role="XML">
+                    <![CDATA[
+    <servlet>
+        <servlet-name>DSSRequestServlet</servlet-name>
+        <servlet-class>
+            be.fedict.eid.dss.protocol.simple.client.SignatureRequestServlet
+        </servlet-class>
+        <init-param>
+            <param-name>SignatureRequestService</param-name>
+            <param-value>
+                be/fedict/eid/dss/sp/bean/SignatureRequestServiceBean
+            </param-value>
+        </init-param>
+        <init-param>
+            <param-name>TargetSessionAttribute</param-name>
+            <param-value>target</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ContentTypeSessionAttribute</param-name>
+            <param-value>ContentType</param-value>
+        </init-param>
+        <init-param>
+            <param-name>RelayStateSessionAttribute</param-name>
+            <param-value>RelayState</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SignatureRequestSessionAttribute</param-name>
+            <param-value>SignatureRequest</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DSSRequestServlet</servlet-name>
+        <url-pattern>/dss-request</url-pattern>
+    </servlet-mapping>
+                    ]]>
+                </programlisting>
+                <para>
+                    If you wish to control yourself the page that posts the
+                    signature request to the eID DSS Service, the utility class
+                    <code>SignatureRequestUtil</code>
+                    is available for creating the service signature if wanted.
+                    Make sure to respect the order of the
+                    <code>ServiceCertificate.x</code> POST parameters!
+                </para>
+            </section>
+
 		</section>
 		<section>
 			<title>Signature Ceremony</title>
@@ -269,8 +470,8 @@
 					</para>
 				</listitem>
 			</itemizedlist>
-			<tip>
-				<title>Java SDK component</title>
+			<section>
+				<title>Java SDK</title>
 				<para>
 					To ease the handling of DSS response messages according to the
 					described protocol we've provided eID DSS SDK components. These can
@@ -279,107 +480,51 @@
 					artifact. The corresponding javadoc documentation is also part of
 					the eID DSS SDK.
 				</para>
-			</tip>
+			</section>
 		</section>
-	</section>
-    <section>
-        <title>eID DSS Artifact Binding</title>
-        <para>
-            In the eID DSS Artifact Binding the to be signed document and the
-            signed document are transmitted by reference. The actual documents
-            are transmitted using a seperate synchronous binding, being SOAP.
-            A custom OASIS DSS Web Service is used for this, more detail can be
-            found in the wsdl file.
-            The flow is as follows:
-            <orderedlist>
-                <listitem>
-                    <para>
-                        The to be signed document is transmitted to the eID DSS
-                        service over its SOAP web service. The eID DSS Service
-                        stores the document and returns a unique document ID in
-                        the response to the web application. Also
-                        <code>notBefore</code> and <code>notAfter</code> time
-                        fields are returned, indicating the valitity of the
-                        temporarily stored document at the eID DSS Service.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-                        The application "posts" a signature request (similar to
-                        2.1) to the eID DSS Service, replacing the
-                        <code>SignatureRequest</code> with a
-                        <code>SignatureRequestId</code> POST parameter for
-                        sending over the document ID.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-                        The eID DSS Service executes the signature ceremony as
-                        explained in 2.2.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-                        The eID DSS Service stores the signed document
-                        internally and responds back to the web application with
-                        a similar HTTP Post as in 2.3 via the web browser of the
-                        client. The <code>SignatureResponse</code> POST
-                        parameter is replaced with the
-                        <code>SignatureResponseId</code>
-                        POST paramter, which contains the document ID of the
-                        signed document.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
-                        If the signing was successful, the web application
-                        can now retrieve the signed document using the eID DSS
-                        SOAP web service and the returned document ID.
-                    </para>
-                </listitem>
-            </orderedlist>
-        </para>
-        <tip>
-            <title>Java WS SDK component</title>
+        <section>
+            <title>Artifact Binding</title>
             <para>
-                The "store" and "retrieve" operations on the eID DSS web service
-                can be performed using the WS client available in the
-                <code>eid-dss-client</code>
-                artifact. The corresponding javadoc documentation is also part of
-                the eID DSS SDK.
+                The Artifact Binding is a variation to the standard Browser POST
+                protocol where the to be signed document and the signed document
+                will be sent and retrieved to/from the eID DSS Service using a
+                seperate synchronous binding. The eID DSS Service provides such
+                a service in its OASIS DSS Web Service. More detail on this web
+                service can be found in
+                <link linkend="oasis_ws" endterm="oasis_ws.title"/>.
             </para>
-        </tip>
-        <tip>
-            <title>Java SDK component</title>
             <para>
-                To ease the handling of DSS response messages according to the
-                described protocol we've provided eID DSS SDK components. These can
-                be found within the
-                <code>eid-dss-protocol-simple-client</code>
-                artifact. The corresponding javadoc documentation is also part of
-                the eID DSS SDK.
+                The signature request and response will therefore vary slightly
+                as the identifiers will be posted instead of the actual
+                documents.
             </para>
-        </tip>
-        <tip>
-            <title>Java SDK Example</title>
             <para>
-                A complete example showing the usage of the Java SDK can be
-                found in the <code>eid-dss-sp-webapp</code> artifact.
+                For the signature request the required
+                <code>SignatureRequest</code> is replaced with the required
+                <code>SignatureRequestId</code> POST paramater. This is the
+                identifier returned by the OASIS DSS Web Service "store" call.
             </para>
-        </tip>
+            <para>
+                For the signature response the <code>SignatureResponse</code>
+                POST parameter will be replaced by the
+                <code>SignatureResponseId</code> POST parameter which will
+                contain the identifier to be used in the OASIS DSS Web Service
+                "retrieve" call for fetching the signed document.
+            </para>
+        </section>
     </section>
-	<section>
-		<title>OASIS DSS Web Service</title>
-		<para>
-			The eID Digital Signature Service implements a SOAP web service
-			for validation of signed documents. This validation web service has
-			been implemented according to the OASIS Digital Signature Service
-			Core Protocols, Elements, and Bindings Version 1.0. The web service
-			also implements the OASIS Profile for Comprehensive Multi-signature
-			Verification Reports for OASIS Digital Signature Services Version 1.0
-			for providing detailed reporting on the signatures of a signed
-			document.
-		</para>
+	<section id="oasis_ws">
+		<title id="oasis_ws.title">OASIS DSS Web Service</title>
+        <para>
+            The eID Digital Signature Service provides a SOAP web service for
+            validation of signed documents and for a generic "Artifact Binding"
+            which Signature Protocols can use as a synchronous binding for
+            transmitting the to be signed document to the eID DSS Service and
+            retrieval of the signed document from it. This web service has been
+            implemented according to the OASIS Digital Signature Service Core
+            Protocols, Elements, and Bindings Version 1.0. Specific profiles are
+            used for validation and the "Artifact Binding".
+        </para>
 		<para>In this section we will highlight the web service protocol by
 			example. A web service client can connect to the SOAP web service
 			using some URL. For example:
@@ -442,137 +587,337 @@
 							<code>http://www.w3.org/2000/09/xmldsig#</code>
 						</entry>
 					</row>
+                    <row>
+                        <entry>
+                            <code>artifact</code>
+                        </entry>
+                        <entry>
+                            <code>be:fedict:eid:dss:profile:artifact-binding:1.0</code>
+                        </entry>
+                    </row>
 				</tbody>
 			</tgroup>
 		</table>
-		<para>
-			A SOAP request for validation of a signed document looks as
-			follows:
-		</para>
-		<programlisting role="XML"><![CDATA[<soap:Envelope>
-<soap:Body>
-	<dss:VerifyRequest RequestID="some-id">
-		<dss:OptionalInputs>
-			<vr:ReturnVerificationReport>
-				<vr:IncludeVerifier>false</vr:IncludeVerifier>
-				<vr:IncludeCertificateValues>true</vr:IncludeCertificateValues>
-				<vr:ReportDetailLevel>
-				urn:oasis:names:tc:dss-x:1.0:profiles:verificationreport:reportdetail:noDetails
-				</vr:ReportDetailLevel>
-			</vr:ReturnVerificationReport>
-		</dss:OptionalInputs>
-		<dss:InputDocuments>
-			<dss:Document>
-				<dss:Base64XML>the document base64 encoded</dss:Base64XML>
-			</dss:Document>
-		</dss:InputDocuments>
-	</dss:VerifyRequest>
-</soap:Body>
-</soap:Envelope>]]></programlisting>
-		<para>
-			The corresponding SOAP response looks as follows:
-		</para>
-		<programlisting role="XML"><![CDATA[<soap:Envelope>
-<soap:Body>
-	<dss:Response RequestID="the original request id">
-		<dss:Result>
-			<dss:ResultMajor>
-				urn:oasis:names:tc:dss:1.0:resultmajor:Success
-			</dss:ResultMajor>
-			<dss:ResultMinor>
-				urn:oasis:names:tc:dss:1.0:resultminor:valid:signature:OnAllDocuments
-			</dss:ResultMinor>
-		</dss:Result>
-		<dss:OptionalOutputs>
-			<vr:VerificationReport>
-				<vr:IndividualReport>
-					<vr:SignedObjectIdentifier>
-						<vr:SignedProperties>
-							<vr:SignedSignatureProperties>
-								<xades:SigningTime>
-									2010-09-13T15:35:49.767+02:00
-								</xades:SigningTime>
-							</vr:SignedSignatureProperties>
-						</vr:SignedProperties>
-					</vr:SignedObjectIdentifier>
-					<dss:Result>
-						<dss:ResultMajor>
-							urn:oasis:names:tc:dss:1.0:resultmajor:Success
-						</dss:ResultMajor>
-						<dss:ResultMinor>
-							urn:oasis:names:tc:dss:1.0:resultminor:valid:signature:OnAllDocuments
-						</dss:ResultMinor>
-					</dss:Result>
-					<vr:Details>
-						<vr:IndividualCertificateReport>
-							<vr:CertificateIdentifier>
-								<xmldsig:X509IssuerName>
-									SERIALNUMBER=200612, CN=Citizen CA, C=BE
-								</xmldsig:X509IssuerName>
-								<xmldsig:X509SerialNumber>
-									21267647932559078400084294942057726232
-								</xmldsig:X509SerialNumber>
-							</vr:CertificateIdentifier>
-							<vr:Subject>
-								SERIALNUMBER=79102520991, GIVENNAME=Frank Henri, SURNAME=Cornelis, CN=Frank Cornelis (Signature), C=BE
-							</vr:Subject>
-							<vr:ChainingOK>
-								<vr:ResultMajor>
-									urn:oasis:names:tc:dss:1.0:detail:valid
-								</vr:ResultMajor>
-							</vr:ChainingOK>
-							<vr:ValidityPeriodOK>
-								<vr:ResultMajor>
-									urn:oasis:names:tc:dss:1.0:detail:valid
-								</vr:ResultMajor>
-							</vr:ValidityPeriodOK>
-							<vr:ExtensionsOK>
-								<vr:ResultMajor>
-									urn:oasis:names:tc:dss:1.0:detail:valid
-								</vr:ResultMajor>
-							</vr:ExtensionsOK>
-							<vr:CertificateValue>
-								base64 encoded signer certificate
-							</vr:CertificateValue>
-							<vr:SignatureOK>
-								<vr:SigMathOK>
-									<vr:ResultMajor>
-										urn:oasis:names:tc:dss:1.0:detail:valid
-									</vr:ResultMajor>
-								</vr:SigMathOK>
-							</vr:SignatureOK>
-							<vr:CertificateStatus>
-								<vr:CertStatusOK>
-									<vr:ResultMajor>
-										urn:oasis:names:tc:dss:1.0:detail:valid
-									</vr:ResultMajor>
-								</vr:CertStatusOK>
-							</vr:CertificateStatus>
-						</vr:IndividualCertificateReport>
-					</vr:Details>
-				</vr:IndividualReport>
-			</vr:VerificationReport>
-		</dss:OptionalOutputs>
-	</dss:Response>
-</soap:Body>
-</soap:Envelope>]]></programlisting>
-		<para>
-			The signature is uniquely identified by the
-			<code>SigningTime</code>
-			element. The certificate of the signatory is delivered via the
-			<code>CertificateValue</code>
-			element.
-		</para>
-		<tip>
-			<title>Java SDK component</title>
-			<para>
-				The eID DSS SDK comes with a Java DSS verification web service
-				client component. This component is part of the
-				<code>eid-dss-client</code>
-				artifact. The corresponding javadoc documentation is also part of
-				the eID DSS SDK.
-			</para>
-		</tip>
+        <section>
+            <title>Validation</title>
+            <para>
+                The validation operation of the web service also implements
+                the OASIS Profile for Comprehensive Multi-signature Verification
+                Reports for OASIS Digital Signature Services Version 1.0 for
+                providing detailed reporting on the signatures of a signed
+                document.
+            </para>
+            <para>
+                A SOAP request for validation of a signed document looks as
+                follows:
+            </para>
+            <programlisting role="XML"><![CDATA[<soap:Envelope>
+    <soap:Body>
+        <dss:VerifyRequest RequestID="some-id">
+            <dss:OptionalInputs>
+                <vr:ReturnVerificationReport>
+                    <vr:IncludeVerifier>false</vr:IncludeVerifier>
+                    <vr:IncludeCertificateValues>true</vr:IncludeCertificateValues>
+                    <vr:ReportDetailLevel>
+                    urn:oasis:names:tc:dss-x:1.0:profiles:verificationreport:reportdetail:noDetails
+                    </vr:ReportDetailLevel>
+                </vr:ReturnVerificationReport>
+            </dss:OptionalInputs>
+            <dss:InputDocuments>
+                <dss:Document>
+                    <dss:Base64XML>the document base64 encoded</dss:Base64XML>
+                </dss:Document>
+            </dss:InputDocuments>
+        </dss:VerifyRequest>
+    </soap:Body>
+    </soap:Envelope>]]></programlisting>
+            <para>
+                The corresponding SOAP response looks as follows:
+            </para>
+            <programlisting role="XML"><![CDATA[<soap:Envelope>
+    <soap:Body>
+        <dss:Response RequestID="the original request id">
+            <dss:Result>
+                <dss:ResultMajor>
+                    urn:oasis:names:tc:dss:1.0:resultmajor:Success
+                </dss:ResultMajor>
+                <dss:ResultMinor>
+                    urn:oasis:names:tc:dss:1.0:resultminor:valid:signature:OnAllDocuments
+                </dss:ResultMinor>
+            </dss:Result>
+            <dss:OptionalOutputs>
+                <vr:VerificationReport>
+                    <vr:IndividualReport>
+                        <vr:SignedObjectIdentifier>
+                            <vr:SignedProperties>
+                                <vr:SignedSignatureProperties>
+                                    <xades:SigningTime>
+                                        2010-09-13T15:35:49.767+02:00
+                                    </xades:SigningTime>
+                                </vr:SignedSignatureProperties>
+                            </vr:SignedProperties>
+                        </vr:SignedObjectIdentifier>
+                        <dss:Result>
+                            <dss:ResultMajor>
+                                urn:oasis:names:tc:dss:1.0:resultmajor:Success
+                            </dss:ResultMajor>
+                            <dss:ResultMinor>
+                                urn:oasis:names:tc:dss:1.0:resultminor:valid:signature:OnAllDocuments
+                            </dss:ResultMinor>
+                        </dss:Result>
+                        <vr:Details>
+                            <vr:IndividualCertificateReport>
+                                <vr:CertificateIdentifier>
+                                    <xmldsig:X509IssuerName>
+                                        SERIALNUMBER=200612, CN=Citizen CA, C=BE
+                                    </xmldsig:X509IssuerName>
+                                    <xmldsig:X509SerialNumber>
+                                        21267647932559078400084294942057726232
+                                    </xmldsig:X509SerialNumber>
+                                </vr:CertificateIdentifier>
+                                <vr:Subject>
+                                    SERIALNUMBER=79102520991, GIVENNAME=Frank Henri, SURNAME=Cornelis, CN=Frank Cornelis (Signature), C=BE
+                                </vr:Subject>
+                                <vr:ChainingOK>
+                                    <vr:ResultMajor>
+                                        urn:oasis:names:tc:dss:1.0:detail:valid
+                                    </vr:ResultMajor>
+                                </vr:ChainingOK>
+                                <vr:ValidityPeriodOK>
+                                    <vr:ResultMajor>
+                                        urn:oasis:names:tc:dss:1.0:detail:valid
+                                    </vr:ResultMajor>
+                                </vr:ValidityPeriodOK>
+                                <vr:ExtensionsOK>
+                                    <vr:ResultMajor>
+                                        urn:oasis:names:tc:dss:1.0:detail:valid
+                                    </vr:ResultMajor>
+                                </vr:ExtensionsOK>
+                                <vr:CertificateValue>
+                                    base64 encoded signer certificate
+                                </vr:CertificateValue>
+                                <vr:SignatureOK>
+                                    <vr:SigMathOK>
+                                        <vr:ResultMajor>
+                                            urn:oasis:names:tc:dss:1.0:detail:valid
+                                        </vr:ResultMajor>
+                                    </vr:SigMathOK>
+                                </vr:SignatureOK>
+                                <vr:CertificateStatus>
+                                    <vr:CertStatusOK>
+                                        <vr:ResultMajor>
+                                            urn:oasis:names:tc:dss:1.0:detail:valid
+                                        </vr:ResultMajor>
+                                    </vr:CertStatusOK>
+                                </vr:CertificateStatus>
+                            </vr:IndividualCertificateReport>
+                        </vr:Details>
+                    </vr:IndividualReport>
+                </vr:VerificationReport>
+            </dss:OptionalOutputs>
+        </dss:Response>
+    </soap:Body>
+    </soap:Envelope>]]></programlisting>
+            <para>
+                The signature is uniquely identified by the
+                <code>SigningTime</code>
+                element. The certificate of the signatory is delivered via the
+                <code>CertificateValue</code>
+                element.
+            </para>
+            <tip>
+                <title>Java SDK component</title>
+                <para>
+                    The eID DSS SDK comes with a Java DSS verification web service
+                    client component. This component is part of the
+                    <code>eid-dss-client</code>
+                    artifact. The corresponding javadoc documentation is also part of
+                    the eID DSS SDK.
+                </para>
+            </tip>
+        </section>
+        <section>
+            <title>Artifact Binding</title>
+            <para>
+                A custom OASIS DSS Profile has been introduced for this which
+                used the <code>SignRequest</code> operation for pushing the
+                to be signed document and retrieval of the signed document to/
+                from the eID DSS Service. The profile URI for this is:
+                <code>be:fedict:eid:dss:profile:artifact-binding:1.0</code>
+            </para>
+            <section>
+                <title>Store</title>
+                <para>
+                    A SOAP request for "storing" the to be signed document to
+                    the eID DSS Service looks as follow:
+                </para>
+                <programlisting role="XML">
+                    <![CDATA[
+<soap:Envelope>
+    <soap:Body>
+        <dss:SignRequest
+            Profile="be:fedict:eid:dss:profile:artifact-binding:1.0"
+            RequestID="dss-sign-request-1234...">
+
+            <dss:OptionalInputs>
+                <artifact:ReturnStorageInfo />
+            </dss:OptionalInputs>
+
+            <dss:InputDocuments>
+                <dss:Document>
+                    <dss:Base64XML>...</dss:Base64XML>
+                </dss:Document>
+            </dss:InputDocuments>
+
+        </dss:SignRequest>
+    </soap:Body>
+</soap:Envelope>
+                    ]]>
+                </programlisting>
+                <para>
+                    The to be signed document is passed along base64 encoded in
+                    the OASIS DSS InputDocuments element.
+                </para>
+                <para>
+                    The custom <code>artifact:ReturnStorageInfo</code> optional
+                    input is used within the dss:OptionalInputs element to mark
+                    that the document passed in dss:InputDocument/dss:Document
+                    should be stored for later signing. Only accepted by the eID
+                    DSS when dss:SignRequest/@Profile is set to the
+                    corresponding profile URI. The eID DSS will return a custom
+                    <code>StorageInfo</code> element within dss:OptionalOutputs
+                    in the returned <code>SignResponse</code>.
+                </para>
+                <para>
+                    Following is an example of such a SOAP response.
+                </para>
+                <programlisting role="XML">
+                    <![CDATA[
+<soap:Envelope>
+    <soap:Body>
+        <dss:SignResponse
+            Profile="be:fedict:eid:dss:profile:artifact-binding:1.0"
+            RequestID="dss-sign-request-1234...">
+
+            <dss:Result>
+                <dss:ResultMajor>urn:oasis:names:tc:dss:1.0:resultmajor:Success</dss:ResultMajor>
+            </dss:Result>
+
+            <dss:OptionalInputs>
+                <artifact:StorageInfo>
+                    <artifact:Identifier>de2f6265-fa06-4ae7-8f7f-d289cd590a32</artifact:Identifier>
+                    <artifact:Validity>
+                        <artifact:NotBefore>2011-05-11T16:38:50.600+02:00</artifact:NotBefore>
+                        <artifact:NotAfter>2011-05-11T16:43:50.392+02:00</artifact:NotAfter>
+                    </artifact:Validity>
+                </artifact:StorageInfo>
+            </dss:OptionalInputs>
+
+        </dss:SignResponse>
+    </soap:Body>
+</soap:Envelope>
+                    ]]>
+                </programlisting>
+                <para>
+                    The <code>SignResponse</code> request ID needs to match the
+                    request ID of the <code>SignRequest</code>.
+                </para>
+                <para>
+                    The custom <code>artifact:StorageInfo</code> element
+                    contains the identifier of the stored document and the
+                    validity of the temporary storage of the given document. The
+                    eID DSS Service manages the lifecycle of the document within
+                    this temporary storage. The Relying Party can use this
+                    information to hurry up.
+                </para>
+                <para>
+                    After this the Signature Protocol can use the identifier
+                    for making a signature request to the eID DSS Service which
+                    will retrieve the document from its temporary storage when
+                    needed for signing, sign the document and store the signed
+                    document in the temporary storage for retrieval later on.
+                </para>
+            </section>
+            <section>
+                <title>Retrieve</title>
+                <para>
+                    A SOAP request for "retrieval" of the by now signed document
+                    to the eID DSS Service looks as follow:
+                </para>
+                <programlisting role="XML">
+                    <![CDATA[
+<soap:Envelope>
+    <soap:Body>
+        <dss:SignRequest
+            Profile="be:fedict:eid:dss:profile:artifact-binding:1.0"
+            RequestID="dss-sign-request-1234...">
+
+            <dss:OptionalInputs>
+                <artifact:ReturnStoredDocument>
+                    <artifact:Identifier>f86a925b-0360-47c7-b329-a7fa3988e2e6</Identifier>
+                </artifact:ReturnStoredDocument>
+            </dss:OptionalInputs>
+        </dss:SignRequest>
+    </soap:Body>
+</soap:Envelope>
+                    ]]>
+                </programlisting>
+                <para>
+                    The identifier is the identifier of the signed document in
+                    the eID DSS service's temporary storage. This identifier is
+                    communicated back to the RP according to the used Signature
+                    Protocol, beind <code>SignatureResponseId</code> in case of
+                    the eID DSS Browser Post Protocol. This identifier is only
+                    accepted by the eID DSS when dss:SignRequest/@Profile is set
+                    to the corresponding profile URI. The eID DSS will return
+                    the document within a
+                    <code>
+                        dss:SignResponse/dss:OptionalOutputs/dss:DocumentWithSignature
+                    </code> element. After document retrieval, the eID DSS will
+                    remove the document from the temporary storage. If the
+                    document is not retrieved by the Relying Party, the eID DSS
+                    will remove the document from the temporary storage after a
+                    certain time indicated by Validity/NotAfter.
+                </para>
+                <para>
+                    Following is an example of a SOAP response to this request.
+                </para>
+                <programlisting role="XML">
+                    <![CDATA[
+<soap:Envelope>
+    <soap:Body>
+        <dss:SignResponse
+            Profile="be:fedict:eid:dss:profile:artifact-binding:1.0"
+            RequestID="dss-sign-request-1234...">
+
+            <dss:Result>
+                <dss:ResultMajor>urn:oasis:names:tc:dss:1.0:resultmajor:Success</dss:ResultMajor>
+            </dss:Result>
+
+            <dss:OptionalOutputs>
+                <dss:DocumentWithSignature>
+                    <dss:Document>
+                        <dss:Base64XML>...</dss:Base64XML>
+                    </dss:Document>
+                </dss:DocumentWithSignature>
+            </dss:OptionalOutputs>
+
+        </dss:SignResponse>
+    </soap:Body>
+</soap:Envelope>
+                    ]]>
+                </programlisting>
+                <para>
+                    The <code>SignResponse</code>'s request ID needs to match
+                    the request ID of the <code>SignRequest</code>.
+                </para>
+                <para>
+                    The signed document is returned base64 encoded in the OASIS
+                    DSS <code>DocumentWithSignature</code> element.
+                </para>
+
+            </section>
+        </section>
 	</section>
 	<section>
 		<title>Document Visualization</title>
