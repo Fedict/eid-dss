@@ -19,8 +19,10 @@ function detectMimeTypes() {
         var arrayLength = navigator.mimeTypes.length;
         var mimeTypes = "";
         for (i=0; i  < arrayLength; i++ ) {
-            mimeTypes += navigator.mimeTypes[i].type + ',' +
-             navigator.mimeTypes[i].enabledPlugin.name + '|';
+            if (null != navigator.mimeTypes[i].enabledPlugin) {
+                mimeTypes += navigator.mimeTypes[i].type + ',' +
+                    navigator.mimeTypes[i].enabledPlugin.name + '|';
+            }
         }
         return mimeTypes;
     }
