@@ -257,6 +257,11 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
             }
         }
 
+        if (null == dssRequest.getServiceCertificateChain()) {
+            LOG.debug("No signature and signature is not required, valid...");
+            return true;
+        }
+
         X509Certificate serviceCertificate =
                 dssRequest.getServiceCertificateChain().get(0);
 
