@@ -65,6 +65,7 @@
             <modules>
                 <module>eid-dss-dev-guide</module>
                 <module>eid-dss-sdk</module>
+		<module>eid-dss-sdk-dotnet</module>
             </modules>
         </profile>
         <profile>
@@ -132,6 +133,7 @@
             <modules>
                 <module>eid-dss-dev-guide</module>
                 <module>eid-dss-sdk</module>
+		<module>eid-dss-sdk-dotnet</module>
                 <module>eid-dss-sql-ddl</module>
                 <module>eid-dss-admin-manual</module>
                 <module>eid-dss-mysql-distribution</module>
