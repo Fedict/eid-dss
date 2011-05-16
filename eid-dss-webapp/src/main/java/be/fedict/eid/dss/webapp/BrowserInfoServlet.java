@@ -67,6 +67,7 @@ public class BrowserInfoServlet extends HttpServlet {
                 String[] mimeTypeInfo = mimeType.split(",");
                 if (mimeTypeInfo.length != 2) {
                     LOG.error("Unable to parse mimetype: " + mimeType);
+                    continue;
                 }
                 mimeTypes.add(new MimeType(mimeTypeInfo[0], mimeTypeInfo[1]));
             }
