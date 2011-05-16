@@ -19,6 +19,8 @@ namespace eid_dss_sdk_dotnet
     {
         private String location;
 
+        private bool logging = true;
+
         private DigitalSignatureServicePortTypeClient client;
 
         private X509Certificate sslCertificate;
@@ -26,6 +28,11 @@ namespace eid_dss_sdk_dotnet
         public DigitalSignatureServiceClientImpl(String location)
         {
             this.location = location;
+        }
+
+        public void setLogging(bool logging)
+        {
+            this.logging = logging;
         }
 
         private void setupClient()
@@ -67,7 +74,10 @@ namespace eid_dss_sdk_dotnet
                 }
 
                 // Add logging behaviour
-                this.client.Endpoint.Behaviors.Add(new LoggingBehavior());
+                if (this.logging)
+                {
+                    this.client.Endpoint.Behaviors.Add(new LoggingBehavior());
+                }
             }
         }
 
@@ -104,6 +114,99 @@ namespace eid_dss_sdk_dotnet
             return false;
         }
 
+        public List<SignatureInfo> verifyWithSigners(byte[] signedDocument, String mimeType)
+        {
+            ResponseBaseType response = doVerification(signedDocument, mimeType, false, true);
+
+            validateResult(response);
+
+            // TODO: parse verificationReport
+            List<SignatureInfo> signers = new List<SignatureInfo>();
+            DSSXSDNamespace.VerificationReportType verificationReport = findVerificationReport(response);
+            if (null == verificationReport)
+            {
+                return signers;
+            }
+
+            foreach (DSSXSDNamespace.IndividualReportType individualReport in verificationReport.IndividualReport)
+            {
+
+                if (!DSSConstants.RESULT_MAJOR_SUCCESS.Equals(individualReport.Result.ResultMajor))
+                {
+                    Console.WriteLine("WARNING: invalid VR result reported: " +
+                        individualReport.Result.ResultMajor);
+                    continue;
+                }
+
+                DSSXSDNamespace.SignedObjectIdentifierType signedObjectIdentifier
+                    = individualReport.SignedObjectIdentifier;
+
+                DateTime signingTime = signedObjectIdentifier.SignedProperties
+                    .SignedSignatureProperties.SigningTime;
+                X509Certificate signer = null;
+                String role = null;
+
+                foreach (XmlElement detail in individualReport.Details.Any)
+                {
+                    if (detail.NamespaceURI.Equals(DSSConstants.VR_NAMESPACE) &&
+                        detail.LocalName.Equals("DetailedSignatureReport"))
+                    {
+                        DSSXSDNamespace.DetailedSignatureReportType detailedSignatureReport =
+                            (DSSXSDNamespace.DetailedSignatureReportType)fromDom("DetailedSignatureReport",
+                            DSSConstants.VR_NAMESPACE, detail,
+                            typeof(DSSXSDNamespace.DetailedSignatureReportType));
+
+                        DSSXSDNamespace.CertificateValidityType certificateValidity =
+                            detailedSignatureReport.CertificatePathValidity
+                                .PathValidityDetail.CertificateValidity[0];
+
+                        byte[] encodedSigner = certificateValidity.CertificateValue;
+                        signer = new X509Certificate(encodedSigner);
+
+                        if (null != detailedSignatureReport.Properties)
+                        {
+                            DSSXSDNamespace.SignerRoleType1 signerRole = detailedSignatureReport.Properties
+                                .SignedProperties.SignedSignatureProperties.SignerRole;
+                            if (null != signerRole)
+                            {
+                                role = signerRole.ClaimedRoles[0].Any[0].Value;
+                            }
+                        }
+                    }
+                }
+
+                if (null == signer)
+                {
+                    throw new SystemException("No signer certificate present in verification report.");
+                }
+
+                signers.Add(new SignatureInfo(signer, signingTime, role));
+            }
+            return signers;
+        }
+
+        private DSSXSDNamespace.VerificationReportType findVerificationReport(ResponseBaseType responseBase)
+        {
+            if (null == responseBase.OptionalOutputs)
+            {
+                return null;
+            }
+            foreach (XmlElement optionalOutput in responseBase.OptionalOutputs.Any)
+            {
+                if (optionalOutput.NamespaceURI.Equals(DSSConstants.VR_NAMESPACE) &&
+                    optionalOutput.LocalName.Equals("VerificationReport"))
+                {
+                    DSSXSDNamespace.VerificationReportType verificationReport =
+                        (DSSXSDNamespace.VerificationReportType)fromDom("VerificationReport",
+                        DSSConstants.VR_NAMESPACE, optionalOutput,
+                        typeof(DSSXSDNamespace.VerificationReportType));
+                    return verificationReport;
+                }
+            }
+
+            return null;
+        }
+
         private ResponseBaseType doVerification(byte[] documentData, String mimeType,
             bool returnSignerIdentity, bool returnVerificationReport)
         {
@@ -117,11 +220,11 @@ namespace eid_dss_sdk_dotnet
             verifyRequest.RequestID = requestId;
 
             AnyType optionalInputs = new AnyType();
+            List<XmlElement> optionalInputElements = new List<XmlElement>();
             if (returnSignerIdentity)
             {
-                // TODO: ...
-                // XmlElement el = new XmlElement();
-                //                DSSXSDNamespace.Ret
+                XmlElement e = getElement("dss", "ReturnSignerIdentity", DSSConstants.DSS_NAMESPACE);
+                optionalInputElements.Add(e);
             }
 
             if (returnVerificationReport)
@@ -136,7 +239,13 @@ namespace eid_dss_sdk_dotnet
                 XmlElement e = toDom("ReturnVerificationReport", DSSConstants.VR_NAMESPACE,
                     returnVerificationReportElement, typeof(DSSXSDNamespace.ReturnVerificationReport));
 
-                optionalInputs.Any = new XmlElement[] { e };
+                optionalInputElements.Add(e);
+            }
+
+            if (optionalInputElements.Count > 0)
+            {
+                optionalInputs.Any = optionalInputElements.ToArray();
+                verifyRequest.OptionalInputs = optionalInputs;
             }
 
             verifyRequest.InputDocuments = getInputDocuments(documentData, mimeType);
@@ -188,7 +297,7 @@ namespace eid_dss_sdk_dotnet
             }
         }
 
-        private String validateResult(ResponseBaseType response) 
+        private String validateResult(ResponseBaseType response)
         {
             Result result = response.Result;
             String resultMajor = result.ResultMajor;
@@ -207,6 +316,11 @@ namespace eid_dss_sdk_dotnet
             return resultMinor;
         }
 
+        private XmlElement getElement(String prefix, String elementName, String ns)
+        {
+            XmlDocument xmlDocument = new XmlDocument();
+            return xmlDocument.CreateElement(prefix, elementName, ns);
+        }
 
         private XmlElement toDom(String elementName, String ns, Object o, Type type)
         {
@@ -228,7 +342,20 @@ namespace eid_dss_sdk_dotnet
             memoryStream.Seek(0, SeekOrigin.Begin);
             xmlDocument.Load(memoryStream);
 
-            return (XmlElement)xmlDocument.ChildNodes.Item(0);
+            return (XmlElement)xmlDocument.ChildNodes.Item(1);
+        }
+
+        private Object fromDom(String elementName, String ns, XmlNode xmlNode, Type type)
+        {
+            XmlRootAttribute xRoot = new XmlRootAttribute();
+            xRoot.ElementName = elementName;
+            xRoot.Namespace = ns;
+
+            XmlSerializer serializer = new XmlSerializer(type, xRoot);
+
+            XmlReader xmlReader = new XmlNodeReader(xmlNode);
+
+            return serializer.Deserialize(xmlReader);
         }
     }
 }

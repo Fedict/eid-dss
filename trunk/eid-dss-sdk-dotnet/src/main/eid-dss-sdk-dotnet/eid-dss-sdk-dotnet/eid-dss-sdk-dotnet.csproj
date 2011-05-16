@@ -53,6 +53,7 @@
     <Compile Include="src\main\cs\DSSConstants.cs" />
     <Compile Include="src\main\cs\LoggingBehavior.cs" />
     <Compile Include="src\main\cs\NotParseableXMLDocumentException.cs" />
+    <Compile Include="src\main\cs\SignatureInfo.cs" />
     <Compile Include="src\main\cs\WCFUtil.cs" />
     <Compile Include="target\services\DigitalSignatureService.cs">
       <Autogen>True</Autogen>

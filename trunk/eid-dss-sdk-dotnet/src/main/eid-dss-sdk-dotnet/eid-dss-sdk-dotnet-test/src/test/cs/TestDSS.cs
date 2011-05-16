@@ -23,6 +23,7 @@ namespace eid_dss_sdk_dotnet.test.cs
         public static string DOC_DIRECTORY_PATH = "C:\\Users\\devel\\Documents\\";
 
         private byte[] validSignedDocument;
+        private byte[] invalidSignedDocument;
 
         [SetUp]
         public void setup()
@@ -33,10 +34,17 @@ namespace eid_dss_sdk_dotnet.test.cs
             validSignedDocument = new byte[fs.Length];
             fs.Read(validSignedDocument, 0, System.Convert.ToInt32(fs.Length));
             fs.Close();
+
+            // read invalid signed document
+            fs = new FileStream(DOC_DIRECTORY_PATH + "doc-invalid-signed.xml",
+                FileMode.Open, FileAccess.Read);
+            invalidSignedDocument = new byte[fs.Length];
+            fs.Read(invalidSignedDocument, 0, System.Convert.ToInt32(fs.Length));
+            fs.Close();
         }
 
         [Test]
-        public void TestValidDocument()
+        public void TestVerifyValidDocument()
         {
             DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(DSS_LOCATION);
 
@@ -45,7 +53,24 @@ namespace eid_dss_sdk_dotnet.test.cs
         }
 
         [Test]
-        public void TestValidDocumentSslNoTlsAuthn()
+        public void TestVerifyInvalidSignatureDocument()
+        {
+            DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(DSS_LOCATION);
+
+            try
+            {
+                client.verify(invalidSignedDocument, "text/xml");
+                Assert.Fail();
+            }
+            catch (SystemException e)
+            {
+                // expected
+                Console.WriteLine("SystemException: " + e.Message);
+            }
+        }
+
+        [Test]
+        public void TestVerifyValidDocumentSslNoTlsAuthn()
         {
             DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(DSS_LOCATION_SSL);
             client.configureSsl(null);
@@ -55,7 +80,7 @@ namespace eid_dss_sdk_dotnet.test.cs
         }
 
         [Test]
-        public void TestValidDocumentValidTlsAuthn()
+        public void TestVerifyValidDocumentValidTlsAuthn()
         {
             X509Certificate2 sslCertificate = new X509Certificate2(SSL_CERT_PATH);
 
@@ -67,7 +92,7 @@ namespace eid_dss_sdk_dotnet.test.cs
         }
 
         [Test]
-        public void TestValidDocumentInvalidTlsAuthn()
+        public void TestVerifyValidDocumentInvalidTlsAuthn()
         {
             X509Certificate2 invalidSslCertificate = new X509Certificate2(INVALID_SSL_CERT_PATH);
             DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(DSS_LOCATION_SSL);
@@ -80,7 +105,27 @@ namespace eid_dss_sdk_dotnet.test.cs
             catch (SecurityNegotiationException e)
             {
                 // expected
+                Console.WriteLine("SystemException: " + e.Message);
             }
         }
+
+        [Test]
+        public void TestVerifyWithSignersValidDocument()
+        {
+            DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(DSS_LOCATION);
+
+            List<SignatureInfo> signers = client.verifyWithSigners(validSignedDocument, "text/xml");
+            Assert.NotNull(signers);
+
+            foreach (SignatureInfo signer in signers)
+            {
+                Console.WriteLine("------------------------------------------");
+                Console.WriteLine("Signer: " + signer.getSigner().Subject);
+                Console.WriteLine("Signing Time: " + signer.getSigningTime());
+                Console.WriteLine("Role: " + signer.getRole());
+                Console.WriteLine("------------------------------------------");
+            }
+        }
+
     }
 }
