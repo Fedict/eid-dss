@@ -12,11 +12,13 @@
         <asp:FileUpload ID="FileUpload1" runat="server" />
         <!-- Signature Request POST parameters -->
         <asp:HiddenField runat="server" ID="SignatureRequest" />
+        <asp:HiddenField runat="server" ID="SignatureRequestId" />
         <asp:HiddenField runat="server" ID="ContentType" />
         <asp:HiddenField runat="server" ID="RelayState" />
         <asp:HiddenField runat="server" ID="target" />
         <asp:HiddenField runat="server" ID="Language" />
         <asp:Button ID="Button1" runat="server" OnClick="UploadButton_Click" Text="Upload Document" />
+        <asp:Button ID="Button2" runat="server" OnClick="ArtifactButton_Click" Text="Upload Document (Artifact Binding)" />
     </div>
     </form>
     <asp:Label ID="Label1" runat="server"></asp:Label>
