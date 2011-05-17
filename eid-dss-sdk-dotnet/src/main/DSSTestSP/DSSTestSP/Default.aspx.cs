@@ -10,25 +10,37 @@ namespace DSSTestSP
 {
     public partial class _Default : System.Web.UI.Page
     {
-        protected void Page_Load(object sender, EventArgs e)
+        public const String SIGNATURE_REQUEST_SESSION_PARAM = "SignatureRequest";
+        public const String RELAY_STATE_SESSION_PARAM = "RelayState";
+        public const String TARGET_SESSION_PARAM = "target";
+
+        protected void Page_Load(object sender, EventArgs e)        
         {
-            SignatureResponseProcessor processor = new SignatureResponseProcessor(null);
-            try
+            // inspect Session for SignatureRequest Data
+            String signatureRequest = (String)Session[SIGNATURE_REQUEST_SESSION_PARAM];
+            String relayState = (String)Session[RELAY_STATE_SESSION_PARAM];
+            String target = (String)Session[TARGET_SESSION_PARAM];
+
+            if (null != signatureRequest)
             {
-                SignatureReponse signatureResponse = processor.process(Page.Request, null, null, null, null);
-                // show results
-                if (null != signatureResponse)
+                SignatureResponseProcessor processor = new SignatureResponseProcessor(null);
+                try
                 {
-                    this.Label1.Text = "Valid DSS Response.";
-                    this.FileUpload1.Visible = false;
-                    this.Button1.Visible = false;
+                    SignatureReponse signatureResponse = processor.process(Page.Request, target, signatureRequest, null, relayState);
+                    // show results
+                    if (null != signatureResponse)
+                    {
+                        this.Label1.Text = "Valid DSS Response.<br>" +
+                            "SignatureCertificate.Subject: " + signatureResponse.getSignatureCertificate().Subject;
+                        this.FileUpload1.Visible = false;
+                        this.Button1.Visible = false;
+                    }
+                }
+                catch (SignatureResponseProcessorException ex)
+                {
+                    this.Label1.Text = "Invalid DSS Response: " + ex.Message;
                 }
             }
-            catch (SignatureResponseProcessorException ex)
-            {
-                Console.WriteLine("Error processing DSS response: " + ex.Message);
-            }
-
         }
 
         protected void UploadButton_Click(object sender, EventArgs e)
@@ -45,6 +57,11 @@ namespace DSSTestSP
                     target.Value = Request.Url.ToString();
                     Language.Value = "en";
 
+                    // store request state on session
+                    Session[SIGNATURE_REQUEST_SESSION_PARAM] = SignatureRequest.Value;
+                    Session[RELAY_STATE_SESSION_PARAM] = RelayState.Value;
+                    Session[TARGET_SESSION_PARAM] = target.Value;
+
                     SignForm.Action = "https://sebeco-dev-11:8443/eid-dss/protocol/simple";
                     Button1.Text = "Sign Document";
 
@@ -57,8 +74,7 @@ namespace DSSTestSP
                          FileUpload1.PostedFile.FileName + "<br>" +
                          FileUpload1.PostedFile.ContentLength + " kb<br>" +
                          "Content type: " +
-                         FileUpload1.PostedFile.ContentType + "<br>" +
-                         Request.Url;
+                         FileUpload1.PostedFile.ContentType;
                 }
                 catch (Exception ex)
                 {
