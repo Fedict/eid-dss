@@ -13,33 +13,52 @@ namespace DSSTestSP
     {
         // DSS Config parameters
         private const String dssLocation = "https://sebeco-dev-11:8443/eid-dss/protocol/simple";
+        private const String dssWSLocation = "https://sebeco-dev-11:8443/eid-dss-ws/dss";
         private const String serviceFingerprint = "96964dfed390fc3a884d897f00bc4446cb9d9429";
 
         // session parameters
         public const String SIGNATURE_REQUEST_SESSION_PARAM = "SignatureRequest";
+        public const String SIGNATURE_REQUEST_ID_SESSION_PARAM = "SignatureRequestId";
         public const String RELAY_STATE_SESSION_PARAM = "RelayState";
         public const String TARGET_SESSION_PARAM = "target";
 
-        protected void Page_Load(object sender, EventArgs e)        
+        protected void Page_Load(object sender, EventArgs e)
         {
             // inspect Session for SignatureRequest Data
             String signatureRequest = (String)Session[SIGNATURE_REQUEST_SESSION_PARAM];
+            String signatureRequestId = (String)Session[SIGNATURE_REQUEST_ID_SESSION_PARAM];
             String relayState = (String)Session[RELAY_STATE_SESSION_PARAM];
             String target = (String)Session[TARGET_SESSION_PARAM];
 
-            if (null != signatureRequest)
+            if (null != signatureRequest || null != signatureRequestId)
             {
-                SignatureResponseProcessor processor = new SignatureResponseProcessor(SoapHexBinary.Parse(serviceFingerprint).Value);
+                SignatureResponseProcessor processor = new SignatureResponseProcessor(
+                    SoapHexBinary.Parse(serviceFingerprint).Value);
                 try
                 {
-                    SignatureReponse signatureResponse = processor.process(Page.Request, target, signatureRequest, null, relayState);
-                    // show results
+                    SignatureReponse signatureResponse = processor.process(Page.Request, target,
+                        signatureRequest, signatureRequestId, relayState);
                     if (null != signatureResponse)
                     {
+
+                        byte[] signedDocument;
+                        if (null != signatureRequestId)
+                        {
+                            // fetch signed document via WS
+                            DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(dssWSLocation);
+                            signedDocument = client.retrieve(signatureResponse.getSignatureResponseId());
+                        }
+                        else
+                        {
+                            signedDocument = signatureResponse.getDecodedSignatureResponse();
+                        }
+
+                        // show results
                         this.Label1.Text = "Valid DSS Response.<br>" +
                             "SignatureCertificate.Subject: " + signatureResponse.getSignatureCertificate().Subject;
                         hideRequest();
                         this.Button1.Visible = false;
+
                     }
                 }
                 catch (SignatureResponseProcessorException ex)
@@ -54,6 +73,57 @@ namespace DSSTestSP
         {
             FileUpload1.Visible = false;
             FileUpload1.Enabled = false;
+            Button2.Visible = false;
+            Button2.Enabled = false;
+        }
+
+        protected void ArtifactButton_Click(object sender, EventArgs e)
+        {
+            if (FileUpload1.HasFile)
+                try
+                {
+                    // read to be signed document
+                    byte[] doc = new byte[FileUpload1.PostedFile.ContentLength];
+                    FileUpload1.PostedFile.InputStream.Read(doc, 0, FileUpload1.PostedFile.ContentLength);
+
+                    // upload using WS
+                    DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(dssWSLocation);
+                    StorageInfoDO storageInfo = client.store(doc, FileUpload1.PostedFile.ContentType);
+
+                    // set signature request post parameters
+                    SignatureRequest.Visible = false;
+                    SignatureRequestId.Value = storageInfo.getArtifact();
+                    ContentType.Value = FileUpload1.PostedFile.ContentType;
+                    RelayState.Value = Guid.NewGuid().ToString();
+                    target.Value = Request.Url.ToString();
+                    Language.Value = "fr";
+
+                    // store signature request state on session for response validation
+                    Session[SIGNATURE_REQUEST_ID_SESSION_PARAM] = SignatureRequestId.Value;
+                    Session[RELAY_STATE_SESSION_PARAM] = RelayState.Value;
+                    Session[TARGET_SESSION_PARAM] = target.Value;
+
+                    // ready for sign request
+                    SignForm.Action = dssLocation;
+                    Button1.Text = "Sign Document";
+
+                    hideRequest();
+
+                    // display some info
+                    Label1.Text = "File name: " +
+                         FileUpload1.PostedFile.FileName + "<br>" +
+                         FileUpload1.PostedFile.ContentLength + " kb<br>" +
+                         "Content type: " + FileUpload1.PostedFile.ContentType + "<br>" +
+                         "Document ID: " + storageInfo.getArtifact();
+                }
+                catch (Exception ex)
+                {
+                    Label1.Text = "ERROR: " + ex.Message.ToString();
+                }
+            else
+            {
+                Label1.Text = "You have not specified a file.";
+            }
         }
 
         protected void UploadButton_Click(object sender, EventArgs e)
@@ -67,6 +137,7 @@ namespace DSSTestSP
 
                     // set signature request post parameters
                     SignatureRequest.Value = Convert.ToBase64String(doc);
+                    SignatureRequestId.Visible = false;
                     ContentType.Value = FileUpload1.PostedFile.ContentType;
                     RelayState.Value = Guid.NewGuid().ToString();
                     target.Value = Request.Url.ToString();
