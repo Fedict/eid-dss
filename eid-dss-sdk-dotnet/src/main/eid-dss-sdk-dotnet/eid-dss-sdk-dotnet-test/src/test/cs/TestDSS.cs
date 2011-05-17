@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel.Security;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace eid_dss_sdk_dotnet.test.cs
 {
@@ -15,7 +16,7 @@ namespace eid_dss_sdk_dotnet.test.cs
     {
         public static string DSS_LOCATION_SSL = "https://sebeco-dev-11:8443/eid-dss-ws/dss";
         public static string DSS_LOCATION = "http://sebeco-dev-11:8080/eid-dss-ws/dss";
-        
+
         public static string CERT_DIRECTORY_PATH = "C:\\Users\\devel\\certificates\\";
         public static string SSL_CERT_PATH = CERT_DIRECTORY_PATH + "eiddss_ssl.cer";
         public static string INVALID_SSL_CERT_PATH = CERT_DIRECTORY_PATH + "invalid_ssl.cer";
@@ -29,7 +30,7 @@ namespace eid_dss_sdk_dotnet.test.cs
         public void setup()
         {
             // read valid signed document
-            FileStream fs = new FileStream(DOC_DIRECTORY_PATH + "doc-signed.xml", 
+            FileStream fs = new FileStream(DOC_DIRECTORY_PATH + "doc-signed.xml",
                 FileMode.Open, FileAccess.Read);
             validSignedDocument = new byte[fs.Length];
             fs.Read(validSignedDocument, 0, System.Convert.ToInt32(fs.Length));
@@ -86,7 +87,7 @@ namespace eid_dss_sdk_dotnet.test.cs
 
             DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(DSS_LOCATION_SSL);
             client.configureSsl(sslCertificate);
-            
+
             bool result = client.verify(validSignedDocument, "text/xml");
             Assert.True(result);
         }
@@ -127,5 +128,22 @@ namespace eid_dss_sdk_dotnet.test.cs
             }
         }
 
+        [Test]
+        public void TestDigest()
+        {
+            String serviceFingerprint = "96964dfed390fc3a884d897f00bc4446cb9d9429";
+            String serviceCertificateString = "MIIB8zCCAVygAwIBAgIETSMjbDANBgkqhkiG9w0BAQUFADA+MQswCQYDVQQGEwJCRTEPMA0GA1UEChMGRmVkSUNUMQ8wDQYDVQQLEwZGZWRJQ1QxDTALBgNVBAMTBFRlc3QwHhcNMTEwMTA0MTM0MTAwWhcNMTEwNzAzMTM0MTAwWjA+MQswCQYDVQQGEwJCRTEPMA0GA1UEChMGRmVkSUNUMQ8wDQYDVQQLEwZGZWRJQ1QxDTALBgNVBAMTBFRlc3QwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAIWZDsOroiTb8rlDy6GoUhoG632DGSPjcvHHr/PVT1qsv7+goC6gUPo/4HHxSS67oJZxMABYYLFosBM/wtz5MIBlfCZYcxaVwhxd8HbWtzkBWvaZ9UobWoa83DL5ns1g4zOYkYA4KMBzDTP/s36dVT4vnB0WQvjqxHFtheoNacDNAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEAecWebvuTk04zuYO7npHgpNi0IgmOafBW9mmeQBWq7gJlm5sy8nK/HJjtmRxjnRzo+iQ89On5Acipg5H0PIH5HVLf4zoLdH86tohzj0ohpw+rUma4aCwhyQfO+QqS2PokHM7elF0yUNYrZdoY3InoYuXvS1oejGeOJ6wiZ4dqN/c=";
+
+            X509Certificate2 serviceCertificate = new X509Certificate2(Convert.FromBase64String(serviceCertificateString));
+            Assert.NotNull(serviceCertificate);
+
+            String resultServiceCertificateString = Convert.ToBase64String(serviceCertificate.GetRawCertData());
+            Assert.True(serviceCertificateString.Equals(resultServiceCertificateString));
+
+            byte[] actualServiceFingerprint = SHA1.Create().ComputeHash(serviceCertificate.GetRawCertData());
+            String resultFingerprint = BitConverter.ToString(actualServiceFingerprint).Replace("-", "").ToLower();
+            Console.WriteLine("result: " + resultFingerprint);
+            Assert.True(serviceFingerprint.Equals(resultFingerprint));
+        }
     }
 }

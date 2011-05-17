@@ -215,15 +215,15 @@ namespace eid_dss_sdk_dotnet
             //  verify service fingerprint if configured
             if (null != this.serviceFingerprint)
             {
-                //               byte[] actualServiceFingerprint = SHA1.Create().ComputeHash(serviceCertificate.RawData());
-                byte[] actualServiceFingerprint = serviceCertificate.GetCertHash();
+                byte[] actualServiceFingerprint = SHA1.Create().ComputeHash(serviceCertificate.GetRawCertData());
                 if (!Arrays.AreEqual(this.serviceFingerprint, actualServiceFingerprint))
                 {
                     throw new SystemException("Service certificate fingerprint mismatch!");
                 }
             }
-
         }
+
+
         public static byte[] toByteArray(string str)
         {
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();

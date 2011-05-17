@@ -10,12 +10,13 @@
     <form id="SignForm" runat="server">
     <div>
         <asp:FileUpload ID="FileUpload1" runat="server" />
-        <asp:Button ID="Button1" runat="server" OnClick="UploadButton_Click" Text="Upload Document" />
+        <!-- Signature Request POST parameters -->
         <asp:HiddenField runat="server" ID="SignatureRequest" />
         <asp:HiddenField runat="server" ID="ContentType" />
         <asp:HiddenField runat="server" ID="RelayState" />
         <asp:HiddenField runat="server" ID="target" />
         <asp:HiddenField runat="server" ID="Language" />
+        <asp:Button ID="Button1" runat="server" OnClick="UploadButton_Click" Text="Upload Document" />
     </div>
     </form>
     <asp:Label ID="Label1" runat="server"></asp:Label>

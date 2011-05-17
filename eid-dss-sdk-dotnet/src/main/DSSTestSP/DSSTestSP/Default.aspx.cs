@@ -5,11 +5,17 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using eid_dss_sdk_dotnet;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
 namespace DSSTestSP
 {
     public partial class _Default : System.Web.UI.Page
     {
+        // DSS Config parameters
+        private const String dssLocation = "https://sebeco-dev-11:8443/eid-dss/protocol/simple";
+        private const String serviceFingerprint = "96964dfed390fc3a884d897f00bc4446cb9d9429";
+
+        // session parameters
         public const String SIGNATURE_REQUEST_SESSION_PARAM = "SignatureRequest";
         public const String RELAY_STATE_SESSION_PARAM = "RelayState";
         public const String TARGET_SESSION_PARAM = "target";
@@ -23,7 +29,7 @@ namespace DSSTestSP
 
             if (null != signatureRequest)
             {
-                SignatureResponseProcessor processor = new SignatureResponseProcessor(null);
+                SignatureResponseProcessor processor = new SignatureResponseProcessor(SoapHexBinary.Parse(serviceFingerprint).Value);
                 try
                 {
                     SignatureReponse signatureResponse = processor.process(Page.Request, target, signatureRequest, null, relayState);
@@ -32,7 +38,7 @@ namespace DSSTestSP
                     {
                         this.Label1.Text = "Valid DSS Response.<br>" +
                             "SignatureCertificate.Subject: " + signatureResponse.getSignatureCertificate().Subject;
-                        this.FileUpload1.Visible = false;
+                        hideRequest();
                         this.Button1.Visible = false;
                     }
                 }
@@ -43,31 +49,39 @@ namespace DSSTestSP
             }
         }
 
+        // hides/disables the upload field, service fingerprint input, ... all what is needed to create a signature request.
+        private void hideRequest()
+        {
+            FileUpload1.Visible = false;
+            FileUpload1.Enabled = false;
+        }
+
         protected void UploadButton_Click(object sender, EventArgs e)
         {
             if (FileUpload1.HasFile)
                 try
                 {
+                    // read to be signed document
                     byte[] doc = new byte[FileUpload1.PostedFile.ContentLength];
                     FileUpload1.PostedFile.InputStream.Read(doc, 0, FileUpload1.PostedFile.ContentLength);
 
+                    // set signature request post parameters
                     SignatureRequest.Value = Convert.ToBase64String(doc);
                     ContentType.Value = FileUpload1.PostedFile.ContentType;
                     RelayState.Value = "foo";
                     target.Value = Request.Url.ToString();
                     Language.Value = "en";
 
-                    // store request state on session
+                    // store signature request state on session for response validation
                     Session[SIGNATURE_REQUEST_SESSION_PARAM] = SignatureRequest.Value;
                     Session[RELAY_STATE_SESSION_PARAM] = RelayState.Value;
                     Session[TARGET_SESSION_PARAM] = target.Value;
 
-                    SignForm.Action = "https://sebeco-dev-11:8443/eid-dss/protocol/simple";
+                    // ready for sign request
+                    SignForm.Action = dssLocation;
                     Button1.Text = "Sign Document";
 
-                    // hide fileupload
-                    FileUpload1.Visible = false;
-                    FileUpload1.Enabled = false;
+                    hideRequest();
 
                     // display some info
                     Label1.Text = "File name: " +
