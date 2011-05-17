@@ -68,7 +68,7 @@ namespace DSSTestSP
                     // set signature request post parameters
                     SignatureRequest.Value = Convert.ToBase64String(doc);
                     ContentType.Value = FileUpload1.PostedFile.ContentType;
-                    RelayState.Value = "foo";
+                    RelayState.Value = Guid.NewGuid().ToString();
                     target.Value = Request.Url.ToString();
                     Language.Value = "en";
 

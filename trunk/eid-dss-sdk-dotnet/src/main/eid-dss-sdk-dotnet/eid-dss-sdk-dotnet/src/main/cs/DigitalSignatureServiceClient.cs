@@ -39,5 +39,22 @@ namespace eid_dss_sdk_dotnet
         /// <param name="mimeType">optional mime-type, default is "text/xml"</param>
         /// <returns>a list of signature information objects detailing on the signing parties.</returns>
         List<SignatureInfo> verifyWithSigners(byte[] signedDocument, String mimeType);
+
+        /// <summary>
+        /// Send specified document to the eID DSS WS for temp storage. The WS will return a StorageInfoDO containing
+        /// the artifact ID for the upload document plus info on expiration of it.
+        /// </summary>
+        /// <param name="documentData">document to be signed</param>
+        /// <param name="contentType">content type of the document to be signed</param>
+        /// <returns>storage information object</returns>
+        StorageInfoDO store(byte[] documentData, String contentType);
+
+        /// <summary>
+        /// Retrieve the document specified by the given ID from the eID DSS service.
+        /// </summary>
+        /// <param name="documentId">the ID of the document to fetch</param>
+        /// <returns>the decoded document data</returns>
+        /// <exception cref="DocumentNotFoundException">no document was returned</exception>
+        byte[] retrieve(String documentId);
     }
 }

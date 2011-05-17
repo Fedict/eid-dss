@@ -210,8 +210,8 @@ namespace eid_dss_sdk_dotnet
         private ResponseBaseType doVerification(byte[] documentData, String mimeType,
             bool returnSignerIdentity, bool returnVerificationReport)
         {
-
             Console.WriteLine("Verify");
+
             // setup the client
             setupClient();
 
@@ -257,6 +257,164 @@ namespace eid_dss_sdk_dotnet
             checkResponse(response, verifyRequest.RequestID);
 
             return response;
+        }
+
+        public StorageInfoDO store(byte[] documentData, String contentType)
+        {
+            Console.WriteLine("Store");
+
+            // setup the client
+            setupClient();
+
+            // create SignRequest
+            String requestId = "dss-sign-request-" + Guid.NewGuid().ToString();
+            SignRequest signRequest = new SignRequest();
+            signRequest.RequestID = requestId;
+            signRequest.Profile = DSSConstants.ARTIFACT_NAMESPACE;
+
+            // add "ReturnStorageInfo" optional input
+            AnyType optionalInputs = new AnyType();
+            XmlElement returnStorageInfoElement = getElement("artifact", "ReturnStorageInfo", DSSConstants.ARTIFACT_NAMESPACE);
+            optionalInputs.Any = new XmlElement[] { returnStorageInfoElement };
+            signRequest.OptionalInputs = optionalInputs;
+
+            // add document
+            signRequest.InputDocuments = getInputDocuments(documentData, contentType);
+
+            // operate
+            SignResponse signResponse = client.sign(signRequest);
+
+            // parse response
+            checkResponse(signResponse, requestId);
+
+            try
+            {
+                validateResult(signResponse);
+            }
+            catch (NotParseableXMLDocumentException e)
+            {
+                throw new SystemException(e.Message, e);
+            }
+
+            // check profile
+            if (!signResponse.Profile.Equals(DSSConstants.ARTIFACT_NAMESPACE))
+            {
+                throw new SystemException("Unexpected SignResponse.Profile: " + signResponse.Profile);
+            }
+
+            // parse StorageInfo
+            DSSXSDNamespace.StorageInfo storageInfo = findStorageInfo(signResponse);
+            if (null == storageInfo)
+            {
+                throw new SystemException("Missing StorageInfo");
+            }
+
+            return new StorageInfoDO(storageInfo.Identifier, storageInfo.Validity.NotBefore, storageInfo.Validity.NotAfter);
+        }
+
+        public byte[] retrieve(String documentId)
+        {
+            Console.WriteLine("Retrieve");
+
+            // setup client
+            setupClient();
+
+            // create request
+            String requestId = "dss-sign-request-" + Guid.NewGuid().ToString();
+            SignRequest signRequest = new SignRequest();
+            signRequest.RequestID = requestId;
+            signRequest.Profile = DSSConstants.ARTIFACT_NAMESPACE;
+
+            // add "ReturnStoredDocument" optional input
+            AnyType optionalInputs = new AnyType();
+
+            DSSXSDNamespace.ReturnStoredDocument returnStoredDocument = new DSSXSDNamespace.ReturnStoredDocument();
+            returnStoredDocument.Identifier = documentId;
+
+            XmlElement returnStoredDocumentElement = toDom("ReturnStoredDocument", DSSConstants.ARTIFACT_NAMESPACE, 
+                returnStoredDocument, typeof(DSSXSDNamespace.ReturnStoredDocument));
+            optionalInputs.Any = new XmlElement[] { returnStoredDocumentElement };
+            signRequest.OptionalInputs = optionalInputs;
+
+            // operate
+            SignResponse signResponse = this.client.sign(signRequest);
+
+            // parse response
+            checkResponse(signResponse, requestId);
+
+            try
+            {
+                validateResult(signResponse);
+            }
+            catch (NotParseableXMLDocumentException e)
+            {
+                throw new SystemException(e.Message, e);
+            }
+
+            // check profile
+            if (!signResponse.Profile.Equals(DSSConstants.ARTIFACT_NAMESPACE))
+            {
+                throw new SystemException("Unexpected SignResponse.Profile: " + signResponse.Profile);
+            }
+
+            // get document
+            DSSXSDNamespace.DocumentWithSignature documentWithSignature = findDocumentWithSignature(signResponse);
+            if (null == documentWithSignature || null == documentWithSignature.Document || null == documentWithSignature.Document.Item)
+            {
+                throw new DocumentNotFoundException();
+            }
+            byte[] documentData;
+
+            if (documentWithSignature.Document.Item is DSSXSDNamespace.Base64Data)
+            {
+                documentData = ((DSSXSDNamespace.Base64Data)documentWithSignature.Document.Item).Value;
+            }
+            else
+            {
+                documentData = (byte[])documentWithSignature.Document.Item;
+            }
+            return documentData;
+        }
+
+        private DSSXSDNamespace.DocumentWithSignature findDocumentWithSignature(SignResponse signResponse)
+        {
+            if (null == signResponse.OptionalOutputs)
+            {
+                return null;
+            }
+            foreach (XmlElement optionalOutput in signResponse.OptionalOutputs.Any)
+            {
+                if (optionalOutput.NamespaceURI.Equals(DSSConstants.DSS_NAMESPACE) &&
+                    optionalOutput.LocalName.Equals("DocumentWithSignature"))
+                {
+                    DSSXSDNamespace.DocumentWithSignature documentWithSignature = (DSSXSDNamespace.DocumentWithSignature)
+                        fromDom("DocumentWithSignature", DSSConstants.DSS_NAMESPACE, optionalOutput, 
+                        typeof(DSSXSDNamespace.DocumentWithSignature));
+                    return documentWithSignature;
+                }
+            }
+
+            return null;
+        }
+
+        private DSSXSDNamespace.StorageInfo findStorageInfo(SignResponse signResponse)
+        {
+            if (null == signResponse.OptionalOutputs)
+            {
+                return null;
+            }
+            foreach (XmlElement optionalOutput in signResponse.OptionalOutputs.Any)
+            {
+                if (optionalOutput.NamespaceURI.Equals(DSSConstants.ARTIFACT_NAMESPACE) &&
+                    optionalOutput.LocalName.Equals("StorageInfo"))
+                {
+                    DSSXSDNamespace.StorageInfo storageInfo = (DSSXSDNamespace.StorageInfo)fromDom("StorageInfo",
+                        DSSConstants.ARTIFACT_NAMESPACE, optionalOutput, typeof(DSSXSDNamespace.StorageInfo));
+                    return storageInfo;
+                }
+            }
+
+            return null;
         }
 
         private InputDocuments getInputDocuments(byte[] documentData, String mimeType)

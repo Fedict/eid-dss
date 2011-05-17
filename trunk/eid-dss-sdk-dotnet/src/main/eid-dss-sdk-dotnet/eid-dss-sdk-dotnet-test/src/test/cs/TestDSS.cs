@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel.Security;
 using System.IO;
 using System.Security.Cryptography;
+using Org.BouncyCastle.Utilities;
 
 namespace eid_dss_sdk_dotnet.test.cs
 {
@@ -25,6 +26,7 @@ namespace eid_dss_sdk_dotnet.test.cs
 
         private byte[] validSignedDocument;
         private byte[] invalidSignedDocument;
+        private byte[] unsignedDocument;
 
         [SetUp]
         public void setup()
@@ -41,6 +43,13 @@ namespace eid_dss_sdk_dotnet.test.cs
                 FileMode.Open, FileAccess.Read);
             invalidSignedDocument = new byte[fs.Length];
             fs.Read(invalidSignedDocument, 0, System.Convert.ToInt32(fs.Length));
+            fs.Close();
+
+            // read unsigned document
+            fs = new FileStream(DOC_DIRECTORY_PATH + "doc.xml",
+                FileMode.Open, FileAccess.Read);
+            unsignedDocument = new byte[fs.Length];
+            fs.Read(unsignedDocument, 0, System.Convert.ToInt32(fs.Length));
             fs.Close();
         }
 
@@ -144,6 +153,31 @@ namespace eid_dss_sdk_dotnet.test.cs
             String resultFingerprint = BitConverter.ToString(actualServiceFingerprint).Replace("-", "").ToLower();
             Console.WriteLine("result: " + resultFingerprint);
             Assert.True(serviceFingerprint.Equals(resultFingerprint));
+        }
+
+        [Test]
+        public void TestStoreAndRetrieve()
+        {
+            DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(DSS_LOCATION);
+
+            // store
+            StorageInfoDO storageInfo = client.store(unsignedDocument, "text/xml");
+            Assert.NotNull(storageInfo);
+            Assert.NotNull(storageInfo.getArtifact());
+            Assert.NotNull(storageInfo.getNotBefore()); 
+            Assert.NotNull(storageInfo.getNotAfter());
+
+            // verify store
+            Console.WriteLine("Artifact: " + storageInfo.getArtifact());
+            Console.WriteLine("NotBefore: " + storageInfo.getNotBefore());
+            Console.WriteLine("NotAfter: " + storageInfo.getNotAfter());
+
+            // retrieve
+
+            // verify retrieve
+            byte[] resultDocument = client.retrieve(storageInfo.getArtifact());
+            Assert.NotNull(resultDocument);
+            Assert.True(Arrays.AreEqual(unsignedDocument, resultDocument));
         }
     }
 }

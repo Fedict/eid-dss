@@ -49,6 +49,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\main\cs\DocumentNotFoundException.cs" />
+    <Compile Include="src\main\cs\StorageInfoDO.cs" />
     <Compile Include="src\main\cs\UserCancelledSignatureResponseProcessorException.cs" />
     <Compile Include="src\main\cs\SignatureResponseProcessorException.cs" />
     <Compile Include="src\main\cs\DigitalSignatureServiceClient.cs" />
