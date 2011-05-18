@@ -48,7 +48,7 @@ namespace DSSTestSP
                     SoapHexBinary.Parse(serviceFingerprint).Value);
                 try
                 {
-                    SignatureReponse signatureResponse = processor.process(Page.Request, target,
+                    SignatureReponse signatureResponse = processor.Process(Page.Request, target,
                         signatureRequest, signatureRequestId, relayState);
                     if (null != signatureResponse)
                     {
@@ -57,16 +57,16 @@ namespace DSSTestSP
                         if (null != signatureRequestId)
                         {
                             // fetch signed document via WS
-                            signedDocument = getClient().retrieve(signatureResponse.getSignatureResponseId());
+                            signedDocument = getClient().Retrieve(signatureResponse.SignatureResponseId);
                         }
                         else
                         {
-                            signedDocument = signatureResponse.getDecodedSignatureResponse();
+                            signedDocument = signatureResponse.DecodedSignatureResponse;
                         }
 
                         // show results
                         this.Label1.Text = "Valid DSS Response.<br>" +
-                            "SignatureCertificate.Subject: " + signatureResponse.getSignatureCertificate().Subject;
+                            "SignatureCertificate.Subject: " + signatureResponse.SignatureCertificate.Subject;
                         this.Button1.Text = "Validate (WS)";
                         Session[SIGNED_DOCUMENT_SESSION_PARAM] = signedDocument;
                         hideRequest();
@@ -105,8 +105,8 @@ namespace DSSTestSP
         private DigitalSignatureServiceClient getClient()
         {
             DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(dssWSLocation);
-            client.setMaxReceivedMessageSize(maxReceivedMessageSize);
-            client.setLogging(true);
+            client.SetMaxReceivedMessageSize(maxReceivedMessageSize);
+            client.SetLogging(true);
             return client;
         }
 
@@ -130,8 +130,8 @@ namespace DSSTestSP
                     if (artifact)
                     {
                         // upload using WS
-                        StorageInfoDO storageInfo = getClient().store(doc, FileUpload1.PostedFile.ContentType);
-                        signatureRequestIdValue = storageInfo.getArtifact();
+                        StorageInfoDO storageInfo = getClient().Store(doc, FileUpload1.PostedFile.ContentType);
+                        signatureRequestIdValue = storageInfo.Artifact;
                     }
                     else
                     {
@@ -147,7 +147,7 @@ namespace DSSTestSP
                         List<X509Certificate2> certificateChain = new List<X509Certificate2>();
                         certificateChain.Add(certificate);
 
-                        serviceSignature = SignatureRequestUtil.getServiceSignature(rsa, certificateChain, signatureRequestValue,
+                        serviceSignature = SignatureRequestUtil.CreateServiceSignature(rsa, certificateChain, signatureRequestValue,
                             signatureRequestIdValue, targetValue, languageValue, contentTypeValue, relayStateValue);
                     }
 
@@ -220,13 +220,13 @@ namespace DSSTestSP
             if (null != signedDocument)
             {
                 // validate signed document over WS
-                List<SignatureInfo> signatureInfos = getClient().verifyWithSigners(signedDocument, contentType);
+                List<SignatureInfo> signatureInfos = getClient().VerifyWithSigners(signedDocument, contentType);
                 Label1.Text = "SignatureInfos:<br>";
                 foreach (SignatureInfo signatureInfo in signatureInfos)
                 {
-                    Label1.Text += "  * Signer: " + signatureInfo.getSigner().Subject.ToString() + "<br>";
-                    Label1.Text += "  * Time  : " + signatureInfo.getSigningTime() + "<br>";
-                    Label1.Text += "  * Role  : " + signatureInfo.getRole() + "<br><br>";
+                    Label1.Text += "  * Signer: " + signatureInfo.Signer.Subject.ToString() + "<br>";
+                    Label1.Text += "  * Time  : " + signatureInfo.SigningTime + "<br>";
+                    Label1.Text += "  * Role  : " + signatureInfo.Role + "<br><br>";
                 }
                 Button1.Visible = false;
 

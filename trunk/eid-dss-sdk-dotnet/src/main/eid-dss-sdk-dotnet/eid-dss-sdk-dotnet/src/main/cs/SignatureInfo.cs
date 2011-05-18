@@ -18,19 +18,40 @@ namespace eid_dss_sdk_dotnet
             this.role = role;
         }
 
-        public X509Certificate getSigner()
+        public X509Certificate Signer
         {
-            return this.signer;
+            get
+            {
+                return this.signer;
+            }
+            set
+            {
+                this.signer = value;
+            }
         }
 
-        public DateTime getSigningTime()
+        public DateTime SigningTime
         {
-            return this.signingTime;
+            get
+            {
+                return this.signingTime;
+            }
+            set
+            {
+                this.signingTime = value;
+            }
         }
 
-        public String getRole()
+        public String Role
         {
-            return this.role;
+            get
+            {
+                return this.role;
+            }
+            set
+            {
+                this.role = value;
+            }
         }
     }
 }

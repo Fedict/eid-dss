@@ -33,17 +33,17 @@ namespace eid_dss_sdk_dotnet
             this.location = location;
         }
 
-        public void setLogging(bool logging)
+        public void SetLogging(bool logging)
         {
             this.logging = logging;
         }
 
-        public void setMaxReceivedMessageSize(long maxReceivedMessageSize)
+        public void SetMaxReceivedMessageSize(long maxReceivedMessageSize)
         {
             this.maxReceivedMessageSize = maxReceivedMessageSize;
         }
 
-        private void setupClient()
+        private void SetupClient()
         {
             EndpointAddress remoteAddress = new EndpointAddress(this.location);
 
@@ -90,7 +90,7 @@ namespace eid_dss_sdk_dotnet
             }
         }
 
-        public void configureSsl(X509Certificate2 sslCertificate)
+        public void ConfigureSsl(X509Certificate2 sslCertificate)
         {
             this.sslCertificate = sslCertificate;
         }
@@ -104,11 +104,11 @@ namespace eid_dss_sdk_dotnet
             return result;
         }
 
-        public bool verify(byte[] signedDocument, string mimeType)
+        public bool Verify(byte[] signedDocument, string mimeType)
         {
-            ResponseBaseType response = doVerification(signedDocument, mimeType, false, false);
+            ResponseBaseType response = DoVerification(signedDocument, mimeType, false, false);
 
-            String resultminor = validateResult(response);
+            String resultminor = ValidateResult(response);
             if (null == resultminor)
             {
                 throw new SystemException("Missing ResultMinor");
@@ -123,15 +123,15 @@ namespace eid_dss_sdk_dotnet
             return false;
         }
 
-        public List<SignatureInfo> verifyWithSigners(byte[] signedDocument, String mimeType)
+        public List<SignatureInfo> VerifyWithSigners(byte[] signedDocument, String mimeType)
         {
-            ResponseBaseType response = doVerification(signedDocument, mimeType, false, true);
+            ResponseBaseType response = DoVerification(signedDocument, mimeType, false, true);
 
-            validateResult(response);
+            ValidateResult(response);
 
             // TODO: parse verificationReport
             List<SignatureInfo> signers = new List<SignatureInfo>();
-            DSSXSDNamespace.VerificationReportType verificationReport = findVerificationReport(response);
+            DSSXSDNamespace.VerificationReportType verificationReport = FindVerificationReport(response);
             if (null == verificationReport)
             {
                 return signers;
@@ -161,7 +161,7 @@ namespace eid_dss_sdk_dotnet
                         detail.LocalName.Equals("DetailedSignatureReport"))
                     {
                         DSSXSDNamespace.DetailedSignatureReportType detailedSignatureReport =
-                            (DSSXSDNamespace.DetailedSignatureReportType)fromDom("DetailedSignatureReport",
+                            (DSSXSDNamespace.DetailedSignatureReportType)FromDom("DetailedSignatureReport",
                             DSSConstants.VR_NAMESPACE, detail,
                             typeof(DSSXSDNamespace.DetailedSignatureReportType));
 
@@ -194,7 +194,7 @@ namespace eid_dss_sdk_dotnet
             return signers;
         }
 
-        private DSSXSDNamespace.VerificationReportType findVerificationReport(ResponseBaseType responseBase)
+        private DSSXSDNamespace.VerificationReportType FindVerificationReport(ResponseBaseType responseBase)
         {
             if (null == responseBase.OptionalOutputs)
             {
@@ -206,7 +206,7 @@ namespace eid_dss_sdk_dotnet
                     optionalOutput.LocalName.Equals("VerificationReport"))
                 {
                     DSSXSDNamespace.VerificationReportType verificationReport =
-                        (DSSXSDNamespace.VerificationReportType)fromDom("VerificationReport",
+                        (DSSXSDNamespace.VerificationReportType)FromDom("VerificationReport",
                         DSSConstants.VR_NAMESPACE, optionalOutput,
                         typeof(DSSXSDNamespace.VerificationReportType));
                     return verificationReport;
@@ -216,13 +216,13 @@ namespace eid_dss_sdk_dotnet
             return null;
         }
 
-        private ResponseBaseType doVerification(byte[] documentData, String mimeType,
+        private ResponseBaseType DoVerification(byte[] documentData, String mimeType,
             bool returnSignerIdentity, bool returnVerificationReport)
         {
             Console.WriteLine("Verify");
 
             // setup the client
-            setupClient();
+            SetupClient();
 
             String requestId = "dss-verify-request-" + Guid.NewGuid().ToString();
             VerifyRequest verifyRequest = new VerifyRequest();
@@ -232,7 +232,7 @@ namespace eid_dss_sdk_dotnet
             List<XmlElement> optionalInputElements = new List<XmlElement>();
             if (returnSignerIdentity)
             {
-                XmlElement e = getElement("dss", "ReturnSignerIdentity", DSSConstants.DSS_NAMESPACE);
+                XmlElement e = GetElement("dss", "ReturnSignerIdentity", DSSConstants.DSS_NAMESPACE);
                 optionalInputElements.Add(e);
             }
 
@@ -245,7 +245,7 @@ namespace eid_dss_sdk_dotnet
                 returnVerificationReportElement.ReportDetailLevel =
                     "urn:oasis:names:tc:dss-x:1.0:profiles:verificationreport:reportdetail:noDetails";
 
-                XmlElement e = toDom("ReturnVerificationReport", DSSConstants.VR_NAMESPACE,
+                XmlElement e = ToDom("ReturnVerificationReport", DSSConstants.VR_NAMESPACE,
                     returnVerificationReportElement, typeof(DSSXSDNamespace.ReturnVerificationReport));
 
                 optionalInputElements.Add(e);
@@ -257,23 +257,23 @@ namespace eid_dss_sdk_dotnet
                 verifyRequest.OptionalInputs = optionalInputs;
             }
 
-            verifyRequest.InputDocuments = getInputDocuments(documentData, mimeType);
+            verifyRequest.InputDocuments = GetInputDocuments(documentData, mimeType);
 
             // operate
             ResponseBaseType response = this.client.verify(verifyRequest);
 
             // check response
-            checkResponse(response, verifyRequest.RequestID);
+            CheckResponse(response, verifyRequest.RequestID);
 
             return response;
         }
 
-        public StorageInfoDO store(byte[] documentData, String contentType)
+        public StorageInfoDO Store(byte[] documentData, String contentType)
         {
             Console.WriteLine("Store");
 
             // setup the client
-            setupClient();
+            SetupClient();
 
             // create SignRequest
             String requestId = "dss-sign-request-" + Guid.NewGuid().ToString();
@@ -283,22 +283,22 @@ namespace eid_dss_sdk_dotnet
 
             // add "ReturnStorageInfo" optional input
             AnyType optionalInputs = new AnyType();
-            XmlElement returnStorageInfoElement = getElement("artifact", "ReturnStorageInfo", DSSConstants.ARTIFACT_NAMESPACE);
+            XmlElement returnStorageInfoElement = GetElement("artifact", "ReturnStorageInfo", DSSConstants.ARTIFACT_NAMESPACE);
             optionalInputs.Any = new XmlElement[] { returnStorageInfoElement };
             signRequest.OptionalInputs = optionalInputs;
 
             // add document
-            signRequest.InputDocuments = getInputDocuments(documentData, contentType);
+            signRequest.InputDocuments = GetInputDocuments(documentData, contentType);
 
             // operate
             SignResponse signResponse = client.sign(signRequest);
 
             // parse response
-            checkResponse(signResponse, requestId);
+            CheckResponse(signResponse, requestId);
 
             try
             {
-                validateResult(signResponse);
+                ValidateResult(signResponse);
             }
             catch (NotParseableXMLDocumentException e)
             {
@@ -312,7 +312,7 @@ namespace eid_dss_sdk_dotnet
             }
 
             // parse StorageInfo
-            DSSXSDNamespace.StorageInfo storageInfo = findStorageInfo(signResponse);
+            DSSXSDNamespace.StorageInfo storageInfo = FindStorageInfo(signResponse);
             if (null == storageInfo)
             {
                 throw new SystemException("Missing StorageInfo");
@@ -321,12 +321,12 @@ namespace eid_dss_sdk_dotnet
             return new StorageInfoDO(storageInfo.Identifier, storageInfo.Validity.NotBefore, storageInfo.Validity.NotAfter);
         }
 
-        public byte[] retrieve(String documentId)
+        public byte[] Retrieve(String documentId)
         {
             Console.WriteLine("Retrieve");
 
             // setup client
-            setupClient();
+            SetupClient();
 
             // create request
             String requestId = "dss-sign-request-" + Guid.NewGuid().ToString();
@@ -340,7 +340,7 @@ namespace eid_dss_sdk_dotnet
             DSSXSDNamespace.ReturnStoredDocument returnStoredDocument = new DSSXSDNamespace.ReturnStoredDocument();
             returnStoredDocument.Identifier = documentId;
 
-            XmlElement returnStoredDocumentElement = toDom("ReturnStoredDocument", DSSConstants.ARTIFACT_NAMESPACE,
+            XmlElement returnStoredDocumentElement = ToDom("ReturnStoredDocument", DSSConstants.ARTIFACT_NAMESPACE,
                 returnStoredDocument, typeof(DSSXSDNamespace.ReturnStoredDocument));
             optionalInputs.Any = new XmlElement[] { returnStoredDocumentElement };
             signRequest.OptionalInputs = optionalInputs;
@@ -349,11 +349,11 @@ namespace eid_dss_sdk_dotnet
             SignResponse signResponse = this.client.sign(signRequest);
 
             // parse response
-            checkResponse(signResponse, requestId);
+            CheckResponse(signResponse, requestId);
 
             try
             {
-                validateResult(signResponse);
+                ValidateResult(signResponse);
             }
             catch (NotParseableXMLDocumentException e)
             {
@@ -367,7 +367,7 @@ namespace eid_dss_sdk_dotnet
             }
 
             // get document
-            DSSXSDNamespace.DocumentWithSignature documentWithSignature = findDocumentWithSignature(signResponse);
+            DSSXSDNamespace.DocumentWithSignature documentWithSignature = FindDocumentWithSignature(signResponse);
             if (null == documentWithSignature || null == documentWithSignature.Document || null == documentWithSignature.Document.Item)
             {
                 throw new DocumentNotFoundException();
@@ -385,7 +385,7 @@ namespace eid_dss_sdk_dotnet
             return documentData;
         }
 
-        private DSSXSDNamespace.DocumentWithSignature findDocumentWithSignature(SignResponse signResponse)
+        private DSSXSDNamespace.DocumentWithSignature FindDocumentWithSignature(SignResponse signResponse)
         {
             if (null == signResponse.OptionalOutputs)
             {
@@ -397,7 +397,7 @@ namespace eid_dss_sdk_dotnet
                     optionalOutput.LocalName.Equals("DocumentWithSignature"))
                 {
                     DSSXSDNamespace.DocumentWithSignature documentWithSignature = (DSSXSDNamespace.DocumentWithSignature)
-                        fromDom("DocumentWithSignature", DSSConstants.DSS_NAMESPACE, optionalOutput,
+                        FromDom("DocumentWithSignature", DSSConstants.DSS_NAMESPACE, optionalOutput,
                         typeof(DSSXSDNamespace.DocumentWithSignature));
                     return documentWithSignature;
                 }
@@ -406,7 +406,7 @@ namespace eid_dss_sdk_dotnet
             return null;
         }
 
-        private DSSXSDNamespace.StorageInfo findStorageInfo(SignResponse signResponse)
+        private DSSXSDNamespace.StorageInfo FindStorageInfo(SignResponse signResponse)
         {
             if (null == signResponse.OptionalOutputs)
             {
@@ -417,7 +417,7 @@ namespace eid_dss_sdk_dotnet
                 if (optionalOutput.NamespaceURI.Equals(DSSConstants.ARTIFACT_NAMESPACE) &&
                     optionalOutput.LocalName.Equals("StorageInfo"))
                 {
-                    DSSXSDNamespace.StorageInfo storageInfo = (DSSXSDNamespace.StorageInfo)fromDom("StorageInfo",
+                    DSSXSDNamespace.StorageInfo storageInfo = (DSSXSDNamespace.StorageInfo)FromDom("StorageInfo",
                         DSSConstants.ARTIFACT_NAMESPACE, optionalOutput, typeof(DSSXSDNamespace.StorageInfo));
                     return storageInfo;
                 }
@@ -426,7 +426,7 @@ namespace eid_dss_sdk_dotnet
             return null;
         }
 
-        private InputDocuments getInputDocuments(byte[] documentData, String mimeType)
+        private InputDocuments GetInputDocuments(byte[] documentData, String mimeType)
         {
             InputDocuments inputDocuments = new InputDocuments();
 
@@ -447,7 +447,7 @@ namespace eid_dss_sdk_dotnet
             return inputDocuments;
         }
 
-        private void checkResponse(ResponseBaseType response, String requestId)
+        private void CheckResponse(ResponseBaseType response, String requestId)
         {
             if (null == response)
             {
@@ -464,7 +464,7 @@ namespace eid_dss_sdk_dotnet
             }
         }
 
-        private String validateResult(ResponseBaseType response)
+        private String ValidateResult(ResponseBaseType response)
         {
             Result result = response.Result;
             String resultMajor = result.ResultMajor;
@@ -478,18 +478,18 @@ namespace eid_dss_sdk_dotnet
                 {
                     throw new NotParseableXMLDocumentException();
                 }
-                throw new SystemException("unsuccessful result: " + resultMajor);
+                throw new DSSRequestFailedException("unsuccessful result",resultMajor, resultMinor);
             }
             return resultMinor;
         }
 
-        private XmlElement getElement(String prefix, String elementName, String ns)
+        private XmlElement GetElement(String prefix, String elementName, String ns)
         {
             XmlDocument xmlDocument = new XmlDocument();
             return xmlDocument.CreateElement(prefix, elementName, ns);
         }
 
-        private XmlElement toDom(String elementName, String ns, Object o, Type type)
+        private XmlElement ToDom(String elementName, String ns, Object o, Type type)
         {
             // serialize to DOM
             XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
@@ -512,7 +512,7 @@ namespace eid_dss_sdk_dotnet
             return (XmlElement)xmlDocument.ChildNodes.Item(1);
         }
 
-        private Object fromDom(String elementName, String ns, XmlNode xmlNode, Type type)
+        private Object FromDom(String elementName, String ns, XmlNode xmlNode, Type type)
         {
             XmlRootAttribute xRoot = new XmlRootAttribute();
             xRoot.ElementName = elementName;

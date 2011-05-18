@@ -21,7 +21,7 @@ namespace eid_dss_sdk_dotnet
         /// <param name="relayState">optional relay state</param>
         /// <returns>service signature DO containing the signature value, service signed property indiciating which fields were signed,
         /// and the SP certificate chain</returns>
-        public static ServiceSignatureDO getServiceSignature(RSACryptoServiceProvider spRSA,
+        public static ServiceSignatureDO CreateServiceSignature(RSACryptoServiceProvider spRSA,
             List<X509Certificate2> spCertificateChain, String signatureRequest, String signatureRequestId,
             String target, String language, String contentType, String relayState)
         {
@@ -40,14 +40,14 @@ namespace eid_dss_sdk_dotnet
 
             // construct service signature
             List<byte> signatureData = new List<byte>();
-            signatureData.AddRange(toByteArray(target));
+            signatureData.AddRange(ToByteArray(target));
 
-            if (null != signatureRequest) signatureData.AddRange(toByteArray(signatureRequest));
-            else signatureData.AddRange(toByteArray(signatureRequestId));
+            if (null != signatureRequest) signatureData.AddRange(ToByteArray(signatureRequest));
+            else signatureData.AddRange(ToByteArray(signatureRequestId));
 
-            if (null != language) signatureData.AddRange(toByteArray(language));
-            if (null != contentType) signatureData.AddRange(toByteArray(contentType));
-            if (null != relayState) signatureData.AddRange(toByteArray(relayState));
+            if (null != language) signatureData.AddRange(ToByteArray(language));
+            if (null != contentType) signatureData.AddRange(ToByteArray(contentType));
+            if (null != relayState) signatureData.AddRange(ToByteArray(relayState));
 
             byte[] serviceSignatureValue = spRSA.SignData(signatureData.ToArray(), "SHA1");
 
@@ -73,7 +73,7 @@ namespace eid_dss_sdk_dotnet
             return new ServiceSignatureDO(serviceSigned, encodedServiceSignature, serviceCertificateChainSize, serviceCertificates); ;
         }
 
-        public static byte[] toByteArray(string str)
+        public static byte[] ToByteArray(string str)
         {
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
             return encoding.GetBytes(str);

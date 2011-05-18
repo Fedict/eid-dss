@@ -19,19 +19,40 @@ namespace eid_dss_sdk_dotnet
             this.signatureCertificate = signatureCertificate;
         }
 
-        public byte[] getDecodedSignatureResponse()
+        public byte[] DecodedSignatureResponse
         {
-            return this.decodedSignatureResponse;
+            get
+            {
+                return this.decodedSignatureResponse;
+            }
+            set
+            {
+                this.decodedSignatureResponse = value;
+            }
         }
 
-        public String getSignatureResponseId()
+        public String SignatureResponseId
         {
-            return this.signatureResponseId;
+            get
+            {
+                return this.signatureResponseId;
+            }
+            set
+            {
+                this.signatureResponseId = value;
+            }
         }
 
-        public X509Certificate getSignatureCertificate()
+        public X509Certificate SignatureCertificate
         {
-            return this.signatureCertificate;
+            get
+            {
+                return this.signatureCertificate;
+            }
+            set
+            {
+                this.signatureCertificate = value;
+            }
         }
     }
 }

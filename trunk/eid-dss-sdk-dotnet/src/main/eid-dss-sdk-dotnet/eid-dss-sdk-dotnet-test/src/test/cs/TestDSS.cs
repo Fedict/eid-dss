@@ -71,7 +71,7 @@ namespace eid_dss_sdk_dotnet.test.cs
         {
             DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(DSS_LOCATION);
 
-            bool result = client.verify(validSignedDocument, "text/xml");
+            bool result = client.Verify(validSignedDocument, "text/xml");
             Assert.True(result);
         }
 
@@ -82,7 +82,7 @@ namespace eid_dss_sdk_dotnet.test.cs
 
             try
             {
-                client.verify(invalidSignedDocument, "text/xml");
+                client.Verify(invalidSignedDocument, "text/xml");
                 Assert.Fail();
             }
             catch (SystemException e)
@@ -96,9 +96,9 @@ namespace eid_dss_sdk_dotnet.test.cs
         public void TestVerifyValidDocumentSslNoTlsAuthn()
         {
             DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(DSS_LOCATION_SSL);
-            client.configureSsl(null);
+            client.ConfigureSsl(null);
 
-            bool result = client.verify(validSignedDocument, "text/xml");
+            bool result = client.Verify(validSignedDocument, "text/xml");
             Assert.True(result);
         }
 
@@ -108,9 +108,9 @@ namespace eid_dss_sdk_dotnet.test.cs
             X509Certificate2 sslCertificate = new X509Certificate2(SSL_CERT_PATH);
 
             DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(DSS_LOCATION_SSL);
-            client.configureSsl(sslCertificate);
+            client.ConfigureSsl(sslCertificate);
 
-            bool result = client.verify(validSignedDocument, "text/xml");
+            bool result = client.Verify(validSignedDocument, "text/xml");
             Assert.True(result);
         }
 
@@ -119,10 +119,10 @@ namespace eid_dss_sdk_dotnet.test.cs
         {
             X509Certificate2 invalidSslCertificate = new X509Certificate2(INVALID_SSL_CERT_PATH);
             DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(DSS_LOCATION_SSL);
-            client.configureSsl(invalidSslCertificate);
+            client.ConfigureSsl(invalidSslCertificate);
             try
             {
-                client.verify(validSignedDocument, "text/xml");
+                client.Verify(validSignedDocument, "text/xml");
                 Assert.Fail();
             }
             catch (SecurityNegotiationException e)
@@ -137,15 +137,15 @@ namespace eid_dss_sdk_dotnet.test.cs
         {
             DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(DSS_LOCATION);
 
-            List<SignatureInfo> signers = client.verifyWithSigners(validSignedDocument, "text/xml");
+            List<SignatureInfo> signers = client.VerifyWithSigners(validSignedDocument, "text/xml");
             Assert.NotNull(signers);
 
             foreach (SignatureInfo signer in signers)
             {
                 Console.WriteLine("------------------------------------------");
-                Console.WriteLine("Signer: " + signer.getSigner().Subject);
-                Console.WriteLine("Signing Time: " + signer.getSigningTime());
-                Console.WriteLine("Role: " + signer.getRole());
+                Console.WriteLine("Signer: " + signer.Signer.Subject);
+                Console.WriteLine("Signing Time: " + signer.SigningTime);
+                Console.WriteLine("Role: " + signer.Role);
                 Console.WriteLine("------------------------------------------");
             }
         }
@@ -174,19 +174,19 @@ namespace eid_dss_sdk_dotnet.test.cs
             DigitalSignatureServiceClient client = new DigitalSignatureServiceClientImpl(DSS_LOCATION);
 
             // store
-            StorageInfoDO storageInfo = client.store(unsignedDocument, "text/xml");
+            StorageInfoDO storageInfo = client.Store(unsignedDocument, "text/xml");
             Assert.NotNull(storageInfo);
-            Assert.NotNull(storageInfo.getArtifact());
-            Assert.NotNull(storageInfo.getNotBefore());
-            Assert.NotNull(storageInfo.getNotAfter());
+            Assert.NotNull(storageInfo.Artifact);
+            Assert.NotNull(storageInfo.NotBefore);
+            Assert.NotNull(storageInfo.NotAfter);
 
             // verify store
-            Console.WriteLine("Artifact: " + storageInfo.getArtifact());
-            Console.WriteLine("NotBefore: " + storageInfo.getNotBefore());
-            Console.WriteLine("NotAfter: " + storageInfo.getNotAfter());
+            Console.WriteLine("Artifact: " + storageInfo.Artifact);
+            Console.WriteLine("NotBefore: " + storageInfo.NotBefore);
+            Console.WriteLine("NotAfter: " + storageInfo.NotAfter);
 
             // retrieve
-            byte[] resultDocument = client.retrieve(storageInfo.getArtifact());
+            byte[] resultDocument = client.Retrieve(storageInfo.Artifact);
 
             // verify retrieve
             Assert.NotNull(resultDocument);
@@ -255,7 +255,7 @@ namespace eid_dss_sdk_dotnet.test.cs
             List<X509Certificate2> certificateChain = new List<X509Certificate2>();
             certificateChain.Add(certificate);
 
-            ServiceSignatureDO serviceSignature = SignatureRequestUtil.getServiceSignature(rsa, certificateChain, "signature-request", null,
+            ServiceSignatureDO serviceSignature = SignatureRequestUtil.CreateServiceSignature(rsa, certificateChain, "signature-request", null,
                 "target", "language", "content-type", "relay-state");
             Assert.NotNull(serviceSignature);
 

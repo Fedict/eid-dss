@@ -17,19 +17,36 @@ namespace eid_dss_sdk_dotnet
             this.notAfter = notAfter;
         }
 
-        public String getArtifact()
+        public String Artifact
         {
-            return this.artifact;
+            get
+            {
+                return this.artifact;
+            }
         }
 
-        public DateTime getNotBefore()
+        public DateTime NotBefore
         {
-            return this.notBefore;
+            get
+            {
+                return this.notBefore;
+            }
+            set
+            {
+                this.notBefore = value;
+            }
         }
 
-        public DateTime getNotAfter()
+        public DateTime NotAfter
         {
-            return this.notAfter;
+            get
+            {
+                return this.notAfter;
+            }
+            set
+            {
+                this.notAfter = value;
+            }
         }
     }
 }
