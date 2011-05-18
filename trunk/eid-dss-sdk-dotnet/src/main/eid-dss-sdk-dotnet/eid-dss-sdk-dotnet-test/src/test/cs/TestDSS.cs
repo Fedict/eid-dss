@@ -9,6 +9,13 @@ using System.ServiceModel.Security;
 using System.IO;
 using System.Security.Cryptography;
 using Org.BouncyCastle.Utilities;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Generators;
+using System.Collections;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Pkcs;
 
 namespace eid_dss_sdk_dotnet.test.cs
 {
@@ -18,11 +25,17 @@ namespace eid_dss_sdk_dotnet.test.cs
         public static string DSS_LOCATION_SSL = "https://sebeco-dev-11:8443/eid-dss-ws/dss";
         public static string DSS_LOCATION = "http://sebeco-dev-11:8080/eid-dss-ws/dss";
 
-        public static string CERT_DIRECTORY_PATH = "C:\\Users\\devel\\certificates\\";
+        public static string TEST_DIRECTORY_PATH = "C:\\Users\\devel\\Documents\\Test\\";
+
+        public static string TEST_DOC_PATH = TEST_DIRECTORY_PATH + "documents\\";
+
+        public static string CERT_DIRECTORY_PATH = TEST_DIRECTORY_PATH + "certificates\\";
         public static string SSL_CERT_PATH = CERT_DIRECTORY_PATH + "eiddss_ssl.cer";
         public static string INVALID_SSL_CERT_PATH = CERT_DIRECTORY_PATH + "invalid_ssl.cer";
 
-        public static string DOC_DIRECTORY_PATH = "C:\\Users\\devel\\Documents\\";
+        public static string TEST_PFX_PATH = CERT_DIRECTORY_PATH + "test.pfx";
+        public static string TEST_PFX_PASSWORD = "secret";
+        public static string TEST_CRT_PATH = CERT_DIRECTORY_PATH + "test.crt";
 
         private byte[] validSignedDocument;
         private byte[] invalidSignedDocument;
@@ -32,21 +45,21 @@ namespace eid_dss_sdk_dotnet.test.cs
         public void setup()
         {
             // read valid signed document
-            FileStream fs = new FileStream(DOC_DIRECTORY_PATH + "doc-signed.xml",
+            FileStream fs = new FileStream(TEST_DOC_PATH + "doc-signed.xml",
                 FileMode.Open, FileAccess.Read);
             validSignedDocument = new byte[fs.Length];
             fs.Read(validSignedDocument, 0, System.Convert.ToInt32(fs.Length));
             fs.Close();
 
             // read invalid signed document
-            fs = new FileStream(DOC_DIRECTORY_PATH + "doc-invalid-signed.xml",
+            fs = new FileStream(TEST_DOC_PATH + "doc-invalid-signed.xml",
                 FileMode.Open, FileAccess.Read);
             invalidSignedDocument = new byte[fs.Length];
             fs.Read(invalidSignedDocument, 0, System.Convert.ToInt32(fs.Length));
             fs.Close();
 
             // read unsigned document
-            fs = new FileStream(DOC_DIRECTORY_PATH + "doc.xml",
+            fs = new FileStream(TEST_DOC_PATH + "doc.xml",
                 FileMode.Open, FileAccess.Read);
             unsignedDocument = new byte[fs.Length];
             fs.Read(unsignedDocument, 0, System.Convert.ToInt32(fs.Length));
@@ -164,7 +177,7 @@ namespace eid_dss_sdk_dotnet.test.cs
             StorageInfoDO storageInfo = client.store(unsignedDocument, "text/xml");
             Assert.NotNull(storageInfo);
             Assert.NotNull(storageInfo.getArtifact());
-            Assert.NotNull(storageInfo.getNotBefore()); 
+            Assert.NotNull(storageInfo.getNotBefore());
             Assert.NotNull(storageInfo.getNotAfter());
 
             // verify store
@@ -173,11 +186,90 @@ namespace eid_dss_sdk_dotnet.test.cs
             Console.WriteLine("NotAfter: " + storageInfo.getNotAfter());
 
             // retrieve
+            byte[] resultDocument = client.retrieve(storageInfo.getArtifact());
 
             // verify retrieve
-            byte[] resultDocument = client.retrieve(storageInfo.getArtifact());
             Assert.NotNull(resultDocument);
             Assert.True(Arrays.AreEqual(unsignedDocument, resultDocument));
         }
+
+        [Test]
+        public void TestCreateKeyStore()
+        {
+            AsymmetricCipherKeyPair keyPair = KeyStoreUtil.GenerateKeyPair();
+            RsaPrivateCrtKeyParameters RSAprivKey = (RsaPrivateCrtKeyParameters)keyPair.Private;
+            RsaKeyParameters RSApubKey = (RsaKeyParameters)keyPair.Public;
+
+            Org.BouncyCastle.X509.X509Certificate cert = KeyStoreUtil.CreateCert("Test", RSApubKey, RSAprivKey);
+            Console.WriteLine(cert.ToString());
+
+            string pfxPath = TEST_PFX_PATH;
+            if (File.Exists(pfxPath))
+            {
+                pfxPath += "_old";
+                if (File.Exists(pfxPath))
+                {
+                    File.Delete(pfxPath);
+                }
+            }
+            FileStream fs = new FileStream(pfxPath, FileMode.CreateNew);
+            KeyStoreUtil.WritePkcs12(RSAprivKey, cert, TEST_PFX_PASSWORD, fs);
+            fs.Close();
+
+            string crtPath = TEST_CRT_PATH;
+            if (File.Exists(crtPath))
+            {
+                crtPath += "_old";
+                if (File.Exists(crtPath))
+                {
+                    File.Delete(crtPath);
+                }
+            }
+            FileStream certFileStream = new FileStream(crtPath, FileMode.CreateNew);
+            byte[] encodedCert = cert.GetEncoded();
+            certFileStream.Write(encodedCert, 0, encodedCert.Length);
+            certFileStream.Close();
+        }
+
+        [Test]
+        public void TestLoadKeyFromPfx()
+        {
+            RSACryptoServiceProvider rsa = KeyStoreUtil.GetPrivateKeyFromPfx(TEST_PFX_PATH, TEST_PFX_PASSWORD, true);
+            Console.WriteLine(rsa);
+            Assert.NotNull(rsa);
+        }
+
+        [Test]
+        public void TestLoadCertFromPfx()
+        {
+            X509Certificate2 certificate = KeyStoreUtil.GetCertificateFromPfx(TEST_PFX_PATH, TEST_PFX_PASSWORD, true);
+            Console.WriteLine(certificate);
+            Assert.NotNull(certificate);
+        }
+
+        [Test]
+        public void TestCreateServiceSignature()
+        {
+            RSACryptoServiceProvider rsa = KeyStoreUtil.GetPrivateKeyFromPfx(TEST_PFX_PATH, TEST_PFX_PASSWORD, true);
+            X509Certificate2 certificate = KeyStoreUtil.GetCertificateFromPfx(TEST_PFX_PATH, TEST_PFX_PASSWORD, true);
+            List<X509Certificate2> certificateChain = new List<X509Certificate2>();
+            certificateChain.Add(certificate);
+
+            ServiceSignatureDO serviceSignature = SignatureRequestUtil.getServiceSignature(rsa, certificateChain, "signature-request", null,
+                "target", "language", "content-type", "relay-state");
+            Assert.NotNull(serviceSignature);
+
+            Assert.NotNull(serviceSignature.ServiceSigned);
+            Assert.NotNull(serviceSignature.ServiceSignature);
+            Assert.NotNull(serviceSignature.ServiceCertificateChainSize);
+            Assert.NotNull(serviceSignature.ServiceCertificates);
+            Assert.True(serviceSignature.ServiceCertificates.Count == 1);
+
+            Console.WriteLine("ServiceSignature");
+            Console.WriteLine("----------------");
+            Console.WriteLine("  * ServiceSigned   =" + serviceSignature.ServiceSigned);
+            Console.WriteLine("  * ServiceSignature=" + serviceSignature.ServiceSignature);
+        }
+
     }
 }

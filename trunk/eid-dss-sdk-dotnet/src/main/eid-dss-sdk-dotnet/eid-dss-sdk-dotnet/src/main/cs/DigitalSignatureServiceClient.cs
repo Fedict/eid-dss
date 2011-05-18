@@ -24,6 +24,12 @@ namespace eid_dss_sdk_dotnet
         void setLogging(bool logging);
 
         /// <summary>
+        /// Set the WS endpoint's binding "MaxReceivedMessageSize" property, default is 65536
+        /// </summary>
+        /// <param name="size"></param>
+        void setMaxReceivedMessageSize(long size);
+
+        /// <summary>
         /// Verifies whether the given document has been signed or not.
         /// </summary>
         /// <param name="signedDocument">The signed document to verify</param>

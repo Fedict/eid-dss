@@ -28,7 +28,7 @@ namespace eid_dss_sdk_dotnet
         /// BasicHttpBinding with SSL Transport Security. Provides NO message integrity.
         /// </summary>
         /// <returns></returns>
-        public static BasicHttpBinding BasicHttpOverSSLBinding()
+        public static BasicHttpBinding BasicHttpOverSSLBinding(long maxReceivedMessageSize)
         {
             BasicHttpBinding binding = new BasicHttpBinding(BasicHttpSecurityMode.Transport);
             BasicHttpSecurity security = binding.Security;
@@ -37,6 +37,8 @@ namespace eid_dss_sdk_dotnet
             transportSecurity.ClientCredentialType = HttpClientCredentialType.None;
             transportSecurity.ProxyCredentialType = HttpProxyCredentialType.None;
             transportSecurity.Realm = "";
+
+            if (maxReceivedMessageSize > 0) binding.MaxReceivedMessageSize = maxReceivedMessageSize;
             return binding;
         }
     }
