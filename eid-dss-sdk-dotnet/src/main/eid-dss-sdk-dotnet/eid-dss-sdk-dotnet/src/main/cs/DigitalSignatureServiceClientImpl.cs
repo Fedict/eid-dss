@@ -10,6 +10,7 @@ using System.Net;
 using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
+using System.ServiceModel.Channels;
 
 
 
@@ -20,6 +21,8 @@ namespace eid_dss_sdk_dotnet
         private String location;
 
         private bool logging = true;
+
+        private long maxReceivedMessageSize = 0;
 
         private DigitalSignatureServicePortTypeClient client;
 
@@ -33,6 +36,11 @@ namespace eid_dss_sdk_dotnet
         public void setLogging(bool logging)
         {
             this.logging = logging;
+        }
+
+        public void setMaxReceivedMessageSize(long maxReceivedMessageSize)
+        {
+            this.maxReceivedMessageSize = maxReceivedMessageSize;
         }
 
         private void setupClient()
@@ -62,16 +70,17 @@ namespace eid_dss_sdk_dotnet
             if (null == this.client)
             {
                 // Setup basic client
+                Binding binding;
                 if (sslLocation)
                 {
-                    this.client = new DigitalSignatureServicePortTypeClient(
-                        WCFUtil.BasicHttpOverSSLBinding(), remoteAddress);
+                    binding = WCFUtil.BasicHttpOverSSLBinding(this.maxReceivedMessageSize);
                 }
                 else
                 {
-                    this.client = new DigitalSignatureServicePortTypeClient(
-                        new BasicHttpBinding(), remoteAddress);
+                    binding = new BasicHttpBinding();
+                    if (this.maxReceivedMessageSize > 0) ((BasicHttpBinding)binding).MaxReceivedMessageSize = maxReceivedMessageSize;
                 }
+                this.client = new DigitalSignatureServicePortTypeClient(binding, remoteAddress);
 
                 // Add logging behaviour
                 if (this.logging)
@@ -331,7 +340,7 @@ namespace eid_dss_sdk_dotnet
             DSSXSDNamespace.ReturnStoredDocument returnStoredDocument = new DSSXSDNamespace.ReturnStoredDocument();
             returnStoredDocument.Identifier = documentId;
 
-            XmlElement returnStoredDocumentElement = toDom("ReturnStoredDocument", DSSConstants.ARTIFACT_NAMESPACE, 
+            XmlElement returnStoredDocumentElement = toDom("ReturnStoredDocument", DSSConstants.ARTIFACT_NAMESPACE,
                 returnStoredDocument, typeof(DSSXSDNamespace.ReturnStoredDocument));
             optionalInputs.Any = new XmlElement[] { returnStoredDocumentElement };
             signRequest.OptionalInputs = optionalInputs;
@@ -388,7 +397,7 @@ namespace eid_dss_sdk_dotnet
                     optionalOutput.LocalName.Equals("DocumentWithSignature"))
                 {
                     DSSXSDNamespace.DocumentWithSignature documentWithSignature = (DSSXSDNamespace.DocumentWithSignature)
-                        fromDom("DocumentWithSignature", DSSConstants.DSS_NAMESPACE, optionalOutput, 
+                        fromDom("DocumentWithSignature", DSSConstants.DSS_NAMESPACE, optionalOutput,
                         typeof(DSSXSDNamespace.DocumentWithSignature));
                     return documentWithSignature;
                 }

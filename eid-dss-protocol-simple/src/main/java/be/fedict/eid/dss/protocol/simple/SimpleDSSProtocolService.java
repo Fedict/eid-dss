@@ -115,7 +115,7 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
         }
 
         byte[] decodedSignatureRequest = null;
-        String contentType = null;
+        String contentType;
         if (null != signatureRequest) {
             /*
             * Needed during response for service signature.
@@ -123,15 +123,13 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
             storeSignatureRequest(signatureRequest, httpSession);
             decodedSignatureRequest = Base64.decodeBase64(signatureRequest);
             contentType = request.getParameter(CONTENT_TYPE_PARAMETER);
-            if (null == contentType) {
-                contentType = "text/xml";
-            }
             LOG.debug("content type: " + contentType);
         } else {
             /*
             * Needed during response for service signature.
             */
             storeSignatureRequestId(signatureRequestId, httpSession);
+            contentType = request.getParameter(CONTENT_TYPE_PARAMETER);
         }
 
         List<X509Certificate> serviceCertificateChain = null;
@@ -175,6 +173,9 @@ public class SimpleDSSProtocolService implements DSSProtocolService {
 
         }
 
+        if (null == contentType && null != signatureRequest) {
+            contentType = "text/xml";
+        }
 
         return new DSSRequest(decodedSignatureRequest, contentType,
                 signatureRequestId, language, target, serviceCertificateChain);

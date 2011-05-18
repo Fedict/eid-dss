@@ -16,9 +16,18 @@
         <asp:HiddenField runat="server" ID="ContentType" />
         <asp:HiddenField runat="server" ID="RelayState" />
         <asp:HiddenField runat="server" ID="target" />
-        <asp:HiddenField runat="server" ID="Language" />
-        <asp:Button ID="Button1" runat="server" OnClick="UploadButton_Click" Text="Upload Document" />
-        <asp:Button ID="Button2" runat="server" OnClick="ArtifactButton_Click" Text="Upload Document (Artifact Binding)" />
+        <asp:HiddenField runat="server" ID="language" />
+        <!-- Signature Request Service Signature POST parameters -->
+        <asp:HiddenField runat="server" ID="ServiceSigned" />
+        <asp:HiddenField runat="server" ID="ServiceSignature" />
+        <asp:HiddenField runat="server" ID="ServiceCertificateChainSize" />
+        <asp:HiddenField runat="server" ID="ServiceCertificate"   />
+        <!-- Controls -->
+        <p />
+        <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" />
+        <asp:Button ID="Button2" runat="server" OnClick="Button2_Click" />
+        <asp:Button ID="Button3" runat="server" OnClick="Button3_Click" />
+        <asp:Button ID="Button4" runat="server" OnClick="Button4_Click" />
     </div>
     </form>
     <asp:Label ID="Label1" runat="server"></asp:Label>
