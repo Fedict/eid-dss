@@ -14,20 +14,20 @@ namespace eid_dss_sdk_dotnet
         /// </summary>
         /// <param name="sslCertificate">the SSL certificate to use for validation.
         /// To accept any, specify null here.</param>
-        void configureSsl(X509Certificate2 sslCertificate);
+        void ConfigureSsl(X509Certificate2 sslCertificate);
 
         /// <summary>
         /// Set whether to log the outgoing/incoming SOAP messages. 
         /// If not explicitly specified, logging is enabled.
         /// </summary>
         /// <param name="logging">logging or not</param>
-        void setLogging(bool logging);
+        void SetLogging(bool logging);
 
         /// <summary>
         /// Set the WS endpoint's binding "MaxReceivedMessageSize" property, default is 65536
         /// </summary>
         /// <param name="size"></param>
-        void setMaxReceivedMessageSize(long size);
+        void SetMaxReceivedMessageSize(long size);
 
         /// <summary>
         /// Verifies whether the given document has been signed or not.
@@ -35,8 +35,9 @@ namespace eid_dss_sdk_dotnet
         /// <param name="signedDocument">The signed document to verify</param>
         /// <param name="mimeType">optional mime-type, default is "text/xml"</param>
         /// <returns></returns>
+        /// <exception cref="DSSRequestFailedException">Request failed, exception will contain the result major/minor codes.</exception>
         /// <exception cref="NotParseableXMLDocumentException">Document was not XML parseable.</exception>
-        bool verify(byte[] signedDocument, String mimeType);
+        bool Verify(byte[] signedDocument, String mimeType);
 
         /// <summary>
         /// Verifies whether the given document has been signed and reports back on the signing parties.
@@ -44,7 +45,8 @@ namespace eid_dss_sdk_dotnet
         /// <param name="signedDocument">The signed document to verify</param>
         /// <param name="mimeType">optional mime-type, default is "text/xml"</param>
         /// <returns>a list of signature information objects detailing on the signing parties.</returns>
-        List<SignatureInfo> verifyWithSigners(byte[] signedDocument, String mimeType);
+        /// <exception cref="DSSRequestFailedException">Request failed, exception will contain the result major/minor codes.</exception>
+        List<SignatureInfo> VerifyWithSigners(byte[] signedDocument, String mimeType);
 
         /// <summary>
         /// Send specified document to the eID DSS WS for temp storage. The WS will return a StorageInfoDO containing
@@ -53,7 +55,8 @@ namespace eid_dss_sdk_dotnet
         /// <param name="documentData">document to be signed</param>
         /// <param name="contentType">content type of the document to be signed</param>
         /// <returns>storage information object</returns>
-        StorageInfoDO store(byte[] documentData, String contentType);
+        /// <exception cref="DSSRequestFailedException">Request failed, exception will contain the result major/minor codes.</exception>
+        StorageInfoDO Store(byte[] documentData, String contentType);
 
         /// <summary>
         /// Retrieve the document specified by the given ID from the eID DSS service.
@@ -61,6 +64,7 @@ namespace eid_dss_sdk_dotnet
         /// <param name="documentId">the ID of the document to fetch</param>
         /// <returns>the decoded document data</returns>
         /// <exception cref="DocumentNotFoundException">no document was returned</exception>
-        byte[] retrieve(String documentId);
+        /// <exception cref="DSSRequestFailedException">Request failed, exception will contain the result major/minor codes.</exception>
+        byte[] Retrieve(String documentId);
     }
 }

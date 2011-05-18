@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\main\cs\DSSRequestFailedException.cs" />
     <Compile Include="src\main\cs\KeyStoreUtil.cs" />
     <Compile Include="src\main\cs\ServiceSignatureDO.cs" />
     <Compile Include="src\main\cs\DocumentNotFoundException.cs" />

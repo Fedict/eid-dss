@@ -45,14 +45,14 @@ namespace eid_dss_sdk_dotnet
         /// <returns>the signature response DTO</returns>
         /// <exception cref="UserCancelledSignatureResponseProcessorException">User cancelled the signature ceremony.</exception>
         /// <exception cref="SignatureResponseProcessorException">something went wrong...</exception>
-        public SignatureReponse process(HttpRequest request, String target,
+        public SignatureReponse Process(HttpRequest request, String target,
                 String base64EncodedSignatureRequest, String signatureRequestId,
                 String relayState)
         {
             /*
              * Decode all incoming parameters
              */
-            String signatureStatus = getParameter(request, SIGNATURE_STATUS_PARAM);
+            String signatureStatus = GetParameter(request, SIGNATURE_STATUS_PARAM);
             if (null == signatureStatus)
             {
                 throw new SignatureResponseProcessorException(SIGNATURE_STATUS_PARAM +
@@ -69,8 +69,8 @@ namespace eid_dss_sdk_dotnet
                 throw new SignatureResponseProcessorException("Invalid signature status: " + signatureStatus);
             }
 
-            String signatureResponse = getParameter(request, SIGNATURE_RESPONSE_PARAM);
-            String signatureResponseId = getParameter(request, SIGNATURE_RESPONSE_ID_PARAM);
+            String signatureResponse = GetParameter(request, SIGNATURE_RESPONSE_PARAM);
+            String signatureResponseId = GetParameter(request, SIGNATURE_RESPONSE_ID_PARAM);
 
             if (null == signatureResponse && null == signatureResponseId)
             {
@@ -78,7 +78,7 @@ namespace eid_dss_sdk_dotnet
                  " or " + SIGNATURE_RESPONSE_ID_PARAM + " parameter found!");
             }
 
-            String encodedSignatureCertificate = getParameter(request, SIGNATURE_CERTIFICATE_PARAM);
+            String encodedSignatureCertificate = GetParameter(request, SIGNATURE_CERTIFICATE_PARAM);
             if (null == encodedSignatureCertificate)
             {
                 throw new SignatureResponseProcessorException("No " + SIGNATURE_CERTIFICATE_PARAM + " parameter found!");
@@ -87,7 +87,7 @@ namespace eid_dss_sdk_dotnet
             /*
              * Validate RelayState if needed.
              */
-            String responseRelayState = getParameter(request, RELAY_STATE_PARAM);
+            String responseRelayState = GetParameter(request, RELAY_STATE_PARAM);
             if (null != relayState)
             {
                 if (!relayState.Equals(responseRelayState))
@@ -100,12 +100,12 @@ namespace eid_dss_sdk_dotnet
             /*
              * Check service signature
              */
-            String encodedServiceSigned = getParameter(request, SERVICE_SIGNED_PARAM);
+            String encodedServiceSigned = GetParameter(request, SERVICE_SIGNED_PARAM);
             if (null != encodedServiceSigned)
             {
                 String serviceSigned = HttpUtility.UrlDecode(encodedServiceSigned);
 
-                String encodedServiceSignature = getParameter(request, SERVICE_SIGNATURE_PARAM);
+                String encodedServiceSignature = GetParameter(request, SERVICE_SIGNATURE_PARAM);
                 if (null == encodedServiceSignature)
                 {
                     throw new SignatureResponseProcessorException("Missing " + SERVICE_SIGNATURE_PARAM + " parameter!");
@@ -115,7 +115,7 @@ namespace eid_dss_sdk_dotnet
                 /*
                  * Parse the service certificate chain
                  */
-                String serviceCertificateChainSizeString = getParameter(request, SERVICE_CERTIFICATE_CHAIN_SIZE_PARAM);
+                String serviceCertificateChainSizeString = GetParameter(request, SERVICE_CERTIFICATE_CHAIN_SIZE_PARAM);
                 if (null == serviceCertificateChainSizeString)
                 {
                     throw new SignatureResponseProcessorException("Missing " + SERVICE_CERTIFICATE_CHAIN_SIZE_PARAM + " parameter!");
@@ -124,7 +124,7 @@ namespace eid_dss_sdk_dotnet
                 List<X509Certificate2> serviceCertificateChain = new List<X509Certificate2>();
                 for (int idx = 1; idx <= serviceCertificateChainSize; idx++)
                 {
-                    String encodedCertificate = getParameter(request, SERVICE_CERTIFICATE_PARAM_PREFIX + idx);
+                    String encodedCertificate = GetParameter(request, SERVICE_CERTIFICATE_PARAM_PREFIX + idx);
                     byte[] certificateData = Convert.FromBase64String(encodedCertificate);
                     X509Certificate2 certificate = new X509Certificate2(certificateData);
                     serviceCertificateChain.Add(certificate);
@@ -141,7 +141,7 @@ namespace eid_dss_sdk_dotnet
                         "for validation of service signature");
                 }
 
-                verifyServiceSignature(serviceSigned, target, base64EncodedSignatureRequest, signatureRequestId,
+                VerifyServiceSignature(serviceSigned, target, base64EncodedSignatureRequest, signatureRequestId,
                     signatureResponse, signatureResponseId, encodedSignatureCertificate, serviceSignatureValue, serviceCertificateChain);
             }
             else
@@ -167,7 +167,7 @@ namespace eid_dss_sdk_dotnet
             return new SignatureReponse(decodedSignatureResponse, signatureResponseId, signatureCertificate);
         }
 
-        private void verifyServiceSignature(String serviceSigned, String target, String signatureRequest,
+        private void VerifyServiceSignature(String serviceSigned, String target, String signatureRequest,
             String signatureRequestId, String signatureResponse, String signatureResponseId, String encodedSignatureCertificate,
             byte[] serviceSignatureValue, List<X509Certificate2> serviceCertificateChain)
         {
@@ -182,27 +182,27 @@ namespace eid_dss_sdk_dotnet
             {
                 if ("target".Equals(serviceSignedElement))
                 {
-                    signatureData.AddRange(toByteArray(target));
+                    signatureData.AddRange(ToByteArray(target));
                 }
                 else if ("SignatureRequest".Equals(serviceSignedElement))
                 {
-                    signatureData.AddRange(toByteArray(signatureRequest));
+                    signatureData.AddRange(ToByteArray(signatureRequest));
                 }
                 else if ("SignatureRequestId".Equals(serviceSignedElement))
                 {
-                    signatureData.AddRange(toByteArray(signatureRequestId));
+                    signatureData.AddRange(ToByteArray(signatureRequestId));
                 }
                 else if ("SignatureResponse".Equals(serviceSignedElement))
                 {
-                    signatureData.AddRange(toByteArray(signatureResponse));
+                    signatureData.AddRange(ToByteArray(signatureResponse));
                 }
                 else if ("SignatureResponseId".Equals(serviceSignedElement))
                 {
-                    signatureData.AddRange(toByteArray(signatureResponseId));
+                    signatureData.AddRange(ToByteArray(signatureResponseId));
                 }
                 else if ("SignatureCertificate".Equals(serviceSignedElement))
                 {
-                    signatureData.AddRange(toByteArray(encodedSignatureCertificate));
+                    signatureData.AddRange(ToByteArray(encodedSignatureCertificate));
                 }
             }
 
@@ -224,14 +224,14 @@ namespace eid_dss_sdk_dotnet
         }
 
 
-        public static byte[] toByteArray(string str)
+        public static byte[] ToByteArray(string str)
         {
             System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
             return encoding.GetBytes(str);
         }
 
 
-        private String getParameter(HttpRequest request, String name)
+        private String GetParameter(HttpRequest request, String name)
         {
             String[] values = request.Form.GetValues(name);
             if (null == values || values.Length < 1) return null;
