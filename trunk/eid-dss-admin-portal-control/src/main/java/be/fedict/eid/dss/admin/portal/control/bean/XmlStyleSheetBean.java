@@ -52,20 +52,22 @@ public class XmlStyleSheetBean implements XmlStyleSheet {
     }
 
     @Override
-    public void add() {
+    public String add() {
         this.log.debug("add #0 #1", this.namespace, this.revision);
         if (null == this.uploadedFile) {
             this.facesMessages.addToControl("file", "missing XML schema");
-            return;
+            return null;
         }
         try {
             this.xmlStyleSheetManager.add(this.namespace, this.revision,
                     this.uploadedFile);
         } catch (ExistingXmlStyleSheetException e) {
             this.facesMessages.addToControl("file", "existing XML schema");
-            return;
+            return null;
         }
+        this.revision = null;
         initList();
+        return "success";
     }
 
     @Override

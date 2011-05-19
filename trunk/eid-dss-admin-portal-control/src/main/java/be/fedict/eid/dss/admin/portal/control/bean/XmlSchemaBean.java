@@ -51,23 +51,25 @@ public class XmlSchemaBean implements XmlSchema {
     }
 
     @Override
-    public void add() {
+    public String add() {
         this.log.debug("add #0", this.revision);
         if (null == this.uploadedFile) {
             this.facesMessages.addToControl("file", "missing XML schema");
-            return;
+            return null;
         }
         try {
             this.xmlSchemaManager.add(this.revision, this.uploadedFile);
         } catch (InvalidXmlSchemaException e) {
             this.facesMessages.addToControl("file", "Not a valid XML schema: "
                     + e.getMessage());
-            return;
+            return null;
         } catch (ExistingXmlSchemaException e) {
             this.facesMessages.addToControl("file", "Existing XML schema");
-            return;
+            return null;
         }
+        this.revision = null;
         initList();
+        return "success";
     }
 
     @Override

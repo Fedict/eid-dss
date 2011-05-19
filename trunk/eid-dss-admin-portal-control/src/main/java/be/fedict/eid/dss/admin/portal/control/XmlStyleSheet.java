@@ -34,7 +34,7 @@ public interface XmlStyleSheet {
 	/*
 	 * Actions.
 	 */
-	void add();
+	String add();
 
 	void delete();
 

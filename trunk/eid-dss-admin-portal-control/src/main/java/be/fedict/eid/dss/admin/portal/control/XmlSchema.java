@@ -33,7 +33,7 @@ public interface XmlSchema {
 	/*
 	 * Actions.
 	 */
-	void add();
+	String add();
 
 	void delete();
 
