@@ -267,6 +267,9 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
 
         if (null != serviceCertificate && null != rp.getEncodedCertificate()) {
 
+            LOG.debug("verify service signature certificate fingerprint against " +
+                    "RP's configuration...");
+
             // verify fingerprint
             // TODO: for now first using fingerprint of value of leaf certificate, expand later for service key rollover scenarios.
             try {

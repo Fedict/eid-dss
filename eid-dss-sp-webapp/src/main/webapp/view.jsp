@@ -43,6 +43,9 @@
         </table>
     </c:if>
 
+    <p />
+
+    <a href="./index.jsp">Sign something else...</a>
 
 </body>
 </html>
