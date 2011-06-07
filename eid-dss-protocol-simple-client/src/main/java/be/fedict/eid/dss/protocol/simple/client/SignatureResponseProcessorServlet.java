@@ -324,10 +324,11 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
 
                 DigitalSignatureServiceClient dssClient =
                         new DigitalSignatureServiceClient(this.dssWSUrl);
-                // TODO: disable logging when finished
-                dssClient.setLogging(true, false);
                 if (null != this.dssWSProxyHost) {
                     dssClient.setProxy(this.dssWSProxyHost, this.dssWSProxyPort);
+                } else {
+                    // disable previously set proxy
+                    dssClient.setProxy(null, 0);
                 }
                 try {
                     decodedSignatureResponse = dssClient.retrieve(signatureResponseId);

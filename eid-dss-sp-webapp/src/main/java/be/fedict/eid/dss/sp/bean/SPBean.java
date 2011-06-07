@@ -91,7 +91,7 @@ public class SPBean {
             // SignRequest to DSS WS
             DigitalSignatureServiceClient dssClient =
                     new DigitalSignatureServiceClient();
-            dssClient.setLogging(true, true);
+            dssClient.setLogging(true, false);
 
             StorageInfoDO storageInfoDO = dssClient.store(document, this.contentType);
 
@@ -117,7 +117,7 @@ public class SPBean {
             // SignRequest to DSS WS
             DigitalSignatureServiceClient dssClient =
                     new DigitalSignatureServiceClient();
-            dssClient.setLogging(true, true);
+            dssClient.setLogging(true, false);
 
             StorageInfoDO storageInfoDO = dssClient.store(document, this.contentType);
 

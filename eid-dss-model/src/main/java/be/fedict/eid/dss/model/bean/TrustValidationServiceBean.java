@@ -41,64 +41,68 @@ import java.util.List;
 @Stateless
 public class TrustValidationServiceBean implements TrustValidationService {
 
-    private static final Log LOG = LogFactory
-            .getLog(TrustValidationServiceBean.class);
+        private static final Log LOG = LogFactory
+                .getLog(TrustValidationServiceBean.class);
 
-    @EJB
-    private Configuration configuration;
+        @EJB
+        private Configuration configuration;
 
-    /**
-     * {@inheritDoc}
-     */
-    public void validate(List<X509Certificate> certificateChain,
-                         Date validationDate, List<OCSPResp> ocspResponses,
-                         List<X509CRL> crls) throws CertificateEncodingException,
-            TrustDomainNotFoundException, RevocationDataNotFoundException,
-            ValidationFailedException {
+        /**
+         * {@inheritDoc}
+         */
+        public void validate(List<X509Certificate> certificateChain,
+                             Date validationDate, List<OCSPResp> ocspResponses,
+                             List<X509CRL> crls) throws CertificateEncodingException,
+                TrustDomainNotFoundException, RevocationDataNotFoundException,
+                ValidationFailedException {
 
 
-        String verifyTrustDomain = this.configuration.getValue(
-                ConfigProperty.VERIFY_TRUST_DOMAIN, String.class);
+                String verifyTrustDomain = this.configuration.getValue(
+                        ConfigProperty.VERIFY_TRUST_DOMAIN, String.class);
 
-        LOG.debug("validating certificate chain");
-        LOG.debug("number of CRLs: " + crls.size());
-        LOG.debug("number of OCSPs: " + ocspResponses.size());
-        getXkms2Client().validate(verifyTrustDomain, certificateChain,
-                validationDate, ocspResponses, crls);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void validate(TimeStampToken timeStampToken)
-            throws CertificateEncodingException, ValidationFailedException,
-            TrustDomainNotFoundException, RevocationDataNotFoundException {
-
-        String tsaTrustDomain = this.configuration.getValue(
-                ConfigProperty.TSA_TRUST_DOMAIN, String.class);
-
-        LOG.debug("validating timestamp token");
-        getXkms2Client().validate(tsaTrustDomain, timeStampToken);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public XKMS2Client getXkms2Client() {
-
-        String xkmsUrl = this.configuration.getValue(ConfigProperty.XKMS_URL,
-                String.class);
-        XKMS2Client xkms2Client = new XKMS2Client(xkmsUrl);
-
-        Boolean useHttpProxy = this.configuration.getValue(
-                ConfigProperty.HTTP_PROXY_ENABLED, Boolean.class);
-        if (null != useHttpProxy && useHttpProxy) {
-            String httpProxyHost = this.configuration.getValue(
-                    ConfigProperty.HTTP_PROXY_HOST, String.class);
-            int httpProxyPort = this.configuration.getValue(
-                    ConfigProperty.HTTP_PROXY_PORT, Integer.class);
-            xkms2Client.setProxy(httpProxyHost, httpProxyPort);
+                LOG.debug("validating certificate chain");
+                LOG.debug("number of CRLs: " + crls.size());
+                LOG.debug("number of OCSPs: " + ocspResponses.size());
+                getXkms2Client().validate(verifyTrustDomain, certificateChain,
+                        validationDate, ocspResponses, crls);
         }
-        return xkms2Client;
-    }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void validate(TimeStampToken timeStampToken)
+                throws CertificateEncodingException, ValidationFailedException,
+                TrustDomainNotFoundException, RevocationDataNotFoundException {
+
+                String tsaTrustDomain = this.configuration.getValue(
+                        ConfigProperty.TSA_TRUST_DOMAIN, String.class);
+
+                LOG.debug("validating timestamp token");
+                getXkms2Client().validate(tsaTrustDomain, timeStampToken);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public XKMS2Client getXkms2Client() {
+
+                String xkmsUrl = this.configuration.getValue(ConfigProperty.XKMS_URL,
+                        String.class);
+                XKMS2Client xkms2Client = new XKMS2Client(xkmsUrl);
+
+                Boolean useHttpProxy = this.configuration.getValue(
+                        ConfigProperty.HTTP_PROXY_ENABLED, Boolean.class);
+                if (null != useHttpProxy && useHttpProxy) {
+                        String httpProxyHost = this.configuration.getValue(
+                                ConfigProperty.HTTP_PROXY_HOST, String.class);
+                        int httpProxyPort = this.configuration.getValue(
+                                ConfigProperty.HTTP_PROXY_PORT, Integer.class);
+                        xkms2Client.setProxy(httpProxyHost, httpProxyPort);
+                } else {
+                        // disable previously set proxy
+                        xkms2Client.setProxy(null, 0);
+                }
+
+                return xkms2Client;
+        }
 }
