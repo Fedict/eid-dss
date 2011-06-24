@@ -257,36 +257,36 @@ public class ProtocolEntryServlet extends AbstractProtocolServiceServlet {
             }
         }
 
-        if (null == dssRequest.getServiceCertificateChain()) {
-            LOG.debug("No signature and signature is not required, valid...");
-            return true;
-        }
+        if (null != dssRequest.getServiceCertificateChain()) {
 
-        X509Certificate serviceCertificate =
-                dssRequest.getServiceCertificateChain().get(0);
+            X509Certificate serviceCertificate =
+                    dssRequest.getServiceCertificateChain().get(0);
 
-        if (null != serviceCertificate && null != rp.getEncodedCertificate()) {
+            if (null != serviceCertificate && null != rp.getEncodedCertificate()) {
 
-            LOG.debug("verify service signature certificate fingerprint against " +
-                    "RP's configuration...");
+                LOG.debug("verify service signature certificate fingerprint against " +
+                        "RP's configuration...");
 
-            // verify fingerprint
-            // TODO: for now first using fingerprint of value of leaf certificate, expand later for service key rollover scenarios.
-            try {
-                String rpFingerprint =
-                        DigestUtils.shaHex(rp.getEncodedCertificate());
-                String requestFingerPrint =
-                        DigestUtils.shaHex(serviceCertificate.getEncoded());
+                // verify fingerprint
+                // TODO: for now first using fingerprint of value of leaf certificate, expand later for service key rollover scenarios.
+                try {
+                    String rpFingerprint =
+                            DigestUtils.shaHex(rp.getEncodedCertificate());
+                    String requestFingerPrint =
+                            DigestUtils.shaHex(serviceCertificate.getEncoded());
 
-                if (!rpFingerprint.equals(requestFingerPrint)) {
-                    error(request, response,
-                            "Request was not signed with the correct keystore!");
+                    if (!rpFingerprint.equals(requestFingerPrint)) {
+                        error(request, response,
+                                "Request was not signed with the correct keystore!");
+                        return false;
+                    }
+                } catch (CertificateEncodingException e) {
                     return false;
                 }
-            } catch (CertificateEncodingException e) {
-                return false;
-            }
 
+            }
+        } else {
+            LOG.debug("No signature and signature is not required, valid...");
         }
 
         request.getSession().setAttribute(
