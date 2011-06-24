@@ -19,7 +19,10 @@
 			</noscript>
 		</form>
 		<script type="text/javascript">
-			document.getElementById('response-form').submit();
+            if (document.getElementById('response-form').action == "") {
+                document.getElementById('response-form').action = "main.seam";
+	        }
+	        document.getElementById('response-form').submit();
 		</script>
 	</ui:define>
 </ui:composition>
