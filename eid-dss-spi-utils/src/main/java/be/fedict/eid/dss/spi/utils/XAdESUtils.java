@@ -314,7 +314,7 @@ public abstract class XAdESUtils {
             if (null != identityUri) {
                 String identityId = identityUri.substring(1);
                 Node identityNode = XPathAPI.selectSingleNode(signatureElement,
-                        "ds:Object/identity:Identity[@Id = '" + identityId + "']",
+                        "ds:Object[@Id = '" + identityId + "']/identity:Identity",
                         nsElement);
                 if (null != identityNode) {
                     JAXBElement<IdentityType> identityElement =
