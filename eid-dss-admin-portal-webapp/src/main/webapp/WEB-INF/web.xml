@@ -6,6 +6,17 @@
 
     <display-name>eID DSS Admin Portal Web Application</display-name>
 
+    <!-- Fix for Ajax4JSF and IE 9: https://issues.jboss.org/browse/RF-10774 -->
+    <filter>
+        <filter-name>IE9CompatablityFixFilter</filter-name>
+        <filter-class>be.fedict.eid.dss.admin.portal.IE9CompatablityFixFilter
+        </filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>IE9CompatablityFixFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <!-- JBoss Seam -->
     <listener>
         <listener-class>org.jboss.seam.servlet.SeamListener</listener-class>
