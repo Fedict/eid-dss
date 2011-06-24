@@ -18,9 +18,13 @@
 
 package be.fedict.eid.dss.admin.portal.control.bean;
 
+import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.dss.admin.portal.control.AdminConstants;
 import be.fedict.eid.dss.admin.portal.control.Config;
-import be.fedict.eid.dss.model.*;
+import be.fedict.eid.dss.model.ConfigProperty;
+import be.fedict.eid.dss.model.Configuration;
+import be.fedict.eid.dss.model.DocumentService;
+import be.fedict.eid.dss.model.TSPDigestAlgo;
 import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.annotations.Destroy;
@@ -75,7 +79,7 @@ public class ConfigBean implements Config {
 
     private String tsaTrustDomain;
 
-    private SignatureDigestAlgo signatureDigestAlgo;
+    private DigestAlgo signatureDigestAlgo;
 
     private Integer documentStorageExpiration;
 
@@ -112,7 +116,7 @@ public class ConfigBean implements Config {
                 ConfigProperty.TSA_TRUST_DOMAIN, String.class);
 
         this.signatureDigestAlgo = this.configuration.getValue(
-                ConfigProperty.SIGNATURE_DIGEST_ALGO, SignatureDigestAlgo.class);
+                ConfigProperty.SIGNATURE_DIGEST_ALGO, DigestAlgo.class);
 
         this.documentStorageExpiration = this.configuration.getValue(
                 ConfigProperty.DOCUMENT_STORAGE_EXPIRATION, Integer.class);
@@ -291,17 +295,17 @@ public class ConfigBean implements Config {
     }
 
     @Override
-    public SignatureDigestAlgo[] getSignatureDigestAlgoArray() {
-        return SignatureDigestAlgo.values();
+    public DigestAlgo[] getSignatureDigestAlgoArray() {
+        return DigestAlgo.values();
     }
 
     @Override
-    public SignatureDigestAlgo getSignatureDigestAlgo() {
+    public DigestAlgo getSignatureDigestAlgo() {
         return this.signatureDigestAlgo;
     }
 
     @Override
-    public void setSignatureDigestAlgo(SignatureDigestAlgo signatureDigestAlgo) {
+    public void setSignatureDigestAlgo(DigestAlgo signatureDigestAlgo) {
         this.signatureDigestAlgo = signatureDigestAlgo;
     }
 

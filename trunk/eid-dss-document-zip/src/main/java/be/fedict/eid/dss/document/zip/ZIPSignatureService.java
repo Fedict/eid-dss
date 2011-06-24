@@ -18,10 +18,7 @@
 
 package be.fedict.eid.dss.document.zip;
 
-import be.fedict.eid.applet.service.signer.AbstractXmlSignatureService;
-import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
-import be.fedict.eid.applet.service.signer.SignatureFacet;
-import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
+import be.fedict.eid.applet.service.signer.*;
 import be.fedict.eid.applet.service.signer.facets.*;
 import be.fedict.eid.applet.service.signer.odf.ODFUtil;
 import be.fedict.eid.applet.service.signer.time.TimeStampService;
@@ -54,8 +51,6 @@ import java.util.zip.ZipInputStream;
 public class ZIPSignatureService extends AbstractXmlSignatureService implements
         SignatureServiceEx {
 
-    private final String signatureDigestAlgo;
-
     private final TemporaryDataStorage temporaryDataStorage;
 
     private final OutputStream documentOutputStream;
@@ -66,10 +61,10 @@ public class ZIPSignatureService extends AbstractXmlSignatureService implements
                                SignatureFacet signatureFacet, OutputStream documentOutputStream,
                                RevocationDataService revocationDataService,
                                TimeStampService timeStampService, String role,
-                               IdentityDTO identity, byte[] photo, String signatureDigestAlgo)
+                               IdentityDTO identity, byte[] photo, DigestAlgo signatureDigestAlgo)
             throws IOException {
 
-        this.signatureDigestAlgo = signatureDigestAlgo;
+        super(signatureDigestAlgo);
         this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
         this.documentOutputStream = documentOutputStream;
 
@@ -80,32 +75,23 @@ public class ZIPSignatureService extends AbstractXmlSignatureService implements
 
         addSignatureFacet(new ZIPSignatureFacet(this.tmpFile));
         XAdESSignatureFacet xadesSignatureFacet = new XAdESSignatureFacet(
-                "SHA-512");
+                getSignatureDigestAlgorithm());
         xadesSignatureFacet.setRole(role);
         addSignatureFacet(xadesSignatureFacet);
         addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
         addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
-                revocationDataService, "SHA-512"));
+                revocationDataService, getSignatureDigestAlgorithm()));
         addSignatureFacet(signatureFacet);
 
         if (null != identity) {
             IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
-                    identity, photo, "SHA-1");
+                    identity, photo, getSignatureDigestAlgorithm());
             addSignatureFacet(identitySignatureFacet);
         }
     }
 
     public String getFilesDigestAlgorithm() {
         return null;
-    }
-
-    @Override
-    protected String getSignatureDigestAlgorithm() {
-
-        if (null != this.signatureDigestAlgo) {
-            return this.signatureDigestAlgo;
-        }
-        return "SHA-512";
     }
 
     @Override

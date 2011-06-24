@@ -18,7 +18,7 @@
 
 package be.fedict.eid.dss.admin.portal.control;
 
-import be.fedict.eid.dss.model.SignatureDigestAlgo;
+import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.dss.model.TSPDigestAlgo;
 
 import javax.ejb.Local;
@@ -75,11 +75,11 @@ public interface Config {
 
     void setTsaTrustDomain(String tsaTrustDomain);
 
-    SignatureDigestAlgo[] getSignatureDigestAlgoArray();
+    DigestAlgo[] getSignatureDigestAlgoArray();
 
-    SignatureDigestAlgo getSignatureDigestAlgo();
+    DigestAlgo getSignatureDigestAlgo();
 
-    void setSignatureDigestAlgo(SignatureDigestAlgo signatureDigestAlgo);
+    void setSignatureDigestAlgo(DigestAlgo signatureDigestAlgo);
 
     Integer getDocumentStorageExpiration();
 

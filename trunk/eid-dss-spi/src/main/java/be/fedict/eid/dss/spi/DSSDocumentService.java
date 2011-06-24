@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.spi;
 
+import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.eid.applet.service.signer.time.TimeStampService;
@@ -90,7 +91,7 @@ public interface DSSDocumentService extends Serializable {
                                            RevocationDataService revocationDataService,
                                            SignatureFacet signatureFacet, OutputStream documentOutputStream,
                                            String role, IdentityDTO identity, byte[] photo,
-                                           String signatureDigestAlgo) throws Exception;
+                                           DigestAlgo signatureDigestAlgo) throws Exception;
 
     /**
      * Verifies the signatures on the given document.

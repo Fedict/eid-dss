@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.document.ooxml;
 
+import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
@@ -44,8 +45,6 @@ import java.util.List;
 public class OOXMLSignatureService extends AbstractOOXMLSignatureService
         implements SignatureServiceEx {
 
-    private final String signatureDigestAlgo;
-
     private final TemporaryDataStorage temporaryDataStorage;
 
     private final OutputStream documentOutputStream;
@@ -58,10 +57,10 @@ public class OOXMLSignatureService extends AbstractOOXMLSignatureService
                                  String role, IdentityDTO identity, byte[] photo,
                                  RevocationDataService revocationDataService,
                                  TimeStampService timeStampService,
-                                 String signatureDigestAlgo)
+                                 DigestAlgo signatureDigestAlgo)
             throws IOException {
 
-        this.signatureDigestAlgo = signatureDigestAlgo;
+        super(signatureDigestAlgo);
         this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
         this.documentOutputStream = documentOutputStream;
         this.tmpFile = File.createTempFile("eid-dss-", ".ooxml");
@@ -70,7 +69,7 @@ public class OOXMLSignatureService extends AbstractOOXMLSignatureService
         IOUtils.copy(documentInputStream, fileOutputStream);
         addSignatureFacet(signatureFacet);
         addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
-                revocationDataService, "SHA-1"));
+                revocationDataService, getSignatureDigestAlgorithm()));
 
         XAdESSignatureFacet xadesSignatureFacet = super
                 .getXAdESSignatureFacet();
@@ -78,18 +77,9 @@ public class OOXMLSignatureService extends AbstractOOXMLSignatureService
 
         if (null != identity) {
             IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
-                    identity, photo, "SHA-1");
+                    identity, photo, getSignatureDigestAlgorithm());
             addSignatureFacet(identitySignatureFacet);
         }
-    }
-
-    @Override
-    protected String getSignatureDigestAlgorithm() {
-
-        if (null != this.signatureDigestAlgo) {
-            return this.signatureDigestAlgo;
-        }
-        return "SHA-512";
     }
 
     @Override

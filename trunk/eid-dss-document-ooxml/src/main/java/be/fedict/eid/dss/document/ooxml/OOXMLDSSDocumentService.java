@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.document.ooxml;
 
+import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
@@ -88,7 +89,7 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
             RevocationDataService revocationDataService,
             SignatureFacet signatureFacet, OutputStream documentOutputStream,
             String role, IdentityDTO identity, byte[] photo,
-            String signatureDigestAlgo)
+            DigestAlgo signatureDigestAlgo)
             throws Exception {
 
         return new OOXMLSignatureService(documentInputStream,

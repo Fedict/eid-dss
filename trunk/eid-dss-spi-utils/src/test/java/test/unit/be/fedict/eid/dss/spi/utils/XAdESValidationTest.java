@@ -19,6 +19,7 @@
 package test.unit.be.fedict.eid.dss.spi.utils;
 
 import be.fedict.eid.applet.service.signer.AbstractXmlSignatureService;
+import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.facets.*;
@@ -320,7 +321,7 @@ public class XAdESValidationTest {
         private ByteArrayOutputStream signedDocumentOutputStream;
 
         public XmlSignatureTestService(SignatureFacet... signatureFacets) {
-            super();
+            super(DigestAlgo.SHA1);
             this.temporaryDataStorage = new TemporaryTestDataStorage();
             this.signedDocumentOutputStream = new ByteArrayOutputStream();
             for (SignatureFacet signatureFacet : signatureFacets) {

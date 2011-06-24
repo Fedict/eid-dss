@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.model.bean;
 
+import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
@@ -104,8 +105,8 @@ public class SignatureServiceBean implements SignatureServiceEx {
         Integer httpProxyPort = this.configuration.getValue(
                 ConfigProperty.HTTP_PROXY_PORT, Integer.class);
 
-        SignatureDigestAlgo signatureDigestAlgo = this.configuration.getValue(
-                ConfigProperty.SIGNATURE_DIGEST_ALGO, SignatureDigestAlgo.class);
+        DigestAlgo signatureDigestAlgo = this.configuration.getValue(
+                ConfigProperty.SIGNATURE_DIGEST_ALGO, DigestAlgo.class);
 
         LOG.debug("signatureDigestAlgo: " + signatureDigestAlgo);
 
@@ -142,7 +143,7 @@ public class SignatureServiceBean implements SignatureServiceEx {
                     .getSignatureService(documentInputStream, timeStampService,
                             timeStampServiceValidator, revocationDataService,
                             signatureFacet, documentOutputStream, role,
-                            identity, photo, signatureDigestAlgo.getAlgoId());
+                            identity, photo, signatureDigestAlgo);
         } catch (Exception e) {
             throw new RuntimeException("error retrieving signature service: "
                     + e.getMessage(), e);

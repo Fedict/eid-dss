@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.document.zip;
 
+import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
@@ -86,7 +87,7 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
             TimeStampServiceValidator timeStampServiceValidator,
             RevocationDataService revocationDataService,
             SignatureFacet signatureFacet, OutputStream documentOutputStream,
-            String role, IdentityDTO identity, byte[] photo, String signatureDigestAlgo)
+            String role, IdentityDTO identity, byte[] photo, DigestAlgo signatureDigestAlgo)
             throws Exception {
 
         return new ZIPSignatureService(documentInputStream, signatureFacet,
