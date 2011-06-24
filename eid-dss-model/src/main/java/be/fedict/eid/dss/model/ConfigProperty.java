@@ -18,6 +18,8 @@
 
 package be.fedict.eid.dss.model;
 
+import be.fedict.eid.applet.service.signer.DigestAlgo;
+
 /**
  * Enumeration of all possible configuration properties. This enumeration also
  * keeps track of the type of each property.
@@ -48,8 +50,8 @@ public enum ConfigProperty {
     IDENTITY_TRUST_DOMAIN("identity-trust-domain", String.class, "BE-NAT-REG"),
     TSA_TRUST_DOMAIN("tsa-trust-domain", String.class, "BE-TSA"),
 
-    SIGNATURE_DIGEST_ALGO("signature-digest-algo", SignatureDigestAlgo.class,
-            SignatureDigestAlgo.SHA512),
+    SIGNATURE_DIGEST_ALGO("signature-digest-algo", DigestAlgo.class,
+            DigestAlgo.SHA512),
 
     DOCUMENT_STORAGE_EXPIRATION("document-storage-expiration", Integer.class, 5),
     DOCUMENT_CLEANUP_TASK_SCHEDULE("document-cleanup-task-schedule", String.class,

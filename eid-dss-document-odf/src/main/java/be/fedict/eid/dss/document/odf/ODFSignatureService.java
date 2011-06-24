@@ -19,6 +19,7 @@
 package be.fedict.eid.dss.document.odf;
 
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
+import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
@@ -49,8 +50,6 @@ public class ODFSignatureService extends AbstractODFSignatureService implements
         SignatureServiceEx {
 
 
-    private final String signatureDigestAlgo;
-
     private final TemporaryDataStorage temporaryDataStorage;
 
     private final OutputStream documentOutputStream;
@@ -63,10 +62,10 @@ public class ODFSignatureService extends AbstractODFSignatureService implements
             SignatureFacet signatureFacet, InputStream documentInputStream,
             OutputStream documentOutputStream,
             TimeStampService timeStampService, String role,
-            IdentityDTO identity, byte[] photo, String signatureDigestAlgo)
+            IdentityDTO identity, byte[] photo, DigestAlgo digestAlgo)
             throws Exception {
 
-        this.signatureDigestAlgo = signatureDigestAlgo;
+        super(digestAlgo);
         this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
         this.documentOutputStream = documentOutputStream;
         this.tmpFile = File.createTempFile("eid-dss-", ".odf");
@@ -74,7 +73,7 @@ public class ODFSignatureService extends AbstractODFSignatureService implements
         fileOutputStream = new FileOutputStream(this.tmpFile);
         IOUtils.copy(documentInputStream, fileOutputStream);
         addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
-                revocationDataService, "SHA-512"));
+                revocationDataService, getSignatureDigestAlgorithm()));
         addSignatureFacet(signatureFacet);
 
         XAdESSignatureFacet xadesSignatureFacet = super
@@ -83,18 +82,9 @@ public class ODFSignatureService extends AbstractODFSignatureService implements
 
         if (null != identity) {
             IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
-                    identity, photo, "SHA-1");
+                    identity, photo, getSignatureDigestAlgorithm());
             addSignatureFacet(identitySignatureFacet);
         }
-    }
-
-    @Override
-    protected String getSignatureDigestAlgorithm() {
-
-        if (null != this.signatureDigestAlgo) {
-            return this.signatureDigestAlgo;
-        }
-        return "SHA-512";
     }
 
     @Override
