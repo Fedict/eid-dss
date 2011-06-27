@@ -7,7 +7,7 @@
               anyway. -->
         <groupId>be.fedict</groupId>
         <artifactId>eid-applet</artifactId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.0.4.Beta1</version>
     </parent>
     <groupId>be.fedict</groupId>
     <artifactId>eid-dss</artifactId>
@@ -206,7 +206,7 @@
         </repository>
     </repositories>
     <properties>
-        <eid-applet.version>1.0.4-SNAPSHOT</eid-applet.version>
+        <eid-applet.version>1.0.4.Beta1</eid-applet.version>
         <eid-applet.SkipSecureConnectionCheck>false</eid-applet.SkipSecureConnectionCheck>
         <eid-trust-service.version>1.0.0.RC7</eid-trust-service.version>
         <hibernate.hbm2ddl.auto>create-drop</hibernate.hbm2ddl.auto>
