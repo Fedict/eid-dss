@@ -19,7 +19,8 @@
 			</noscript>
 		</form>
 		<script type="text/javascript">
-            if (document.getElementById('response-form').action == "") {
+            if (document.getElementById('response-form').action == "" ||
+                document.getElementById('response-form').action.indexOf("protocol-response-post.seam") != -1) {
                 document.getElementById('response-form').action = "main.seam";
 	        }
 	        document.getElementById('response-form').submit();
