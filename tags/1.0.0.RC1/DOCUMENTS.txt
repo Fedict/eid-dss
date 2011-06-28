@@ -1,0 +1,18 @@
+Overview of tested documents
+============================
+
+                    SHA1     SHA256     SHA384     SHA512
+
+ODF          
+                    OK          FAIL          FAIL          FAIL               OS X OpenOffice 3.3.0
+
+ODF ( + identity )          
+                    FAIL        FAIL          FAIL          FAIL               OS X OpenOffice 3.3.0
+
+OOXML          
+                     OK          OK          OK               OK               Office 2010
+
+OOXML ( + identity )
+                     OK          OK          OK               OK               Office 2010
+
+
