@@ -175,21 +175,33 @@ public class XAdESValidation {
             LOG.debug("validate timestamp tokens time coherence...");
             for (TimeStampToken signatureTimeStampToken : signatureTimeStampTokens) {
 
+                // TODO: make a configurable maxOffset and throw exception case falls out of it...
                 if (signatureTimeStampToken.getTimeStampInfo().getGenTime().before(signingTime)) {
-                    throw new XAdESValidationException("SignatureTimeStamp ("
+                    LOG.warn("SignatureTimeStamp ("
                             + signatureTimeStampToken.getTimeStampInfo().getGenTime()
                             + ") generated before SigningTime ("
                             + signingTime + ")?!");
+//                    throw new XAdESValidationException("SignatureTimeStamp ("
+//                            + signatureTimeStampToken.getTimeStampInfo().getGenTime()
+//                            + ") generated before SigningTime ("
+//                            + signingTime + ")?!");
                 }
 
                 for (TimeStampToken sigAndRefsTimeStampToken : sigAndRefsTimeStampTokens) {
                     if (signatureTimeStampToken.getTimeStampInfo().getGenTime()
                             .after(sigAndRefsTimeStampToken.getTimeStampInfo().getGenTime())) {
-                        throw new XAdESValidationException("SignatureTimeStamp ("
+
+                        // TODO: make a configurable maxOffset and throw exception case falls out of it...
+                        LOG.warn("SignatureTimeStamp ("
                                 + signatureTimeStampToken.getTimeStampInfo().getGenTime()
                                 + ") generated after SigAndRefsTimeStamp ("
                                 + sigAndRefsTimeStampToken.getTimeStampInfo().getGenTime()
                                 + ") ?!");
+//                        throw new XAdESValidationException("SignatureTimeStamp ("
+//                                + signatureTimeStampToken.getTimeStampInfo().getGenTime()
+//                                + ") generated after SigAndRefsTimeStamp ("
+//                                + sigAndRefsTimeStampToken.getTimeStampInfo().getGenTime()
+//                                + ") ?!");
                     }
                 }
             }
