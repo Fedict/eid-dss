@@ -7,7 +7,7 @@
               anyway. -->
         <groupId>be.fedict</groupId>
         <artifactId>eid-applet</artifactId>
-        <version>1.0.4.Beta1</version>
+        <version>1.0.4-SNAPSHOT</version>
     </parent>
     <groupId>be.fedict</groupId>
     <artifactId>eid-dss</artifactId>
@@ -26,6 +26,7 @@
         <module>eid-dss-document-odf</module>
         <module>eid-dss-document-ooxml</module>
         <module>eid-dss-document-zip</module>
+        <module>eid-dss-document-asic</module>
         <module>eid-dss-entity</module>
         <module>eid-dss-model</module>
         <module>eid-dss-ws</module>
@@ -206,7 +207,7 @@
         </repository>
     </repositories>
     <properties>
-        <eid-applet.version>1.0.4.Beta1</eid-applet.version>
+        <eid-applet.version>1.0.4-SNAPSHOT</eid-applet.version>
         <eid-applet.SkipSecureConnectionCheck>false</eid-applet.SkipSecureConnectionCheck>
         <eid-trust-service.version>1.0.0.RC8</eid-trust-service.version>
         <hibernate.hbm2ddl.auto>create-drop</hibernate.hbm2ddl.auto>

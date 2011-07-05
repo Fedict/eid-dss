@@ -196,7 +196,9 @@ public class DigitalSignatureServiceTest {
 				.getResourceAsStream("/signed-document.xml");
 		String signedDocument = IOUtils.toString(signedDocumentInputStream);
 
-		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient();
+		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
+				"https://www.e-contract.be/eid-dss-ws/dss");
+		client.setProxy("proxy.yourict.net", 8080);
 
 		// operate
 		List<SignatureInfo> signers = client.verifyWithSigners(
