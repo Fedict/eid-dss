@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2010 FedICT.
+ * Copyright (C) 2010-2011 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -16,11 +16,30 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.document.zip;
+package be.fedict.eid.dss.document.asic;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.cert.X509Certificate;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.dom.DOMValidateContext;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
+import be.fedict.eid.applet.service.signer.asic.ASiCURIDereferencer;
+import be.fedict.eid.applet.service.signer.asic.ASiCUtil;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.eid.applet.service.signer.odf.ODFUtil;
 import be.fedict.eid.applet.service.signer.time.TimeStampService;
@@ -32,47 +51,40 @@ import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DocumentVisualization;
 import be.fedict.eid.dss.spi.SignatureInfo;
 import be.fedict.eid.dss.spi.utils.XAdESValidation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.dom.DOMValidateContext;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.cert.X509Certificate;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-public class ZIPDSSDocumentService implements DSSDocumentService {
+/**
+ * Associated Signature Container document service implementation.
+ * 
+ * @author Frank Cornelis
+ * 
+ */
+public class ASiCDSSDocumentService implements DSSDocumentService {
 
 	private static final long serialVersionUID = 1L;
 
 	private DSSDocumentContext documentContext;
 
+	@Override
 	public void init(DSSDocumentContext context, String contentType)
 			throws Exception {
 		this.documentContext = context;
 	}
 
+	@Override
 	public void checkIncomingDocument(byte[] document) throws Exception {
 	}
 
+	@Override
 	public DocumentVisualization visualizeDocument(byte[] document,
 			String language) throws Exception {
-
 		ZipInputStream zipInputStream = new ZipInputStream(
 				new ByteArrayInputStream(document));
 		ZipEntry zipEntry;
 		StringBuffer stringBuffer = new StringBuffer();
 		stringBuffer.append("<html><body>");
-		stringBuffer.append("<h1>ZIP package</h1>");
+		stringBuffer.append("<h1>Associated Signature Container</h1>");
 		while (null != (zipEntry = zipInputStream.getNextEntry())) {
-			if (ODFUtil.isSignatureFile(zipEntry)) {
+			if (ASiCUtil.isSignatureZipEntry(zipEntry)) {
 				continue;
 			}
 			String zipEntryName = zipEntry.getName();
@@ -84,6 +96,7 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 				.getBytes());
 	}
 
+	@Override
 	public SignatureServiceEx getSignatureService(
 			InputStream documentInputStream, TimeStampService timeStampService,
 			TimeStampServiceValidator timeStampServiceValidator,
@@ -91,20 +104,19 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 			SignatureFacet signatureFacet, OutputStream documentOutputStream,
 			String role, IdentityDTO identity, byte[] photo,
 			DigestAlgo signatureDigestAlgo) throws Exception {
-
-		return new ZIPSignatureService(documentInputStream, signatureFacet,
-				documentOutputStream, revocationDataService, timeStampService,
-				role, identity, photo, signatureDigestAlgo);
+		return new ASiCSignatureService(documentInputStream,
+				signatureDigestAlgo, revocationDataService, timeStampService,
+				role, identity, photo, documentOutputStream, signatureFacet);
 	}
 
+	@Override
 	public List<SignatureInfo> verifySignatures(byte[] document)
 			throws Exception {
-
 		ZipInputStream zipInputStream = new ZipInputStream(
 				new ByteArrayInputStream(document));
 		ZipEntry zipEntry;
 		while (null != (zipEntry = zipInputStream.getNextEntry())) {
-			if (ODFUtil.isSignatureFile(zipEntry)) {
+			if (ASiCUtil.isSignatureZipEntry(zipEntry)) {
 				break;
 			}
 		}
@@ -123,7 +135,7 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 			KeyInfoKeySelector keySelector = new KeyInfoKeySelector();
 			DOMValidateContext domValidateContext = new DOMValidateContext(
 					keySelector, signatureElement);
-			ZIPURIDereferencer dereferencer = new ZIPURIDereferencer(document);
+			ASiCURIDereferencer dereferencer = new ASiCURIDereferencer(document);
 			domValidateContext.setURIDereferencer(dereferencer);
 
 			XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory
