@@ -197,6 +197,13 @@
 		</dependency>
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-model</artifactId>
+			<type>ejb-client</type>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-webapp-control</artifactId>
 			<type>ejb</type>
 			<version>${project.version}</version>
