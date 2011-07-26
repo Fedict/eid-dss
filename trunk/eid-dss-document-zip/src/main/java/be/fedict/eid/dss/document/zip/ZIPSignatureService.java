@@ -73,7 +73,7 @@ public class ZIPSignatureService extends AbstractXmlSignatureService implements
         fileOutputStream = new FileOutputStream(this.tmpFile);
         IOUtils.copy(documentInputStream, fileOutputStream);
 
-        addSignatureFacet(new ZIPSignatureFacet(this.tmpFile));
+        addSignatureFacet(new ZIPSignatureFacet(this.tmpFile, signatureDigestAlgo));
         XAdESSignatureFacet xadesSignatureFacet = new XAdESSignatureFacet(
                 getSignatureDigestAlgorithm());
         xadesSignatureFacet.setRole(role);
