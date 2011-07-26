@@ -18,9 +18,7 @@
 
 package be.fedict.eid.dss.model.bean;
 
-import be.fedict.eid.dss.model.TrustValidationService;
-import be.fedict.eid.dss.model.XmlSchemaManager;
-import be.fedict.eid.dss.model.XmlStyleSheetManager;
+import be.fedict.eid.dss.model.*;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
 import org.bouncycastle.ocsp.OCSPResp;
 import org.bouncycastle.tsp.TimeStampToken;
@@ -37,58 +35,76 @@ import java.util.List;
  */
 public class ModelDSSDocumentContext implements DSSDocumentContext {
 
-    private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-    private final XmlSchemaManager xmlSchemaManager;
+        private final XmlSchemaManager xmlSchemaManager;
 
-    private final XmlStyleSheetManager xmlStyleSheetManager;
+        private final XmlStyleSheetManager xmlStyleSheetManager;
 
-    private final TrustValidationService trustValidationService;
+        private final TrustValidationService trustValidationService;
 
-    /**
-     * {@inheritDoc}
-     */
-    public ModelDSSDocumentContext(XmlSchemaManager xmlSchemaManager,
-                                   XmlStyleSheetManager xmlStyleSheetManager,
-                                   TrustValidationService trustValidationService) {
+        private final Configuration configuration;
 
-        this.xmlSchemaManager = xmlSchemaManager;
-        this.xmlStyleSheetManager = xmlStyleSheetManager;
-        this.trustValidationService = trustValidationService;
-    }
+        /**
+         * {@inheritDoc}
+         */
+        public ModelDSSDocumentContext(XmlSchemaManager xmlSchemaManager,
+                                       XmlStyleSheetManager xmlStyleSheetManager,
+                                       TrustValidationService trustValidationService,
+                                       Configuration configuration) {
 
-    /**
-     * {@inheritDoc}
-     */
-    public byte[] getXmlSchema(String namespace) {
+                this.xmlSchemaManager = xmlSchemaManager;
+                this.xmlStyleSheetManager = xmlStyleSheetManager;
+                this.trustValidationService = trustValidationService;
+                this.configuration = configuration;
+        }
 
-        return this.xmlSchemaManager.getXmlSchema(namespace);
-    }
+        /**
+         * {@inheritDoc}
+         */
+        public byte[] getXmlSchema(String namespace) {
 
-    /**
-     * {@inheritDoc}
-     */
-    public byte[] getXmlStyleSheet(String namespace) {
+                return this.xmlSchemaManager.getXmlSchema(namespace);
+        }
 
-        return this.xmlStyleSheetManager.getXmlStyleSheet(namespace);
-    }
+        /**
+         * {@inheritDoc}
+         */
+        public byte[] getXmlStyleSheet(String namespace) {
 
-    /**
-     * {@inheritDoc}
-     */
-    public void validate(List<X509Certificate> certificateChain,
-                         Date validationDate, List<OCSPResp> ocspResponses,
-                         List<X509CRL> crls) throws Exception {
+                return this.xmlStyleSheetManager.getXmlStyleSheet(namespace);
+        }
 
-        this.trustValidationService.validate(certificateChain, validationDate,
-                ocspResponses, crls);
-    }
+        /**
+         * {@inheritDoc}
+         */
+        public void validate(List<X509Certificate> certificateChain,
+                             Date validationDate, List<OCSPResp> ocspResponses,
+                             List<X509CRL> crls) throws Exception {
 
-    /**
-     * {@inheritDoc}
-     */
-    public void validate(TimeStampToken timeStampToken) throws Exception {
+                this.trustValidationService.validate(certificateChain, validationDate,
+                        ocspResponses, crls);
+        }
 
-        this.trustValidationService.validate(timeStampToken);
-    }
+        /**
+         * {@inheritDoc}
+         */
+        public void validate(TimeStampToken timeStampToken) throws Exception {
+
+                this.trustValidationService.validate(timeStampToken);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public Long getTimestampMaxOffset() {
+
+                Long timestampMaxOffset = this.configuration.getValue(
+                        ConfigProperty.TIMESTAMP_MAX_OFFSET, Long.class);
+                if (null != timestampMaxOffset) {
+                        return timestampMaxOffset;
+                } else {
+                        return (Long) ConfigProperty.TIMESTAMP_MAX_OFFSET.getDefaultValue();
+                }
+        }
 }

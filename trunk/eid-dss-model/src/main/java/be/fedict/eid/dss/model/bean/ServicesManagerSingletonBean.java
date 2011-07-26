@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.model.bean;
 
+import be.fedict.eid.dss.model.Configuration;
 import be.fedict.eid.dss.model.TrustValidationService;
 import be.fedict.eid.dss.model.XmlSchemaManager;
 import be.fedict.eid.dss.model.XmlStyleSheetManager;
@@ -50,185 +51,188 @@ import java.util.*;
 @Startup
 public class ServicesManagerSingletonBean {
 
-    private static final Log LOG = LogFactory.getLog(ServicesManagerBean.class);
+        private static final Log LOG = LogFactory.getLog(ServicesManagerBean.class);
 
-    private Enumeration<URL> getResources(String resourceName)
-            throws IOException {
-        ClassLoader classLoader = Thread.currentThread()
-                .getContextClassLoader();
-        return classLoader.getResources(resourceName);
-    }
-
-    private Map<String, String> protocolServiceClassNames;
-
-    private Map<String, String> documentServiceClassNames;
-
-    @EJB
-    private XmlSchemaManager xmlSchemaManager;
-
-    @EJB
-    private XmlStyleSheetManager xmlStyleSheetManager;
-
-    @EJB
-    private TrustValidationService trustValidationService;
-
-    @PostConstruct
-    public void postConstruct() {
-        LOG.debug("post construct");
-        this.protocolServiceClassNames = loadProtocolServiceClassNames();
-        this.documentServiceClassNames = loadDocumentServiceClassNames();
-    }
-
-    public Map<String, String> getProtocolServiceClassNames() {
-        return this.protocolServiceClassNames;
-    }
-
-    @SuppressWarnings("unchecked")
-    private Map<String, String> loadProtocolServiceClassNames() {
-
-        LOG.debug("load protocol service class names");
-        List<DigitalSignatureServiceProtocolType> protocolServices =
-                getProtocolServices();
-
-        Map<String, String> protocolServiceClassNames =
-                new HashMap<String, String>();
-
-        for (DigitalSignatureServiceProtocolType protocolService : protocolServices) {
-            protocolServiceClassNames.put(protocolService.getContextPath(),
-                    protocolService.getProtocolServiceClass());
+        private Enumeration<URL> getResources(String resourceName)
+                throws IOException {
+                ClassLoader classLoader = Thread.currentThread()
+                        .getContextClassLoader();
+                return classLoader.getResources(resourceName);
         }
-        return protocolServiceClassNames;
-    }
 
-    @SuppressWarnings("unchecked")
-    public List<DigitalSignatureServiceProtocolType> getProtocolServices() {
+        private Map<String, String> protocolServiceClassNames;
 
-        LOG.debug("getProtocolServices");
+        private Map<String, String> documentServiceClassNames;
 
-        List<DigitalSignatureServiceProtocolType> protocolServices =
-                new LinkedList<DigitalSignatureServiceProtocolType>();
-        Enumeration<URL> resources;
-        try {
-            resources = getResources("META-INF/eid-dss-protocol.xml");
-        } catch (IOException e) {
-            LOG.error("I/O error: " + e.getMessage(), e);
-            return protocolServices;
-        }
-        Unmarshaller unmarshaller;
-        try {
-            JAXBContext jaxbContext = JAXBContext
-                    .newInstance(ObjectFactory.class);
-            unmarshaller = jaxbContext.createUnmarshaller();
-        } catch (JAXBException e) {
-            LOG.error("JAXB error: " + e.getMessage(), e);
-            return protocolServices;
-        }
-        while (resources.hasMoreElements()) {
-            URL resource = resources.nextElement();
-            LOG.debug("resource URL: " + resource.toString());
-            JAXBElement<DigitalSignatureServiceProtocolType> jaxbElement;
-            try {
-                jaxbElement = (JAXBElement<DigitalSignatureServiceProtocolType>)
-                        unmarshaller.unmarshal(resource);
-            } catch (JAXBException e) {
-                LOG.error("JAXB error: " + e.getMessage(), e);
-                continue;
-            }
+        @EJB
+        private XmlSchemaManager xmlSchemaManager;
 
-            protocolServices.add(jaxbElement.getValue());
-        }
-        return protocolServices;
+        @EJB
+        private XmlStyleSheetManager xmlStyleSheetManager;
 
-    }
+        @EJB
+        private TrustValidationService trustValidationService;
 
-    public Map<String, String> getDocumentServiceClassNames() {
-        return this.documentServiceClassNames;
-    }
+        @EJB
+        private Configuration configuration;
 
-    public Set<String> getSupportedDocumentFormats() {
-        return this.documentServiceClassNames.keySet();
-    }
+        @PostConstruct
+        public void postConstruct() {
+                LOG.debug("post construct");
+                this.protocolServiceClassNames = loadProtocolServiceClassNames();
+                this.documentServiceClassNames = loadDocumentServiceClassNames();
+        }
 
-    @SuppressWarnings("unchecked")
-    private Map<String, String> loadDocumentServiceClassNames() {
-        LOG.debug("getDocumentServiceClassNames");
-        Map<String, String> documentServiceClassNames = new HashMap<String, String>();
-        Enumeration<URL> resources;
-        try {
-            resources = getResources("META-INF/eid-dss-document.xml");
-        } catch (IOException e) {
-            LOG.error("I/O error: " + e.getMessage(), e);
-            return documentServiceClassNames;
+        public Map<String, String> getProtocolServiceClassNames() {
+                return this.protocolServiceClassNames;
         }
-        Unmarshaller unmarshaller;
-        try {
-            JAXBContext jaxbContext = JAXBContext
-                    .newInstance(be.fedict.eid.dss.spi.document.ObjectFactory.class);
-            unmarshaller = jaxbContext.createUnmarshaller();
-        } catch (JAXBException e) {
-            LOG.error("JAXB error: " + e.getMessage(), e);
-            return documentServiceClassNames;
-        }
-        while (resources.hasMoreElements()) {
-            URL resource = resources.nextElement();
-            LOG.debug("resource URL: " + resource.toString());
-            JAXBElement<DigitalSignatureServiceDocumentType> jaxbElement;
-            try {
-                jaxbElement = (JAXBElement<DigitalSignatureServiceDocumentType>) unmarshaller
-                        .unmarshal(resource);
-            } catch (JAXBException e) {
-                LOG.error("JAXB error: " + e.getMessage(), e);
-                continue;
-            }
-            DigitalSignatureServiceDocumentType digitalSignatureServiceDocument = jaxbElement
-                    .getValue();
-            String documentServiceClassName = digitalSignatureServiceDocument
-                    .getDocumentServiceClass();
-            List<String> contentTypes = digitalSignatureServiceDocument
-                    .getContentType();
-            for (String contentType : contentTypes) {
-                documentServiceClassNames.put(contentType,
-                        documentServiceClassName);
-            }
-        }
-        return documentServiceClassNames;
-    }
 
-    @SuppressWarnings("unchecked")
-    public DSSDocumentService getDocumentService(String contentType) {
-        LOG.debug("getDocumentService");
-        String documentServiceClassName = this.documentServiceClassNames
-                .get(contentType);
-        if (null == documentServiceClassName) {
-            throw new IllegalArgumentException("unsupported content type: "
-                    + contentType);
+        @SuppressWarnings("unchecked")
+        private Map<String, String> loadProtocolServiceClassNames() {
+
+                LOG.debug("load protocol service class names");
+                List<DigitalSignatureServiceProtocolType> protocolServices =
+                        getProtocolServices();
+
+                Map<String, String> protocolServiceClassNames =
+                        new HashMap<String, String>();
+
+                for (DigitalSignatureServiceProtocolType protocolService : protocolServices) {
+                        protocolServiceClassNames.put(protocolService.getContextPath(),
+                                protocolService.getProtocolServiceClass());
+                }
+                return protocolServiceClassNames;
         }
-        Class<? extends DSSDocumentService> documentServiceClass;
-        try {
-            documentServiceClass = (Class<? extends DSSDocumentService>) Class
-                    .forName(documentServiceClassName);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("document service class not found: "
-                    + documentServiceClassName, e);
+
+        @SuppressWarnings("unchecked")
+        public List<DigitalSignatureServiceProtocolType> getProtocolServices() {
+
+                LOG.debug("getProtocolServices");
+
+                List<DigitalSignatureServiceProtocolType> protocolServices =
+                        new LinkedList<DigitalSignatureServiceProtocolType>();
+                Enumeration<URL> resources;
+                try {
+                        resources = getResources("META-INF/eid-dss-protocol.xml");
+                } catch (IOException e) {
+                        LOG.error("I/O error: " + e.getMessage(), e);
+                        return protocolServices;
+                }
+                Unmarshaller unmarshaller;
+                try {
+                        JAXBContext jaxbContext = JAXBContext
+                                .newInstance(ObjectFactory.class);
+                        unmarshaller = jaxbContext.createUnmarshaller();
+                } catch (JAXBException e) {
+                        LOG.error("JAXB error: " + e.getMessage(), e);
+                        return protocolServices;
+                }
+                while (resources.hasMoreElements()) {
+                        URL resource = resources.nextElement();
+                        LOG.debug("resource URL: " + resource.toString());
+                        JAXBElement<DigitalSignatureServiceProtocolType> jaxbElement;
+                        try {
+                                jaxbElement = (JAXBElement<DigitalSignatureServiceProtocolType>)
+                                        unmarshaller.unmarshal(resource);
+                        } catch (JAXBException e) {
+                                LOG.error("JAXB error: " + e.getMessage(), e);
+                                continue;
+                        }
+
+                        protocolServices.add(jaxbElement.getValue());
+                }
+                return protocolServices;
+
         }
-        DSSDocumentService documentService;
-        try {
-            documentService = documentServiceClass.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "could not create instance of document service: "
-                            + documentServiceClassName, e);
+
+        public Map<String, String> getDocumentServiceClassNames() {
+                return this.documentServiceClassNames;
         }
-        DSSDocumentContext documentContext = new ModelDSSDocumentContext(
-                this.xmlSchemaManager, this.xmlStyleSheetManager,
-                this.trustValidationService);
-        try {
-            documentService.init(documentContext, contentType);
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "error initializing the document service: "
-                            + e.getMessage(), e);
+
+        public Set<String> getSupportedDocumentFormats() {
+                return this.documentServiceClassNames.keySet();
         }
-        return documentService;
-    }
+
+        @SuppressWarnings("unchecked")
+        private Map<String, String> loadDocumentServiceClassNames() {
+                LOG.debug("getDocumentServiceClassNames");
+                Map<String, String> documentServiceClassNames = new HashMap<String, String>();
+                Enumeration<URL> resources;
+                try {
+                        resources = getResources("META-INF/eid-dss-document.xml");
+                } catch (IOException e) {
+                        LOG.error("I/O error: " + e.getMessage(), e);
+                        return documentServiceClassNames;
+                }
+                Unmarshaller unmarshaller;
+                try {
+                        JAXBContext jaxbContext = JAXBContext
+                                .newInstance(be.fedict.eid.dss.spi.document.ObjectFactory.class);
+                        unmarshaller = jaxbContext.createUnmarshaller();
+                } catch (JAXBException e) {
+                        LOG.error("JAXB error: " + e.getMessage(), e);
+                        return documentServiceClassNames;
+                }
+                while (resources.hasMoreElements()) {
+                        URL resource = resources.nextElement();
+                        LOG.debug("resource URL: " + resource.toString());
+                        JAXBElement<DigitalSignatureServiceDocumentType> jaxbElement;
+                        try {
+                                jaxbElement = (JAXBElement<DigitalSignatureServiceDocumentType>) unmarshaller
+                                        .unmarshal(resource);
+                        } catch (JAXBException e) {
+                                LOG.error("JAXB error: " + e.getMessage(), e);
+                                continue;
+                        }
+                        DigitalSignatureServiceDocumentType digitalSignatureServiceDocument = jaxbElement
+                                .getValue();
+                        String documentServiceClassName = digitalSignatureServiceDocument
+                                .getDocumentServiceClass();
+                        List<String> contentTypes = digitalSignatureServiceDocument
+                                .getContentType();
+                        for (String contentType : contentTypes) {
+                                documentServiceClassNames.put(contentType,
+                                        documentServiceClassName);
+                        }
+                }
+                return documentServiceClassNames;
+        }
+
+        @SuppressWarnings("unchecked")
+        public DSSDocumentService getDocumentService(String contentType) {
+                LOG.debug("getDocumentService");
+                String documentServiceClassName = this.documentServiceClassNames
+                        .get(contentType);
+                if (null == documentServiceClassName) {
+                        throw new IllegalArgumentException("unsupported content type: "
+                                + contentType);
+                }
+                Class<? extends DSSDocumentService> documentServiceClass;
+                try {
+                        documentServiceClass = (Class<? extends DSSDocumentService>) Class
+                                .forName(documentServiceClassName);
+                } catch (ClassNotFoundException e) {
+                        throw new RuntimeException("document service class not found: "
+                                + documentServiceClassName, e);
+                }
+                DSSDocumentService documentService;
+                try {
+                        documentService = documentServiceClass.newInstance();
+                } catch (Exception e) {
+                        throw new RuntimeException(
+                                "could not create instance of document service: "
+                                        + documentServiceClassName, e);
+                }
+                DSSDocumentContext documentContext = new ModelDSSDocumentContext(
+                        this.xmlSchemaManager, this.xmlStyleSheetManager,
+                        this.trustValidationService, this.configuration);
+                try {
+                        documentService.init(documentContext, contentType);
+                } catch (Exception e) {
+                        throw new RuntimeException(
+                                "error initializing the document service: "
+                                        + e.getMessage(), e);
+                }
+                return documentService;
+        }
 }
