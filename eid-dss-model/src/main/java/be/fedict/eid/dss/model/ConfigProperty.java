@@ -28,62 +28,64 @@ import be.fedict.eid.applet.service.signer.DigestAlgo;
  */
 public enum ConfigProperty {
 
-    TSP_URL("tsp-url", String.class, "http://tsa.belgium.be/connect"),
-    TSP_POLICY_OID("tsp-policy-oid", String.class),
-    TSP_DIGEST_ALGO("tsp-digest-algo", TSPDigestAlgo.class),
+        TSP_URL("tsp-url", String.class, "http://tsa.belgium.be/connect"),
+        TSP_POLICY_OID("tsp-policy-oid", String.class),
+        TSP_DIGEST_ALGO("tsp-digest-algo", TSPDigestAlgo.class),
 
-    HTTP_PROXY_ENABLED("http-proxy", Boolean.class),
-    HTTP_PROXY_HOST("http-proxy-host", String.class),
-    HTTP_PROXY_PORT("http-proxy-port", Integer.class),
+        HTTP_PROXY_ENABLED("http-proxy", Boolean.class),
+        HTTP_PROXY_HOST("http-proxy-host", String.class),
+        HTTP_PROXY_PORT("http-proxy-port", Integer.class),
 
-    XKMS_URL("xkms-url", String.class),
+        XKMS_URL("xkms-url", String.class),
 
-    ACTIVE_IDENTITY("active-identity", String.class),
-    KEY_STORE_TYPE("key-store-type", KeyStoreType.class),
-    KEY_STORE_PATH("key-store-path", String.class),
-    KEY_STORE_SECRET("key-store-secret", String.class),
-    KEY_ENTRY_SECRET("key-entry-secret", String.class),
-    KEY_ENTRY_ALIAS("key-entry-alias", String.class),
+        ACTIVE_IDENTITY("active-identity", String.class),
+        KEY_STORE_TYPE("key-store-type", KeyStoreType.class),
+        KEY_STORE_PATH("key-store-path", String.class),
+        KEY_STORE_SECRET("key-store-secret", String.class),
+        KEY_ENTRY_SECRET("key-entry-secret", String.class),
+        KEY_ENTRY_ALIAS("key-entry-alias", String.class),
 
-    SIGN_TRUST_DOMAIN("sign-trust-domain", String.class, "BE"),
-    VERIFY_TRUST_DOMAIN("verify-trust-domain", String.class, "BE"),
-    IDENTITY_TRUST_DOMAIN("identity-trust-domain", String.class, "BE-NAT-REG"),
-    TSA_TRUST_DOMAIN("tsa-trust-domain", String.class, "BE-TSA"),
+        SIGN_TRUST_DOMAIN("sign-trust-domain", String.class, "BE"),
+        VERIFY_TRUST_DOMAIN("verify-trust-domain", String.class, "BE"),
+        IDENTITY_TRUST_DOMAIN("identity-trust-domain", String.class, "BE-NAT-REG"),
+        TSA_TRUST_DOMAIN("tsa-trust-domain", String.class, "BE-TSA"),
 
-    SIGNATURE_DIGEST_ALGO("signature-digest-algo", DigestAlgo.class,
-            DigestAlgo.SHA512),
+        SIGNATURE_DIGEST_ALGO("signature-digest-algo", DigestAlgo.class,
+                DigestAlgo.SHA512),
 
-    DOCUMENT_STORAGE_EXPIRATION("document-storage-expiration", Integer.class, 5),
-    DOCUMENT_CLEANUP_TASK_SCHEDULE("document-cleanup-task-schedule", String.class,
-            "0 0/15 * * * *");
+        DOCUMENT_STORAGE_EXPIRATION("document-storage-expiration", Integer.class, 5),
+        DOCUMENT_CLEANUP_TASK_SCHEDULE("document-cleanup-task-schedule", String.class,
+                "0 0/15 * * * *"),
 
-    private final String name;
+        TIMESTAMP_MAX_OFFSET("timestamp-max-offset", Long.class, 1000L);
 
-    private final Class<?> type;
+        private final String name;
 
-    private final Object defaultValue;
+        private final Class<?> type;
 
-    private ConfigProperty(String name, Class<?> type) {
-        this.name = name;
-        this.type = type;
-        this.defaultValue = null;
-    }
+        private final Object defaultValue;
 
-    private ConfigProperty(String name, Class<?> type, Object defaultValue) {
-        this.name = name;
-        this.type = type;
-        this.defaultValue = defaultValue;
-    }
+        private ConfigProperty(String name, Class<?> type) {
+                this.name = name;
+                this.type = type;
+                this.defaultValue = null;
+        }
 
-    public String getName() {
-        return this.name;
-    }
+        private ConfigProperty(String name, Class<?> type, Object defaultValue) {
+                this.name = name;
+                this.type = type;
+                this.defaultValue = defaultValue;
+        }
 
-    public Class<?> getType() {
-        return this.type;
-    }
+        public String getName() {
+                return this.name;
+        }
 
-    public Object getDefaultValue() {
-        return this.defaultValue;
-    }
+        public Class<?> getType() {
+                return this.type;
+        }
+
+        public Object getDefaultValue() {
+                return this.defaultValue;
+        }
 }

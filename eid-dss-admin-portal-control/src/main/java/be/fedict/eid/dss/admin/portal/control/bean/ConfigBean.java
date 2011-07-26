@@ -45,288 +45,306 @@ import javax.ejb.Stateful;
 @LocalBinding(jndiBinding = AdminConstants.ADMIN_JNDI_CONTEXT + "ConfigBean")
 public class ConfigBean implements Config {
 
-    @Logger
-    private Log log;
+        @Logger
+        private Log log;
 
-    @In
-    FacesMessages facesMessages;
+        @In
+        FacesMessages facesMessages;
 
-    @EJB
-    private Configuration configuration;
+        @EJB
+        private Configuration configuration;
 
-    @EJB
-    private DocumentService documentService;
+        @EJB
+        private DocumentService documentService;
 
-    private String xkmsUrl;
+        private String xkmsUrl;
 
-    private String tspUrl;
+        private String tspUrl;
 
-    private String tspPolicyOid;
+        private String tspPolicyOid;
 
-    private Boolean httpProxy;
+        private Boolean httpProxy;
 
-    private String httpProxyHost;
+        private String httpProxyHost;
 
-    private Integer httpProxyPort;
+        private Integer httpProxyPort;
 
-    private TSPDigestAlgo tspDigestAlgo;
+        private TSPDigestAlgo tspDigestAlgo;
 
-    private String signTrustDomain;
+        private String signTrustDomain;
 
-    private String verifyTrustDomain;
+        private String verifyTrustDomain;
 
-    private String identityTrustDomain;
+        private String identityTrustDomain;
 
-    private String tsaTrustDomain;
+        private String tsaTrustDomain;
 
-    private DigestAlgo signatureDigestAlgo;
+        private DigestAlgo signatureDigestAlgo;
 
-    private Integer documentStorageExpiration;
+        private Integer documentStorageExpiration;
 
-    private String documentCleanupTaskCronSchedule;
+        private String documentCleanupTaskCronSchedule;
 
-    @Override
-    @PostConstruct
-    public void postConstruct() {
-        this.log.debug("postConstruct");
-        this.xkmsUrl = this.configuration.getValue(ConfigProperty.XKMS_URL,
-                String.class);
+        private Long timestampMaxOffset;
 
-        this.tspUrl = this.configuration.getValue(ConfigProperty.TSP_URL,
-                String.class);
-        this.tspPolicyOid = this.configuration.getValue(
-                ConfigProperty.TSP_POLICY_OID, String.class);
-        this.tspDigestAlgo = this.configuration.getValue(
-                ConfigProperty.TSP_DIGEST_ALGO, TSPDigestAlgo.class);
+        @Override
+        @PostConstruct
+        public void postConstruct() {
+                this.log.debug("postConstruct");
+                this.xkmsUrl = this.configuration.getValue(ConfigProperty.XKMS_URL,
+                        String.class);
 
-        this.httpProxy = this.configuration.getValue(
-                ConfigProperty.HTTP_PROXY_ENABLED, Boolean.class);
-        this.httpProxyHost = this.configuration.getValue(
-                ConfigProperty.HTTP_PROXY_HOST, String.class);
-        this.httpProxyPort = this.configuration.getValue(
-                ConfigProperty.HTTP_PROXY_PORT, Integer.class);
+                this.tspUrl = this.configuration.getValue(ConfigProperty.TSP_URL,
+                        String.class);
+                this.tspPolicyOid = this.configuration.getValue(
+                        ConfigProperty.TSP_POLICY_OID, String.class);
+                this.tspDigestAlgo = this.configuration.getValue(
+                        ConfigProperty.TSP_DIGEST_ALGO, TSPDigestAlgo.class);
 
-        this.signTrustDomain = this.configuration.getValue(
-                ConfigProperty.SIGN_TRUST_DOMAIN, String.class);
-        this.verifyTrustDomain = this.configuration.getValue(
-                ConfigProperty.VERIFY_TRUST_DOMAIN, String.class);
-        this.identityTrustDomain = this.configuration.getValue(
-                ConfigProperty.IDENTITY_TRUST_DOMAIN, String.class);
-        this.tsaTrustDomain = this.configuration.getValue(
-                ConfigProperty.TSA_TRUST_DOMAIN, String.class);
+                this.httpProxy = this.configuration.getValue(
+                        ConfigProperty.HTTP_PROXY_ENABLED, Boolean.class);
+                this.httpProxyHost = this.configuration.getValue(
+                        ConfigProperty.HTTP_PROXY_HOST, String.class);
+                this.httpProxyPort = this.configuration.getValue(
+                        ConfigProperty.HTTP_PROXY_PORT, Integer.class);
 
-        this.signatureDigestAlgo = this.configuration.getValue(
-                ConfigProperty.SIGNATURE_DIGEST_ALGO, DigestAlgo.class);
+                this.signTrustDomain = this.configuration.getValue(
+                        ConfigProperty.SIGN_TRUST_DOMAIN, String.class);
+                this.verifyTrustDomain = this.configuration.getValue(
+                        ConfigProperty.VERIFY_TRUST_DOMAIN, String.class);
+                this.identityTrustDomain = this.configuration.getValue(
+                        ConfigProperty.IDENTITY_TRUST_DOMAIN, String.class);
+                this.tsaTrustDomain = this.configuration.getValue(
+                        ConfigProperty.TSA_TRUST_DOMAIN, String.class);
 
-        this.documentStorageExpiration = this.configuration.getValue(
-                ConfigProperty.DOCUMENT_STORAGE_EXPIRATION, Integer.class);
-        this.documentCleanupTaskCronSchedule = this.configuration.getValue(
-                ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE, String.class);
-    }
+                this.signatureDigestAlgo = this.configuration.getValue(
+                        ConfigProperty.SIGNATURE_DIGEST_ALGO, DigestAlgo.class);
 
-    @Remove
-    @Destroy
-    @Override
-    public void destroy() {
-        this.log.debug("destroy");
-    }
+                this.documentStorageExpiration = this.configuration.getValue(
+                        ConfigProperty.DOCUMENT_STORAGE_EXPIRATION, Integer.class);
+                this.documentCleanupTaskCronSchedule = this.configuration.getValue(
+                        ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE, String.class);
 
-    @Override
-    public String save() {
-
-        this.log.debug("save");
-        this.configuration.setValue(ConfigProperty.XKMS_URL, this.xkmsUrl);
-
-        this.configuration.setValue(ConfigProperty.TSP_URL, this.tspUrl);
-        this.configuration.setValue(ConfigProperty.TSP_POLICY_OID,
-                this.tspPolicyOid);
-        this.configuration.setValue(ConfigProperty.TSP_DIGEST_ALGO,
-                this.tspDigestAlgo);
-
-        this.configuration.setValue(ConfigProperty.HTTP_PROXY_ENABLED,
-                this.httpProxy);
-        this.configuration.setValue(ConfigProperty.HTTP_PROXY_HOST,
-                this.httpProxyHost);
-        this.configuration.setValue(ConfigProperty.HTTP_PROXY_PORT,
-                this.httpProxyPort);
-
-        this.configuration.setValue(ConfigProperty.SIGN_TRUST_DOMAIN,
-                this.signTrustDomain);
-        this.configuration.setValue(ConfigProperty.VERIFY_TRUST_DOMAIN,
-                this.verifyTrustDomain);
-        this.configuration.setValue(ConfigProperty.IDENTITY_TRUST_DOMAIN,
-                this.identityTrustDomain);
-        this.configuration.setValue(ConfigProperty.TSA_TRUST_DOMAIN,
-                this.tsaTrustDomain);
-
-        this.configuration.setValue(ConfigProperty.SIGNATURE_DIGEST_ALGO,
-                this.signatureDigestAlgo);
-
-        this.configuration.setValue(ConfigProperty.DOCUMENT_STORAGE_EXPIRATION,
-                this.documentStorageExpiration);
-
-        // start document cleanup task timer
-        try {
-            this.documentService.startTimer(this.documentCleanupTaskCronSchedule);
-        } catch (InvalidCronExpressionException e) {
-            this.facesMessages.addToControl("documentCleanupTaskCronSchedule",
-                    StatusMessage.Severity.ERROR, "Invalid cron schedule");
-            return null;
+                this.timestampMaxOffset = this.configuration.getValue(
+                        ConfigProperty.TIMESTAMP_MAX_OFFSET, Long.class);
         }
-        this.configuration.setValue(ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE,
-                this.documentCleanupTaskCronSchedule);
 
-        return null;
-    }
+        @Remove
+        @Destroy
+        @Override
+        public void destroy() {
+                this.log.debug("destroy");
+        }
 
-    @Override
-    public String getXkmsUrl() {
-        return this.xkmsUrl;
-    }
+        @Override
+        public String save() {
 
-    @Override
-    public void setXkmsUrl(String xkmsUrl) {
-        this.xkmsUrl = xkmsUrl;
-    }
+                this.log.debug("save");
+                this.configuration.setValue(ConfigProperty.XKMS_URL, this.xkmsUrl);
 
-    @Override
-    public String getTspUrl() {
-        return this.tspUrl;
-    }
+                this.configuration.setValue(ConfigProperty.TSP_URL, this.tspUrl);
+                this.configuration.setValue(ConfigProperty.TSP_POLICY_OID,
+                        this.tspPolicyOid);
+                this.configuration.setValue(ConfigProperty.TSP_DIGEST_ALGO,
+                        this.tspDigestAlgo);
 
-    @Override
-    public void setTspUrl(String tspUrl) {
-        this.tspUrl = tspUrl;
-    }
+                this.configuration.setValue(ConfigProperty.HTTP_PROXY_ENABLED,
+                        this.httpProxy);
+                this.configuration.setValue(ConfigProperty.HTTP_PROXY_HOST,
+                        this.httpProxyHost);
+                this.configuration.setValue(ConfigProperty.HTTP_PROXY_PORT,
+                        this.httpProxyPort);
 
-    @Override
-    public String getTspPolicyOid() {
-        return this.tspPolicyOid;
-    }
+                this.configuration.setValue(ConfigProperty.SIGN_TRUST_DOMAIN,
+                        this.signTrustDomain);
+                this.configuration.setValue(ConfigProperty.VERIFY_TRUST_DOMAIN,
+                        this.verifyTrustDomain);
+                this.configuration.setValue(ConfigProperty.IDENTITY_TRUST_DOMAIN,
+                        this.identityTrustDomain);
+                this.configuration.setValue(ConfigProperty.TSA_TRUST_DOMAIN,
+                        this.tsaTrustDomain);
 
-    @Override
-    public void setTspPolicyOid(String tspPolicyOid) {
-        this.tspPolicyOid = tspPolicyOid;
-    }
+                this.configuration.setValue(ConfigProperty.SIGNATURE_DIGEST_ALGO,
+                        this.signatureDigestAlgo);
 
-    @Override
-    public Boolean getHttpProxy() {
-        return this.httpProxy;
-    }
+                this.configuration.setValue(ConfigProperty.DOCUMENT_STORAGE_EXPIRATION,
+                        this.documentStorageExpiration);
 
-    @Override
-    public void setHttpProxy(Boolean httpProxy) {
-        this.httpProxy = httpProxy;
-    }
+                this.configuration.setValue(ConfigProperty.TIMESTAMP_MAX_OFFSET,
+                        this.timestampMaxOffset);
 
-    @Override
-    public String getHttpProxyHost() {
-        return this.httpProxyHost;
-    }
+                // start document cleanup task timer
+                try {
+                        this.documentService.startTimer(this.documentCleanupTaskCronSchedule);
+                } catch (InvalidCronExpressionException e) {
+                        this.facesMessages.addToControl("documentCleanupTaskCronSchedule",
+                                StatusMessage.Severity.ERROR, "Invalid cron schedule");
+                        return null;
+                }
+                this.configuration.setValue(ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE,
+                        this.documentCleanupTaskCronSchedule);
 
-    @Override
-    public void setHttpProxyHost(String httpProxyHost) {
-        this.httpProxyHost = httpProxyHost;
-    }
+                return null;
+        }
 
-    @Override
-    public Integer getHttpProxyPort() {
-        return this.httpProxyPort;
-    }
+        @Override
+        public String getXkmsUrl() {
+                return this.xkmsUrl;
+        }
 
-    @Override
-    public void setHttpProxyPort(Integer httpProxyPort) {
-        this.httpProxyPort = httpProxyPort;
-    }
+        @Override
+        public void setXkmsUrl(String xkmsUrl) {
+                this.xkmsUrl = xkmsUrl;
+        }
 
-    @Override
-    public TSPDigestAlgo[] getTspDigestAlgoArray() {
-        return TSPDigestAlgo.values();
-    }
+        @Override
+        public String getTspUrl() {
+                return this.tspUrl;
+        }
 
-    @Override
-    public TSPDigestAlgo getTspDigestAlgo() {
-        return this.tspDigestAlgo;
-    }
+        @Override
+        public void setTspUrl(String tspUrl) {
+                this.tspUrl = tspUrl;
+        }
 
-    @Override
-    public void setTspDigestAlgo(TSPDigestAlgo tspDigestAlgo) {
-        this.tspDigestAlgo = tspDigestAlgo;
-    }
+        @Override
+        public String getTspPolicyOid() {
+                return this.tspPolicyOid;
+        }
 
-    @Override
-    public String getSignTrustDomain() {
-        return this.signTrustDomain;
-    }
+        @Override
+        public void setTspPolicyOid(String tspPolicyOid) {
+                this.tspPolicyOid = tspPolicyOid;
+        }
 
-    @Override
-    public void setSignTrustDomain(String signTrustDomain) {
-        this.signTrustDomain = signTrustDomain;
-    }
+        @Override
+        public Boolean getHttpProxy() {
+                return this.httpProxy;
+        }
 
-    @Override
-    public String getVerifyTrustDomain() {
-        return this.verifyTrustDomain;
-    }
+        @Override
+        public void setHttpProxy(Boolean httpProxy) {
+                this.httpProxy = httpProxy;
+        }
 
-    @Override
-    public void setVerifyTrustDomain(String verifyTrustDomain) {
-        this.verifyTrustDomain = verifyTrustDomain;
-    }
+        @Override
+        public String getHttpProxyHost() {
+                return this.httpProxyHost;
+        }
 
-    @Override
-    public String getIdentityTrustDomain() {
-        return this.identityTrustDomain;
-    }
+        @Override
+        public void setHttpProxyHost(String httpProxyHost) {
+                this.httpProxyHost = httpProxyHost;
+        }
 
-    @Override
-    public void setIdentityTrustDomain(String identityTrustDomain) {
-        this.identityTrustDomain = identityTrustDomain;
-    }
+        @Override
+        public Integer getHttpProxyPort() {
+                return this.httpProxyPort;
+        }
 
-    @Override
-    public String getTsaTrustDomain() {
-        return this.tsaTrustDomain;
-    }
+        @Override
+        public void setHttpProxyPort(Integer httpProxyPort) {
+                this.httpProxyPort = httpProxyPort;
+        }
 
-    @Override
-    public void setTsaTrustDomain(String tsaTrustDomain) {
-        this.tsaTrustDomain = tsaTrustDomain;
-    }
+        @Override
+        public TSPDigestAlgo[] getTspDigestAlgoArray() {
+                return TSPDigestAlgo.values();
+        }
 
-    @Override
-    public DigestAlgo[] getSignatureDigestAlgoArray() {
-        return DigestAlgo.values();
-    }
+        @Override
+        public TSPDigestAlgo getTspDigestAlgo() {
+                return this.tspDigestAlgo;
+        }
 
-    @Override
-    public DigestAlgo getSignatureDigestAlgo() {
-        return this.signatureDigestAlgo;
-    }
+        @Override
+        public void setTspDigestAlgo(TSPDigestAlgo tspDigestAlgo) {
+                this.tspDigestAlgo = tspDigestAlgo;
+        }
 
-    @Override
-    public void setSignatureDigestAlgo(DigestAlgo signatureDigestAlgo) {
-        this.signatureDigestAlgo = signatureDigestAlgo;
-    }
+        @Override
+        public String getSignTrustDomain() {
+                return this.signTrustDomain;
+        }
 
-    @Override
-    public Integer getDocumentStorageExpiration() {
-        return this.documentStorageExpiration;
-    }
+        @Override
+        public void setSignTrustDomain(String signTrustDomain) {
+                this.signTrustDomain = signTrustDomain;
+        }
 
-    @Override
-    public void setDocumentStorageExpiration(Integer documentStorageExpiration) {
-        this.documentStorageExpiration = documentStorageExpiration;
-    }
+        @Override
+        public String getVerifyTrustDomain() {
+                return this.verifyTrustDomain;
+        }
 
-    @Override
-    public String getDocumentCleanupTaskCronSchedule() {
-        return this.documentCleanupTaskCronSchedule;
-    }
+        @Override
+        public void setVerifyTrustDomain(String verifyTrustDomain) {
+                this.verifyTrustDomain = verifyTrustDomain;
+        }
 
-    @Override
-    public void setDocumentCleanupTaskCronSchedule(String documentCleanupTaskCronSchedule) {
-        this.documentCleanupTaskCronSchedule = documentCleanupTaskCronSchedule;
-    }
+        @Override
+        public String getIdentityTrustDomain() {
+                return this.identityTrustDomain;
+        }
+
+        @Override
+        public void setIdentityTrustDomain(String identityTrustDomain) {
+                this.identityTrustDomain = identityTrustDomain;
+        }
+
+        @Override
+        public String getTsaTrustDomain() {
+                return this.tsaTrustDomain;
+        }
+
+        @Override
+        public void setTsaTrustDomain(String tsaTrustDomain) {
+                this.tsaTrustDomain = tsaTrustDomain;
+        }
+
+        @Override
+        public DigestAlgo[] getSignatureDigestAlgoArray() {
+                return DigestAlgo.values();
+        }
+
+        @Override
+        public DigestAlgo getSignatureDigestAlgo() {
+                return this.signatureDigestAlgo;
+        }
+
+        @Override
+        public void setSignatureDigestAlgo(DigestAlgo signatureDigestAlgo) {
+                this.signatureDigestAlgo = signatureDigestAlgo;
+        }
+
+        @Override
+        public Integer getDocumentStorageExpiration() {
+                return this.documentStorageExpiration;
+        }
+
+        @Override
+        public void setDocumentStorageExpiration(Integer documentStorageExpiration) {
+                this.documentStorageExpiration = documentStorageExpiration;
+        }
+
+        @Override
+        public String getDocumentCleanupTaskCronSchedule() {
+                return this.documentCleanupTaskCronSchedule;
+        }
+
+        @Override
+        public void setDocumentCleanupTaskCronSchedule(String documentCleanupTaskCronSchedule) {
+                this.documentCleanupTaskCronSchedule = documentCleanupTaskCronSchedule;
+        }
+
+        @Override
+        public Long getTimestampMaxOffset() {
+                return this.timestampMaxOffset;
+        }
+
+        @Override
+        public void setTimestampMaxOffset(Long timestampMaxOffset) {
+                this.timestampMaxOffset = timestampMaxOffset;
+        }
 
 }

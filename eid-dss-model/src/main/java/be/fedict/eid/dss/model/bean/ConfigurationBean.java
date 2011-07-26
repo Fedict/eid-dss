@@ -38,197 +38,201 @@ import java.util.Map;
 @Startup
 public class ConfigurationBean implements Configuration {
 
-    private static final Log LOG = LogFactory.getLog(ConfigurationBean.class);
+        private static final Log LOG = LogFactory.getLog(ConfigurationBean.class);
 
-    private Map<String, String> properties = new HashMap<String, String>();
+        private Map<String, String> properties = new HashMap<String, String>();
 
 
-    @PersistenceContext
-    private EntityManager entityManager;
+        @PersistenceContext
+        private EntityManager entityManager;
 
-    @PostConstruct
-    public void init() {
+        @PostConstruct
+        public void init() {
 
-        updateProperties();
+                updateProperties();
 
-        initProperties();
-    }
+                initProperties();
+        }
 
-    private void initProperties() {
+        private void initProperties() {
 
-        for (ConfigProperty configProperty : ConfigProperty.values()) {
+                for (ConfigProperty configProperty : ConfigProperty.values()) {
 
-            if (!properties.containsKey(configProperty.getName())) {
+                        if (!properties.containsKey(configProperty.getName())) {
 
-                // check if default value specified, if so initialize
-                if (null != configProperty.getDefaultValue()) {
-                    LOG.debug("Initialize " + configProperty.getName() + " with " +
-                            "default value=" + configProperty.getDefaultValue());
-                    setValue(configProperty, configProperty.getDefaultValue());
+                                // check if default value specified, if so initialize
+                                if (null != configProperty.getDefaultValue()) {
+                                        LOG.debug("Initialize " + configProperty.getName() + " with " +
+                                                "default value=" + configProperty.getDefaultValue());
+                                        setValue(configProperty, configProperty.getDefaultValue());
 
+                                }
+                        }
                 }
-            }
-        }
-    }
-
-    private void updateProperties() {
-
-        this.properties.clear();
-        for (ConfigPropertyEntity configProperty :
-                ConfigPropertyEntity.listAll(this.entityManager)) {
-            this.properties.put(configProperty.getName(), configProperty.getValue());
         }
 
-    }
+        private void updateProperties() {
 
-    /**
-     * {@inheritDoc}
-     */
-    public void setValue(ConfigProperty configProperty, Object value) {
-
-        setValue(configProperty, null, value);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void setValue(ConfigProperty configProperty, String index, Object value) {
-
-        String propertyValue;
-        if (null != value) {
-            Class<?> expectedType = configProperty.getType();
-            Class<?> type = value.getClass();
-            if (!expectedType.isAssignableFrom(type)) {
-                throw new IllegalArgumentException("value has incorrect type: "
-                        + type.getClass().getName());
-            }
-            Object castedValue = expectedType.cast(value);
-            if (expectedType.isEnum()) {
-                Enum<?> enumValue = (Enum<?>) castedValue;
-                propertyValue = enumValue.name();
-            } else {
-                propertyValue = castedValue.toString();
-                if (propertyValue.trim().isEmpty()) {
-                    propertyValue = null;
+                this.properties.clear();
+                for (ConfigPropertyEntity configProperty :
+                        ConfigPropertyEntity.listAll(this.entityManager)) {
+                        this.properties.put(configProperty.getName(), configProperty.getValue());
                 }
-            }
-        } else {
-            propertyValue = null;
+
         }
 
-        String propertyName = getPropertyName(configProperty, index);
-        ConfigPropertyEntity configPropertyEntity = this.entityManager.find(
-                ConfigPropertyEntity.class, propertyName);
-        if (null == configPropertyEntity) {
-            configPropertyEntity = new ConfigPropertyEntity(
-                    propertyName, propertyValue);
-            this.entityManager.persist(configPropertyEntity);
-        } else {
-            configPropertyEntity.setValue(propertyValue);
+        /**
+         * {@inheritDoc}
+         */
+        public void setValue(ConfigProperty configProperty, Object value) {
+
+                setValue(configProperty, null, value);
         }
 
-        // update
-        updateProperties();
-    }
+        /**
+         * {@inheritDoc}
+         */
+        public void setValue(ConfigProperty configProperty, String index, Object value) {
 
-    /**
-     * {@inheritDoc}
-     */
-    public void removeValue(ConfigProperty configProperty) {
+                String propertyValue;
+                if (null != value) {
+                        Class<?> expectedType = configProperty.getType();
+                        Class<?> type = value.getClass();
+                        if (!expectedType.isAssignableFrom(type)) {
+                                throw new IllegalArgumentException("value has incorrect type: "
+                                        + type.getClass().getName());
+                        }
+                        Object castedValue = expectedType.cast(value);
+                        if (expectedType.isEnum()) {
+                                Enum<?> enumValue = (Enum<?>) castedValue;
+                                propertyValue = enumValue.name();
+                        } else {
+                                propertyValue = castedValue.toString();
+                                if (propertyValue.trim().isEmpty()) {
+                                        propertyValue = null;
+                                }
+                        }
+                } else {
+                        propertyValue = null;
+                }
 
-        removeValue(configProperty, null);
+                String propertyName = getPropertyName(configProperty, index);
+                ConfigPropertyEntity configPropertyEntity = this.entityManager.find(
+                        ConfigPropertyEntity.class, propertyName);
+                if (null == configPropertyEntity) {
+                        configPropertyEntity = new ConfigPropertyEntity(
+                                propertyName, propertyValue);
+                        this.entityManager.persist(configPropertyEntity);
+                } else {
+                        configPropertyEntity.setValue(propertyValue);
+                }
 
-        // update
-        updateProperties();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void removeValue(ConfigProperty configProperty, String index) {
-
-        String propertyName = getPropertyName(configProperty, index);
-        ConfigPropertyEntity configPropertyEntity = this.entityManager.find(
-                ConfigPropertyEntity.class, propertyName);
-        if (null != configPropertyEntity) {
-            this.entityManager.remove(configPropertyEntity);
+                // update
+                updateProperties();
         }
 
-        // update
-        updateProperties();
-    }
+        /**
+         * {@inheritDoc}
+         */
+        public void removeValue(ConfigProperty configProperty) {
 
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings({"unchecked", "static-access"})
-    public <T> T getValue(ConfigProperty configProperty, Class<T> type) {
-        return getValue(configProperty, null, type);
-    }
+                removeValue(configProperty, null);
 
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings({"unchecked", "static-access"})
-    public <T> T getValue(ConfigProperty configProperty, String index, Class<T> type) {
-
-        if (!type.equals(configProperty.getType())) {
-            throw new IllegalArgumentException("incorrect type: "
-                    + type.getName());
+                // update
+                updateProperties();
         }
 
-        String propertyName = getPropertyName(configProperty, index);
+        /**
+         * {@inheritDoc}
+         */
+        public void removeValue(ConfigProperty configProperty, String index) {
 
-        String value = this.properties.get(propertyName);
-        if (null == value || value.trim().length() == 0) {
-            return null;
+                String propertyName = getPropertyName(configProperty, index);
+                ConfigPropertyEntity configPropertyEntity = this.entityManager.find(
+                        ConfigPropertyEntity.class, propertyName);
+                if (null != configPropertyEntity) {
+                        this.entityManager.remove(configPropertyEntity);
+                }
+
+                // update
+                updateProperties();
         }
 
-        if (String.class == configProperty.getType()) {
-            return (T) value;
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings({"unchecked", "static-access"})
+        public <T> T getValue(ConfigProperty configProperty, Class<T> type) {
+                return getValue(configProperty, null, type);
         }
-        if (Boolean.class == configProperty.getType()) {
-            Boolean booleanValue = Boolean.parseBoolean(value);
-            return (T) booleanValue;
-        }
-        if (Integer.class == configProperty.getType()) {
-            Integer integerValue = Integer.parseInt(value);
-            return (T) integerValue;
-        }
-        if (configProperty.getType().isEnum()) {
-            Enum<?> e = (Enum<?>) configProperty.getType().getEnumConstants()[0];
-            return (T) Enum.valueOf(e.getClass(), value);
-        }
-        throw new RuntimeException("unsupported type: "
-                + configProperty.getType().getName());
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<String> getIndexes(ConfigProperty configProperty) {
+        /**
+         * {@inheritDoc}
+         */
+        @SuppressWarnings({"unchecked", "static-access"})
+        public <T> T getValue(ConfigProperty configProperty, String index, Class<T> type) {
 
-        List<ConfigPropertyEntity> configs =
-                ConfigPropertyEntity.listConfigsWhereNameLike(this.entityManager,
-                        configProperty.getName());
-        List<String> indexes = new LinkedList<String>();
+                if (!type.equals(configProperty.getType())) {
+                        throw new IllegalArgumentException("incorrect type: "
+                                + type.getName());
+                }
 
-        String prefix = configProperty.getName() + '-';
-        for (ConfigPropertyEntity config : configs) {
-            if (config.getName().contains(prefix)) {
-                indexes.add(config.getName().substring(config.getName().
-                        indexOf(prefix) + prefix.length()));
-            }
+                String propertyName = getPropertyName(configProperty, index);
+
+                String value = this.properties.get(propertyName);
+                if (null == value || value.trim().length() == 0) {
+                        return null;
+                }
+
+                if (String.class == configProperty.getType()) {
+                        return (T) value;
+                }
+                if (Boolean.class == configProperty.getType()) {
+                        Boolean booleanValue = Boolean.parseBoolean(value);
+                        return (T) booleanValue;
+                }
+                if (Integer.class == configProperty.getType()) {
+                        Integer integerValue = Integer.parseInt(value);
+                        return (T) integerValue;
+                }
+                if (Long.class == configProperty.getType()) {
+                        Long longValue = Long.parseLong(value);
+                        return (T) longValue;
+                }
+                if (configProperty.getType().isEnum()) {
+                        Enum<?> e = (Enum<?>) configProperty.getType().getEnumConstants()[0];
+                        return (T) Enum.valueOf(e.getClass(), value);
+                }
+                throw new RuntimeException("unsupported type: "
+                        + configProperty.getType().getName());
         }
-        return indexes;
-    }
 
-    private String getPropertyName(ConfigProperty configProperty, String index) {
+        /**
+         * {@inheritDoc}
+         */
+        public List<String> getIndexes(ConfigProperty configProperty) {
 
-        String propertyName = configProperty.getName();
-        if (null != index) {
-            propertyName += '-' + index;
+                List<ConfigPropertyEntity> configs =
+                        ConfigPropertyEntity.listConfigsWhereNameLike(this.entityManager,
+                                configProperty.getName());
+                List<String> indexes = new LinkedList<String>();
+
+                String prefix = configProperty.getName() + '-';
+                for (ConfigPropertyEntity config : configs) {
+                        if (config.getName().contains(prefix)) {
+                                indexes.add(config.getName().substring(config.getName().
+                                        indexOf(prefix) + prefix.length()));
+                        }
+                }
+                return indexes;
         }
-        return propertyName;
-    }
+
+        private String getPropertyName(ConfigProperty configProperty, String index) {
+
+                String propertyName = configProperty.getName();
+                if (null != index) {
+                        propertyName += '-' + index;
+                }
+                return propertyName;
+        }
 }

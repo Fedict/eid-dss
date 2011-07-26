@@ -39,159 +39,161 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
 
+import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.*;
 
 public class XMLDSSDocumentServiceTest {
 
-    private static final Log LOG = LogFactory
-            .getLog(XMLDSSDocumentServiceTest.class);
+        private static final Log LOG = LogFactory
+                .getLog(XMLDSSDocumentServiceTest.class);
 
-    @BeforeClass
-    public static void setUp() {
-        if (null == Security.getProvider(BouncyCastleProvider.PROVIDER_NAME)) {
-            Security.addProvider(new BouncyCastleProvider());
+        @BeforeClass
+        public static void setUp() {
+                if (null == Security.getProvider(BouncyCastleProvider.PROVIDER_NAME)) {
+                        Security.addProvider(new BouncyCastleProvider());
+                }
         }
-    }
 
-    @Test
-    public void testCheckIncomingDocumentWithoutNamespace() throws Exception {
-        // setup
-        XMLDSSDocumentService testedInstance = new XMLDSSDocumentService();
-        byte[] document = "<test>hello world</test>".getBytes();
+        @Test
+        public void testCheckIncomingDocumentWithoutNamespace() throws Exception {
+                // setup
+                XMLDSSDocumentService testedInstance = new XMLDSSDocumentService();
+                byte[] document = "<test>hello world</test>".getBytes();
 
-        // operate
-        testedInstance.init(null, null);
-        testedInstance.checkIncomingDocument(document);
-    }
+                // operate
+                testedInstance.init(null, null);
+                testedInstance.checkIncomingDocument(document);
+        }
 
-    @Test
-    public void testCheckIncomingDocumentUnknownNamespace() throws Exception {
-        // setup
-        XMLDSSDocumentService testedInstance = new XMLDSSDocumentService();
-        byte[] document = "<test xmlns=\"urn:test\">hello world</test>"
-                .getBytes();
-        DSSDocumentContext mockContext = EasyMock
-                .createMock(DSSDocumentContext.class);
+        @Test
+        public void testCheckIncomingDocumentUnknownNamespace() throws Exception {
+                // setup
+                XMLDSSDocumentService testedInstance = new XMLDSSDocumentService();
+                byte[] document = "<test xmlns=\"urn:test\">hello world</test>"
+                        .getBytes();
+                DSSDocumentContext mockContext = EasyMock
+                        .createMock(DSSDocumentContext.class);
 
-        // expectations
-        EasyMock.expect(mockContext.getXmlSchema("urn:test")).andReturn(null);
+                // expectations
+                EasyMock.expect(mockContext.getXmlSchema("urn:test")).andReturn(null);
 
-        // prepare
-        EasyMock.replay(mockContext);
+                // prepare
+                EasyMock.replay(mockContext);
 
-        // operate
-        testedInstance.init(mockContext, null);
-        testedInstance.checkIncomingDocument(document);
+                // operate
+                testedInstance.init(mockContext, null);
+                testedInstance.checkIncomingDocument(document);
 
-        // verify
-        EasyMock.verify(mockContext);
-    }
+                // verify
+                EasyMock.verify(mockContext);
+        }
 
-    @Test
-    public void testCheckIncomingDocumentWithNamespaceChecking()
-            throws Exception {
-        // setup
-        XMLDSSDocumentService testedInstance = new XMLDSSDocumentService();
-        byte[] document = "<test xmlns=\"urn:test\">hello world</test>"
-                .getBytes();
-        DSSDocumentContext mockContext = EasyMock
-                .createMock(DSSDocumentContext.class);
+        @Test
+        public void testCheckIncomingDocumentWithNamespaceChecking()
+                throws Exception {
+                // setup
+                XMLDSSDocumentService testedInstance = new XMLDSSDocumentService();
+                byte[] document = "<test xmlns=\"urn:test\">hello world</test>"
+                        .getBytes();
+                DSSDocumentContext mockContext = EasyMock
+                        .createMock(DSSDocumentContext.class);
 
-        byte[] xsd = IOUtils.toByteArray(XMLDSSDocumentServiceTest.class
-                .getResourceAsStream("/test.xsd"));
+                byte[] xsd = IOUtils.toByteArray(XMLDSSDocumentServiceTest.class
+                        .getResourceAsStream("/test.xsd"));
 
-        // expectations
-        EasyMock.expect(mockContext.getXmlSchema("urn:test")).andReturn(xsd);
+                // expectations
+                EasyMock.expect(mockContext.getXmlSchema("urn:test")).andReturn(xsd);
 
-        // prepare
-        EasyMock.replay(mockContext);
+                // prepare
+                EasyMock.replay(mockContext);
 
-        // operate
-        testedInstance.init(mockContext, null);
-        testedInstance.checkIncomingDocument(document);
+                // operate
+                testedInstance.init(mockContext, null);
+                testedInstance.checkIncomingDocument(document);
 
-        // verify
-        EasyMock.verify(mockContext);
-    }
+                // verify
+                EasyMock.verify(mockContext);
+        }
 
-    @Test
-    public void testCheckIncomingDocumentWithNamespaceCheckingWithImporting()
-            throws Exception {
-        // setup
-        XMLDSSDocumentService testedInstance = new XMLDSSDocumentService();
-        byte[] document = ("<test2 xmlns=\"urn:test2\" xmlns:test=\"urn:test\">"
-                + "<test:test>hello world</test:test></test2>").getBytes();
-        DSSDocumentContext mockContext = EasyMock
-                .createMock(DSSDocumentContext.class);
+        @Test
+        public void testCheckIncomingDocumentWithNamespaceCheckingWithImporting()
+                throws Exception {
+                // setup
+                XMLDSSDocumentService testedInstance = new XMLDSSDocumentService();
+                byte[] document = ("<test2 xmlns=\"urn:test2\" xmlns:test=\"urn:test\">"
+                        + "<test:test>hello world</test:test></test2>").getBytes();
+                DSSDocumentContext mockContext = EasyMock
+                        .createMock(DSSDocumentContext.class);
 
-        byte[] xsd2 = IOUtils.toByteArray(XMLDSSDocumentServiceTest.class
-                .getResourceAsStream("/test-import.xsd"));
-        byte[] xsd = IOUtils.toByteArray(XMLDSSDocumentServiceTest.class
-                .getResourceAsStream("/test.xsd"));
+                byte[] xsd2 = IOUtils.toByteArray(XMLDSSDocumentServiceTest.class
+                        .getResourceAsStream("/test-import.xsd"));
+                byte[] xsd = IOUtils.toByteArray(XMLDSSDocumentServiceTest.class
+                        .getResourceAsStream("/test.xsd"));
 
-        // expectations
-        EasyMock.expect(mockContext.getXmlSchema("urn:test2")).andReturn(xsd2);
-        EasyMock.expect(mockContext.getXmlSchema("urn:test")).andReturn(xsd);
+                // expectations
+                EasyMock.expect(mockContext.getXmlSchema("urn:test2")).andReturn(xsd2);
+                EasyMock.expect(mockContext.getXmlSchema("urn:test")).andReturn(xsd);
 
-        // prepare
-        EasyMock.replay(mockContext);
+                // prepare
+                EasyMock.replay(mockContext);
 
-        // operate
-        testedInstance.init(mockContext, null);
-        testedInstance.checkIncomingDocument(document);
+                // operate
+                testedInstance.init(mockContext, null);
+                testedInstance.checkIncomingDocument(document);
 
-        // verify
-        EasyMock.verify(mockContext);
-    }
+                // verify
+                EasyMock.verify(mockContext);
+        }
 
-    @Test
-    public void testVerifySignedDocument() throws Exception {
-        // setup
-        InputStream signedDocumentInputStream = XMLDSSDocumentServiceTest.class
-                .getResourceAsStream("/signed-document.xml");
-        byte[] signedDocument = IOUtils.toByteArray(signedDocumentInputStream);
-        XMLDSSDocumentService testedInstance = new XMLDSSDocumentService();
+        @Test
+        public void testVerifySignedDocument() throws Exception {
+                // setup
+                InputStream signedDocumentInputStream = XMLDSSDocumentServiceTest.class
+                        .getResourceAsStream("/signed-document.xml");
+                byte[] signedDocument = IOUtils.toByteArray(signedDocumentInputStream);
+                XMLDSSDocumentService testedInstance = new XMLDSSDocumentService();
 
-        DSSDocumentContext mockDocumentContext = EasyMock
-                .createMock(DSSDocumentContext.class);
-        testedInstance.init(mockDocumentContext, "text/xml");
+                DSSDocumentContext mockDocumentContext = EasyMock
+                        .createMock(DSSDocumentContext.class);
+                testedInstance.init(mockDocumentContext, "text/xml");
 
-        Capture<List<X509Certificate>> certificateChainCapture = new Capture<List<X509Certificate>>();
-        Capture<Date> validationDateCapture = new Capture<Date>();
-        Capture<List<OCSPResp>> ocspResponsesCapture = new Capture<List<OCSPResp>>();
-        Capture<List<X509CRL>> crlsCapture = new Capture<List<X509CRL>>();
-        Capture<TimeStampToken> timeStampTokenCapture = new Capture<TimeStampToken>();
-        mockDocumentContext.validate(EasyMock.capture(certificateChainCapture),
-                EasyMock.capture(validationDateCapture),
-                EasyMock.capture(ocspResponsesCapture),
-                EasyMock.capture(crlsCapture));
-        mockDocumentContext.validate(EasyMock.capture(timeStampTokenCapture));
-        mockDocumentContext.validate(EasyMock.capture(timeStampTokenCapture));
+                Capture<List<X509Certificate>> certificateChainCapture = new Capture<List<X509Certificate>>();
+                Capture<Date> validationDateCapture = new Capture<Date>();
+                Capture<List<OCSPResp>> ocspResponsesCapture = new Capture<List<OCSPResp>>();
+                Capture<List<X509CRL>> crlsCapture = new Capture<List<X509CRL>>();
+                Capture<TimeStampToken> timeStampTokenCapture = new Capture<TimeStampToken>();
+                mockDocumentContext.validate(EasyMock.capture(certificateChainCapture),
+                        EasyMock.capture(validationDateCapture),
+                        EasyMock.capture(ocspResponsesCapture),
+                        EasyMock.capture(crlsCapture));
+                mockDocumentContext.validate(EasyMock.capture(timeStampTokenCapture));
+                mockDocumentContext.validate(EasyMock.capture(timeStampTokenCapture));
+                expect(mockDocumentContext.getTimestampMaxOffset()).andReturn(1000L);
 
-        // prepare
-        EasyMock.replay(mockDocumentContext);
+                // prepare
+                EasyMock.replay(mockDocumentContext);
 
-        // operate
-        List<SignatureInfo> result = testedInstance
-                .verifySignatures(signedDocument);
+                // operate
+                List<SignatureInfo> result = testedInstance
+                        .verifySignatures(signedDocument);
 
-        // verify
-        EasyMock.verify(mockDocumentContext);
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        SignatureInfo signatureInfo = result.get(0);
-        assertNotNull(signatureInfo.getSigner());
-        LOG.debug("signer: "
-                + signatureInfo.getSigner().getSubjectX500Principal());
-        assertTrue(signatureInfo.getSigner().getSubjectX500Principal()
-                .toString().contains("Wim Vandenhaute"));
-        assertNotNull(signatureInfo.getSigningTime());
-        LOG.debug("signing time: " + signatureInfo.getSigningTime());
-        LOG.debug("number of OCSPs: " + ocspResponsesCapture.getValue().size());
-        LOG.debug("number of CRLs: " + crlsCapture.getValue().size());
-        assertEquals(1, ocspResponsesCapture.getValue().size());
-        assertEquals(1, crlsCapture.getValue().size());
-        assertEquals(validationDateCapture.getValue(),
-                signatureInfo.getSigningTime());
-    }
+                // verify
+                EasyMock.verify(mockDocumentContext);
+                assertNotNull(result);
+                assertEquals(1, result.size());
+                SignatureInfo signatureInfo = result.get(0);
+                assertNotNull(signatureInfo.getSigner());
+                LOG.debug("signer: "
+                        + signatureInfo.getSigner().getSubjectX500Principal());
+                assertTrue(signatureInfo.getSigner().getSubjectX500Principal()
+                        .toString().contains("Wim Vandenhaute"));
+                assertNotNull(signatureInfo.getSigningTime());
+                LOG.debug("signing time: " + signatureInfo.getSigningTime());
+                LOG.debug("number of OCSPs: " + ocspResponsesCapture.getValue().size());
+                LOG.debug("number of CRLs: " + crlsCapture.getValue().size());
+                assertEquals(1, ocspResponsesCapture.getValue().size());
+                assertEquals(1, crlsCapture.getValue().size());
+                assertEquals(validationDateCapture.getValue(),
+                        signatureInfo.getSigningTime());
+        }
 }

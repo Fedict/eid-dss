@@ -35,36 +35,43 @@ import java.util.List;
  */
 public interface DSSDocumentContext extends Serializable {
 
-    /**
-     * @param namespace XML namespace
-     * @return the XML schema for the given XML namespace.
-     */
-    byte[] getXmlSchema(String namespace);
+        /**
+         * @param namespace XML namespace
+         * @return the XML schema for the given XML namespace.
+         */
+        byte[] getXmlSchema(String namespace);
 
-    /**
-     * @param namespace XML namespace
-     * @return the XML Style Sheet for the given XML namespace.
-     */
-    byte[] getXmlStyleSheet(String namespace);
+        /**
+         * @param namespace XML namespace
+         * @return the XML Style Sheet for the given XML namespace.
+         */
+        byte[] getXmlStyleSheet(String namespace);
 
-    /**
-     * Checks whether the given certificate chain is valid for the given
-     * validation time using the given revocation data.
-     *
-     * @param certificateChain certificate chain to validate
-     * @param validationDate   validation date
-     * @param ocspResponses    list of OCSP responses used in validation
-     * @param crls             list of CRLs used in validation
-     * @throws Exception something went wrong
-     */
-    void validate(List<X509Certificate> certificateChain, Date validationDate,
-                  List<OCSPResp> ocspResponses, List<X509CRL> crls) throws Exception;
+        /**
+         * Checks whether the given certificate chain is valid for the given
+         * validation time using the given revocation data.
+         *
+         * @param certificateChain certificate chain to validate
+         * @param validationDate   validation date
+         * @param ocspResponses    list of OCSP responses used in validation
+         * @param crls             list of CRLs used in validation
+         * @throws Exception something went wrong
+         */
+        void validate(List<X509Certificate> certificateChain, Date validationDate,
+                      List<OCSPResp> ocspResponses, List<X509CRL> crls) throws Exception;
 
-    /**
-     * Validate the specified timestamp token.
-     *
-     * @param timeStampToken the timestamp token to validate.
-     * @throws Exception something went wrong
-     */
-    void validate(TimeStampToken timeStampToken) throws Exception;
+        /**
+         * Validate the specified timestamp token.
+         *
+         * @param timeStampToken the timestamp token to validate.
+         * @throws Exception something went wrong
+         */
+        void validate(TimeStampToken timeStampToken) throws Exception;
+
+        /**
+         * Used when validating timestamp tokens.
+         *
+         * @return the maximum offset (in ms) for timestamps.
+         */
+        Long getTimestampMaxOffset();
 }
