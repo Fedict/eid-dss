@@ -242,13 +242,15 @@ public class IdentityServiceSingletonBean {
                 // check identity config changed in dbase, if so reload!
                 DSSIdentityConfig databaseIdentityConfig = findIdentityConfig();
 
-                if (!databaseIdentityConfig.equals(this.identityConfig)) {
-                        try {
-                                this.identity = loadIdentity(databaseIdentityConfig);
-                        } catch (KeyStoreLoadException e) {
-                                throw new RuntimeException(e);
+                if (null != databaseIdentityConfig) {
+                        if (!databaseIdentityConfig.equals(this.identityConfig)) {
+                                try {
+                                        this.identity = loadIdentity(databaseIdentityConfig);
+                                } catch (KeyStoreLoadException e) {
+                                        throw new RuntimeException(e);
+                                }
+                                this.identityConfig = databaseIdentityConfig;
                         }
-                        this.identityConfig = databaseIdentityConfig;
                 }
                 return this.identity;
         }
