@@ -25,22 +25,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-@Singleton
 @Startup
+@Stateless
 public class ConfigurationBean implements Configuration {
 
         private static final Log LOG = LogFactory.getLog(ConfigurationBean.class);
-
-        private Map<String, String> properties = new HashMap<String, String>();
 
 
         @PersistenceContext
@@ -49,8 +45,6 @@ public class ConfigurationBean implements Configuration {
         @PostConstruct
         public void init() {
 
-                updateProperties();
-
                 initProperties();
         }
 
@@ -58,27 +52,15 @@ public class ConfigurationBean implements Configuration {
 
                 for (ConfigProperty configProperty : ConfigProperty.values()) {
 
-                        if (!properties.containsKey(configProperty.getName())) {
+                        // init defaults if necessary
+                        if (null == getValue(configProperty, configProperty.getType())
+                                && null != configProperty.getDefaultValue()) {
 
-                                // check if default value specified, if so initialize
-                                if (null != configProperty.getDefaultValue()) {
-                                        LOG.debug("Initialize " + configProperty.getName() + " with " +
-                                                "default value=" + configProperty.getDefaultValue());
-                                        setValue(configProperty, configProperty.getDefaultValue());
-
-                                }
+                                LOG.debug("Initialize " + configProperty.getName() + " with " +
+                                        "default value=" + configProperty.getDefaultValue());
+                                setValue(configProperty, configProperty.getDefaultValue());
                         }
                 }
-        }
-
-        private void updateProperties() {
-
-                this.properties.clear();
-                for (ConfigPropertyEntity configProperty :
-                        ConfigPropertyEntity.listAll(this.entityManager)) {
-                        this.properties.put(configProperty.getName(), configProperty.getValue());
-                }
-
         }
 
         /**
@@ -126,9 +108,6 @@ public class ConfigurationBean implements Configuration {
                 } else {
                         configPropertyEntity.setValue(propertyValue);
                 }
-
-                // update
-                updateProperties();
         }
 
         /**
@@ -137,9 +116,6 @@ public class ConfigurationBean implements Configuration {
         public void removeValue(ConfigProperty configProperty) {
 
                 removeValue(configProperty, null);
-
-                // update
-                updateProperties();
         }
 
         /**
@@ -153,9 +129,6 @@ public class ConfigurationBean implements Configuration {
                 if (null != configPropertyEntity) {
                         this.entityManager.remove(configPropertyEntity);
                 }
-
-                // update
-                updateProperties();
         }
 
         /**
@@ -179,7 +152,12 @@ public class ConfigurationBean implements Configuration {
 
                 String propertyName = getPropertyName(configProperty, index);
 
-                String value = this.properties.get(propertyName);
+                ConfigPropertyEntity configPropertyEntity = this.entityManager.find(
+                        ConfigPropertyEntity.class, propertyName);
+                if (null == configPropertyEntity) {
+                        return null;
+                }
+                String value = configPropertyEntity.getValue();
                 if (null == value || value.trim().length() == 0) {
                         return null;
                 }
