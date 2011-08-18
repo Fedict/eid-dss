@@ -138,6 +138,16 @@ public class XAdESValidation {
                                 }
                         }
 
+                        // validate SignatureTimeStamp
+                        XAdESTimeStampType signatureTimeStamp = XAdESUtils.findUnsignedSignatureProperty(
+                                qualifyingProperties, XAdESTimeStampType.class, "SignatureTimeStamp");
+                        if (null == signatureTimeStamp) {
+                                LOG.error("No SignatureTimeStamp present");
+                                throw new XAdESValidationException("No SignatureTimeStamp present");
+                        }
+                        List<TimeStampToken> signatureTimeStampTokens =
+                                XAdESSignatureTimeStampValidation.validate(signatureTimeStamp,
+                                        signatureElement);
 
                         // validate SigAndRefsTimeStamp
                         XAdESTimeStampType sigAndRefsTimeStamp = XAdESUtils.findUnsignedSignatureProperty(
@@ -148,17 +158,6 @@ public class XAdESValidation {
                         }
                         List<TimeStampToken> sigAndRefsTimeStampTokens =
                                 XAdESSigAndRefsTimeStampValidation.validate(sigAndRefsTimeStamp,
-                                        signatureElement);
-
-                        // validate SignatureTimeStamp
-                        XAdESTimeStampType signatureTimeStamp = XAdESUtils.findUnsignedSignatureProperty(
-                                qualifyingProperties, XAdESTimeStampType.class, "SignatureTimeStamp");
-                        if (null == signatureTimeStamp) {
-                                LOG.error("No SignatureTimeStamp present");
-                                throw new XAdESValidationException("No SignatureTimeStamp present");
-                        }
-                        List<TimeStampToken> signatureTimeStampTokens =
-                                XAdESSignatureTimeStampValidation.validate(signatureTimeStamp,
                                         signatureElement);
 
                         // timestamp tokens trust validation
