@@ -151,6 +151,7 @@ public abstract class XAdESUtils {
         } catch (NoSuchAlgorithmException e) {
             throw new XAdESValidationException(e);
         }
+        //LOG.debug("digest input: " + new String(digestInput.getBytes()));
 
         if (!Arrays.equals(md.digest(digestInput.getBytes()),
                 timeStampToken.getTimeStampInfo().getMessageImprintDigest())) {

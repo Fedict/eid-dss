@@ -116,7 +116,7 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
             NodeList signatureNodeList = signatureDocument
                     .getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
             if (0 == signatureNodeList.getLength()) {
-                return null;
+                continue;
             }
             Element signatureElement = (Element) signatureNodeList.item(0);
             KeyInfoKeySelector keySelector = new KeyInfoKeySelector();

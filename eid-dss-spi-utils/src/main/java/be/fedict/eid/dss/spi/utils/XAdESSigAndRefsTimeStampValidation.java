@@ -20,10 +20,12 @@ package be.fedict.eid.dss.spi.utils;
 
 import be.fedict.eid.applet.service.signer.jaxb.xades132.XAdESTimeStampType;
 import be.fedict.eid.dss.spi.utils.exception.XAdESValidationException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.crypto.dsig.XMLSignature;
@@ -68,15 +70,49 @@ public abstract class XAdESSigAndRefsTimeStampValidation {
         /*
          *  4. check SignatureTimeStamp(s), CompleteCertificateRefs, CompleteRevocationRefs, AttributeCertificateRefs, AttributeRevocationRefs
          *  5. canonicalize these and concatenate to bytestream from step 3
+         *  These nodes should be added in their order of appearance.
          */
-        addDigest(signatureElement, XAdESUtils.XADES_132_NS_URI,
-                "SignatureTimeStamp", digestInput);
-        addDigest(signatureElement, XAdESUtils.XADES_132_NS_URI,
-                "CompleteCertificateRefs", digestInput);
-        addDigest(signatureElement, XAdESUtils.XADES_132_NS_URI,
-                "CompleteRevocationRefs", digestInput);
-
-
+        
+        NodeList unsignedSignaturePropertiesNodeList = signatureElement.getElementsByTagNameNS(
+        		XAdESUtils.XADES_132_NS_URI, "UnsignedSignatureProperties");
+        if (unsignedSignaturePropertiesNodeList.getLength() == 0) {
+        	throw new XAdESValidationException("UnsignedSignatureProperties node not present");
+        }
+        Node unsignedSignaturePropertiesNode = unsignedSignaturePropertiesNodeList.item(0);
+        NodeList childNodes = unsignedSignaturePropertiesNode.getChildNodes();
+		int childNodesCount = childNodes.getLength();
+		for (int idx = 0; idx < childNodesCount; idx++) {
+			Node childNode = childNodes.item(idx);
+			if (Node.ELEMENT_NODE != childNode.getNodeType()) {
+				continue;
+			}
+			if (!XAdESUtils.XADES_132_NS_URI.equals(childNode
+					.getNamespaceURI())) {
+				continue;
+			}
+			String localName = childNode.getLocalName();
+			if ("SignatureTimeStamp".equals(localName)) {
+				digestInput.addNode(childNode);
+				continue;
+			}
+			if ("CompleteCertificateRefs".equals(localName)) {
+				digestInput.addNode(childNode);
+				continue;
+			}
+			if ("CompleteRevocationRefs".equals(localName)) {
+				digestInput.addNode(childNode);
+				continue;
+			}
+			if ("AttributeCertificateRefs".equals(localName)) {
+				digestInput.addNode(childNode);
+				continue;
+			}
+			if ("AttributeRevocationRefs".equals(localName)) {
+				digestInput.addNode(childNode);
+				continue;
+			}
+		}
+		
         for (TimeStampToken timeStampToken : timeStampTokens) {
 
             // 1. verify signature in timestamp token
