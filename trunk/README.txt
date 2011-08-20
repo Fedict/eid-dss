@@ -10,8 +10,8 @@ Service. The source code is hosted at: http://code.google.com/p/eid-dss/
 === 2. Requirements
 
 The following is required for compiling the eID DSS software:
-* Sun Java 1.6.0_23
-* Apache Maven 3.0.1
+* Oracle Java 1.6.0_26
+* Apache Maven 3.0.3
 
 
 === 3. Build

@@ -229,8 +229,13 @@ public class XAdESValidation {
                         */
                         if (!Arrays.equals(signingCertificate.getEncoded(),
                                 certificateChain.get(0).getEncoded())) {
-                                throw new XAdESValidationException(
-                                        "XAdES certificate chain does not include actual signing certificate");
+                                //throw new XAdESValidationException(
+                                //        "XAdES certificate chain does not include actual signing certificate");
+                        	/*
+                        	 * Not all XAdES implementations add the entire certificate chain via
+                        	 * xades:CertificateValues.
+                        	 */
+                        	certificateChain.add(0, signingCertificate);
                         }
                         LOG.debug("XAdES certificate chain contains actual signing certificate");
 
