@@ -36,7 +36,7 @@ public enum ConfigProperty {
         HTTP_PROXY_HOST("http-proxy-host", String.class),
         HTTP_PROXY_PORT("http-proxy-port", Integer.class),
 
-        XKMS_URL("xkms-url", String.class),
+        XKMS_URL("xkms-url", String.class, "https://www.e-contract.be/eid-trust-service-ws/xkms2"),
 
         ACTIVE_IDENTITY("active-identity", String.class),
         KEY_STORE_TYPE("key-store-type", KeyStoreType.class),
@@ -57,7 +57,7 @@ public enum ConfigProperty {
         DOCUMENT_CLEANUP_TASK_SCHEDULE("document-cleanup-task-schedule", String.class,
                 "0 0/15 * * * *"),
 
-        TIMESTAMP_MAX_OFFSET("timestamp-max-offset", Long.class, 1000L);
+        TIMESTAMP_MAX_OFFSET("timestamp-max-offset", Long.class, 10000L);
 
         private final String name;
 
