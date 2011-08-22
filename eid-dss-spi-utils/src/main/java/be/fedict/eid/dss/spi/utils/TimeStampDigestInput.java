@@ -33,10 +33,9 @@ import org.w3c.dom.Node;
  * Helper class to build inputs for time-stamps. The digests for time-stamps are
  * usually calculated over a concatenations of byte-streams, resulting from nodes
  * and/or processed {@code Reference}s, with the proper canonicalization if needed.
- * This class provides methods to build a sequential input by adding DOM {@code Node}s
- * or {@code Reference}s.
+ * This class provides methods to build a sequential input by adding DOM {@code Node}s.
  *
- * @author http://code.google.com/p/xades4j
+ * @author Frank Cornelis
  */
 public class TimeStampDigestInput {
 
