@@ -124,20 +124,4 @@ public abstract class XAdESSigAndRefsTimeStampValidation {
 
         return timeStampTokens;
     }
-
-    private static void addDigest(Element signatureElement, String namespaceURI,
-                                  String localName, TimeStampDigestInput digestInput)
-            throws XAdESValidationException {
-
-        NodeList nodeList = signatureElement.getElementsByTagNameNS(
-                namespaceURI, localName);
-        if (0 == nodeList.getLength()) {
-            LOG.error("no " + localName + " element found");
-            throw new XAdESValidationException("no " + localName + " element found");
-        }
-        for (int i = 0; i < nodeList.getLength(); i++) {
-            digestInput.addNode(nodeList.item(i));
-        }
-    }
-
 }
