@@ -18,6 +18,7 @@
 
 package test.be.fedict.eid.dss;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -89,6 +90,7 @@ import be.fedict.eid.applet.sc.Pkcs11Eid;
 import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
 import be.fedict.eid.dss.client.NotParseableXMLDocumentException;
 import be.fedict.eid.dss.client.SignatureInfo;
+import be.fedict.eid.dss.client.StorageInfoDO;
 
 public class DigitalSignatureServiceTest {
 
@@ -239,6 +241,31 @@ public class DigitalSignatureServiceTest {
 		LOG.debug("signing time: " + signatureInfo.getSigningTime());
 		LOG.debug("role: " + signatureInfo.getRole());
 		assertEquals("eID Architect", signatureInfo.getRole());
+	}
+
+	@Test
+	public void testArtifactBindingWebService() throws Exception {
+		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
+				"https://www.e-contract.be/eid-dss-ws/dss");
+		client.setProxy("proxy.yourict.net", 8080);
+		client.setLogging(true, false);
+		
+		String documentContent = "Hello World";
+		StorageInfoDO storageInfo = client.store(documentContent.getBytes(),
+				"text/plain");
+		LOG.debug("storage info artifact Id: " + storageInfo.getArtifact());
+		LOG.debug("storage info not before: " + storageInfo.getNotBefore());
+		LOG.debug("storage info not after: " + storageInfo.getNotAfter());
+
+		byte[] resultDocument = client.retrieve(storageInfo.getArtifact());
+		assertEquals(documentContent, new String(resultDocument));
+
+		try {
+			client.retrieve(storageInfo.getArtifact());
+			fail();
+		} catch (RuntimeException e) {
+			// expected
+		}
 	}
 
 	private void signDocument(Document document) throws IOException,
