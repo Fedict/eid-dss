@@ -55,6 +55,12 @@
 						OOXML documents (Microsoft Office 2007 and 2010), using OOXML
 						XML Signature with XAdES-X-L extension (recognized by Office
 						itself) and eID identity extension.
+						<warning>
+							<para>
+								When enabling the eID identity extension Office 2010
+								will no longer recognize the signature as being valid.
+							</para>
+						</warning>
 					</para>
 				</listitem>
 				<listitem>
@@ -902,7 +908,7 @@
                 <dss:ResultMajor>urn:oasis:names:tc:dss:1.0:resultmajor:Success</dss:ResultMajor>
             </dss:Result>
 
-            <dss:OptionalInputs>
+            <dss:OptionalOutputs>
                 <artifact:StorageInfo>
                     <artifact:Identifier>de2f6265-fa06-4ae7-8f7f-d289cd590a32</artifact:Identifier>
                     <artifact:Validity>
@@ -910,7 +916,7 @@
                         <artifact:NotAfter>2011-05-11T16:43:50.392+02:00</artifact:NotAfter>
                     </artifact:Validity>
                 </artifact:StorageInfo>
-            </dss:OptionalInputs>
+            </dss:OptionalOutputs>
 
         </dss:SignResponse>
     </soap:Body>
@@ -1044,7 +1050,15 @@
 					<code>DocumentWithSignature</code>
 					element.
 				</para>
-
+				<para>
+					Instead of returning with
+					<code>Base64XML</code>
+					it is possible that the web service returns with
+					<code>Base64Data</code>
+					in case the document has a mime type different from
+					<code>text/xml</code>
+					.
+				</para>
 			</section>
 		</section>
 		<section>
