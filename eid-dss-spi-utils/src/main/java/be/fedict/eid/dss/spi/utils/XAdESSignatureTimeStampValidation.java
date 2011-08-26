@@ -31,48 +31,59 @@ import java.util.List;
 
 /**
  * XAdES SignatureTimeStamp validator. Used by {@link XAdESValidation}.
- *
+ * 
  * @author Wim Vandenhaute
  */
 public abstract class XAdESSignatureTimeStampValidation {
 
-    private static final Log LOG = LogFactory.getLog(XAdESSignatureTimeStampValidation.class);
+	private static final Log LOG = LogFactory
+			.getLog(XAdESSignatureTimeStampValidation.class);
 
-    public static List<TimeStampToken> validate(XAdESTimeStampType signatureTimeStamp,
-                                                Element signatureElement)
-            throws XAdESValidationException {
+	/**
+	 * Checks the time-stamp tokens' digital signatures.
+	 * 
+	 * @param signatureTimeStamp
+	 * @param signatureElement
+	 * @return
+	 * @throws XAdESValidationException
+	 */
+	public static List<TimeStampToken> validate(
+			XAdESTimeStampType signatureTimeStamp, Element signatureElement)
+			throws XAdESValidationException {
 
-        LOG.debug("validate SignatureTimeStamp...");
+		LOG.debug("validate SignatureTimeStamp...");
 
-        List<TimeStampToken> timeStampTokens = XAdESUtils.getTimeStampTokens(signatureTimeStamp);
-        if (timeStampTokens.isEmpty()) {
-            LOG.error("No timestamp tokens present in SignatureTimeStamp");
-            throw new XAdESValidationException("No timestamp tokens present in SignatureTimeStamp");
-        }
+		List<TimeStampToken> timeStampTokens = XAdESUtils
+				.getTimeStampTokens(signatureTimeStamp);
+		if (timeStampTokens.isEmpty()) {
+			LOG.error("No timestamp tokens present in SignatureTimeStamp");
+			throw new XAdESValidationException(
+					"No timestamp tokens present in SignatureTimeStamp");
+		}
 
-        // 2. take ds:SignatureValue element
-        NodeList signatureValueNodeList = signatureElement.getElementsByTagNameNS(
-                XMLSignature.XMLNS, "SignatureValue");
-        if (0 == signatureValueNodeList.getLength()) {
-            LOG.error("no XML signature valuefound");
-            throw new XAdESValidationException("no XML signature valuefound");
-        }
+		// 2. take ds:SignatureValue element
+		NodeList signatureValueNodeList = signatureElement
+				.getElementsByTagNameNS(XMLSignature.XMLNS, "SignatureValue");
+		if (0 == signatureValueNodeList.getLength()) {
+			LOG.error("no XML signature valuefound");
+			throw new XAdESValidationException("no XML signature valuefound");
+		}
 
-        // 3. canonicalize using CanonicalizationMethod if any, else take dsig's
-        TimeStampDigestInput digestInput = new TimeStampDigestInput(
-                signatureTimeStamp.getCanonicalizationMethod().getAlgorithm());
-        digestInput.addNode(signatureValueNodeList.item(0));
+		// 3. canonicalize using CanonicalizationMethod if any, else take dsig's
+		TimeStampDigestInput digestInput = new TimeStampDigestInput(
+				signatureTimeStamp.getCanonicalizationMethod().getAlgorithm());
+		digestInput.addNode(signatureValueNodeList.item(0));
 
-        for (TimeStampToken timeStampToken : timeStampTokens) {
+		for (TimeStampToken timeStampToken : timeStampTokens) {
 
-            // 1. verify signature in timestamp token
-            XAdESUtils.validateTimeStampTokenSignature(timeStampToken);
+			// 1. verify signature in timestamp token
+			XAdESUtils.validateTimeStampTokenSignature(timeStampToken);
 
-            // 4. for-each timestamp token, compute digest and compare
-            XAdESUtils.verifyTimeStampTokenDigest(timeStampToken, digestInput);
-        }
+			// 4. for-each timestamp token, compute digest and compare
+			XAdESUtils.verifyTimeStampTokenDigest(timeStampToken, digestInput);
+		}
 
-        return timeStampTokens;
-    }
+		return timeStampTokens;
+	}
 
 }
