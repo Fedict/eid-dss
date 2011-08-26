@@ -13,7 +13,7 @@
 			<year>2009-2011</year>
 			<holder>FedICT</holder>
 		</copyright>
-		<releaseinfo>5 July 2011</releaseinfo>
+		<releaseinfo>26 August 2011</releaseinfo>
 		<authorgroup>
 			<author>
 				<firstname>Frank</firstname>
@@ -34,13 +34,16 @@
 		<para>
 			The FedICT eID Digital Signature Service (eID DSS) is a web service
 			that can be used by web applications to integrate the creation of eID
-			based digital signatures in the business work-flows. The eID Digital
-			Signature Service supports different document and corresponding
-			signature formats. The supported signature formats are:
+			based qualified signatures in the business work-flows. The eID
+			Digital Signature Service supports different document and
+			corresponding signature formats. The eID DSS supports XAdES-X-L
+			v1.4.2 signatures in accordance with the recommendations of the
+			export group on the e-Signatures Service Directive. The supported
+			document formats are:
 			<itemizedlist>
 				<listitem>
 					<para>
-						XML documents using XML Signature with XAdES-X-L extension
+						XML documents using XML Signatures with XAdES-X-L extension
 						and eID identity extension.
 					</para>
 				</listitem>
@@ -52,52 +55,81 @@
 				</listitem>
 				<listitem>
 					<para>
-						OOXML documents (Microsoft Office 2007 and 2010), using OOXML
-						XML Signature with XAdES-X-L extension (recognized by Office
-						itself) and eID identity extension.
+						OOXML documents (Microsoft Office 2007 and 2010), using OOXML XML
+						Signatures with XAdES-X-L extension (recognized by Office itself)
+						and eID identity extension.
 						<warning>
 							<para>
-								When enabling the eID identity extension Office 2010
-								will no longer recognize the signature as being valid.
+								When enabling the eID identity extension Office 2010 will
+								no longer recognize the signature as being valid.
 							</para>
 						</warning>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						ZIP container holding your files, using XML Signature with
+						ZIP container holding your files, using XML Signatures with
 						XAdES-X-L extension and eID identity extension.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						Associated Signature Container (ETSI TS 102 918 v1.1.1)
-						holding your files, using XML Signature with XAdES-X-L extension
+						holding your files, using XML Signatures with XAdES-X-L extension
 						and eID identity extension.
 					</para>
 				</listitem>
 			</itemizedlist>
+		</para>
+		<para>
 			The eID Digital Signature Service also supports different protocols.
-			The following sections will highlight the different supported
-			signature profiles and protocols.
+			Basically there are two types of protocols:
+			<itemizedlist>
+				<listitem>
+					<para>
+						Protocols for creation of qualified electronic signatures.
+						Here the protocol is web browser POST based as the eID DSS needs
+						to be able to interact with the end-user for eID signature
+						creation.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Protocols for validation of qualified electronic signatures.
+						These protocols are SOAP based.
+					</para>
+				</listitem>
+			</itemizedlist>
+			An overview of all supported protocols and document formats can be
+			obtained by directly visiting your eID DSS instance, for example at:
+			<computeroutput>
+				https://www.e-contract.be/eid-dss/
+			</computeroutput>
+		</para>
+		<para>
+			The following sections highlights the different supported
+			signature
+			profiles and protocols.
 		</para>
 	</section>
 	<section>
 		<title>eID DSS Browser POST Protocol</title>
 		<para>
-			The eID Digital Signature Service Protocol POST Profile can be
+			The eID Digital Signature Service Browser POST Profile can be
 			used to sign documents as part of web application work-flows. The
 			service offers basic visualization of the document, and creation of
-			the XAdES-X-L v1.4.1 signatures. The protocol is very lightweight to
-			ease integration within your web applications.
+			the XAdES-X-L v1.4.2 signatures. The protocol is very lightweight to
+			ease integration within your web applications. Nonetheless the
+			protocol does provide a message level security mechanism similar to
+			the one found in the OpenID protocol.
 		</para>
 		<section>
 			<title>Signature Request</title>
 			<para>
-				Suppose that the web application prepared document that needs
+				Suppose that the web application prepared a document that needs
 				to be signed by the end-user as part of some business work-flow. The
 				web application sends the signature request to the eID DSS web
-				service using an HTTP POST via the web browser of the client. The
+				service using an HTTP POST via the web browser of the end-user. The
 				following POST parameters are available:
 			</para>
 			<itemizedlist>
@@ -113,16 +145,17 @@
 					<para>
 						The required
 						<code>target</code>
-						POST parameter should contain the URL of the web application to
-						which to send back the signed document.
+						POST parameter should contain the URL of the web application
+						component to which to send back the signed document.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						The optional
 						<code>language</code>
-						POST parameter should contain the language code which will be used
-						by the eID DSS during signature creation.
+						POST parameter should contain the language code which is used
+						by
+						the eID DSS during signature creation.
 					</para>
 				</listitem>
 				<listitem>
@@ -139,18 +172,17 @@
 					<para>
 						The optional
 						<code>RelayState</code>
-						POST parameter is an opaque reference to state
-						information
-						maintained at the service provider.
-						. The same value should be
-						returned by the eID DSS
-						service when returning.
+						POST parameter is an opaque reference to state information
+						maintained at the service provider. The same value is returned by
+						the eID DSS service within the response message.
 					</para>
 				</listitem>
 			</itemizedlist>
 			<para>
-				The web application can construct the eID DSS Browser POST
-				Protocol signature request via the following piece of HTML code.
+				For example, the web application can construct the eID DSS
+				Browser POST
+				Protocol signature request via the following piece of
+				HTML code.
 			</para>
 			<programlisting role="XML">
                 <![CDATA[
@@ -168,12 +200,12 @@
                 ]]>
             </programlisting>
 			<section>
-				<title>Signing</title>
+				<title>Service Signature</title>
 				<para>
-					Optionally a Relying Party can add a service signature to the
-					signature request. Following group of POST parameters should
-					be
-					added in that case:
+					Optionally a Relying Party (RP) can add a service signature to
+					the
+					signature request. The following group of POST parameters should
+					be appended:
 				</para>
 				<itemizedlist>
 					<listitem>
@@ -182,7 +214,7 @@
 							contains the URL encoded
 							comma-seperated list of POST parameters
 							signed by
-							the RP. This should at least include the following
+							the RP. This list should at least include the following
 							elements:
 							<code>SignatureRequest</code>
 							,
@@ -191,7 +223,7 @@
 							<code>language</code>
 							,
 							<code>ContentType</code>
-							,
+							, and
 							<code>RelayState</code>
 							.
 						</para>
@@ -203,8 +235,10 @@
 							encoded signature created by the RP. This
 							signature
 							can be used by the eID DSS Service to verify the
-							integrity and the authenticity of the signed
-							document.
+							integrity and authenticity of the request message. The signature
+							algorithm to be used is
+							<code>SHA1-RSA</code>
+							.
 						</para>
 					</listitem>
 					<listitem>
@@ -231,7 +265,7 @@
 				</itemizedlist>
 				<para>
 					Following is an example of such a signed eID DSS Browser
-					Post
+					POST
 					Protocol signature request.
 				</para>
 				<programlisting role="XML">
@@ -239,12 +273,14 @@
     <form id="dss-signed-request-form" method="post" action="https://www.e-contract.be/eid-dss/protocol/simple">
 
         <input type="hidden" name="SignatureRequest" value="..." />
-        <input type="hidden" name="target" value="http://www.some-web-application.be/dss-landing-page" />
+        <input type="hidden" name="target"
+        	value="http://www.some-web-application.be/dss-landing-page" />
         <input type="hidden" name="language" value="nl" />
         <input type="hidden" name="ContentType" value="text/xml" />
         <input type="hidden" name="RelayState" value="foo123" />
 
-        <input type="hidden" name="ServiceSigned" value="target,SignatureRequest,language,ContentType,RelayState" />
+        <input type="hidden" name="ServiceSigned" value="target,SignatureRequest,language,
+        	ContentType,RelayState" />
         <input type="hidden" name="ServiceSignature" value="..." />
         <input type="hidden" name="ServiceCertificateChainSize" value="3" />
         <input type="hidden" name="ServiceCertificate.1" value="..." />
@@ -264,7 +300,7 @@
 				<para>
 					For easy integration, a
 					<code>SignatureRequestServlet</code>
-					has been provided in the
+					servlet has been provided in the
 					<code>eid-dss-protocol-simple-client</code>
 					artifact. This
 					servlet will, given the necessary configuration and
@@ -272,10 +308,19 @@
 					attributes, construct a signature request and send it to the
 					eD DSS Service. An example of its usage can be found in the
 					<code>eid-dss-sp-webapp</code>
-					artifact.
+					example service provider web application artifact.
 				</para>
 				<para>
-					Some configuration servlet of the servlet can be acheived
+					An important configuration is the service provider
+					destination. The
+					service provider destination points to the
+					(servlet) component of
+					the Relying Party that will process incoming
+					eID DSS protocol
+					response messages.
+				</para>
+				<para>
+					Some configuration of the servlet can be achieved
 					either by
 					providing:
 					<itemizedlist>
@@ -285,23 +330,28 @@
 								Optional JNDI location (or Class reference) of
 								an implementation
 								of the
-								SignatureRequestService interface. This
+								<code>SignatureRequestService</code>
+								SPI interface. This
 								implementation can
 								provide an optional SP
 								identity used for signing the signature
-								request, optional relay state, DSS destination,
+								request, optional relay
+								state, DSS destination,
 								SP destination
-								and optional language to display
-								the FedICT eID DSS webapp in.
+								and optional language used
+								in
+								the FedICT eID DSS pages.
 							</para>
 						</listitem>
 					</itemizedlist>
-					or by providing following init parameters:
+					or by providing the following init parameters:
 					<itemizedlist>
 						<listitem>
 							<para>
 								<code>Target</code>
-								The location of the FedICT eID DSSlanding servlet.
+								The location of the FedICT eID DSS landing servlet.
+								This is for
+								example: https://www.e-contract.be/eid-dss/protocol/simple
 							</para>
 						</listitem>
 						<listitem>
@@ -310,7 +360,8 @@
 								The absolute location of the Service Providers's
 								DSS landing
 								servlet, which will handle the
-								incoming signature response.
+								incoming signature response
+								messages.
 							</para>
 						</listitem>
 						<listitem>
@@ -334,25 +385,87 @@
 									en
 								</code>
 								. If an unsupported locale is used,
-								the browsers' default locale
+								the browser's default locale
 								will be used.
 							</para>
 						</listitem>
 					</itemizedlist>
 				</para>
 				<para>
-					The document to be signed or document ID in case of artifact
-					binding, along with the content type needs to be put on the
+					Thus the service provider destination can either be configured via
+					the
+					<code>SignatureRequestService</code>
+					, or via the
+					<code>SPDestination</code>
+					init-param, or via the
+					<code>SPDestinationPage</code>
+					init-param.
+				</para>
+				<para>
+					Runtime parameters are configured via init-parameters that
+					point to
+					HTTP session attributes that will contain the required
+					configuration values. The following runtime parameters are
+					supported.
+					<itemizedlist>
+						<listitem>
+							<para>
+								The eID DSS target page can be configured via a runtime
+								parameter by setting the
+								<code>TargetSessionAttribute</code>
+								to the name of the HTTP session attribute that will contain the
+								runtime value of the target.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								The
+								<code>SignatureRequestSessionAttribute</code>
+								init-param should point to the HTTP session attribute that will
+								contain the base64 encoded document to be signed via the eID DSS
+								service.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								The
+								<code>ContentTypeSessionAttribute</code>
+								init-param should point to the HTTP session attribute that will
+								contain the mime type of the document to be signed via the eID
+								DSS service.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								The
+								<code>RelayStateSessionAttribute</code>
+								init-param should point to the HTTP session attribute that will
+								contain the relay state string to be used when performing the
+								eID DSS request.
+							</para>
+						</listitem>
+					</itemizedlist>
+				</para>
+				<para>
+					The document to be signed (or document ID in case of artifact
+					binding), along with the content type needs to be put on the
 					HTTP
-					Session, the names of the session attribute need to be
+					Session, the names of the session attributes need to be
 					specified in
-					web.xml as shown below.
+					the
+					<code>web.xml</code>
+					web deployment descriptor as shown below.
 				</para>
 				<para>
 					Following is a snippet of the
 					<code>web.xml</code>
 					for
-					configuring the servlet.
+					configuring the
+					<code>SignatureRequestServlet</code>
+					servlet.
+					Here we use a JNDI lookup of the
+					<code>SignatureRequestService</code>
+					EJB3 session bean.
 				</para>
 				<programlisting role="XML">
                     <![CDATA[
@@ -401,6 +514,10 @@
 					<code>ServiceCertificate.x</code>
 					POST parameters!
 				</para>
+				<para>
+					More information on the Java components is available within
+					the javadocs that are bundled with the eID DSS SDK package.
+				</para>
 			</section>
 			<section>
 				<title>.NET SDK</title>
@@ -430,14 +547,29 @@
 				choose to either sign the document, or to cancel the signing
 				process. The next screen loads an eID Applet to have the document
 				signed according to the W3C XMLDSig specification. The XML signature
-				also contains a XAdES-X-L v1.4.1 extension in accordance with the
+				also contains a XAdES-X-L v1.4.2 extension in accordance with the
 				recommendations of the expert group on the e-Signatures Service
 				Directive. The created XML signature is a co-signature, meaning that
-				multiple signatures can coexist within the same document. In case of
-				XML documents, the signature is appended as last child of the
-				document root element. At last the end-user's web browser is
-				redirected to the originating web application where the signed
-				document can be processed further.
+				multiple independent signatures can coexist within the same
+				document. In case of
+				XML documents, the signature is appended as last
+				child of the
+				document root element. This means that within your XML
+				schema the top level element complex type definition should include
+				as last element in its sequence:
+				<programlisting role="XML"><![CDATA[<element ref="ds:Signature" minOccurs="0" maxOccurs="unbounded" />]]></programlisting>
+				with of course
+				<code>ds</code>
+				defined as
+				<code>xmlns:ds="http://www.w3.org/2000/09/xmldsig#"</code>
+			</para>
+			<para>
+				At last the end-user's web browser is
+				redirected to the
+				originating
+				web application where the signed
+				document can be processed
+				further.
 			</para>
 		</section>
 		<section>
@@ -445,7 +577,8 @@
 			<para>
 				After a successful completion of the signature ceremony, the
 				eID DSS responds to the web application using an HTTP POST via the
-				web browser of the client. The following POST parameters are
+				web browser of the client. The following POST protocol parameters
+				are
 				available to the web application.
 			</para>
 			<itemizedlist>
@@ -472,7 +605,7 @@
 							<listitem>
 								<para>
 									<code>FILE_FORMAT</code>
-									in case the incoming file was not a well-formated document.
+									in case the transmitted file was not a well-formated document.
 								</para>
 							</listitem>
 							<listitem>
@@ -500,15 +633,20 @@
 			<para>
 				In case the eID Digital Signature Service signs the response
 				messages the following additional POST parameters are available to
-				the web application. This protocol level signature is created by the
-				eID DSS identity itself.
+				the web application. This protocol message level signature is
+				created by the
+				eID DSS service itself.
 			</para>
 			<itemizedlist>
 				<listitem>
 					<para>
 						<code>ServiceSigned</code>
 						contains the URL encoded comma-separated list of POST parameters
-						signed by the eID DSS itself. Example:
+						signed by the eID DSS itself.
+						Some of these parameters may refer to
+						paramters from within the
+						signing request message.
+						Example:
 						<code>target,SignatureRequest,SignatureResponse,SignatureCertificate
 						</code>
 					</para>
@@ -518,13 +656,18 @@
 						<code>ServiceSignature</code>
 						contains the base64 encoded signature created by the eID DSS
 						service itself. This signature can be used by the Relying Party to
-						verify the integrity and the authenticity of the signed document.
+						verify the integrity and the authenticity of the protocol response
+						message.
+						The used signature algorithm is
+						<code>SHA1-RSA</code>
+						.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						<code>ServiceCertificateChainSize</code>
-						contains the length as an integer string of the certificate chain
+						contains the length, as an integer string, of the certificate
+						chain
 						used by the service to sign the request/response protocol
 						parameters.
 					</para>
@@ -544,19 +687,67 @@
 				<title>Java SDK</title>
 				<para>
 					To ease the handling of DSS response messages according to the
-					described protocol we've provided eID DSS SDK components. These can
+					described protocol we have provided eID DSS SDK components. These
+					components can
 					be found within the
 					<code>eid-dss-protocol-simple-client</code>
 					artifact. The corresponding javadoc documentation is also part of
 					the eID DSS SDK.
+				</para>
+				<para>
+					The
+					<code>SignatureResponseProcessorServlet</code>
+					servlet can process incoming eID DSS response messages according to
+					the described eID DSS protocol. The most important init-params are:
+					<itemizedlist>
+						<listitem>
+							<para>
+								The
+								<code>NextPage</code>
+								init-param contains the relative location of the web page to
+								where the servlet should redirect after a successful processing
+								of the eID DSS response message.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								The
+								<code>ErrorPage</code>
+								init-param contains the relative location of the web page to
+								where the servlet should redirect after a failed processing of
+								the eID DSS response message.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								The
+								<code>ErrorMessageSessionAttribute</code>
+								contains the name of the HTTP session attribute that will be
+								used to store the error message after a failed processing of the
+								eID DSS response message.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								The
+								<code>SignedDocumentSessionAttribute</code>
+								contains the name of the HTTP session attribute that will be
+								used to store the signed document after a sucessful processing
+								of the eID DSS response message.
+							</para>
+						</listitem>
+					</itemizedlist>
+					Further documentation can be found within the javadoc of the eID
+					DSS SDK components.
 				</para>
 			</section>
 			<section>
 				<title>.NET SDK</title>
 				<para>
 					To ease the handling of DSS response messages according to the
-					described protocol we've provided eID DSS SDK components.
-					These can
+					described protocol we have provided eID DSS SDK components.
+					These
+					can
 					be found in the
 					<code>eid-dss-sdk-dotnet</code>
 					artifact. You can use the
@@ -574,9 +765,11 @@
 				The Artifact Binding is a variation to the standard Browser POST
 				protocol where the to be signed document and the signed document
 				will be sent and retrieved to/from the eID DSS Service using a
-				seperate synchronous binding. The eID DSS Service provides such
+				seperate synchronous SOAP web service. The eID DSS Service provides
+				such
 				a
-				service in its OASIS DSS Web Service. More detail on this web
+				service as part of its OASIS DSS Web Service. More detail on
+				this web
 				service can be found in
 				<link linkend="oasis_ws" endterm="oasis_ws.title" />
 				.
@@ -587,23 +780,26 @@
 				documents.
 			</para>
 			<para>
-				For the signature request the required
+				For the signature request, the required
 				<code>SignatureRequest</code>
+				POST parameter
 				is replaced with the required
 				<code>SignatureRequestId</code>
-				POST paramater. This is the
+				POST parameter. This is the
 				identifier returned by the OASIS DSS Web
 				Service "store" call.
 			</para>
 			<para>
-				For the signature response the
+				For the signature response, the
 				<code>SignatureResponse</code>
 				POST parameter will be replaced by the
 				<code>SignatureResponseId</code>
-				POST parameter which will
-				contain the identifier to be used in the
-				OASIS DSS Web Service
-				"retrieve" call for fetching the signed
+				POST parameter which
+				contains the identifier to be used in the
+				OASIS
+				DSS Web Service
+				"retrieve"
+				call for fetching the signed
 				document.
 			</para>
 		</section>
@@ -615,15 +811,20 @@
 			for
 			validation of signed documents and for a generic "Artifact
 			Binding"
-			which Signature Protocols can use as a synchronous binding
+			which signature protocols can use
 			for
-			transmitting the to be signed document to the eID DSS Service and
-			retrieval of the signed document from it. This web service has been
-			implemented according to the OASIS Digital Signature Service Core
-			Protocols, Elements, and Bindings Version 1.0. Specific profiles are
-			used for validation and the "Artifact Binding".
+			transmitting the to be
+			signed documents to the eID DSS Service and
+			for retrieval of the
+			signed documents. This web service has been
+			implemented according to
+			the OASIS Digital Signature Service Core
+			Protocols, Elements, and
+			Bindings Version 1.0. Specific profiles are
+			used for validation and
+			the "Artifact Binding".
 		</para>
-		<para>In this section we will highlight the web service protocol by
+		<para>In this section we highlight the web service protocol by
 			example. A web service client can connect to the SOAP web service
 			using some URL. For example:
 		</para>
@@ -705,7 +906,7 @@
 				Reports
 				for OASIS Digital Signature Services Version 1.0 for
 				providing
-				detailed reporting on the signatures of a signed
+				detailed reporting on the signatures of a validated
 				document.
 			</para>
 			<para>
@@ -732,6 +933,13 @@
         </dss:VerifyRequest>
     </soap:Body>
     </soap:Envelope>]]></programlisting>
+			<para>
+				Depending on the mime type of the document
+				<code>Base64Data</code>
+				can be used instead of
+				<code>Base64XML</code>
+				.
+			</para>
 			<para>
 				The corresponding SOAP response looks as follows:
 			</para>
@@ -824,20 +1032,45 @@
 				<code>SigningTime</code>
 				element. The certificate of the signatory is delivered via the
 				<code>CertificateValue</code>
-				element.
+				element. If the XAdES signature contains a claimed role, the
+				verification report contains a
+				<code>Properties</code>
+				element under
+				<code>DetailedSignatureReport</code>
+				similar to:
+				<programlisting role="XML"><![CDATA[
+				<vr:Properties>
+					<vr:SignedProperties>
+						<vr:SignedSignatureProperties>
+							<xades:SigningTime>2010-09-13T15:35:49.767+02:00</xades:SigningTime>
+							<vr:ClaimedRoles>
+								<xades:ClaimedRole>eID Architect</xades:ClaimedRole>
+							</vr:ClaimedRoles>
+						</vr:SignedSignatureProperties>
+					</vr:SignedProperties>
+				</vr:Properties>
+				]]></programlisting>
 			</para>
 		</section>
 		<section>
 			<title>Artifact Binding</title>
 			<para>
-				A custom OASIS DSS Profile has been introduced for this which
-				used
+				Via the artifact binding eID DSS protocol, applications can use
+				a regular SOAP web service to transfer the documents to/from the eID
+				DSS. The actual signing request/response browser POST protocol can
+				then simply use references to the documents to be processed. The eID
+				DSS document repository will store the documents no longer than
+				required to be able to complete a document signing protocol run. The
+				artifact binding is an interesting feature when coping with large
+				documents that need to be signed.
+			</para>
+			<para>
+				A custom OASIS DSS Profile has been introduced for this which uses
 				the
 				<code>SignRequest</code>
 				operation for pushing the
 				to be signed document and retrieval of the
-				signed document to/
-				from the eID DSS Service. The profile URI for
+				signed document to/from the eID DSS service. The profile URI for
 				this is:
 				<code>be:fedict:eid:dss:profile:artifact-binding:1.0</code>
 			</para>
@@ -872,25 +1105,34 @@
                     ]]>
                 </programlisting>
 				<para>
-					The to be signed document is passed along base64 encoded in
-					the OASIS DSS InputDocuments element.
+					The to be signed document is passed as base64 encoded in
+					the OASIS
+					DSS
+					<code>InputDocuments</code>
+					element.
 				</para>
 				<para>
 					The custom
 					<code>artifact:ReturnStorageInfo</code>
 					optional
-					input is used within the dss:OptionalInputs element to mark
-					that the document passed in dss:InputDocument/dss:Document
+					input is used within the
+					<code>dss:OptionalInputs</code>
+					element to mark
+					that the document passed in
+					<code>dss:InputDocument/dss:Document</code>
 					should be
 					stored for later signing. Only accepted by the eID
 					DSS when
-					dss:SignRequest/@Profile is set to the
+					<code>dss:SignRequest/@Profile</code>
+					is set to the
 					corresponding profile URI.
-					The eID DSS will return a custom
-					<code>StorageInfo</code>
-					element within dss:OptionalOutputs
+					The eID DSS will return a
+					custom
+					<code>artifact:StorageInfo</code>
+					element within
+					<code>dss:OptionalOutputs</code>
 					in the returned
-					<code>SignResponse</code>
+					<code>dss:SignResponse</code>
 					.
 				</para>
 				<para>
@@ -938,28 +1180,31 @@
 					contains the identifier of the stored document and the
 					validity of the temporary storage of the given document. The
 					eID DSS
-					Service manages the lifecycle of the document within
+					manages the lifecycle of the document within
 					this temporary
-					storage. The Relying Party can use this
-					information to hurry up.
+					storage.
 				</para>
 				<para>
-					After this the Signature Protocol can use the identifier
+					The Signature Protocol can use the identifier
 					for
-					making a signature request to the eID DSS Service which
+					making a
+					signature request to the eID DSS Service which
 					will
-					retrieve the document from its temporary storage when
+					retrieve the
+					document from its temporary storage when
 					needed for
-					signing, sign the document and store the signed
+					signing, sign the
+					document and store the signed
 					document in the
-					temporary storage for retrieval later on.
+					temporary storage for
+					retrieval later on.
 				</para>
 			</section>
 			<section>
 				<title>Retrieve</title>
 				<para>
 					A SOAP request for "retrieval" of the by now signed document
-					to the eID DSS Service looks as follow:
+					from the eID DSS Service looks as follow:
 				</para>
 				<programlisting role="XML">
                     <![CDATA[
@@ -985,28 +1230,34 @@
 					DSS service's temporary storage. This identifier is
 					communicated
 					back to the RP according to the used Signature
-					Protocol, beind
+					Protocol, being
 					<code>SignatureResponseId</code>
 					in case of
 					the eID DSS Browser Post Protocol. This identifier is
 					only
-					accepted by the eID DSS when dss:SignRequest/@Profile is set
+					accepted by the eID DSS when
+					<code>dss:SignRequest/@Profile</code>
+					is set
 					to
 					the corresponding profile URI. The eID DSS will return
-					the document
+					the
+					document
 					within a
 					<code>
 						dss:SignResponse/dss:OptionalOutputs/dss:DocumentWithSignature
 					</code>
-					element. After document retrieval, the eID DSS will
-					remove the
-					document from the temporary storage. If the
+					element. After document retrieval, the eID DSS
+					removes the
+					document from its temporary storage. If the
 					document is not
 					retrieved by the Relying Party, the eID DSS
-					will remove the document
+					removes the document
 					from the temporary storage after a
 					certain time indicated by
-					Validity/NotAfter.
+					<code>Validity/NotAfter</code>
+					within the
+					<code>SignRequest</code>
+					element.
 				</para>
 				<para>
 					Following is an example of a SOAP response to this request.
@@ -1090,7 +1341,7 @@
 		<para>
 			The eID Digital Signature Service features visualization of the
 			documents before they are signed. In case of XML documents, the
-			Relying Party can register an XML Schema and XML Style Sheet with the
+			Relying Party can register an XML Schema and XML Style Sheet at the
 			eID DSS hosting party to visualize the XML data structure within the
 			web browser as part of the signature ceremony. This allows the
 			Relying Party to define a domain specific language for its
@@ -1110,9 +1361,11 @@
 			The corresponding XML Schema could look as follows.
 		</para>
 		<programlisting role="XML"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:be:fedict:eid:dss:example"
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="urn:be:fedict:eid:dss:example"
 	xmlns:tns="urn:be:fedict:eid:dss:example" elementFormDefault="qualified"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
 	<xsd:import namespace="http://www.w3.org/2000/09/xmldsig#"
 		schemaLocation="xmldsig-core-schema.xsd" />
 	<element name="Transaction" type="tns:TransactionType" />
@@ -1127,11 +1380,19 @@
 	</complexType>
 </schema>]]></programlisting>
 		<para>
+			Notice here that the last element of the top level element complex
+			type definition refers to
+			<code>ds:Signature</code>
+			. This is required because the eID DSS appends XML signatures as last
+			child node of the top level element of the XML documents.
+		</para>
+		<para>
 			A possible XML Style Sheet could then be:
 		</para>
 		<programlisting role="XML"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:tns="urn:be:fedict:eid:dss:example">
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:tns="urn:be:fedict:eid:dss:example">
 	<xsl:param name="language">en</xsl:param>
 	<xsl:template match="/tns:Transaction">
 
@@ -1190,8 +1451,7 @@
 		<para>
 			As you can see the XML Style Sheet receives a
 			<code>language</code>
-			parameter from the eID Digital Signature Service to aid the
-			visualization process.
+			parameter from the eID Digital Signature Service for localization of the view.
 		</para>
 		<para>
 			An XML Style Sheet can easily be developed using the following
@@ -1244,7 +1504,7 @@
 			visualization of the batch structure within the eID DSS.
 		</para>
 		<para>
-			For signature verification the Relying Party application first
+			For signature validation the Relying Party application first
 			uses the eID DSS OASIS Web Service. As a second step the Relying
 			Party application should check the digest values against the
 			available documents in its document repository.
@@ -1378,6 +1638,11 @@
 						<entry>5 July 2011</entry>
 						<entry>Frank Cornelis</entry>
 						<entry>ASiC document format, batch signing.</entry>
+					</row>
+					<row>
+						<entry>26 August 2011</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>Improved protocol and Java components documentation.</entry>
 					</row>
 				</tbody>
 			</tgroup>

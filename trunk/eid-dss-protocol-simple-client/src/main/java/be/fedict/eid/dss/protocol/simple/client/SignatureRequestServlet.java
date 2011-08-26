@@ -31,6 +31,13 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.security.KeyStore;
 
+/**
+ * The signature request servlet can be used for constructing the eID DSS
+ * signing request message.
+ * 
+ * @author Frank Cornelis
+ * 
+ */
 public class SignatureRequestServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;

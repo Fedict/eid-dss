@@ -18,7 +18,6 @@
 
 package test.be.fedict.eid.dss;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -224,7 +223,10 @@ public class DigitalSignatureServiceTest {
 				.getResourceAsStream("/example-xades-claimed-role.xml");
 		String signedDocument = IOUtils.toString(signedDocumentInputStream);
 
-		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient();
+		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
+				"https://www.e-contract.be/eid-dss-ws/dss");
+		client.setLogging(true, false);
+		client.setProxy("proxy.yourict.net", 8080);
 
 		// operate
 		List<SignatureInfo> signers = client.verifyWithSigners(
@@ -249,7 +251,7 @@ public class DigitalSignatureServiceTest {
 				"https://www.e-contract.be/eid-dss-ws/dss");
 		client.setProxy("proxy.yourict.net", 8080);
 		client.setLogging(true, false);
-		
+
 		String documentContent = "Hello World";
 		StorageInfoDO storageInfo = client.store(documentContent.getBytes(),
 				"text/plain");
