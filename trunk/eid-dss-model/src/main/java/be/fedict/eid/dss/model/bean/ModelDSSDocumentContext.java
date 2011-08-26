@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2009-2010 FedICT.
+ * Copyright (C) 2009-2011 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -107,4 +107,13 @@ public class ModelDSSDocumentContext implements DSSDocumentContext {
                         return (Long) ConfigProperty.TIMESTAMP_MAX_OFFSET.getDefaultValue();
                 }
         }
+
+        /**
+         * {@inheritDoc}
+         */
+		public void validate(TimeStampToken timeStampToken,
+				List<OCSPResp> ocspResponses, List<X509CRL> crls)
+				throws Exception {
+			this.trustValidationService.validate(timeStampToken, ocspResponses, crls);
+		}
 }

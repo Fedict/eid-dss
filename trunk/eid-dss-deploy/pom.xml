@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>be.fedict</groupId>
@@ -18,6 +20,12 @@
 				<artifactId>maven-ear-plugin</artifactId>
 				<configuration>
 					<modules>
+						<jarModule>
+							<groupId>be.fedict</groupId>
+							<artifactId>jtrust</artifactId>
+							<includeInApplicationXml>true</includeInApplicationXml>
+							<bundleDir>lib</bundleDir>
+						</jarModule>
 						<jarModule>
 							<groupId>be.fedict.eid-applet</groupId>
 							<artifactId>eid-applet-shared</artifactId>
@@ -162,11 +170,11 @@
 							<artifactId>eid-dss-ws-webapp</artifactId>
 							<contextRoot>/eid-dss-ws</contextRoot>
 						</webModule>
-                        <webModule>
-                            <groupId>be.fedict.eid-dss</groupId>
-                            <artifactId>eid-dss-sp-webapp</artifactId>
-                            <contextRoot>/eid-dss-sp</contextRoot>
-                        </webModule>
+						<webModule>
+							<groupId>be.fedict.eid-dss</groupId>
+							<artifactId>eid-dss-sp-webapp</artifactId>
+							<contextRoot>/eid-dss-sp</contextRoot>
+						</webModule>
 					</modules>
 					<version>5</version>
 				</configuration>
@@ -244,12 +252,12 @@
 			<type>war</type>
 			<version>${project.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>be.fedict.eid-dss</groupId>
-            <artifactId>eid-dss-sp-webapp</artifactId>
-            <type>war</type>
-            <version>${project.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-sp-webapp</artifactId>
+			<type>war</type>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-spi</artifactId>
@@ -315,6 +323,10 @@
 			<groupId>be.fedict.eid-trust-service</groupId>
 			<artifactId>eid-trust-service-xkms2-ws</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>be.fedict</groupId>
+			<artifactId>jtrust</artifactId>
+		</dependency>
 		<!-- The following dependencies are all provided by the Java EE runtime. -->
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -346,16 +358,16 @@
 			<artifactId>hibernate-annotations</artifactId>
 			<scope>provided</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>javax.faces</groupId>
 			<artifactId>jsf-api</artifactId>

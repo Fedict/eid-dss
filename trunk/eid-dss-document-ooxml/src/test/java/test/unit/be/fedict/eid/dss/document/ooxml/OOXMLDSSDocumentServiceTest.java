@@ -18,10 +18,16 @@
 
 package test.unit.be.fedict.eid.dss.document.ooxml;
 
-import be.fedict.eid.applet.service.signer.ooxml.OOXMLProvider;
-import be.fedict.eid.dss.document.ooxml.OOXMLDSSDocumentService;
-import be.fedict.eid.dss.spi.DSSDocumentContext;
-import be.fedict.eid.dss.spi.SignatureInfo;
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.security.Security;
+import java.security.cert.X509CRL;
+import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,15 +39,10 @@ import org.easymock.EasyMock;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.security.Security;
-import java.security.cert.X509CRL;
-import java.security.cert.X509Certificate;
-import java.util.Date;
-import java.util.List;
-
-import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import be.fedict.eid.applet.service.signer.ooxml.OOXMLProvider;
+import be.fedict.eid.dss.document.ooxml.OOXMLDSSDocumentService;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
+import be.fedict.eid.dss.spi.SignatureInfo;
 
 public class OOXMLDSSDocumentServiceTest {
 
@@ -74,8 +75,16 @@ public class OOXMLDSSDocumentServiceTest {
 				EasyMock.capture(validationDateCapture),
 				EasyMock.capture(ocspResponsesCapture),
 				EasyMock.capture(crlsCapture));
-		mockContext.validate(EasyMock.capture(timeStampTokenCapture));
-		mockContext.validate(EasyMock.capture(timeStampTokenCapture));
+
+		Capture<List<OCSPResp>> tsaOcspResponsesCapture = new Capture<List<OCSPResp>>();
+		Capture<List<X509CRL>> tsaCrlsCapture = new Capture<List<X509CRL>>();
+		mockContext.validate(EasyMock.capture(timeStampTokenCapture),
+				EasyMock.capture(tsaOcspResponsesCapture),
+				EasyMock.capture(tsaCrlsCapture));
+		mockContext.validate(EasyMock.capture(timeStampTokenCapture),
+				EasyMock.capture(tsaOcspResponsesCapture),
+				EasyMock.capture(tsaCrlsCapture));
+
 		expect(mockContext.getTimestampMaxOffset()).andReturn(1000L);
 
 		// prepare

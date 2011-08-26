@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2010 FedICT.
+ * Copyright (C) 2010-2011 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -22,27 +22,60 @@ import be.fedict.trust.client.XKMS2Client;
 import be.fedict.trust.client.exception.RevocationDataNotFoundException;
 import be.fedict.trust.client.exception.TrustDomainNotFoundException;
 import be.fedict.trust.client.exception.ValidationFailedException;
+
+import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.ocsp.OCSPResp;
 import org.bouncycastle.tsp.TimeStampToken;
 
 import javax.ejb.Local;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.cert.CertStoreException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Interface for trust validation service component.
+ * 
+ * @author Frank Cornelis
+ * 
+ */
 @Local
 public interface TrustValidationService {
 
-    void validate(List<X509Certificate> certificateChain, Date validationDate,
-                  List<OCSPResp> ocspResponses, List<X509CRL> crls)
-            throws CertificateEncodingException, TrustDomainNotFoundException,
-            RevocationDataNotFoundException, ValidationFailedException;
+	void validate(List<X509Certificate> certificateChain, Date validationDate,
+			List<OCSPResp> ocspResponses, List<X509CRL> crls)
+			throws CertificateEncodingException, TrustDomainNotFoundException,
+			RevocationDataNotFoundException, ValidationFailedException;
 
-    void validate(TimeStampToken timeStampToken)
-            throws CertificateEncodingException, ValidationFailedException,
-            TrustDomainNotFoundException, RevocationDataNotFoundException;
+	void validate(TimeStampToken timeStampToken)
+			throws CertificateEncodingException, ValidationFailedException,
+			TrustDomainNotFoundException, RevocationDataNotFoundException;
 
-    XKMS2Client getXkms2Client();
+	XKMS2Client getXkms2Client();
+
+	/**
+	 * Performs a historical trust validation on the given timestamp token.
+	 * 
+	 * @param timeStampToken
+	 * @param ocspResponses
+	 * @param crls
+	 * @throws ValidationFailedException
+	 * @throws RevocationDataNotFoundException
+	 * @throws TrustDomainNotFoundException
+	 * @throws CertificateEncodingException
+	 * @throws CMSException
+	 * @throws NoSuchProviderException
+	 * @throws NoSuchAlgorithmException
+	 * @throws CertStoreException 
+	 */
+	void validate(TimeStampToken timeStampToken, List<OCSPResp> ocspResponses,
+			List<X509CRL> crls) throws CertificateEncodingException,
+			TrustDomainNotFoundException, RevocationDataNotFoundException,
+			ValidationFailedException, NoSuchAlgorithmException,
+			NoSuchProviderException, CMSException, CertStoreException;
 }
