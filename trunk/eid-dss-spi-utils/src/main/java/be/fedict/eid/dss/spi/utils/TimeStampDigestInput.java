@@ -18,10 +18,11 @@
 
 package be.fedict.eid.dss.spi.utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.c14n.CanonicalizationException;
@@ -31,60 +32,66 @@ import org.w3c.dom.Node;
 
 /**
  * Helper class to build inputs for time-stamps. The digests for time-stamps are
- * usually calculated over a concatenations of byte-streams, resulting from nodes
- * and/or processed {@code Reference}s, with the proper canonicalization if needed.
- * This class provides methods to build a sequential input by adding DOM {@code Node}s.
- *
+ * usually calculated over a concatenations of byte-streams, resulting from
+ * nodes and/or processed {@code Reference}s, with the proper canonicalization
+ * if needed. This class provides methods to build a sequential input by adding
+ * DOM {@code Node}s.
+ * 
  * @author Frank Cornelis
  */
 public class TimeStampDigestInput {
 
-    private static final Log LOG = LogFactory.getLog(TimeStampDigestInput.class);
+	private static final Log LOG = LogFactory
+			.getLog(TimeStampDigestInput.class);
 
-    private final String canonMethodUri;
-    private final List<Node> nodes;
-    
-    static {
-        org.apache.xml.security.Init.init();
-    }
+	private final String canonMethodUri;
+	private final List<Node> nodes;
 
-    /**
-     * @param canonMethodUri the canonicalization method to be used, if needed
-     * @throws IllegalArgumentException if {@code canonMethodUri} is {@code null}
-     */
-    public TimeStampDigestInput(String canonMethodUri) {
+	static {
+		org.apache.xml.security.Init.init();
+	}
 
-        LOG.debug("canonMethodUri: " + canonMethodUri);
+	/**
+	 * @param canonMethodUri
+	 *            the canonicalization method to be used, if needed
+	 * @throws IllegalArgumentException
+	 *             if {@code canonMethodUri} is {@code null}
+	 */
+	public TimeStampDigestInput(String canonMethodUri) {
 
-        if (null == canonMethodUri) {
-            throw new IllegalArgumentException("c14n algo URI is null");
-        }
+		LOG.debug("canonMethodUri: " + canonMethodUri);
 
-        this.canonMethodUri = canonMethodUri;
-        this.nodes = new LinkedList<Node>();
-    }
+		if (null == canonMethodUri) {
+			throw new IllegalArgumentException("c14n algo URI is null");
+		}
 
-    /**
-     * Adds a {@code Node} to the input. The node is canonicalized.
-     *
-     * @param n the node to be added
-     * @throws IllegalArgumentException if {@code n} is {@code null}
-     */
-    public void addNode(Node n) {
-        if (null == n) {
-            throw new IllegalArgumentException("DOM node is null");
-        }
-        LOG.debug("adding digest node: " + n.getLocalName());
-        this.nodes.add(n);
-    }
+		this.canonMethodUri = canonMethodUri;
+		this.nodes = new LinkedList<Node>();
+	}
 
-    /**
-     * Gets the octet-stream corresponding to the actual state of the input.
-     *
-     * @return the octet-stream (always a new instance)
-     */
-    public byte[] getBytes() {
-    	byte[] c14nValue = null;
+	/**
+	 * Adds a {@code Node} to the input. The node is canonicalized.
+	 * 
+	 * @param n
+	 *            the node to be added
+	 * @throws IllegalArgumentException
+	 *             if {@code n} is {@code null}
+	 */
+	public void addNode(Node n) {
+		if (null == n) {
+			throw new IllegalArgumentException("DOM node is null");
+		}
+		LOG.debug("adding digest node: " + n.getLocalName());
+		this.nodes.add(n);
+	}
+
+	/**
+	 * Gets the octet-stream corresponding to the actual state of the input.
+	 * 
+	 * @return the octet-stream (always a new instance)
+	 */
+	public byte[] getBytes() {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
 			for (Node node : this.nodes) {
 				/*
@@ -99,12 +106,13 @@ public class TimeStampDigestInput {
 					throw new RuntimeException("c14n algo error: "
 							+ e.getMessage(), e);
 				}
-				c14nValue = ArrayUtils.addAll(c14nValue,
-						c14n.canonicalizeSubtree(node));
+				baos.write(c14n.canonicalizeSubtree(node));
 			}
 		} catch (CanonicalizationException e) {
 			throw new RuntimeException("c14n error: " + e.getMessage(), e);
+		} catch (IOException e) {
+			throw new RuntimeException("I/O error: " + e.getMessage(), e);
 		}
-		return c14nValue;
-    }
+		return baos.toByteArray();
+	}
 }

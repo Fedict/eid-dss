@@ -18,16 +18,18 @@
 
 package be.fedict.eid.dss.spi.utils;
 
-import be.fedict.eid.applet.service.signer.jaxb.xades132.XAdESTimeStampType;
-import be.fedict.eid.dss.spi.utils.exception.XAdESValidationException;
+import java.util.List;
+
+import javax.xml.crypto.dsig.XMLSignature;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import javax.xml.crypto.dsig.XMLSignature;
-import java.util.List;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.XAdESTimeStampType;
+import be.fedict.eid.dss.spi.utils.exception.XAdESValidationException;
 
 /**
  * XAdES SignatureTimeStamp validator. Used by {@link XAdESValidation}.
@@ -47,7 +49,7 @@ public abstract class XAdESSignatureTimeStampValidation {
 	 * @return
 	 * @throws XAdESValidationException
 	 */
-	public static List<TimeStampToken> validate(
+	public static List<TimeStampToken> verify(
 			XAdESTimeStampType signatureTimeStamp, Element signatureElement)
 			throws XAdESValidationException {
 
@@ -77,7 +79,7 @@ public abstract class XAdESSignatureTimeStampValidation {
 		for (TimeStampToken timeStampToken : timeStampTokens) {
 
 			// 1. verify signature in timestamp token
-			XAdESUtils.validateTimeStampTokenSignature(timeStampToken);
+			XAdESUtils.verifyTimeStampTokenSignature(timeStampToken);
 
 			// 4. for-each timestamp token, compute digest and compare
 			XAdESUtils.verifyTimeStampTokenDigest(timeStampToken, digestInput);

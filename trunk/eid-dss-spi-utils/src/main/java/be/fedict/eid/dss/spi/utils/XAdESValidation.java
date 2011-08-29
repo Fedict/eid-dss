@@ -18,15 +18,13 @@
 
 package be.fedict.eid.dss.spi.utils;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.crypto.dsig.DigestMethod;
 import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -42,11 +40,10 @@ import org.w3c.dom.Element;
 import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
 import be.fedict.eid.applet.service.signer.jaxb.identity.IdentityType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.AnyType;
-import be.fedict.eid.applet.service.signer.jaxb.xades132.CertIDListType;
-import be.fedict.eid.applet.service.signer.jaxb.xades132.CertIDType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.CertificateValuesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.ClaimedRolesListType;
-import be.fedict.eid.applet.service.signer.jaxb.xades132.DigestAlgAndValueType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.CompleteCertificateRefsType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.CompleteRevocationRefsType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.QualifyingPropertiesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.RevocationValuesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.SignedPropertiesType;
@@ -94,6 +91,12 @@ public class XAdESValidation {
 			QualifyingPropertiesType qualifyingProperties = XAdESUtils
 					.unmarshall(qualifyingPropertiesElement,
 							QualifyingPropertiesType.class);
+			if (false == qualifyingProperties.getTarget().equals(
+					"#" + xmlSignature.getId())) {
+				throw new XAdESValidationException(
+						"xades:QualifyingProperties/@Target incorrect");
+			}
+
 			SignedPropertiesType signedProperties = qualifyingProperties
 					.getSignedProperties();
 			SignedSignaturePropertiesType signedSignatureProperties = signedProperties
@@ -107,7 +110,7 @@ public class XAdESValidation {
 			/*
 			 * Check the XAdES signing certificate
 			 */
-			checkSigningCertificate(signingCertificate,
+			XAdESUtils.checkSigningCertificate(signingCertificate,
 					signedSignatureProperties);
 
 			/*
@@ -139,7 +142,7 @@ public class XAdESValidation {
 
 			// XAdES-T
 
-			// validate SignatureTimeStamp
+			// validate first SignatureTimeStamp
 			Element signatureTimeStampElement = XAdESUtils
 					.findUnsignedSignaturePropertyElement(
 							qualifyingPropertiesElement, "SignatureTimeStamp");
@@ -150,11 +153,11 @@ public class XAdESValidation {
 			XAdESTimeStampType signatureTimeStamp = XAdESUtils.unmarshall(
 					signatureTimeStampElement, XAdESTimeStampType.class);
 			List<TimeStampToken> signatureTimeStampTokens = XAdESSignatureTimeStampValidation
-					.validate(signatureTimeStamp, signatureElement);
+					.verify(signatureTimeStamp, signatureElement);
 
 			// XAdES-X
 
-			// validate SigAndRefsTimeStamp
+			// validate first SigAndRefsTimeStamp
 			Element sigAndRefsTimeStampElement = XAdESUtils
 					.findUnsignedSignaturePropertyElement(
 							qualifyingPropertiesElement, "SigAndRefsTimeStamp");
@@ -166,7 +169,7 @@ public class XAdESValidation {
 			XAdESTimeStampType sigAndRefsTimeStamp = XAdESUtils.unmarshall(
 					sigAndRefsTimeStampElement, XAdESTimeStampType.class);
 			List<TimeStampToken> sigAndRefsTimeStampTokens = XAdESSigAndRefsTimeStampValidation
-					.validate(sigAndRefsTimeStamp, signatureElement);
+					.verify(sigAndRefsTimeStamp, signatureElement);
 
 			// timestamp tokens trust validation
 			LOG.debug("validate SignatureTimeStamp's trust...");
@@ -214,49 +217,45 @@ public class XAdESValidation {
 			}
 
 			// timestamp tokens time coherence verification
-			long timestampMaxOffset = documentContext.getTimestampMaxOffset();
+			long timestampMaxOffset = this.documentContext
+					.getTimestampMaxOffset();
 			LOG.debug("validate timestamp tokens time coherence...");
 			for (TimeStampToken signatureTimeStampToken : signatureTimeStampTokens) {
-
 				DateTime stsTokenGenTime = new DateTime(signatureTimeStampToken
 						.getTimeStampInfo().getGenTime());
-
-				if (stsTokenGenTime.plus(timestampMaxOffset).isBefore(
-						signingTime)
-						&& stsTokenGenTime.minus(timestampMaxOffset).isBefore(
-								signingTime)) {
-					throw new XAdESValidationException("SignatureTimeStamp ("
-							+ signatureTimeStampToken.getTimeStampInfo()
-									.getGenTime()
-							+ ") generated before SigningTime (" + signingTime
-							+ ")?!");
+				try {
+					XAdESUtils.checkCloseEnough(signingTime, stsTokenGenTime,
+							timestampMaxOffset);
+				} catch (XAdESValidationException e) {
+					throw new XAdESValidationException(
+							"SignatureTimeStamp too far from SigningTime", e);
 				}
 
 				for (TimeStampToken sigAndRefsTimeStampToken : sigAndRefsTimeStampTokens) {
-
 					DateTime sigAndRefsTokenGenTime = new DateTime(
 							sigAndRefsTimeStampToken.getTimeStampInfo()
 									.getGenTime());
-
-					if (stsTokenGenTime.isAfter(sigAndRefsTokenGenTime
-							.minus(timestampMaxOffset))
-							&& stsTokenGenTime.isAfter(sigAndRefsTokenGenTime
-									.plus(timestampMaxOffset))) {
-
+					if (sigAndRefsTokenGenTime.isBefore(stsTokenGenTime)) {
 						throw new XAdESValidationException(
-								"SignatureTimeStamp ("
-										+ signatureTimeStampToken
-												.getTimeStampInfo()
-												.getGenTime()
-										+ ") generated after SigAndRefsTimeStamp ("
-										+ sigAndRefsTimeStampToken
-												.getTimeStampInfo()
-												.getGenTime() + ") ?!");
+								"SigAndRefsTimeStamp before SignatureTimeStamp");
 					}
 				}
 			}
 
-			// XAdES-C/XL
+			for (TimeStampToken sigAndRefsTimeStampToken : sigAndRefsTimeStampTokens) {
+				DateTime sigAndRefsTokenGenTime = new DateTime(
+						sigAndRefsTimeStampToken.getTimeStampInfo()
+								.getGenTime());
+				try {
+					XAdESUtils.checkCloseEnough(signingTime,
+							sigAndRefsTokenGenTime, timestampMaxOffset);
+				} catch (XAdESValidationException e) {
+					throw new XAdESValidationException(
+							"SigAndRefsTimeStamp too far from SigningTime", e);
+				}
+			}
+
+			// XAdES-X-L
 
 			/*
 			 * Retrieve certificate chain and revocation data from XAdES-X-L
@@ -264,25 +263,23 @@ public class XAdESValidation {
 			 */
 			RevocationValuesType revocationValues = XAdESUtils
 					.findUnsignedSignatureProperty(qualifyingProperties,
-							RevocationValuesType.class);
+							RevocationValuesType.class, "RevocationValues");
 			List<X509CRL> crls = XAdESUtils.getCrls(revocationValues);
 			List<OCSPResp> ocspResponses = XAdESUtils
 					.getOCSPResponses(revocationValues);
 
 			CertificateValuesType certificateValues = XAdESUtils
 					.findUnsignedSignatureProperty(qualifyingProperties,
-							CertificateValuesType.class);
+							CertificateValuesType.class, "CertificateValues");
 			if (null == certificateValues) {
-				LOG.error("no CertificateValuesType element found.");
 				throw new XAdESValidationException(
-						"no CertificateValuesType element found.");
+						"no CertificateValues element found.");
 			}
 			List<X509Certificate> certificateChain = XAdESUtils
 					.getCertificates(certificateValues);
 			if (certificateChain.isEmpty()) {
-				LOG.error("no certificate chain present in CertificateValuesType");
 				throw new XAdESValidationException(
-						"no cert chain in CertificateValuesType");
+						"no cert chain in CertificateValues");
 			}
 
 			/*
@@ -300,6 +297,38 @@ public class XAdESValidation {
 				certificateChain.add(0, signingCertificate);
 			}
 			LOG.debug("XAdES certificate chain contains actual signing certificate");
+
+			// XAdES-C
+			CompleteCertificateRefsType completeCertificateRefs = XAdESUtils
+					.findUnsignedSignatureProperty(qualifyingProperties,
+							CompleteCertificateRefsType.class,
+							"CompleteCertificateRefs");
+			if (null == completeCertificateRefs) {
+				throw new XAdESValidationException(
+						"missing CompleteCertificateRefs");
+			}
+			CompleteRevocationRefsType completeRevocationRefs = XAdESUtils
+					.findUnsignedSignatureProperty(qualifyingProperties,
+							CompleteRevocationRefsType.class,
+							"CompleteRevocationRefs");
+			if (null == completeRevocationRefs) {
+				throw new XAdESValidationException(
+						"missing CompleteRevocationRefs");
+			}
+			for (OCSPResp ocspResp : ocspResponses) {
+				XAdESUtils.checkReference(ocspResp, completeRevocationRefs);
+			}
+			for (X509CRL crl : crls) {
+				XAdESUtils.checkReference(crl, completeRevocationRefs);
+			}
+			Iterator<X509Certificate> certIterator = certificateChain
+					.iterator();
+			certIterator.next(); // digestion of SigningCertificate already
+									// checked
+			while (certIterator.hasNext()) {
+				X509Certificate certificate = certIterator.next();
+				XAdESUtils.checkReference(certificate, completeCertificateRefs);
+			}
 
 			/*
 			 * Perform trust validation via eID Trust Service
@@ -343,51 +372,6 @@ public class XAdESValidation {
 		} catch (Exception e) {
 			throw new XAdESValidationException(e);
 		}
-	}
-
-	private void checkSigningCertificate(X509Certificate signingCertificate,
-			SignedSignaturePropertiesType signedSignatureProperties)
-			throws XAdESValidationException, CertificateEncodingException {
-		CertIDListType signingCertificateCertIDList = signedSignatureProperties
-				.getSigningCertificate();
-		List<CertIDType> signingCertificateCertIDs = signingCertificateCertIDList
-				.getCert();
-		CertIDType signingCertificateCertID = signingCertificateCertIDs.get(0);
-		DigestAlgAndValueType signingCertificateDigestAlgAndValue = signingCertificateCertID
-				.getCertDigest();
-		String certXmlDigestAlgo = signingCertificateDigestAlgAndValue
-				.getDigestMethod().getAlgorithm();
-		String certDigestAlgo = getDigestAlgo(certXmlDigestAlgo);
-		byte[] certDigestValue = signingCertificateDigestAlgAndValue
-				.getDigestValue();
-		MessageDigest messageDigest;
-		try {
-			messageDigest = MessageDigest.getInstance(certDigestAlgo);
-		} catch (NoSuchAlgorithmException e) {
-			throw new XAdESValidationException("message digest algo error: "
-					+ e.getMessage(), e);
-		}
-		byte[] actualCertDigestValue = messageDigest.digest(signingCertificate
-				.getEncoded());
-		if (!Arrays.equals(actualCertDigestValue, certDigestValue)) {
-			throw new XAdESValidationException(
-					"XAdES signing certificate not corresponding with actual signing certificate");
-		}
-		LOG.debug("XAdES SigningCertificate OK");
-	}
-
-	public static String getDigestAlgo(String xmlDigestAlgo) {
-		if (DigestMethod.SHA1.equals(xmlDigestAlgo)) {
-			return "SHA-1";
-		}
-		if (DigestMethod.SHA256.equals(xmlDigestAlgo)) {
-			return "SHA-256";
-		}
-		if (DigestMethod.SHA512.equals(xmlDigestAlgo)) {
-			return "SHA-512";
-		}
-		throw new RuntimeException("unsupported XML digest algo: "
-				+ xmlDigestAlgo);
 	}
 
 	private Element getNsElement(Document document) {

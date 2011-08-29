@@ -178,7 +178,8 @@ public class XMLDSSDocumentServiceTest {
 		mockDocumentContext.validate(EasyMock.capture(timeStampTokenCapture),
 				EasyMock.capture(tsaOcspResponsesCapture),
 				EasyMock.capture(tsaCrlsCapture));
-		expect(mockDocumentContext.getTimestampMaxOffset()).andReturn(1000L);
+		expect(mockDocumentContext.getTimestampMaxOffset()).andReturn(
+				16 * 1000L);
 
 		// prepare
 		EasyMock.replay(mockDocumentContext);

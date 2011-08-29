@@ -23,69 +23,74 @@ import be.fedict.eid.applet.service.signer.DigestAlgo;
 /**
  * Enumeration of all possible configuration properties. This enumeration also
  * keeps track of the type of each property.
- *
+ * 
  * @author Frank Cornelis
  */
 public enum ConfigProperty {
 
-        TSP_URL("tsp-url", String.class, "http://tsa.belgium.be/connect"),
-        TSP_POLICY_OID("tsp-policy-oid", String.class),
-        TSP_DIGEST_ALGO("tsp-digest-algo", TSPDigestAlgo.class),
+	TSP_URL("tsp-url", String.class, "http://tsa.belgium.be/connect"), TSP_POLICY_OID(
+			"tsp-policy-oid", String.class), TSP_DIGEST_ALGO("tsp-digest-algo",
+			TSPDigestAlgo.class),
 
-        HTTP_PROXY_ENABLED("http-proxy", Boolean.class),
-        HTTP_PROXY_HOST("http-proxy-host", String.class),
-        HTTP_PROXY_PORT("http-proxy-port", Integer.class),
+	HTTP_PROXY_ENABLED("http-proxy", Boolean.class), HTTP_PROXY_HOST(
+			"http-proxy-host", String.class), HTTP_PROXY_PORT(
+			"http-proxy-port", Integer.class),
 
-        XKMS_URL("xkms-url", String.class, "https://www.e-contract.be/eid-trust-service-ws/xkms2"),
+	XKMS_URL("xkms-url", String.class,
+			"https://www.e-contract.be/eid-trust-service-ws/xkms2"),
 
-        ACTIVE_IDENTITY("active-identity", String.class),
-        KEY_STORE_TYPE("key-store-type", KeyStoreType.class),
-        KEY_STORE_PATH("key-store-path", String.class),
-        KEY_STORE_SECRET("key-store-secret", String.class),
-        KEY_ENTRY_SECRET("key-entry-secret", String.class),
-        KEY_ENTRY_ALIAS("key-entry-alias", String.class),
+	ACTIVE_IDENTITY("active-identity", String.class), KEY_STORE_TYPE(
+			"key-store-type", KeyStoreType.class), KEY_STORE_PATH(
+			"key-store-path", String.class), KEY_STORE_SECRET(
+			"key-store-secret", String.class), KEY_ENTRY_SECRET(
+			"key-entry-secret", String.class), KEY_ENTRY_ALIAS(
+			"key-entry-alias", String.class),
 
-        SIGN_TRUST_DOMAIN("sign-trust-domain", String.class, "BE"),
-        VERIFY_TRUST_DOMAIN("verify-trust-domain", String.class, "BE"),
-        IDENTITY_TRUST_DOMAIN("identity-trust-domain", String.class, "BE-NAT-REG"),
-        TSA_TRUST_DOMAIN("tsa-trust-domain", String.class, "BE-TSA"),
+	SIGN_TRUST_DOMAIN("sign-trust-domain", String.class, "BE"), VERIFY_TRUST_DOMAIN(
+			"verify-trust-domain", String.class, "BE"), IDENTITY_TRUST_DOMAIN(
+			"identity-trust-domain", String.class, "BE-NAT-REG"), TSA_TRUST_DOMAIN(
+			"tsa-trust-domain", String.class, "BE-TSA"),
 
-        SIGNATURE_DIGEST_ALGO("signature-digest-algo", DigestAlgo.class,
-                DigestAlgo.SHA512),
+	SIGNATURE_DIGEST_ALGO("signature-digest-algo", DigestAlgo.class,
+			DigestAlgo.SHA512),
 
-        DOCUMENT_STORAGE_EXPIRATION("document-storage-expiration", Integer.class, 5),
-        DOCUMENT_CLEANUP_TASK_SCHEDULE("document-cleanup-task-schedule", String.class,
-                "0 0/15 * * * *"),
+	DOCUMENT_STORAGE_EXPIRATION("document-storage-expiration", Integer.class, 5), DOCUMENT_CLEANUP_TASK_SCHEDULE(
+			"document-cleanup-task-schedule", String.class, "0 0/15 * * * *"),
 
-        TIMESTAMP_MAX_OFFSET("timestamp-max-offset", Long.class, 10000L);
+	/**
+	 * We take a default value of 5 minutes. This required because of delay
+	 * caused by eID PIN validation, SignatureTimeStamp, eID certificate chain
+	 * PKI validation, TSA PKI validation, SigAndRefsTimeStamp.
+	 */
+	TIMESTAMP_MAX_OFFSET("timestamp-max-offset", Long.class, 5 * 60 * 1000L);
 
-        private final String name;
+	private final String name;
 
-        private final Class<?> type;
+	private final Class<?> type;
 
-        private final Object defaultValue;
+	private final Object defaultValue;
 
-        private ConfigProperty(String name, Class<?> type) {
-                this.name = name;
-                this.type = type;
-                this.defaultValue = null;
-        }
+	private ConfigProperty(String name, Class<?> type) {
+		this.name = name;
+		this.type = type;
+		this.defaultValue = null;
+	}
 
-        private ConfigProperty(String name, Class<?> type, Object defaultValue) {
-                this.name = name;
-                this.type = type;
-                this.defaultValue = defaultValue;
-        }
+	private ConfigProperty(String name, Class<?> type, Object defaultValue) {
+		this.name = name;
+		this.type = type;
+		this.defaultValue = defaultValue;
+	}
 
-        public String getName() {
-                return this.name;
-        }
+	public String getName() {
+		return this.name;
+	}
 
-        public Class<?> getType() {
-                return this.type;
-        }
+	public Class<?> getType() {
+		return this.type;
+	}
 
-        public Object getDefaultValue() {
-                return this.defaultValue;
-        }
+	public Object getDefaultValue() {
+		return this.defaultValue;
+	}
 }
