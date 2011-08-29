@@ -26,6 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CRLException;
 import java.security.cert.CertStore;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509CRL;
@@ -40,6 +41,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.crypto.dsig.DigestMethod;
 import javax.xml.crypto.dsig.Reference;
 import javax.xml.crypto.dsig.SignedInfo;
 import javax.xml.crypto.dsig.XMLSignature;
@@ -48,31 +50,47 @@ import javax.xml.transform.TransformerException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xpath.XPathAPI;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.ocsp.OCSPResp;
 import org.bouncycastle.tsp.TimeStampToken;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
 import be.fedict.eid.applet.service.signer.jaxb.identity.IdentityType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.CRLRefType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.CRLRefsType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.CRLValuesType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.CertIDListType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.CertIDType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.CertificateValuesType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.CompleteCertificateRefsType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.CompleteRevocationRefsType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.DigestAlgAndValueType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.EncapsulatedPKIDataType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.OCSPRefType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.OCSPRefsType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.OCSPValuesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.ObjectFactory;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.QualifyingPropertiesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.RevocationValuesType;
+import be.fedict.eid.applet.service.signer.jaxb.xades132.SignedSignaturePropertiesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.UnsignedPropertiesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.UnsignedSignaturePropertiesType;
 import be.fedict.eid.applet.service.signer.jaxb.xades132.XAdESTimeStampType;
+import be.fedict.eid.applet.service.signer.jaxb.xmldsig.X509IssuerSerialType;
 import be.fedict.eid.dss.spi.utils.exception.XAdESValidationException;
 
 /**
- * Some XAdES Utility methods
+ * Some XAdES Utility methods.
  * 
  * @author Wim Vandenhaute
  * @author Frank Cornelis
@@ -150,7 +168,7 @@ public abstract class XAdESUtils {
 		}
 	}
 
-	public static void validateTimeStampTokenSignature(
+	public static void verifyTimeStampTokenSignature(
 			TimeStampToken timeStampToken) throws XAdESValidationException {
 
 		try {
@@ -276,12 +294,6 @@ public abstract class XAdESUtils {
 		} catch (CRLException e) {
 			throw new XAdESValidationException(e);
 		}
-	}
-
-	public static <T> T findUnsignedSignatureProperty(
-			QualifyingPropertiesType qualifyingProperties, Class<T> declaredType) {
-		return findUnsignedSignatureProperty(qualifyingProperties,
-				declaredType, null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -507,5 +519,217 @@ public abstract class XAdESUtils {
 			return null;
 		}
 		return unmarshall(element, jaxbType);
+	}
+
+	/**
+	 * Checks whether the given date-times are close enough next to each other.
+	 * 
+	 * @param t1
+	 * @param t2
+	 * @param millis
+	 * @throws XAdESValidationException
+	 */
+	public static void checkCloseEnough(DateTime t1, DateTime t2, long millis)
+			throws XAdESValidationException {
+		Duration dt;
+		if (t1.isBefore(t2)) {
+			dt = new Duration(t1, t2);
+		} else {
+			dt = new Duration(t2, t1);
+		}
+		if (false == dt.isShorterThan(new Duration(millis))) {
+			throw new XAdESValidationException("max dt of " + millis
+					+ " ms exceeded between " + t1 + " and " + t2
+					+ " with dt = " + dt);
+		}
+	}
+
+	/**
+	 * Checks whether the given OCSP response is being references in the given
+	 * XAdES complete revocation refs structure.
+	 * 
+	 * @param ocspResp
+	 * @param completeRevocationRefs
+	 * @throws XAdESValidationException
+	 */
+	public static void checkReference(OCSPResp ocspResp,
+			CompleteRevocationRefsType completeRevocationRefs)
+			throws XAdESValidationException {
+		byte[] encodedOcsp;
+		try {
+			encodedOcsp = ocspResp.getEncoded();
+		} catch (IOException e) {
+			throw new XAdESValidationException("OCSP encoding error: "
+					+ e.getMessage(), e);
+		}
+		OCSPRefsType ocspRefs = completeRevocationRefs.getOCSPRefs();
+		if (null == ocspRefs) {
+			throw new XAdESValidationException("missing OCSPRefs");
+		}
+		for (OCSPRefType ocspRef : ocspRefs.getOCSPRef()) {
+			DigestAlgAndValueType digestAlgAndValue = ocspRef
+					.getDigestAlgAndValue();
+			if (null == digestAlgAndValue) {
+				continue;
+			}
+			String xmlDigestAlgo = digestAlgAndValue.getDigestMethod()
+					.getAlgorithm();
+			MessageDigest messageDigest;
+			try {
+				messageDigest = MessageDigest
+						.getInstance(getDigestAlgo(xmlDigestAlgo));
+			} catch (NoSuchAlgorithmException e) {
+				throw new XAdESValidationException(
+						"message digest algo error: " + e.getMessage(), e);
+			}
+			byte[] expectedDigestValue = messageDigest.digest(encodedOcsp);
+			byte[] refDigestValue = digestAlgAndValue.getDigestValue();
+			if (Arrays.equals(expectedDigestValue, refDigestValue)) {
+				return;
+			}
+		}
+		throw new XAdESValidationException("OCSP response not referenced");
+	}
+
+	public static String getDigestAlgo(String xmlDigestAlgo) {
+		if (DigestMethod.SHA1.equals(xmlDigestAlgo)) {
+			return "SHA-1";
+		}
+		if (DigestMethod.SHA256.equals(xmlDigestAlgo)) {
+			return "SHA-256";
+		}
+		if (DigestMethod.SHA512.equals(xmlDigestAlgo)) {
+			return "SHA-512";
+		}
+		throw new RuntimeException("unsupported XML digest algo: "
+				+ xmlDigestAlgo);
+	}
+
+	public static void checkReference(X509CRL crl,
+			CompleteRevocationRefsType completeRevocationRefs)
+			throws XAdESValidationException {
+		byte[] encodedCRL;
+		try {
+			encodedCRL = crl.getEncoded();
+		} catch (CRLException e) {
+			throw new XAdESValidationException("CRL encoding error: "
+					+ e.getMessage(), e);
+		}
+		CRLRefsType crlRefs = completeRevocationRefs.getCRLRefs();
+		if (null == crlRefs) {
+			throw new XAdESValidationException("missing CRLRefs");
+		}
+		for (CRLRefType crlRef : crlRefs.getCRLRef()) {
+			DigestAlgAndValueType digestAlgAndValue = crlRef
+					.getDigestAlgAndValue();
+			String xmlDigestAlgo = digestAlgAndValue.getDigestMethod()
+					.getAlgorithm();
+			MessageDigest messageDigest;
+			try {
+				messageDigest = MessageDigest
+						.getInstance(getDigestAlgo(xmlDigestAlgo));
+			} catch (NoSuchAlgorithmException e) {
+				throw new XAdESValidationException(
+						"message digest algo error: " + e.getMessage(), e);
+			}
+			byte[] expectedDigestValue = messageDigest.digest(encodedCRL);
+			byte[] refDigestValue = digestAlgAndValue.getDigestValue();
+			if (Arrays.equals(expectedDigestValue, refDigestValue)) {
+				return;
+			}
+		}
+		throw new XAdESValidationException("CRL not referenced");
+	}
+
+	public static void checkSigningCertificate(
+			X509Certificate signingCertificate,
+			SignedSignaturePropertiesType signedSignatureProperties)
+			throws XAdESValidationException, CertificateEncodingException {
+		CertIDListType signingCertificateCertIDList = signedSignatureProperties
+				.getSigningCertificate();
+		List<CertIDType> signingCertificateCertIDs = signingCertificateCertIDList
+				.getCert();
+		CertIDType signingCertificateCertID = signingCertificateCertIDs.get(0);
+		DigestAlgAndValueType signingCertificateDigestAlgAndValue = signingCertificateCertID
+				.getCertDigest();
+		String certXmlDigestAlgo = signingCertificateDigestAlgAndValue
+				.getDigestMethod().getAlgorithm();
+		String certDigestAlgo = XAdESUtils.getDigestAlgo(certXmlDigestAlgo);
+		byte[] certDigestValue = signingCertificateDigestAlgAndValue
+				.getDigestValue();
+		MessageDigest messageDigest;
+		try {
+			messageDigest = MessageDigest.getInstance(certDigestAlgo);
+		} catch (NoSuchAlgorithmException e) {
+			throw new XAdESValidationException("message digest algo error: "
+					+ e.getMessage(), e);
+		}
+		byte[] actualCertDigestValue = messageDigest.digest(signingCertificate
+				.getEncoded());
+		if (!Arrays.equals(actualCertDigestValue, certDigestValue)) {
+			throw new XAdESValidationException(
+					"XAdES signing certificate not corresponding with actual signing certificate");
+		}
+
+		X509IssuerSerialType issuerSerial = signingCertificateCertID
+				.getIssuerSerial();
+		BigInteger serialNumber = issuerSerial.getX509SerialNumber();
+		if (false == signingCertificate.getSerialNumber().equals(serialNumber)) {
+			throw new XAdESValidationException(
+					"xades:SigningCertificate serial number mismatch");
+		}
+		X509Name issuerName;
+		try {
+			issuerName = new X509Name(
+					(ASN1Sequence) new ASN1InputStream(signingCertificate
+							.getIssuerX500Principal().getEncoded())
+							.readObject());
+		} catch (IOException e) {
+			throw new XAdESValidationException(
+					"error parsing xades:SigningCertificate ds:X509IssuerName: "
+							+ e);
+		}
+		X509Name xadesIssuerName = new X509Name(
+				issuerSerial.getX509IssuerName());
+		if (false == issuerName.equals(xadesIssuerName)) {
+			throw new XAdESValidationException(
+					"xades:SigningCertificate issuer name mismatch");
+		}
+		LOG.debug("XAdES SigningCertificate OK");
+	}
+
+	public static void checkReference(X509Certificate certificate,
+			CompleteCertificateRefsType completeCertificateRefs)
+			throws XAdESValidationException {
+		byte[] encodedCert;
+		try {
+			encodedCert = certificate.getEncoded();
+		} catch (CertificateEncodingException e) {
+			throw new XAdESValidationException("X509 encoding error: "
+					+ e.getMessage(), e);
+		}
+		CertIDListType certIDList = completeCertificateRefs.getCertRefs();
+		if (null == certIDList) {
+			throw new XAdESValidationException("missing CertRefs");
+		}
+		for (CertIDType certID : certIDList.getCert()) {
+			DigestAlgAndValueType digestAlgAndValue = certID.getCertDigest();
+			String xmlDigestAlgo = digestAlgAndValue.getDigestMethod()
+					.getAlgorithm();
+			MessageDigest messageDigest;
+			try {
+				messageDigest = MessageDigest
+						.getInstance(getDigestAlgo(xmlDigestAlgo));
+			} catch (NoSuchAlgorithmException e) {
+				throw new XAdESValidationException(
+						"message digest algo error: " + e.getMessage(), e);
+			}
+			byte[] expectedDigestValue = messageDigest.digest(encodedCert);
+			byte[] refDigestValue = digestAlgAndValue.getDigestValue();
+			if (Arrays.equals(expectedDigestValue, refDigestValue)) {
+				return;
+			}
+		}
+		throw new XAdESValidationException("X509 certificate not referenced");
 	}
 }

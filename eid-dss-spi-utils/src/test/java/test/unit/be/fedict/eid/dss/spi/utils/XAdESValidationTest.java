@@ -59,6 +59,7 @@ import org.bouncycastle.ocsp.OCSPResp;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.easymock.EasyMock;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -131,7 +132,8 @@ public class XAdESValidationTest {
 				(Date) EasyMock.anyObject(),
 				(List<OCSPResp>) EasyMock.anyObject(),
 				(List<X509CRL>) EasyMock.anyObject());
-		expect(mockDSSDocumentContext.getTimestampMaxOffset()).andReturn(1000L);
+		expect(mockDSSDocumentContext.getTimestampMaxOffset()).andReturn(
+				2 * 1000L);
 
 		// prepare
 		replay(mockDSSDocumentContext);
@@ -183,7 +185,6 @@ public class XAdESValidationTest {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testXAdESValidationWrongSigningCertificate() throws Exception {
 
 		// Setup: signed document
@@ -218,6 +219,18 @@ public class XAdESValidationTest {
 
 		// verify
 		verify(mockDSSDocumentContext);
+	}
+
+	@Test
+	public void testJodaTime() throws Exception {
+		DateTime t1 = new DateTime();
+		DateTime t2 = t1.plusSeconds(10);
+
+		assertTrue(t1.isBefore(t2));
+		Duration dt = new Duration(t1, t2);
+		LOG.debug("dt: " + dt);
+		assertFalse(dt.isShorterThan(new Duration(10 * 1000)));
+		assertTrue(dt.isShorterThan(new Duration(10 * 1000 + 1)));
 	}
 
 	private Document getTestDocument() throws Exception {

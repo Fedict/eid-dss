@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.model.bean;
 
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertStore;
@@ -34,10 +35,12 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.ocsp.OCSPResp;
 import org.bouncycastle.tsp.TimeStampToken;
 
@@ -133,6 +136,9 @@ public class TrustValidationServiceBean implements TrustValidationService {
 		LOG.debug("# TSA ocsp responses: " + ocspResponses.size());
 		LOG.debug("# TSA CRLs: " + crls.size());
 
+		/*
+		 * Construct the TSA cert chain.
+		 */
 		List<X509Certificate> certificateChain = new LinkedList<X509Certificate>();
 		CertStore certStore = timeStampToken.getCertificatesAndCRLs(
 				"Collection", "BC");
@@ -142,9 +148,36 @@ public class TrustValidationServiceBean implements TrustValidationService {
 			certificateChain.add((X509Certificate) certificate);
 		}
 		if (TrustValidator.isSelfSigned(certificateChain.get(0))) {
-            Collections.reverse(certificateChain);
-        }
+			Collections.reverse(certificateChain);
+		}
 
+		/*
+		 * Check TSA signer.
+		 */
+		SignerId signerId = timeStampToken.getSID();
+		BigInteger signerCertSerialNumber = signerId.getSerialNumber();
+		X500Principal signerCertIssuer = signerId.getIssuer();
+		X509Certificate tsaCertificate = null;
+		for (Certificate certificate : certificates) {
+			X509Certificate x509Certificate = (X509Certificate) certificate;
+			if (signerCertIssuer.equals(x509Certificate
+					.getIssuerX500Principal())
+					&& signerCertSerialNumber.equals(x509Certificate
+							.getSerialNumber())) {
+				tsaCertificate = x509Certificate;
+				break;
+			}
+		}
+		if (null == tsaCertificate) {
+			throw new SecurityException("TSA cert not present in TST");
+		}
+		if (false == tsaCertificate.equals(certificateChain.get(0))) {
+			throw new SecurityException("TST signing certificate mismatch");
+		}
+
+		/*
+		 * Perform PKI validation via eID Trust Service.
+		 */
 		getXkms2Client().validate(tsaTrustDomain, certificateChain,
 				validationDate, ocspResponses, crls);
 	}
