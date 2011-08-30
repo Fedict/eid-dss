@@ -25,21 +25,21 @@ import java.security.KeyStore.PrivateKeyEntry;
 
 /**
  * Implementation of the DSS Protocol Context.
- *
+ * 
  * @author Frank Cornelis
  */
 public class DSSProtocolContextImpl implements DSSProtocolContext {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private final IdentityService identityService;
+	private final IdentityService identityService;
 
-    public DSSProtocolContextImpl(IdentityService identityService) {
+	public DSSProtocolContextImpl(IdentityService identityService) {
 
-        this.identityService = identityService;
-    }
+		this.identityService = identityService;
+	}
 
-    public PrivateKeyEntry getIdentity() {
-        return this.identityService.findIdentity();
-    }
+	public PrivateKeyEntry getIdentity() {
+		return this.identityService.findIdentity();
+	}
 }

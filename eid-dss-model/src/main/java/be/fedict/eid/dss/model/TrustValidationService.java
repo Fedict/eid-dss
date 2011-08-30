@@ -71,7 +71,7 @@ public interface TrustValidationService {
 	 * @throws CMSException
 	 * @throws NoSuchProviderException
 	 * @throws NoSuchAlgorithmException
-	 * @throws CertStoreException 
+	 * @throws CertStoreException
 	 */
 	void validate(TimeStampToken timeStampToken, List<OCSPResp> ocspResponses,
 			List<X509CRL> crls) throws CertificateEncodingException,

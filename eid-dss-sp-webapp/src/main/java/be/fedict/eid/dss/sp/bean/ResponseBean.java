@@ -30,67 +30,67 @@ import java.util.List;
 
 public class ResponseBean {
 
-    private static final Log LOG = LogFactory.getLog(ResponseBean.class);
+	private static final Log LOG = LogFactory.getLog(ResponseBean.class);
 
-    private ServletRequest request;
+	private ServletRequest request;
 
-    private String error;
-    private byte[] signedDocument;
-    private String contentType;
-    private List<SignatureInfo> signatureInfos = null;
+	private String error;
+	private byte[] signedDocument;
+	private String contentType;
+	private List<SignatureInfo> signatureInfos = null;
 
-    public ServletRequest getRequest() {
-        return this.request;
-    }
+	public ServletRequest getRequest() {
+		return this.request;
+	}
 
-    public void setRequest(ServletRequest request) {
+	public void setRequest(ServletRequest request) {
 
-        this.request = request;
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+		this.request = request;
+		HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
-        this.error = (String) httpServletRequest.getSession()
-                .getAttribute("SignatureErrorMessage");
-        this.signedDocument = (byte[]) httpServletRequest.getSession()
-                .getAttribute("document");
-        this.contentType = (String) httpServletRequest.getSession()
-                .getAttribute("ContentType");
+		this.error = (String) httpServletRequest.getSession().getAttribute(
+				"SignatureErrorMessage");
+		this.signedDocument = (byte[]) httpServletRequest.getSession()
+				.getAttribute("document");
+		this.contentType = (String) httpServletRequest.getSession()
+				.getAttribute("ContentType");
 
-        if (null != this.signedDocument) {
+		if (null != this.signedDocument) {
 
-            DigitalSignatureServiceClient dssClient =
-                    new DigitalSignatureServiceClient();
-            dssClient.setLogging(true, false);
+			DigitalSignatureServiceClient dssClient = new DigitalSignatureServiceClient();
+			dssClient.setLogging(true, false);
 
-            try {
-                LOG.debug("verify signed document");
-                signatureInfos = dssClient.verifyWithSigners(
-                        this.signedDocument, this.contentType);
+			try {
+				LOG.debug("verify signed document");
+				signatureInfos = dssClient.verifyWithSigners(
+						this.signedDocument, this.contentType);
 
-                for (SignatureInfo signatureInfo : signatureInfos) {
-                    LOG.debug("SignatureInfo: " + signatureInfo.getSigner().toString()
-                            + " time=" + signatureInfo.getSigningTime()
-                            + " role=" + signatureInfo.getRole());
-                }
+				for (SignatureInfo signatureInfo : signatureInfos) {
+					LOG.debug("SignatureInfo: "
+							+ signatureInfo.getSigner().toString() + " time="
+							+ signatureInfo.getSigningTime() + " role="
+							+ signatureInfo.getRole());
+				}
 
-            } catch (NotParseableXMLDocumentException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
+			} catch (NotParseableXMLDocumentException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
 
-    public String getError() {
-        return this.error;
-    }
+	public String getError() {
+		return this.error;
+	}
 
-    public void setError(String error) {
-        this.error = error;
-    }
+	public void setError(String error) {
+		this.error = error;
+	}
 
-    public List<SignatureInfo> getSignatureInfos() {
-        return this.signatureInfos;
-    }
+	public List<SignatureInfo> getSignatureInfos() {
+		return this.signatureInfos;
+	}
 
-    public void setSignatureInfos(List<SignatureInfo> signatureInfos) {
-        this.signatureInfos = signatureInfos;
-    }
+	public void setSignatureInfos(List<SignatureInfo> signatureInfos) {
+		this.signatureInfos = signatureInfos;
+	}
 }

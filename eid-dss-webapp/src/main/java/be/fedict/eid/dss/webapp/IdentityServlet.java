@@ -38,65 +38,64 @@ import java.security.cert.Certificate;
 /**
  * Identity servlet exposing the full certificate chain of the active eID DSS's
  * identity in PEM format.
- *
+ * 
  * @author Wim Vandenhaute
  */
 public class IdentityServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private static final Log LOG = LogFactory
-            .getLog(IdentityServlet.class);
+	private static final Log LOG = LogFactory.getLog(IdentityServlet.class);
 
-    @EJB
-    IdentityService identityService;
+	@EJB
+	IdentityService identityService;
 
+	@Override
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 
-    @Override
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response)
-            throws ServletException, IOException {
+		LOG.debug("doGet");
 
-        LOG.debug("doGet");
+		response.setContentType("text/plain");
+		PrintWriter out = response.getWriter();
 
-        response.setContentType("text/plain");
-        PrintWriter out = response.getWriter();
+		KeyStore.PrivateKeyEntry activeIdentity = identityService
+				.findIdentity();
+		if (null == activeIdentity) {
 
-        KeyStore.PrivateKeyEntry activeIdentity = identityService.findIdentity();
-        if (null == activeIdentity) {
+			out.print("No active identity eID DSS Identity configured.");
 
-            out.print("No active identity eID DSS Identity configured.");
+		} else {
 
-        } else {
+			String pemCertificateChain;
+			try {
+				pemCertificateChain = toPem(activeIdentity
+						.getCertificateChain());
+			} catch (Exception e) {
+				LOG.error(e);
+				return;
+			}
+			out.print(pemCertificateChain);
+		}
 
-            String pemCertificateChain;
-            try {
-                pemCertificateChain = toPem(activeIdentity.getCertificateChain());
-            } catch (Exception e) {
-                LOG.error(e);
-                return;
-            }
-            out.print(pemCertificateChain);
-        }
+		out.close();
+	}
 
-        out.close();
-    }
+	private static String toPem(Certificate[] certificateChain) {
 
-    private static String toPem(Certificate[] certificateChain) {
-
-        StringWriter buffer = new StringWriter();
-        try {
-            PEMWriter writer = new PEMWriter(buffer);
-            for (Certificate certificate : certificateChain) {
-                writer.writeObject(certificate);
-            }
-            writer.close();
-            return buffer.toString();
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot convert object to " +
-                    "PEM format: " + e.getMessage(), e);
-        } finally {
-            IOUtils.closeQuietly(buffer);
-        }
-    }
+		StringWriter buffer = new StringWriter();
+		try {
+			PEMWriter writer = new PEMWriter(buffer);
+			for (Certificate certificate : certificateChain) {
+				writer.writeObject(certificate);
+			}
+			writer.close();
+			return buffer.toString();
+		} catch (Exception e) {
+			throw new RuntimeException("Cannot convert object to "
+					+ "PEM format: " + e.getMessage(), e);
+		} finally {
+			IOUtils.closeQuietly(buffer);
+		}
+	}
 }

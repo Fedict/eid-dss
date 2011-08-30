@@ -32,6 +32,6 @@ public interface LanguageSelector {
 	void setLocaleString(java.lang.String localeString);
 
 	List<SelectItem> getSupportedLocales();
-	
+
 	Locale getLocale();
 }

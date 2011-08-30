@@ -27,49 +27,48 @@ import java.io.OutputStream;
 @Local
 public interface RP {
 
-    /*
-    * Accessors
-    */
-    String getSelectedTab();
+	/*
+	 * Accessors
+	 */
+	String getSelectedTab();
 
-    void setSelectedTab(String selectedTab);
+	void setSelectedTab(String selectedTab);
 
-    void paint(OutputStream stream, Object object) throws IOException;
+	void paint(OutputStream stream, Object object) throws IOException;
 
-    long getTimeStamp();
+	long getTimeStamp();
 
+	/*
+	 * Listeners.
+	 */
+	void uploadListener(UploadEvent event) throws IOException;
 
-    /*
-    * Listeners.
-    */
-    void uploadListener(UploadEvent event) throws IOException;
+	void uploadListenerLogo(UploadEvent event) throws IOException;
 
-    void uploadListenerLogo(UploadEvent event) throws IOException;
+	/*
+	 * Factories
+	 */
+	void rpListFactory();
 
-    /*
-    * Factories
-    */
-    void rpListFactory();
+	/*
+	 * Actions.
+	 */
+	String add();
 
-    /*
-    * Actions.
-    */
-    String add();
+	String modify();
 
-    String modify();
+	String save();
 
-    String save();
+	String remove();
 
-    String remove();
+	String removeCertificate();
 
-    String removeCertificate();
+	String back();
 
-    String back();
+	/*
+	 * Lifecycle.
+	 */
+	void destroy();
 
-    /*
-    * Lifecycle.
-    */
-    void destroy();
-
-    void postConstruct();
+	void postConstruct();
 }

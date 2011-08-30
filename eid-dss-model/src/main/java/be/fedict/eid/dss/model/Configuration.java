@@ -24,17 +24,17 @@ import java.util.List;
 @Local
 public interface Configuration {
 
-    void setValue(ConfigProperty configProperty, String index, Object value);
+	void setValue(ConfigProperty configProperty, String index, Object value);
 
-    void setValue(ConfigProperty configProperty, Object value);
+	void setValue(ConfigProperty configProperty, Object value);
 
-    <T> T getValue(ConfigProperty configProperty, String index, Class<T> type);
+	<T> T getValue(ConfigProperty configProperty, String index, Class<T> type);
 
-    <T> T getValue(ConfigProperty configProperty, Class<T> type);
+	<T> T getValue(ConfigProperty configProperty, Class<T> type);
 
-    void removeValue(ConfigProperty configProperty, String index);
+	void removeValue(ConfigProperty configProperty, String index);
 
-    void removeValue(ConfigProperty configProperty);
+	void removeValue(ConfigProperty configProperty);
 
-    List<String> getIndexes(ConfigProperty configProperty);
+	List<String> getIndexes(ConfigProperty configProperty);
 }

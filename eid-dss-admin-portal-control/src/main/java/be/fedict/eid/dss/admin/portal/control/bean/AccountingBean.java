@@ -38,49 +38,49 @@ import java.util.List;
 
 @Stateful
 @Name("dssAccounting")
-@LocalBinding(jndiBinding = AdminConstants.ADMIN_JNDI_CONTEXT + "AccountingBean")
+@LocalBinding(jndiBinding = AdminConstants.ADMIN_JNDI_CONTEXT
+		+ "AccountingBean")
 public class AccountingBean implements Accounting {
 
-    private static final String ACCOUNTING_LIST_NAME = "dssAccountingList";
+	private static final String ACCOUNTING_LIST_NAME = "dssAccountingList";
 
-    @Logger
-    private Log log;
+	@Logger
+	private Log log;
 
-    @EJB
-    private AccountingService accountingService;
+	@EJB
+	private AccountingService accountingService;
 
+	@SuppressWarnings("unused")
+	@DataModel(ACCOUNTING_LIST_NAME)
+	private List<AccountingEntity> accountingList;
 
-    @SuppressWarnings("unused")
-    @DataModel(ACCOUNTING_LIST_NAME)
-    private List<AccountingEntity> accountingList;
+	@Override
+	@PostConstruct
+	public void postConstruct() {
+	}
 
-    @Override
-    @PostConstruct
-    public void postConstruct() {
-    }
+	@Override
+	@Remove
+	@Destroy
+	public void destroy() {
+	}
 
-    @Override
-    @Remove
-    @Destroy
-    public void destroy() {
-    }
+	@Override
+	@Factory(ACCOUNTING_LIST_NAME)
+	public void accountingListFactory() {
 
-    @Override
-    @Factory(ACCOUNTING_LIST_NAME)
-    public void accountingListFactory() {
+		this.log.debug("accounting list factory");
+		this.accountingList = this.accountingService.listAll();
+	}
 
-        this.log.debug("accounting list factory");
-        this.accountingList = this.accountingService.listAll();
-    }
+	@Override
+	public String reset() {
 
-    @Override
-    public String reset() {
+		this.log.debug("reset");
 
-        this.log.debug("reset");
+		this.accountingService.resetAll();
 
-        this.accountingService.resetAll();
-
-        accountingListFactory();
-        return "success";
-    }
+		accountingListFactory();
+		return "success";
+	}
 }

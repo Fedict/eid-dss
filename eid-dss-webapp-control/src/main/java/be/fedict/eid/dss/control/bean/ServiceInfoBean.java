@@ -44,89 +44,87 @@ import java.util.List;
 @LocalBinding(jndiBinding = "fedict/eid/dss/ServiceInfoBean")
 public class ServiceInfoBean implements ServiceInfo {
 
-    @Logger
-    private Log log;
+	@Logger
+	private Log log;
 
-    @SuppressWarnings("unused")
-    @DataModel
-    private List<String> dssDocumentFormatList;
+	@SuppressWarnings("unused")
+	@DataModel
+	private List<String> dssDocumentFormatList;
 
-    @SuppressWarnings("unused")
-    @DataModel
-    private List<ServiceEndpoint> dssProtocolServices;
+	@DataModel
+	private List<ServiceEndpoint> dssProtocolServices;
 
-    @SuppressWarnings("unused")
-    @DataModel
-    private List<String> dssXmlSchemaNamespaces;
+	@SuppressWarnings("unused")
+	@DataModel
+	private List<String> dssXmlSchemaNamespaces;
 
-    @SuppressWarnings("unused")
-    @DataModel
-    private List<String> dssXmlStyleSheetNamespaces;
+	@SuppressWarnings("unused")
+	@DataModel
+	private List<String> dssXmlStyleSheetNamespaces;
 
-    @EJB
-    private ServicesManager servicesManager;
+	@EJB
+	private ServicesManager servicesManager;
 
-    @EJB
-    private XmlSchemaManager xmlSchemaManager;
+	@EJB
+	private XmlSchemaManager xmlSchemaManager;
 
-    @EJB
-    private XmlStyleSheetManager xmlStyleSheetManager;
+	@EJB
+	private XmlStyleSheetManager xmlStyleSheetManager;
 
-    @EJB
-    private IdentityService identityService;
+	@EJB
+	private IdentityService identityService;
 
-    @Remove
-    @Destroy
-    @Override
-    public void destroy() {
-        this.log.debug("destroy");
-    }
+	@Remove
+	@Destroy
+	@Override
+	public void destroy() {
+		this.log.debug("destroy");
+	}
 
-    @Override
-    @Factory("dssDocumentFormatList")
-    public void initDocumentFormatList() {
-        this.dssDocumentFormatList = this.servicesManager
-                .getSupportedDocumentFormats();
-    }
+	@Override
+	@Factory("dssDocumentFormatList")
+	public void initDocumentFormatList() {
+		this.dssDocumentFormatList = this.servicesManager
+				.getSupportedDocumentFormats();
+	}
 
-    @Override
-    @Factory("dssProtocolServices")
-    public void initProtocolServices() {
+	@Override
+	@Factory("dssProtocolServices")
+	public void initProtocolServices() {
 
-        this.log.debug("init dssProtocolServices");
-        this.dssProtocolServices = new LinkedList<ServiceEndpoint>();
+		this.log.debug("init dssProtocolServices");
+		this.dssProtocolServices = new LinkedList<ServiceEndpoint>();
 
-        for (DigitalSignatureServiceProtocolType protocolService :
-                this.servicesManager.getProtocolServices()) {
-            this.dssProtocolServices.add(
-                    new ServiceEndpoint(protocolService.getName(),
-                            "/eid-dss/protocol" +
-                                    protocolService.getContextPath()));
-        }
-    }
+		for (DigitalSignatureServiceProtocolType protocolService : this.servicesManager
+				.getProtocolServices()) {
+			this.dssProtocolServices.add(new ServiceEndpoint(protocolService
+					.getName(), "/eid-dss/protocol"
+					+ protocolService.getContextPath()));
+		}
+	}
 
-    @Override
-    @Factory("dssXmlSchemaNamespaces")
-    public void initXmlSchemaNamespacesList() {
-        this.dssXmlSchemaNamespaces = this.xmlSchemaManager
-                .getXmlSchemaNamespaces();
-    }
+	@Override
+	@Factory("dssXmlSchemaNamespaces")
+	public void initXmlSchemaNamespacesList() {
+		this.dssXmlSchemaNamespaces = this.xmlSchemaManager
+				.getXmlSchemaNamespaces();
+	}
 
-    @Override
-    @Factory("dssXmlStyleSheetNamespaces")
-    public void initXmlStyleSheetNamespacesList() {
-        this.dssXmlStyleSheetNamespaces = this.xmlStyleSheetManager
-                .getXmlStyleSheetNamespaces();
-    }
+	@Override
+	@Factory("dssXmlStyleSheetNamespaces")
+	public void initXmlStyleSheetNamespacesList() {
+		this.dssXmlStyleSheetNamespaces = this.xmlStyleSheetManager
+				.getXmlStyleSheetNamespaces();
+	}
 
-    @Override
-    @Factory("dssServiceFingerprint")
-    public String getServiceFingerprint() {
+	@Override
+	@Factory("dssServiceFingerprint")
+	public String getServiceFingerprint() {
 
-        String thumbprint = this.identityService.getIdentityFingerprint();
-        if (null == thumbprint) {
-            return "<No identity configured>";
-        }
-        return thumbprint;
-    }
+		String thumbprint = this.identityService.getIdentityFingerprint();
+		if (null == thumbprint) {
+			return "<No identity configured>";
+		}
+		return thumbprint;
+	}
 }

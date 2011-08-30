@@ -53,98 +53,98 @@ import java.util.zip.ZipInputStream;
 
 /**
  * Document Service implementation of OpenOffice formats.
- *
+ * 
  * @author Frank Cornelis
  */
 public class ODFDSSDocumentService implements DSSDocumentService {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private static final Log LOG = LogFactory
-            .getLog(ODFDSSDocumentService.class);
+	private static final Log LOG = LogFactory
+			.getLog(ODFDSSDocumentService.class);
 
-    private DSSDocumentContext documentContext;
+	private DSSDocumentContext documentContext;
 
-    public void init(DSSDocumentContext context, String contentType)
-            throws Exception {
+	public void init(DSSDocumentContext context, String contentType)
+			throws Exception {
 
-        LOG.debug("init");
-        this.documentContext = context;
-    }
+		LOG.debug("init");
+		this.documentContext = context;
+	}
 
-    public void checkIncomingDocument(byte[] document) throws Exception {
+	public void checkIncomingDocument(byte[] document) throws Exception {
 
-        LOG.debug("checkIncomingDocument");
-    }
+		LOG.debug("checkIncomingDocument");
+	}
 
-    public DocumentVisualization visualizeDocument(byte[] document,
-                                                   String language) throws Exception {
+	public DocumentVisualization visualizeDocument(byte[] document,
+			String language) throws Exception {
 
-        LOG.debug("visualizeDocument");
-        return null;
-    }
+		LOG.debug("visualizeDocument");
+		return null;
+	}
 
-    public SignatureServiceEx getSignatureService(
-            InputStream documentInputStream, TimeStampService timeStampService,
-            TimeStampServiceValidator timeStampServiceValidator,
-            RevocationDataService revocationDataService,
-            SignatureFacet signatureFacet, OutputStream documentOutputStream,
-            String role, IdentityDTO identity, byte[] photo, DigestAlgo signatureDigestAlgo)
-            throws Exception {
+	public SignatureServiceEx getSignatureService(
+			InputStream documentInputStream, TimeStampService timeStampService,
+			TimeStampServiceValidator timeStampServiceValidator,
+			RevocationDataService revocationDataService,
+			SignatureFacet signatureFacet, OutputStream documentOutputStream,
+			String role, IdentityDTO identity, byte[] photo,
+			DigestAlgo signatureDigestAlgo) throws Exception {
 
-        LOG.debug("getSignatureService");
-        return new ODFSignatureService(timeStampServiceValidator,
-                revocationDataService, signatureFacet, documentInputStream,
-                documentOutputStream, timeStampService, role, identity, photo,
-                signatureDigestAlgo);
-    }
+		LOG.debug("getSignatureService");
+		return new ODFSignatureService(timeStampServiceValidator,
+				revocationDataService, signatureFacet, documentInputStream,
+				documentOutputStream, timeStampService, role, identity, photo,
+				signatureDigestAlgo);
+	}
 
-    public List<SignatureInfo> verifySignatures(byte[] document)
-            throws Exception {
+	public List<SignatureInfo> verifySignatures(byte[] document)
+			throws Exception {
 
-        List<SignatureInfo> signatureInfos = new LinkedList<SignatureInfo>();
-        ZipInputStream odfZipInputStream = new ZipInputStream(
-                new ByteArrayInputStream(document));
-        ZipEntry zipEntry;
-        while (null != (zipEntry = odfZipInputStream.getNextEntry())) {
-            if (ODFUtil.isSignatureFile(zipEntry)) {
-                Document documentSignatures = ODFUtil
-                        .loadDocument(odfZipInputStream);
-                NodeList signatureNodeList = documentSignatures
-                        .getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
+		List<SignatureInfo> signatureInfos = new LinkedList<SignatureInfo>();
+		ZipInputStream odfZipInputStream = new ZipInputStream(
+				new ByteArrayInputStream(document));
+		ZipEntry zipEntry;
+		while (null != (zipEntry = odfZipInputStream.getNextEntry())) {
+			if (ODFUtil.isSignatureFile(zipEntry)) {
+				Document documentSignatures = ODFUtil
+						.loadDocument(odfZipInputStream);
+				NodeList signatureNodeList = documentSignatures
+						.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
 
-                XAdESValidation xadesValidation = new XAdESValidation(
-                        this.documentContext);
+				XAdESValidation xadesValidation = new XAdESValidation(
+						this.documentContext);
 
-                for (int idx = 0; idx < signatureNodeList.getLength(); idx++) {
-                    Element signatureElement = (Element) signatureNodeList
-                            .item(idx);
-                    KeyInfoKeySelector keySelector = new KeyInfoKeySelector();
-                    DOMValidateContext domValidateContext = new DOMValidateContext(
-                            keySelector, signatureElement);
-                    ODFURIDereferencer dereferencer = new ODFURIDereferencer(
-                            document);
-                    domValidateContext.setURIDereferencer(dereferencer);
+				for (int idx = 0; idx < signatureNodeList.getLength(); idx++) {
+					Element signatureElement = (Element) signatureNodeList
+							.item(idx);
+					KeyInfoKeySelector keySelector = new KeyInfoKeySelector();
+					DOMValidateContext domValidateContext = new DOMValidateContext(
+							keySelector, signatureElement);
+					ODFURIDereferencer dereferencer = new ODFURIDereferencer(
+							document);
+					domValidateContext.setURIDereferencer(dereferencer);
 
-                    XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory
-                            .getInstance();
-                    XMLSignature xmlSignature = xmlSignatureFactory
-                            .unmarshalXMLSignature(domValidateContext);
-                    boolean valid = xmlSignature.validate(domValidateContext);
-                    if (!valid) {
-                        LOG.debug("invalid signature");
-                        continue;
-                    }
-                    X509Certificate signingCertificate = keySelector
-                            .getCertificate();
-                    SignatureInfo signatureInfo = xadesValidation.validate(
-                            documentSignatures, xmlSignature, signatureElement,
-                            signingCertificate);
-                    signatureInfos.add(signatureInfo);
-                }
-                return signatureInfos;
-            }
-        }
-        return signatureInfos;
-    }
+					XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory
+							.getInstance();
+					XMLSignature xmlSignature = xmlSignatureFactory
+							.unmarshalXMLSignature(domValidateContext);
+					boolean valid = xmlSignature.validate(domValidateContext);
+					if (!valid) {
+						LOG.debug("invalid signature");
+						continue;
+					}
+					X509Certificate signingCertificate = keySelector
+							.getCertificate();
+					SignatureInfo signatureInfo = xadesValidation.validate(
+							documentSignatures, xmlSignature, signatureElement,
+							signingCertificate);
+					signatureInfos.add(signatureInfo);
+				}
+				return signatureInfos;
+			}
+		}
+		return signatureInfos;
+	}
 }

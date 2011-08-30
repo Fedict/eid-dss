@@ -37,136 +37,134 @@ import java.util.List;
 @Stateless
 public class IdentityServiceBean implements IdentityService {
 
-    private static final Log LOG = LogFactory.getLog(IdentityServiceBean.class);
+	private static final Log LOG = LogFactory.getLog(IdentityServiceBean.class);
 
-    @EJB
-    private IdentityServiceSingletonBean identityServiceSingletonBean;
+	@EJB
+	private IdentityServiceSingletonBean identityServiceSingletonBean;
 
-    /**
-     * {@inheritDoc}
-     */
-    public void reloadIdentity() throws KeyStoreLoadException {
+	/**
+	 * {@inheritDoc}
+	 */
+	public void reloadIdentity() throws KeyStoreLoadException {
 
-        this.identityServiceSingletonBean.reloadIdentity();
-    }
+		this.identityServiceSingletonBean.reloadIdentity();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void setActiveIdentity(String name) throws KeyStoreLoadException {
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setActiveIdentity(String name) throws KeyStoreLoadException {
 
-        this.identityServiceSingletonBean.setActiveIdentity(name);
-    }
+		this.identityServiceSingletonBean.setActiveIdentity(name);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean isIdentityConfigured() {
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean isIdentityConfigured() {
 
-        return this.identityServiceSingletonBean.isIdentityConfigured();
-    }
+		return this.identityServiceSingletonBean.isIdentityConfigured();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<String> getIdentities() {
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<String> getIdentities() {
 
-        return this.identityServiceSingletonBean.getIdentities();
-    }
+		return this.identityServiceSingletonBean.getIdentities();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public PrivateKeyEntry findIdentity() {
-        return this.identityServiceSingletonBean.findIdentity();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public PrivateKeyEntry findIdentity() {
+		return this.identityServiceSingletonBean.findIdentity();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public PrivateKeyEntry setIdentity(DSSIdentityConfig dssIdentityConfig)
-            throws KeyStoreLoadException {
+	/**
+	 * {@inheritDoc}
+	 */
+	public PrivateKeyEntry setIdentity(DSSIdentityConfig dssIdentityConfig)
+			throws KeyStoreLoadException {
 
-        return this.identityServiceSingletonBean
-                .setIdentity(dssIdentityConfig);
-    }
+		return this.identityServiceSingletonBean.setIdentity(dssIdentityConfig);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public PrivateKeyEntry loadIdentity(DSSIdentityConfig dssIdentityConfig)
-            throws KeyStoreLoadException {
+	/**
+	 * {@inheritDoc}
+	 */
+	public PrivateKeyEntry loadIdentity(DSSIdentityConfig dssIdentityConfig)
+			throws KeyStoreLoadException {
 
-        return this.identityServiceSingletonBean
-                .loadIdentity(dssIdentityConfig);
-    }
+		return this.identityServiceSingletonBean
+				.loadIdentity(dssIdentityConfig);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public DSSIdentityConfig findIdentityConfig() {
+	/**
+	 * {@inheritDoc}
+	 */
+	public DSSIdentityConfig findIdentityConfig() {
 
-        return this.identityServiceSingletonBean.findIdentityConfig();
-    }
+		return this.identityServiceSingletonBean.findIdentityConfig();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public DSSIdentityConfig findIdentityConfig(String name) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public DSSIdentityConfig findIdentityConfig(String name) {
 
-        return this.identityServiceSingletonBean.findIdentityConfig(name);
-    }
+		return this.identityServiceSingletonBean.findIdentityConfig(name);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void removeIdentityConfig(String name) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public void removeIdentityConfig(String name) {
 
-        this.identityServiceSingletonBean.removeIdentityConfig(name);
-    }
+		this.identityServiceSingletonBean.removeIdentityConfig(name);
+	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getIdentityFingerprint() {
 
-    /**
-     * {@inheritDoc}
-     */
-    public String getIdentityFingerprint() {
+		PrivateKeyEntry identity = findIdentity();
+		if (null == identity) {
+			return null;
+		}
+		X509Certificate certificate = (X509Certificate) identity
+				.getCertificate();
+		if (null == certificate) {
+			return null;
+		}
+		String fingerprint;
+		try {
+			fingerprint = DigestUtils.shaHex(certificate.getEncoded());
+		} catch (CertificateEncodingException e) {
+			LOG.error("cert encoding error: " + e.getMessage(), e);
+			return null;
+		}
+		return fingerprint;
+	}
 
-        PrivateKeyEntry identity = findIdentity();
-        if (null == identity) {
-            return null;
-        }
-        X509Certificate certificate = (X509Certificate) identity
-                .getCertificate();
-        if (null == certificate) {
-            return null;
-        }
-        String fingerprint;
-        try {
-            fingerprint = DigestUtils.shaHex(certificate.getEncoded());
-        } catch (CertificateEncodingException e) {
-            LOG.error("cert encoding error: " + e.getMessage(), e);
-            return null;
-        }
-        return fingerprint;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<X509Certificate> getIdentityCertificateChain() {
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<X509Certificate> getIdentityCertificateChain() {
-
-        PrivateKeyEntry identity = findIdentity();
-        List<X509Certificate> identityCertificateChain = new LinkedList<X509Certificate>();
-        if (null == identity) {
-            return identityCertificateChain;
-        }
-        Certificate[] certificateChain = identity.getCertificateChain();
-        if (null == certificateChain) {
-            return identityCertificateChain;
-        }
-        for (Certificate certificate : certificateChain) {
-            identityCertificateChain.add((X509Certificate) certificate);
-        }
-        return identityCertificateChain;
-    }
+		PrivateKeyEntry identity = findIdentity();
+		List<X509Certificate> identityCertificateChain = new LinkedList<X509Certificate>();
+		if (null == identity) {
+			return identityCertificateChain;
+		}
+		Certificate[] certificateChain = identity.getCertificateChain();
+		if (null == certificateChain) {
+			return identityCertificateChain;
+		}
+		for (Certificate certificate : certificateChain) {
+			identityCertificateChain.add((X509Certificate) certificate);
+		}
+		return identityCertificateChain;
+	}
 }

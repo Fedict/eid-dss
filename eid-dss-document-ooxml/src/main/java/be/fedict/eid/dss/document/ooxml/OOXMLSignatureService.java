@@ -43,75 +43,73 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 
 public class OOXMLSignatureService extends AbstractOOXMLSignatureService
-        implements SignatureServiceEx {
+		implements SignatureServiceEx {
 
-    private final TemporaryDataStorage temporaryDataStorage;
+	private final TemporaryDataStorage temporaryDataStorage;
 
-    private final OutputStream documentOutputStream;
+	private final OutputStream documentOutputStream;
 
-    private final File tmpFile;
+	private final File tmpFile;
 
-    public OOXMLSignatureService(InputStream documentInputStream,
-                                 OutputStream documentOutputStream,
-                                 SignatureFacet signatureFacet,
-                                 String role, IdentityDTO identity, byte[] photo,
-                                 RevocationDataService revocationDataService,
-                                 TimeStampService timeStampService,
-                                 DigestAlgo signatureDigestAlgo)
-            throws IOException {
+	public OOXMLSignatureService(InputStream documentInputStream,
+			OutputStream documentOutputStream, SignatureFacet signatureFacet,
+			String role, IdentityDTO identity, byte[] photo,
+			RevocationDataService revocationDataService,
+			TimeStampService timeStampService, DigestAlgo signatureDigestAlgo)
+			throws IOException {
 
-        super(signatureDigestAlgo);
-        this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
-        this.documentOutputStream = documentOutputStream;
-        this.tmpFile = File.createTempFile("eid-dss-", ".ooxml");
-        FileOutputStream fileOutputStream;
-        fileOutputStream = new FileOutputStream(this.tmpFile);
-        IOUtils.copy(documentInputStream, fileOutputStream);
-        addSignatureFacet(signatureFacet);
-        addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
-                revocationDataService, getSignatureDigestAlgorithm()));
+		super(signatureDigestAlgo);
+		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
+		this.documentOutputStream = documentOutputStream;
+		this.tmpFile = File.createTempFile("eid-dss-", ".ooxml");
+		FileOutputStream fileOutputStream;
+		fileOutputStream = new FileOutputStream(this.tmpFile);
+		IOUtils.copy(documentInputStream, fileOutputStream);
+		addSignatureFacet(signatureFacet);
+		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
+				revocationDataService, getSignatureDigestAlgorithm()));
 
-        XAdESSignatureFacet xadesSignatureFacet = super
-                .getXAdESSignatureFacet();
-        xadesSignatureFacet.setRole(role);
+		XAdESSignatureFacet xadesSignatureFacet = super
+				.getXAdESSignatureFacet();
+		xadesSignatureFacet.setRole(role);
 
-        if (null != identity) {
-            IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
-                    identity, photo, getSignatureDigestAlgorithm());
-            addSignatureFacet(identitySignatureFacet);
-        }
-    }
+		if (null != identity) {
+			IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
+					identity, photo, getSignatureDigestAlgorithm());
+			addSignatureFacet(identitySignatureFacet);
+		}
+	}
 
-    @Override
-    protected URL getOfficeOpenXMLDocumentURL() {
-        try {
-            return this.tmpFile.toURI().toURL();
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("URL error: " + e.getMessage(), e);
-        }
-    }
+	@Override
+	protected URL getOfficeOpenXMLDocumentURL() {
+		try {
+			return this.tmpFile.toURI().toURL();
+		} catch (MalformedURLException e) {
+			throw new RuntimeException("URL error: " + e.getMessage(), e);
+		}
+	}
 
-    @Override
-    protected OutputStream getSignedOfficeOpenXMLDocumentOutputStream() {
-        return new CloseActionOutputStream(this.documentOutputStream,
-                new CloseAction());
-    }
+	@Override
+	protected OutputStream getSignedOfficeOpenXMLDocumentOutputStream() {
+		return new CloseActionOutputStream(this.documentOutputStream,
+				new CloseAction());
+	}
 
-    private class CloseAction implements Runnable {
-        public void run() {
-            OOXMLSignatureService.this.tmpFile.delete();
-        }
-    }
+	private class CloseAction implements Runnable {
+		public void run() {
+			OOXMLSignatureService.this.tmpFile.delete();
+		}
+	}
 
-    @Override
-    protected TemporaryDataStorage getTemporaryDataStorage() {
-        return this.temporaryDataStorage;
-    }
+	@Override
+	protected TemporaryDataStorage getTemporaryDataStorage() {
+		return this.temporaryDataStorage;
+	}
 
-    public DigestInfo preSign(List<DigestInfo> digestInfos,
-                              List<X509Certificate> signingCertificateChain,
-                              IdentityDTO identity, AddressDTO address, byte[] photo)
-            throws NoSuchAlgorithmException {
-        return super.preSign(digestInfos, signingCertificateChain);
-    }
+	public DigestInfo preSign(List<DigestInfo> digestInfos,
+			List<X509Certificate> signingCertificateChain,
+			IdentityDTO identity, AddressDTO address, byte[] photo)
+			throws NoSuchAlgorithmException {
+		return super.preSign(digestInfos, signingCertificateChain);
+	}
 }

@@ -33,58 +33,61 @@ import java.util.List;
 
 public class BrowserInfoServlet extends HttpServlet {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private static final Log LOG = LogFactory
-            .getLog(BrowserInfoServlet.class);
+	private static final Log LOG = LogFactory.getLog(BrowserInfoServlet.class);
 
-    private static final String PLUGINS_SESSION_ATTRIBUTE =
-            BrowserInfoServlet.class.getName() + ".Plugins";
-    private static final String MIMETYPES_SESSION_ATTRIBUTE =
-            BrowserInfoServlet.class.getName() + ".MimeTypes";
+	private static final String PLUGINS_SESSION_ATTRIBUTE = BrowserInfoServlet.class
+			.getName() + ".Plugins";
+	private static final String MIMETYPES_SESSION_ATTRIBUTE = BrowserInfoServlet.class
+			.getName() + ".MimeTypes";
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+	@Override
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 
-        LOG.debug("doPost");
+		LOG.debug("doPost");
 
-        // parse plugins
-        String pluginList = request.getParameter("plugins");
-        if (null != pluginList && !pluginList.isEmpty()) {
-            LOG.debug("pluginList: " + pluginList);
-            String[] pluginarray = pluginList.split("\\|");
-            List<String> plugins = Arrays.asList(pluginarray);
-            request.getSession().setAttribute(PLUGINS_SESSION_ATTRIBUTE, plugins);
-        }
+		// parse plugins
+		String pluginList = request.getParameter("plugins");
+		if (null != pluginList && !pluginList.isEmpty()) {
+			LOG.debug("pluginList: " + pluginList);
+			String[] pluginarray = pluginList.split("\\|");
+			List<String> plugins = Arrays.asList(pluginarray);
+			request.getSession().setAttribute(PLUGINS_SESSION_ATTRIBUTE,
+					plugins);
+		}
 
-        // parse mime types
-        String mimeTypesList = request.getParameter("mimeTypes");
-        if (null != mimeTypesList && !mimeTypesList.isEmpty()) {
-            LOG.debug("mimeTypesList: " + mimeTypesList);
-            List<MimeType> mimeTypes = new LinkedList<MimeType>();
-            for (String mimeType : mimeTypesList.split("\\|")) {
-                String[] mimeTypeInfo = mimeType.split(",");
-                if (mimeTypeInfo.length != 2) {
-                    LOG.error("Unable to parse mimetype: " + mimeType);
-                    continue;
-                }
-                mimeTypes.add(new MimeType(mimeTypeInfo[0], mimeTypeInfo[1]));
-            }
-            request.getSession().setAttribute(MIMETYPES_SESSION_ATTRIBUTE, mimeTypes);
-        }
+		// parse mime types
+		String mimeTypesList = request.getParameter("mimeTypes");
+		if (null != mimeTypesList && !mimeTypesList.isEmpty()) {
+			LOG.debug("mimeTypesList: " + mimeTypesList);
+			List<MimeType> mimeTypes = new LinkedList<MimeType>();
+			for (String mimeType : mimeTypesList.split("\\|")) {
+				String[] mimeTypeInfo = mimeType.split(",");
+				if (mimeTypeInfo.length != 2) {
+					LOG.error("Unable to parse mimetype: " + mimeType);
+					continue;
+				}
+				mimeTypes.add(new MimeType(mimeTypeInfo[0], mimeTypeInfo[1]));
+			}
+			request.getSession().setAttribute(MIMETYPES_SESSION_ATTRIBUTE,
+					mimeTypes);
+		}
 
-        response.sendRedirect("./view.seam");
-    }
+		response.sendRedirect("./view.seam");
+	}
 
-    @SuppressWarnings("unchecked")
-    public static List<String> getPlugins(HttpSession httpSession) {
-        return (List<String>) httpSession.getAttribute(PLUGINS_SESSION_ATTRIBUTE);
-    }
+	@SuppressWarnings("unchecked")
+	public static List<String> getPlugins(HttpSession httpSession) {
+		return (List<String>) httpSession
+				.getAttribute(PLUGINS_SESSION_ATTRIBUTE);
+	}
 
-    @SuppressWarnings("unchecked")
-    public static List<MimeType> getMimeTypes(HttpSession httpSession) {
-        return (List<MimeType>) httpSession.getAttribute(MIMETYPES_SESSION_ATTRIBUTE);
-    }
+	@SuppressWarnings("unchecked")
+	public static List<MimeType> getMimeTypes(HttpSession httpSession) {
+		return (List<MimeType>) httpSession
+				.getAttribute(MIMETYPES_SESSION_ATTRIBUTE);
+	}
 
 }

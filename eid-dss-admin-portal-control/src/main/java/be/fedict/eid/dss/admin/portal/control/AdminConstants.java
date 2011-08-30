@@ -22,7 +22,7 @@ import be.fedict.eid.dss.model.Constants;
 
 public abstract class AdminConstants {
 
-    public static final String ADMIN_JNDI_CONTEXT =
-            Constants.DSS_JNDI_CONTEXT + "admin/webapp/";
+	public static final String ADMIN_JNDI_CONTEXT = Constants.DSS_JNDI_CONTEXT
+			+ "admin/webapp/";
 
 }

@@ -33,28 +33,29 @@ import javax.servlet.http.HttpSession;
 
 @Stateless
 @Local(IdentityService.class)
-@LocalBinding(jndiBinding = Constants.DSS_JNDI_CONTEXT + "AppletIdentityServiceBean")
+@LocalBinding(jndiBinding = Constants.DSS_JNDI_CONTEXT
+		+ "AppletIdentityServiceBean")
 public class AppletIdentityServiceBean implements IdentityService {
 
-    private static final Log LOG = LogFactory
-            .getLog(AppletIdentityServiceBean.class);
+	private static final Log LOG = LogFactory
+			.getLog(AppletIdentityServiceBean.class);
 
-    public IdentityRequest getIdentityRequest() {
+	public IdentityRequest getIdentityRequest() {
 
-        HttpSession httpSession = HttpSessionTemporaryDataStorage
-                .getHttpSession();
-        DocumentRepository documentRepository = new DocumentRepository(
-                httpSession);
-        boolean includeIdentity;
-        boolean includePhoto;
-        if (documentRepository.getIncludeIdentity()) {
-            includeIdentity = true;
-            includePhoto = true;
-        } else {
-            includeIdentity = false;
-            includePhoto = false;
-        }
-        LOG.debug("include identity: " + includeIdentity);
-        return new IdentityRequest(includeIdentity, false, includePhoto, true);
-    }
+		HttpSession httpSession = HttpSessionTemporaryDataStorage
+				.getHttpSession();
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+		boolean includeIdentity;
+		boolean includePhoto;
+		if (documentRepository.getIncludeIdentity()) {
+			includeIdentity = true;
+			includePhoto = true;
+		} else {
+			includeIdentity = false;
+			includePhoto = false;
+		}
+		LOG.debug("include identity: " + includeIdentity);
+		return new IdentityRequest(includeIdentity, false, includePhoto, true);
+	}
 }

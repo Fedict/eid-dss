@@ -35,57 +35,58 @@ import java.util.List;
 
 /**
  * Revocation data service implementation using the eID Trust Service.
- *
+ * 
  * @author Frank Cornelis
  */
 public class TrustServiceRevocationDataService implements RevocationDataService {
 
-    private static final Log LOG = LogFactory
-            .getLog(TrustServiceRevocationDataService.class);
+	private static final Log LOG = LogFactory
+			.getLog(TrustServiceRevocationDataService.class);
 
-    private final XKMS2Client xkms2Client;
+	private final XKMS2Client xkms2Client;
 
-    private final String trustDomain;
+	private final String trustDomain;
 
-    public TrustServiceRevocationDataService(XKMS2Client xkms2Client, String trustDomain) {
-        this.xkms2Client = xkms2Client;
-        this.trustDomain = trustDomain;
-    }
+	public TrustServiceRevocationDataService(XKMS2Client xkms2Client,
+			String trustDomain) {
+		this.xkms2Client = xkms2Client;
+		this.trustDomain = trustDomain;
+	}
 
-    public RevocationData getRevocationData(
-            List<X509Certificate> certificateChain) {
-        LOG.debug("retrieving revocation data for: "
-                + certificateChain.get(0).getSubjectX500Principal());
-        try {
-            this.xkms2Client.validate(this.trustDomain, certificateChain, true);
-        } catch (ValidationFailedException e) {
-            throw new TrustCertificateSecurityException();
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "error validating signing certificate chain: "
-                            + e.getMessage(), e);
-        }
-        RevocationValuesType revocationValues = this.xkms2Client
-                .getRevocationValues();
-        RevocationData revocationData = new RevocationData();
-        CRLValuesType crlValues = revocationValues.getCRLValues();
-        if (null != crlValues) {
-            List<EncapsulatedPKIDataType> encapsulatedCRLValueList = crlValues
-                    .getEncapsulatedCRLValue();
-            for (EncapsulatedPKIDataType encapsulatedCRLValue : encapsulatedCRLValueList) {
-                byte[] crl = encapsulatedCRLValue.getValue();
-                revocationData.addCRL(crl);
-            }
-        }
-        OCSPValuesType ocspValues = revocationValues.getOCSPValues();
-        if (null != ocspValues) {
-            List<EncapsulatedPKIDataType> encapsulatedOCSPValueList = ocspValues
-                    .getEncapsulatedOCSPValue();
-            for (EncapsulatedPKIDataType encapsulatedOCSPValue : encapsulatedOCSPValueList) {
-                byte[] ocsp = encapsulatedOCSPValue.getValue();
-                revocationData.addOCSP(ocsp);
-            }
-        }
-        return revocationData;
-    }
+	public RevocationData getRevocationData(
+			List<X509Certificate> certificateChain) {
+		LOG.debug("retrieving revocation data for: "
+				+ certificateChain.get(0).getSubjectX500Principal());
+		try {
+			this.xkms2Client.validate(this.trustDomain, certificateChain, true);
+		} catch (ValidationFailedException e) {
+			throw new TrustCertificateSecurityException();
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"error validating signing certificate chain: "
+							+ e.getMessage(), e);
+		}
+		RevocationValuesType revocationValues = this.xkms2Client
+				.getRevocationValues();
+		RevocationData revocationData = new RevocationData();
+		CRLValuesType crlValues = revocationValues.getCRLValues();
+		if (null != crlValues) {
+			List<EncapsulatedPKIDataType> encapsulatedCRLValueList = crlValues
+					.getEncapsulatedCRLValue();
+			for (EncapsulatedPKIDataType encapsulatedCRLValue : encapsulatedCRLValueList) {
+				byte[] crl = encapsulatedCRLValue.getValue();
+				revocationData.addCRL(crl);
+			}
+		}
+		OCSPValuesType ocspValues = revocationValues.getOCSPValues();
+		if (null != ocspValues) {
+			List<EncapsulatedPKIDataType> encapsulatedOCSPValueList = ocspValues
+					.getEncapsulatedOCSPValue();
+			for (EncapsulatedPKIDataType encapsulatedOCSPValue : encapsulatedOCSPValueList) {
+				byte[] ocsp = encapsulatedOCSPValue.getValue();
+				revocationData.addOCSP(ocsp);
+			}
+		}
+		return revocationData;
+	}
 }

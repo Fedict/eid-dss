@@ -20,19 +20,19 @@ package be.fedict.eid.dss.webapp;
 
 public class MimeType {
 
-    private final String type;
-    private final String plugin;
+	private final String type;
+	private final String plugin;
 
-    public MimeType(String type, String plugin) {
-        this.type = type;
-        this.plugin = plugin;
-    }
+	public MimeType(String type, String plugin) {
+		this.type = type;
+		this.plugin = plugin;
+	}
 
-    public String getType() {
-        return type;
-    }
+	public String getType() {
+		return type;
+	}
 
-    public String getPlugin() {
-        return plugin;
-    }
+	public String getPlugin() {
+		return plugin;
+	}
 }

@@ -18,8 +18,6 @@
 
 package test.be.fedict.eid.dss;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import be.fedict.trust.client.XKMS2Client;

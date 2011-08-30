@@ -8,30 +8,30 @@ import java.util.Map;
 
 class TemporaryTestDataStorage implements TemporaryDataStorage {
 
-    private ByteArrayOutputStream outputStream;
+	private ByteArrayOutputStream outputStream;
 
-    private Map<String, Serializable> attributes;
+	private Map<String, Serializable> attributes;
 
-    public TemporaryTestDataStorage() {
-        this.outputStream = new ByteArrayOutputStream();
-        this.attributes = new HashMap<String, Serializable>();
-    }
+	public TemporaryTestDataStorage() {
+		this.outputStream = new ByteArrayOutputStream();
+		this.attributes = new HashMap<String, Serializable>();
+	}
 
-    public InputStream getTempInputStream() {
-        byte[] data = this.outputStream.toByteArray();
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
-        return inputStream;
-    }
+	public InputStream getTempInputStream() {
+		byte[] data = this.outputStream.toByteArray();
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
+		return inputStream;
+	}
 
-    public OutputStream getTempOutputStream() {
-        return this.outputStream;
-    }
+	public OutputStream getTempOutputStream() {
+		return this.outputStream;
+	}
 
-    public Serializable getAttribute(String attributeName) {
-        return this.attributes.get(attributeName);
-    }
+	public Serializable getAttribute(String attributeName) {
+		return this.attributes.get(attributeName);
+	}
 
-    public void setAttribute(String attributeName, Serializable attributeValue) {
-        this.attributes.put(attributeName, attributeValue);
-    }
+	public void setAttribute(String attributeName, Serializable attributeValue) {
+		this.attributes.put(attributeName, attributeValue);
+	}
 }

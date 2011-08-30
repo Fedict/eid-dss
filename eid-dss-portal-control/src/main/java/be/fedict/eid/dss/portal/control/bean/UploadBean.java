@@ -110,11 +110,11 @@ public class UploadBean implements Upload {
 
 		// ZIP containers.
 		supportedFileExtensions.put("zip", "application/zip");
-		
+
 		// Associated Signature Container (ETSI TS 102 918 v1.1.1)
 		supportedFileExtensions.put("asics", "application/vnd.etsi.asic-s+zip");
 		supportedFileExtensions.put("scs", "application/vnd.etsi.asic-s+zip");
-		
+
 		supportedFileExtensions.put("asice", "application/vnd.etsi.asic-e+zip");
 		supportedFileExtensions.put("sce", "application/vnd.etsi.asic-e+zip");
 	}

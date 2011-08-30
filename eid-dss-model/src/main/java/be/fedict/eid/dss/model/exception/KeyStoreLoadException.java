@@ -23,21 +23,21 @@ import javax.ejb.ApplicationException;
 @ApplicationException(rollback = true)
 public class KeyStoreLoadException extends Exception {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public KeyStoreLoadException(String message) {
+	public KeyStoreLoadException(String message) {
 
-        super(message);
-    }
+		super(message);
+	}
 
-    public KeyStoreLoadException(Throwable cause) {
+	public KeyStoreLoadException(Throwable cause) {
 
-        super(cause);
-    }
+		super(cause);
+	}
 
-    public KeyStoreLoadException(String message, Throwable cause) {
+	public KeyStoreLoadException(String message, Throwable cause) {
 
-        super(message, cause);
-    }
+		super(message, cause);
+	}
 
 }

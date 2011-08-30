@@ -18,7 +18,6 @@
 
 package be.fedict.eid.dss.model;
 
-
 import be.fedict.eid.dss.entity.DocumentEntity;
 import be.fedict.eid.dss.model.exception.DocumentNotFoundException;
 import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
@@ -30,83 +29,96 @@ import javax.ejb.Timer;
 /**
  * Interface for the document service. The document service maintains the
  * temporaryily stored DSS Documents
- *
+ * 
  * @author Wim Vandenhaute
  */
 @Local
 public interface DocumentService {
 
-    /**
-     * Store specified document.
-     *
-     * @param documentId  id of the stored document entry
-     * @param data        document data
-     * @param contentType content type of the document
-     * @return the expiration date of the stored document
-     */
-    DateTime store(String documentId, byte[] data, String contentType);
+	/**
+	 * Store specified document.
+	 * 
+	 * @param documentId
+	 *            id of the stored document entry
+	 * @param data
+	 *            document data
+	 * @param contentType
+	 *            content type of the document
+	 * @return the expiration date of the stored document
+	 */
+	DateTime store(String documentId, byte[] data, String contentType);
 
-    /**
-     * @param documentId id of the document to find.
-     * @return the document with specified document ID. If not existing or expired returns <code>null</code>
-     */
-    DocumentEntity find(String documentId);
+	/**
+	 * @param documentId
+	 *            id of the document to find.
+	 * @return the document with specified document ID. If not existing or
+	 *         expired returns <code>null</code>
+	 */
+	DocumentEntity find(String documentId);
 
-    /**
-     * Finds and removes the document from storae if found.
-     *
-     * @param documentId id of the document to find.
-     * @return the document with specified document ID. If not existing or expired returns <code>null</code>
-     */
-    DocumentEntity retrieve(String documentId);
+	/**
+	 * Finds and removes the document from storae if found.
+	 * 
+	 * @param documentId
+	 *            id of the document to find.
+	 * @return the document with specified document ID. If not existing or
+	 *         expired returns <code>null</code>
+	 */
+	DocumentEntity retrieve(String documentId);
 
-    /**
-     * Update document entity with specified ID its data
-     *
-     * @param documentId if of document to update
-     * @param data       data of document
-     * @return the updated document entity
-     * @throws DocumentNotFoundException the document was not found.
-     */
-    DocumentEntity update(String documentId, byte[] data)
-            throws DocumentNotFoundException;
+	/**
+	 * Update document entity with specified ID its data
+	 * 
+	 * @param documentId
+	 *            if of document to update
+	 * @param data
+	 *            data of document
+	 * @return the updated document entity
+	 * @throws DocumentNotFoundException
+	 *             the document was not found.
+	 */
+	DocumentEntity update(String documentId, byte[] data)
+			throws DocumentNotFoundException;
 
-    /**
-     * Remove specified document if present.
-     *
-     * @param documentId the ID of the document to remove
-     */
-    void remove(String documentId);
+	/**
+	 * Remove specified document if present.
+	 * 
+	 * @param documentId
+	 *            the ID of the document to remove
+	 */
+	void remove(String documentId);
 
-    /**
-     * Timer has timeout, fire cleanup.
-     *
-     * @param timer the timer that has timed out.
-     */
-    void timeOut(Timer timer);
+	/**
+	 * Timer has timeout, fire cleanup.
+	 * 
+	 * @param timer
+	 *            the timer that has timed out.
+	 */
+	void timeOut(Timer timer);
 
-    /**
-     * Start the timer for the cleanup "task" of the document service.
-     *
-     * @throws InvalidCronExpressionException Invalid cron schedule,
-     *                                        timer was not started.
-     */
-    void startTimer() throws InvalidCronExpressionException;
+	/**
+	 * Start the timer for the cleanup "task" of the document service.
+	 * 
+	 * @throws InvalidCronExpressionException
+	 *             Invalid cron schedule, timer was not started.
+	 */
+	void startTimer() throws InvalidCronExpressionException;
 
-    /**
-     * Start the timer for the cleanup "task" of the document service.
-     *
-     * @param cronSchedule cron schedule
-     * @throws InvalidCronExpressionException Invalid cron schedule,
-     *                                        timer was not started.
-     */
-    void startTimer(String cronSchedule) throws InvalidCronExpressionException;
+	/**
+	 * Start the timer for the cleanup "task" of the document service.
+	 * 
+	 * @param cronSchedule
+	 *            cron schedule
+	 * @throws InvalidCronExpressionException
+	 *             Invalid cron schedule, timer was not started.
+	 */
+	void startTimer(String cronSchedule) throws InvalidCronExpressionException;
 
-    /**
-     * Cleanup all expired temporary documents.
-     *
-     * @return the # of removals.
-     */
-    int cleanup();
+	/**
+	 * Cleanup all expired temporary documents.
+	 * 
+	 * @return the # of removals.
+	 */
+	int cleanup();
 
 }

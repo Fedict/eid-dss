@@ -25,39 +25,39 @@ import java.io.OutputStream;
 @Local
 public interface View {
 
-    public static final String LANGUAGE_SESSION_ATTRIBUTE = "Language";
-    public static final String RP_SESSION_ATTRIBUTE = "RelyingParty";
+	public static final String LANGUAGE_SESSION_ATTRIBUTE = "Language";
+	public static final String RP_SESSION_ATTRIBUTE = "RelyingParty";
 
-    /*
-      * Actions.
-      */
-    String cancel();
+	/*
+	 * Actions.
+	 */
+	String cancel();
 
-    String sign();
+	String sign();
 
-    void initLanguage();
+	void initLanguage();
 
-    /*
-      * Accessors
-      */
-    String getRole();
+	/*
+	 * Accessors
+	 */
+	String getRole();
 
-    void setRole(String role);
+	void setRole(String role);
 
-    boolean getIncludeIdentity();
+	boolean getIncludeIdentity();
 
-    void setIncludeIdentity(boolean includeIdentity);
+	void setIncludeIdentity(boolean includeIdentity);
 
-    String getRp();
+	String getRp();
 
-    boolean isRpLogo();
+	boolean isRpLogo();
 
-    void paint(OutputStream stream, Object object) throws IOException;
+	void paint(OutputStream stream, Object object) throws IOException;
 
-    long getTimeStamp();
+	long getTimeStamp();
 
-    /*
-    * Lifecycle.
-    */
-    void destroy();
+	/*
+	 * Lifecycle.
+	 */
+	void destroy();
 }

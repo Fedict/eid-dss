@@ -30,90 +30,90 @@ import java.util.List;
 
 /**
  * Implementation of DSS document context.
- *
+ * 
  * @author Frank Cornelis
  */
 public class ModelDSSDocumentContext implements DSSDocumentContext {
 
-        private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-        private final XmlSchemaManager xmlSchemaManager;
+	private final XmlSchemaManager xmlSchemaManager;
 
-        private final XmlStyleSheetManager xmlStyleSheetManager;
+	private final XmlStyleSheetManager xmlStyleSheetManager;
 
-        private final TrustValidationService trustValidationService;
+	private final TrustValidationService trustValidationService;
 
-        private final Configuration configuration;
+	private final Configuration configuration;
 
-        /**
-         * {@inheritDoc}
-         */
-        public ModelDSSDocumentContext(XmlSchemaManager xmlSchemaManager,
-                                       XmlStyleSheetManager xmlStyleSheetManager,
-                                       TrustValidationService trustValidationService,
-                                       Configuration configuration) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public ModelDSSDocumentContext(XmlSchemaManager xmlSchemaManager,
+			XmlStyleSheetManager xmlStyleSheetManager,
+			TrustValidationService trustValidationService,
+			Configuration configuration) {
 
-                this.xmlSchemaManager = xmlSchemaManager;
-                this.xmlStyleSheetManager = xmlStyleSheetManager;
-                this.trustValidationService = trustValidationService;
-                this.configuration = configuration;
-        }
+		this.xmlSchemaManager = xmlSchemaManager;
+		this.xmlStyleSheetManager = xmlStyleSheetManager;
+		this.trustValidationService = trustValidationService;
+		this.configuration = configuration;
+	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public byte[] getXmlSchema(String namespace) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public byte[] getXmlSchema(String namespace) {
 
-                return this.xmlSchemaManager.getXmlSchema(namespace);
-        }
+		return this.xmlSchemaManager.getXmlSchema(namespace);
+	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public byte[] getXmlStyleSheet(String namespace) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public byte[] getXmlStyleSheet(String namespace) {
 
-                return this.xmlStyleSheetManager.getXmlStyleSheet(namespace);
-        }
+		return this.xmlStyleSheetManager.getXmlStyleSheet(namespace);
+	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public void validate(List<X509Certificate> certificateChain,
-                             Date validationDate, List<OCSPResp> ocspResponses,
-                             List<X509CRL> crls) throws Exception {
+	/**
+	 * {@inheritDoc}
+	 */
+	public void validate(List<X509Certificate> certificateChain,
+			Date validationDate, List<OCSPResp> ocspResponses,
+			List<X509CRL> crls) throws Exception {
 
-                this.trustValidationService.validate(certificateChain, validationDate,
-                        ocspResponses, crls);
-        }
+		this.trustValidationService.validate(certificateChain, validationDate,
+				ocspResponses, crls);
+	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public void validate(TimeStampToken timeStampToken) throws Exception {
+	/**
+	 * {@inheritDoc}
+	 */
+	public void validate(TimeStampToken timeStampToken) throws Exception {
 
-                this.trustValidationService.validate(timeStampToken);
-        }
+		this.trustValidationService.validate(timeStampToken);
+	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public Long getTimestampMaxOffset() {
+	/**
+	 * {@inheritDoc}
+	 */
+	public Long getTimestampMaxOffset() {
 
-                Long timestampMaxOffset = this.configuration.getValue(
-                        ConfigProperty.TIMESTAMP_MAX_OFFSET, Long.class);
-                if (null != timestampMaxOffset) {
-                        return timestampMaxOffset;
-                } else {
-                        return (Long) ConfigProperty.TIMESTAMP_MAX_OFFSET.getDefaultValue();
-                }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-		public void validate(TimeStampToken timeStampToken,
-				List<OCSPResp> ocspResponses, List<X509CRL> crls)
-				throws Exception {
-			this.trustValidationService.validate(timeStampToken, ocspResponses, crls);
+		Long timestampMaxOffset = this.configuration.getValue(
+				ConfigProperty.TIMESTAMP_MAX_OFFSET, Long.class);
+		if (null != timestampMaxOffset) {
+			return timestampMaxOffset;
+		} else {
+			return (Long) ConfigProperty.TIMESTAMP_MAX_OFFSET.getDefaultValue();
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void validate(TimeStampToken timeStampToken,
+			List<OCSPResp> ocspResponses, List<X509CRL> crls) throws Exception {
+		this.trustValidationService.validate(timeStampToken, ocspResponses,
+				crls);
+	}
 }

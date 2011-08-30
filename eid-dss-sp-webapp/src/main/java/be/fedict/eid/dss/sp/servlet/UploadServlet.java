@@ -44,117 +44,119 @@ import java.util.zip.ZipOutputStream;
 
 public class UploadServlet extends HttpServlet {
 
-    private static final Log LOG = LogFactory.getLog(UploadServlet.class);
+	private static final long serialVersionUID = 1L;
 
-    public static final String DOCUMENT_SESSION_ATTRIBUTE =
-            UploadServlet.class.getName() + ".Document";
+	private static final Log LOG = LogFactory.getLog(UploadServlet.class);
 
-    private static final String POST_PAGE_INIT_PARAM = "PostPage";
+	public static final String DOCUMENT_SESSION_ATTRIBUTE = UploadServlet.class
+			.getName() + ".Document";
 
-    private String postPage;
+	private static final String POST_PAGE_INIT_PARAM = "PostPage";
 
-    @Override
-    public void init(ServletConfig config) throws ServletException {
+	private String postPage;
 
-        super.init(config);
+	@Override
+	public void init(ServletConfig config) throws ServletException {
 
-        this.postPage = config.getInitParameter(POST_PAGE_INIT_PARAM);
-    }
+		super.init(config);
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+		this.postPage = config.getInitParameter(POST_PAGE_INIT_PARAM);
+	}
 
-        LOG.debug("doPost");
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void doPost(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 
-        String fileName = null;
-        String contentType;
-        byte[] document = null;
+		LOG.debug("doPost");
 
-        FileItemFactory factory = new DiskFileItemFactory();
-        // Create a new file upload handler
-        ServletFileUpload upload = new ServletFileUpload(factory);
-        // Parse the request
-        try {
-            List<FileItem> items = upload.parseRequest(request);
-            if (!items.isEmpty()) {
-                fileName = items.get(0).getName();
-//                contentType = items.get(0).getContentType();
-                document = items.get(0).get();
-            }
-        } catch (FileUploadException e) {
-            throw new ServletException(e);
-        }
+		String fileName = null;
+		String contentType;
+		byte[] document = null;
 
-        String extension = FilenameUtils.getExtension(fileName).toLowerCase();
-        contentType = supportedFileExtensions.get(extension);
-        if (null == contentType) {
-            /*
-             * Unsupported content-type is converted to a ZIP container.
-             */
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-            ZipEntry zipEntry = new ZipEntry(fileName);
-            zipOutputStream.putNextEntry(zipEntry);
-            IOUtils.write(document, zipOutputStream);
-            zipOutputStream.close();
-            fileName = FilenameUtils.getBaseName(fileName) + ".zip";
-            document = outputStream.toByteArray();
-            contentType = "application/zip";
-        }
+		FileItemFactory factory = new DiskFileItemFactory();
+		// Create a new file upload handler
+		ServletFileUpload upload = new ServletFileUpload(factory);
+		// Parse the request
+		try {
+			List<FileItem> items = upload.parseRequest(request);
+			if (!items.isEmpty()) {
+				fileName = items.get(0).getName();
+				// contentType = items.get(0).getContentType();
+				document = items.get(0).get();
+			}
+		} catch (FileUploadException e) {
+			throw new ServletException(e);
+		}
 
-        LOG.debug("File name: " + fileName);
-        LOG.debug("Content Type: " + contentType);
+		String extension = FilenameUtils.getExtension(fileName).toLowerCase();
+		contentType = supportedFileExtensions.get(extension);
+		if (null == contentType) {
+			/*
+			 * Unsupported content-type is converted to a ZIP container.
+			 */
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
+			ZipEntry zipEntry = new ZipEntry(fileName);
+			zipOutputStream.putNextEntry(zipEntry);
+			IOUtils.write(document, zipOutputStream);
+			zipOutputStream.close();
+			fileName = FilenameUtils.getBaseName(fileName) + ".zip";
+			document = outputStream.toByteArray();
+			contentType = "application/zip";
+		}
 
-        String signatureRequest = new String(Base64.encode(document));
+		LOG.debug("File name: " + fileName);
+		LOG.debug("Content Type: " + contentType);
 
-        request.getSession().setAttribute(DOCUMENT_SESSION_ATTRIBUTE, document);
-        request.getSession().setAttribute("SignatureRequest", signatureRequest);
-        request.getSession().setAttribute("ContentType", contentType);
+		String signatureRequest = new String(Base64.encode(document));
 
-        response.sendRedirect(request.getContextPath() + this.postPage);
-    }
+		request.getSession().setAttribute(DOCUMENT_SESSION_ATTRIBUTE, document);
+		request.getSession().setAttribute("SignatureRequest", signatureRequest);
+		request.getSession().setAttribute("ContentType", contentType);
 
-    private static final Map<String, String> supportedFileExtensions;
+		response.sendRedirect(request.getContextPath() + this.postPage);
+	}
 
-    static {
-        supportedFileExtensions = new HashMap<String, String>();
+	private static final Map<String, String> supportedFileExtensions;
 
-        // XML document container.
-        supportedFileExtensions.put("xml", "text/xml");
+	static {
+		supportedFileExtensions = new HashMap<String, String>();
 
-        // Open Document Format
-        supportedFileExtensions.put("odt",
-                "application/vnd.oasis.opendocument.text");
-        supportedFileExtensions.put("ods",
-                "application/vnd.oasis.opendocument.spreadsheet");
-        supportedFileExtensions.put("odp",
-                "application/vnd.oasis.opendocument.presentation");
-        supportedFileExtensions.put("odg",
-                "application/vnd.oasis.opendocument.graphics");
-        supportedFileExtensions.put("odc",
-                "application/vnd.oasis.opendocument.chart");
-        supportedFileExtensions.put("odf",
-                "application/vnd.oasis.opendocument.formula");
-        supportedFileExtensions.put("odi",
-                "application/vnd.oasis.opendocument.image");
+		// XML document container.
+		supportedFileExtensions.put("xml", "text/xml");
 
-        // Office OpenXML.
-        supportedFileExtensions
-                .put("docx",
-                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-        supportedFileExtensions
-                .put("xlsx",
-                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        supportedFileExtensions
-                .put("pptx",
-                        "application/vnd.openxmlformats-officedocument.presentationml.presentation");
-        supportedFileExtensions
-                .put("ppsx",
-                        "application/vnd.openxmlformats-officedocument.presentationml.slideshow");
+		// Open Document Format
+		supportedFileExtensions.put("odt",
+				"application/vnd.oasis.opendocument.text");
+		supportedFileExtensions.put("ods",
+				"application/vnd.oasis.opendocument.spreadsheet");
+		supportedFileExtensions.put("odp",
+				"application/vnd.oasis.opendocument.presentation");
+		supportedFileExtensions.put("odg",
+				"application/vnd.oasis.opendocument.graphics");
+		supportedFileExtensions.put("odc",
+				"application/vnd.oasis.opendocument.chart");
+		supportedFileExtensions.put("odf",
+				"application/vnd.oasis.opendocument.formula");
+		supportedFileExtensions.put("odi",
+				"application/vnd.oasis.opendocument.image");
 
-        // ZIP containers.
-        supportedFileExtensions.put("zip", "application/zip");
-    }
+		// Office OpenXML.
+		supportedFileExtensions
+				.put("docx",
+						"application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+		supportedFileExtensions
+				.put("xlsx",
+						"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		supportedFileExtensions
+				.put("pptx",
+						"application/vnd.openxmlformats-officedocument.presentationml.presentation");
+		supportedFileExtensions
+				.put("ppsx",
+						"application/vnd.openxmlformats-officedocument.presentationml.slideshow");
+
+		// ZIP containers.
+		supportedFileExtensions.put("zip", "application/zip");
+	}
 }

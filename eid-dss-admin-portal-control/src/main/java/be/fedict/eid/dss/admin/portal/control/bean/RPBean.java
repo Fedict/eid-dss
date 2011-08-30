@@ -50,193 +50,192 @@ import java.util.List;
 @LocalBinding(jndiBinding = AdminConstants.ADMIN_JNDI_CONTEXT + "RPBean")
 public class RPBean implements RP {
 
-    private static final String RP_LIST_NAME = "dssRPList";
-    private static final String SELECTED_RP = "selectedRP";
-    private static final String UPLOADED_CERTIFICATE = "uploadedCertificate";
+	private static final String RP_LIST_NAME = "dssRPList";
+	private static final String SELECTED_RP = "selectedRP";
+	private static final String UPLOADED_CERTIFICATE = "uploadedCertificate";
 
-    @Logger
-    private Log log;
+	@Logger
+	private Log log;
 
-    @EJB
-    private RPService rpService;
+	@EJB
+	private RPService rpService;
 
-    @In
-    FacesMessages facesMessages;
+	@In
+	FacesMessages facesMessages;
 
+	@SuppressWarnings("unused")
+	@DataModel(RP_LIST_NAME)
+	private List<RPEntity> rpList;
 
-    @SuppressWarnings("unused")
-    @DataModel(RP_LIST_NAME)
-    private List<RPEntity> rpList;
+	@DataModelSelection(RP_LIST_NAME)
+	@In(value = SELECTED_RP, required = false)
+	@Out(value = SELECTED_RP, required = false, scope = ScopeType.CONVERSATION)
+	private RPEntity selectedRP;
 
-    @DataModelSelection(RP_LIST_NAME)
-    @In(value = SELECTED_RP, required = false)
-    @Out(value = SELECTED_RP, required = false, scope = ScopeType.CONVERSATION)
-    private RPEntity selectedRP;
+	@In(value = UPLOADED_CERTIFICATE, required = false)
+	@Out(value = UPLOADED_CERTIFICATE, required = false, scope = ScopeType.CONVERSATION)
+	private byte[] certificateBytes;
 
-    @In(value = UPLOADED_CERTIFICATE, required = false)
-    @Out(value = UPLOADED_CERTIFICATE, required = false, scope = ScopeType.CONVERSATION)
-    private byte[] certificateBytes;
+	@In(value = "selectedTab", required = false)
+	@Out(value = "selectedTab", required = false, scope = ScopeType.CONVERSATION)
+	private String selectedTab = null;
 
-    @In(value = "selectedTab", required = false)
-    @Out(value = "selectedTab", required = false, scope = ScopeType.CONVERSATION)
-    private String selectedTab = null;
+	enum ConfigurationTab {
+		tab_config, tab_logo, tab_signing
+	}
 
-    enum ConfigurationTab {
-        tab_config, tab_logo, tab_signing
-    }
+	@Override
+	@PostConstruct
+	public void postConstruct() {
+	}
 
-    @Override
-    @PostConstruct
-    public void postConstruct() {
-    }
+	@Override
+	@Remove
+	@Destroy
+	public void destroy() {
+	}
 
-    @Override
-    @Remove
-    @Destroy
-    public void destroy() {
-    }
+	@Override
+	@Factory(RP_LIST_NAME)
+	public void rpListFactory() {
 
-    @Override
-    @Factory(RP_LIST_NAME)
-    public void rpListFactory() {
+		this.rpList = this.rpService.listRPs();
+	}
 
-        this.rpList = this.rpService.listRPs();
-    }
+	@Override
+	@Begin(join = true)
+	public String add() {
 
-    @Override
-    @Begin(join = true)
-    public String add() {
+		this.log.debug("add RP");
+		this.selectedRP = new RPEntity();
+		this.log.debug("RP.id: " + this.selectedRP.getId());
+		return "modify";
+	}
 
-        this.log.debug("add RP");
-        this.selectedRP = new RPEntity();
-        this.log.debug("RP.id: " + this.selectedRP.getId());
-        return "modify";
-    }
+	@Override
+	@Begin(join = true)
+	public String modify() {
 
-    @Override
-    @Begin(join = true)
-    public String modify() {
+		this.log.debug("modify RP: #0", this.selectedRP.getName());
+		return "modify";
+	}
 
-        this.log.debug("modify RP: #0", this.selectedRP.getName());
-        return "modify";
-    }
+	@Override
+	@End
+	public String save() {
 
-    @Override
-    @End
-    public String save() {
+		this.log.debug("save RP: #0", this.selectedRP.getName());
 
-        this.log.debug("save RP: #0", this.selectedRP.getName());
+		this.rpService.save(this.selectedRP);
+		rpListFactory();
+		return "success";
+	}
 
-        this.rpService.save(this.selectedRP);
-        rpListFactory();
-        return "success";
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	@End
+	public String remove() {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @End
-    public String remove() {
+		this.log.debug("remove RP: #0", this.selectedRP.getName());
+		this.rpService.remove(this.selectedRP);
+		rpListFactory();
+		return "success";
+	}
 
-        this.log.debug("remove RP: #0", this.selectedRP.getName());
-        this.rpService.remove(this.selectedRP);
-        rpListFactory();
-        return "success";
-    }
+	@Override
+	public String removeCertificate() {
 
-    @Override
-    public String removeCertificate() {
+		this.log.debug("remove rp.certificate");
+		this.selectedRP.setEncodedCertificate(null);
+		this.rpService.save(this.selectedRP);
+		return "success";
+	}
 
-        this.log.debug("remove rp.certificate");
-        this.selectedRP.setEncodedCertificate(null);
-        this.rpService.save(this.selectedRP);
-        return "success";
-    }
+	@Override
+	@End
+	public String back() {
+		return "back";
+	}
 
-    @Override
-    @End
-    public String back() {
-        return "back";
-    }
+	@Override
+	@Begin(join = true)
+	public void uploadListener(UploadEvent event) throws IOException {
 
-    @Override
-    @Begin(join = true)
-    public void uploadListener(UploadEvent event) throws IOException {
+		UploadItem item = event.getUploadItem();
+		this.log.debug(item.getContentType());
+		this.log.debug(item.getFileSize());
+		this.log.debug(item.getFileName());
+		if (null == item.getData()) {
+			// meaning createTempFiles is set to true in the SeamFilter
+			this.certificateBytes = FileUtils.readFileToByteArray(item
+					.getFile());
+		} else {
+			this.certificateBytes = item.getData();
+		}
 
-        UploadItem item = event.getUploadItem();
-        this.log.debug(item.getContentType());
-        this.log.debug(item.getFileSize());
-        this.log.debug(item.getFileName());
-        if (null == item.getData()) {
-            // meaning createTempFiles is set to true in the SeamFilter
-            this.certificateBytes = FileUtils.readFileToByteArray(item
-                    .getFile());
-        } else {
-            this.certificateBytes = item.getData();
-        }
+		try {
+			X509Certificate certificate = getCertificate(this.certificateBytes);
+			this.log.debug("certificate: " + certificate);
+			this.selectedRP.setCertificate(certificate);
+		} catch (CertificateException e) {
+			this.facesMessages.addToControl("upload", "Invalid certificate");
+		}
+	}
 
-        try {
-            X509Certificate certificate = getCertificate(this.certificateBytes);
-            this.log.debug("certificate: " + certificate);
-            this.selectedRP.setCertificate(certificate);
-        } catch (CertificateException e) {
-            this.facesMessages.addToControl("upload", "Invalid certificate");
-        }
-    }
+	@Override
+	@Begin(join = true)
+	public void uploadListenerLogo(UploadEvent event) throws IOException {
 
-    @Override
-    @Begin(join = true)
-    public void uploadListenerLogo(UploadEvent event) throws IOException {
+		UploadItem item = event.getUploadItem();
+		this.log.debug(item.getContentType());
+		this.log.debug(item.getFileSize());
+		this.log.debug(item.getFileName());
 
-        UploadItem item = event.getUploadItem();
-        this.log.debug(item.getContentType());
-        this.log.debug(item.getFileSize());
-        this.log.debug(item.getFileName());
+		byte[] logoBytes;
+		if (null == item.getData()) {
+			// meaning createTempFiles is set to true in the SeamFilter
+			logoBytes = FileUtils.readFileToByteArray(item.getFile());
+		} else {
+			logoBytes = item.getData();
+		}
 
-        byte[] logoBytes;
-        if (null == item.getData()) {
-            // meaning createTempFiles is set to true in the SeamFilter
-            logoBytes = FileUtils.readFileToByteArray(item.getFile());
-        } else {
-            logoBytes = item.getData();
-        }
+		this.selectedRP.setLogo(logoBytes);
+	}
 
-        this.selectedRP.setLogo(logoBytes);
-    }
+	@Override
+	public String getSelectedTab() {
+		return this.selectedTab;
+	}
 
-    @Override
-    public String getSelectedTab() {
-        return this.selectedTab;
-    }
+	@Override
+	public void setSelectedTab(String selectedTab) {
+		this.selectedTab = selectedTab;
+	}
 
-    @Override
-    public void setSelectedTab(String selectedTab) {
-        this.selectedTab = selectedTab;
-    }
+	@Override
+	public void paint(OutputStream stream, Object object) throws IOException {
 
-    @Override
-    public void paint(OutputStream stream, Object object) throws IOException {
+		if (null != this.selectedRP && null != this.selectedRP.getLogo()) {
+			stream.write(this.selectedRP.getLogo());
+			stream.close();
+		}
+	}
 
-        if (null != this.selectedRP && null != this.selectedRP.getLogo()) {
-            stream.write(this.selectedRP.getLogo());
-            stream.close();
-        }
-    }
+	@Override
+	public long getTimeStamp() {
 
-    @Override
-    public long getTimeStamp() {
+		return System.currentTimeMillis();
+	}
 
-        return System.currentTimeMillis();
-    }
+	private static X509Certificate getCertificate(byte[] certificateBytes)
+			throws CertificateException {
 
-    private static X509Certificate getCertificate(byte[] certificateBytes)
-            throws CertificateException {
-
-        CertificateFactory certificateFactory = CertificateFactory
-                .getInstance("X.509");
-        return (X509Certificate) certificateFactory
-                .generateCertificate(new ByteArrayInputStream(certificateBytes));
-    }
+		CertificateFactory certificateFactory = CertificateFactory
+				.getInstance("X.509");
+		return (X509Certificate) certificateFactory
+				.generateCertificate(new ByteArrayInputStream(certificateBytes));
+	}
 
 }

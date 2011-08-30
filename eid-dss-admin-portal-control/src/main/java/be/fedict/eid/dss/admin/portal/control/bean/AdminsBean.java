@@ -41,43 +41,43 @@ import java.util.List;
 @LocalBinding(jndiBinding = AdminConstants.ADMIN_JNDI_CONTEXT + "AdminsBean")
 public class AdminsBean implements Admins {
 
-    @Logger
-    private Log log;
+	@Logger
+	private Log log;
 
-    @EJB
-    private AdministratorManager administratorManager;
+	@EJB
+	private AdministratorManager administratorManager;
 
-    @SuppressWarnings("unused")
-    @DataModel
-    private List<AdministratorEntity> dssAdminList;
+	@SuppressWarnings("unused")
+	@DataModel
+	private List<AdministratorEntity> dssAdminList;
 
-    @DataModelSelection
-    private AdministratorEntity selectedAdmin;
+	@DataModelSelection
+	private AdministratorEntity selectedAdmin;
 
-    @Override
-    public void delete() {
-        this.log.debug("delete: #0", this.selectedAdmin.getName());
-        this.administratorManager.removeAdmin(this.selectedAdmin.getId());
-        initList();
-    }
+	@Override
+	public void delete() {
+		this.log.debug("delete: #0", this.selectedAdmin.getName());
+		this.administratorManager.removeAdmin(this.selectedAdmin.getId());
+		initList();
+	}
 
-    @Override
-    public void approve() {
-        this.log.debug("approve: #0", this.selectedAdmin.getName());
-        this.administratorManager.approveAdmin(this.selectedAdmin.getId());
-        initList();
-    }
+	@Override
+	public void approve() {
+		this.log.debug("approve: #0", this.selectedAdmin.getName());
+		this.administratorManager.approveAdmin(this.selectedAdmin.getId());
+		initList();
+	}
 
-    @Remove
-    @Destroy
-    @Override
-    public void destroy() {
-        this.log.debug("destroy");
-    }
+	@Remove
+	@Destroy
+	@Override
+	public void destroy() {
+		this.log.debug("destroy");
+	}
 
-    @Override
-    @Factory("dssAdminList")
-    public void initList() {
-        this.dssAdminList = this.administratorManager.listAdmins();
-    }
+	@Override
+	@Factory("dssAdminList")
+	public void initList() {
+		this.dssAdminList = this.administratorManager.listAdmins();
+	}
 }

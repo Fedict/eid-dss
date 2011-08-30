@@ -20,20 +20,20 @@ package be.fedict.eid.dss.control;
 
 public class ServiceEndpoint {
 
-    private final String name;
+	private final String name;
 
-    private final String path;
+	private final String path;
 
-    public ServiceEndpoint(String name, String path) {
-        this.name = name;
-        this.path = path;
-    }
+	public ServiceEndpoint(String name, String path) {
+		this.name = name;
+		this.path = path;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getPath() {
-        return path;
-    }
+	public String getPath() {
+		return path;
+	}
 }

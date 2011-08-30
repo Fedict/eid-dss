@@ -33,9 +33,11 @@ import org.jboss.ejb3.annotation.Service;
  * 
  */
 @Service
-public class DigitalSignatureServiceMBean implements DigitalSignatureServiceMBeanLocal {
+public class DigitalSignatureServiceMBean implements
+		DigitalSignatureServiceMBeanLocal {
 
-	private static final Log LOG = LogFactory.getLog(DigitalSignatureServiceMBean.class);
+	private static final Log LOG = LogFactory
+			.getLog(DigitalSignatureServiceMBean.class);
 
 	private Provider managedProvider;
 

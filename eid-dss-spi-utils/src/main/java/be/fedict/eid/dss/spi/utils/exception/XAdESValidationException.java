@@ -20,17 +20,17 @@ package be.fedict.eid.dss.spi.utils.exception;
 
 public class XAdESValidationException extends Exception {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public XAdESValidationException(String message) {
-        super(message);
-    }
+	public XAdESValidationException(String message) {
+		super(message);
+	}
 
-    public XAdESValidationException(Throwable t) {
-        super(t);
-    }
+	public XAdESValidationException(Throwable t) {
+		super(t);
+	}
 
-    public XAdESValidationException(String message, Throwable t) {
-        super(message, t);
-    }
+	public XAdESValidationException(String message, Throwable t) {
+		super(message, t);
+	}
 }

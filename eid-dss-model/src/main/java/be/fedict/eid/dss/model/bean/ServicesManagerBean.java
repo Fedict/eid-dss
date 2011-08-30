@@ -36,46 +36,46 @@ import java.util.Set;
 
 /**
  * Services manager EJB3 bean.
- *
+ * 
  * @author Frank Cornelis
  */
 @Stateless
 public class ServicesManagerBean implements ServicesManager {
 
-    private static final Log LOG = LogFactory.getLog(ServicesManagerBean.class);
+	private static final Log LOG = LogFactory.getLog(ServicesManagerBean.class);
 
-    @EJB
-    private ServicesManagerSingletonBean servicesManagerSingleton;
+	@EJB
+	private ServicesManagerSingletonBean servicesManagerSingleton;
 
-    public Map<String, String> getProtocolServiceClassNames() {
-        return this.servicesManagerSingleton.getProtocolServiceClassNames();
-    }
+	public Map<String, String> getProtocolServiceClassNames() {
+		return this.servicesManagerSingleton.getProtocolServiceClassNames();
+	}
 
-    public List<DigitalSignatureServiceProtocolType> getProtocolServices() {
-        return this.servicesManagerSingleton.getProtocolServices();
-    }
+	public List<DigitalSignatureServiceProtocolType> getProtocolServices() {
+		return this.servicesManagerSingleton.getProtocolServices();
+	}
 
-    public Map<String, String> getDocumentServiceClassNames() {
-        return this.servicesManagerSingleton.getDocumentServiceClassNames();
-    }
+	public Map<String, String> getDocumentServiceClassNames() {
+		return this.servicesManagerSingleton.getDocumentServiceClassNames();
+	}
 
-    public DSSDocumentService getDocumentService() {
-        HttpSession httpSession = HttpSessionTemporaryDataStorage
-                .getHttpSession();
-        DocumentRepository documentRepository = new DocumentRepository(
-                httpSession);
-        String contentType = documentRepository.getDocumentContentType();
-        LOG.debug("content type: " + contentType);
-        return this.servicesManagerSingleton.getDocumentService(contentType);
-    }
+	public DSSDocumentService getDocumentService() {
+		HttpSession httpSession = HttpSessionTemporaryDataStorage
+				.getHttpSession();
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+		String contentType = documentRepository.getDocumentContentType();
+		LOG.debug("content type: " + contentType);
+		return this.servicesManagerSingleton.getDocumentService(contentType);
+	}
 
-    public DSSDocumentService getDocumentService(String contentType) {
-        return this.servicesManagerSingleton.getDocumentService(contentType);
-    }
+	public DSSDocumentService getDocumentService(String contentType) {
+		return this.servicesManagerSingleton.getDocumentService(contentType);
+	}
 
-    public List<String> getSupportedDocumentFormats() {
-        Set<String> documentFormats = this.servicesManagerSingleton
-                .getSupportedDocumentFormats();
-        return Collections.list(Collections.enumeration(documentFormats));
-    }
+	public List<String> getSupportedDocumentFormats() {
+		Set<String> documentFormats = this.servicesManagerSingleton
+				.getSupportedDocumentFormats();
+		return Collections.list(Collections.enumeration(documentFormats));
+	}
 }

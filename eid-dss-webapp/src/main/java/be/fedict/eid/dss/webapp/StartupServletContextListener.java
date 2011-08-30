@@ -33,95 +33,97 @@ import java.util.Map;
 /**
  * Startup servlet component. This servlet context listener boots up the eID DSS
  * system.
- *
+ * 
  * @author Frank Cornelis
  */
 public class StartupServletContextListener implements ServletContextListener {
 
-    private static final Log LOG = LogFactory
-            .getLog(StartupServletContextListener.class);
+	private static final Log LOG = LogFactory
+			.getLog(StartupServletContextListener.class);
 
-    private static final String PROTOCOL_SERVICES_CONTEXT_ATTRIBUTE = StartupServletContextListener.class
-            .getName() + ".ProtocolServices";
+	private static final String PROTOCOL_SERVICES_CONTEXT_ATTRIBUTE = StartupServletContextListener.class
+			.getName() + ".ProtocolServices";
 
-    private static final String DOCUMENT_SERVICES_CONTEXT_ATTRIBUTE = StartupServletContextListener.class
-            .getName() + ".DocumentServices";
+	private static final String DOCUMENT_SERVICES_CONTEXT_ATTRIBUTE = StartupServletContextListener.class
+			.getName() + ".DocumentServices";
 
-    @EJB
-    private ServicesManager servicesManager;
+	@EJB
+	private ServicesManager servicesManager;
 
-    @EJB
-    private DocumentService documentService;
+	@EJB
+	private DocumentService documentService;
 
-    public void contextInitialized(ServletContextEvent event) {
+	public void contextInitialized(ServletContextEvent event) {
 
-        LOG.debug("contextInitialized");
+		LOG.debug("contextInitialized");
 
-        initCleanupTask();
+		initCleanupTask();
 
-        initProtocolServices(event);
+		initProtocolServices(event);
 
-        initDocumentServices(event);
-    }
+		initDocumentServices(event);
+	}
 
-    public void contextDestroyed(ServletContextEvent event) {
-        LOG.debug("contextDestroyed");
-    }
+	public void contextDestroyed(ServletContextEvent event) {
+		LOG.debug("contextDestroyed");
+	}
 
-    private void initCleanupTask() {
+	private void initCleanupTask() {
 
-        LOG.debug("init cleanup task");
+		LOG.debug("init cleanup task");
 
-        try {
-            this.documentService.startTimer();
-        } catch (InvalidCronExpressionException e) {
-            throw new RuntimeException(e);
-        }
-    }
+		try {
+			this.documentService.startTimer();
+		} catch (InvalidCronExpressionException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    private void initProtocolServices(ServletContextEvent event) {
+	private void initProtocolServices(ServletContextEvent event) {
 
-        /*
-         * We once load the protocol services so we don't have to iterate over
-         * all protocol descriptor files upon each DSS request.
-         */
-        ServletContext servletContext = event.getServletContext();
-        Map<String, String> protocolServiceClassNames = this.servicesManager
-                .getProtocolServiceClassNames();
-        servletContext.setAttribute(PROTOCOL_SERVICES_CONTEXT_ATTRIBUTE,
-                protocolServiceClassNames);
-    }
+		/*
+		 * We once load the protocol services so we don't have to iterate over
+		 * all protocol descriptor files upon each DSS request.
+		 */
+		ServletContext servletContext = event.getServletContext();
+		Map<String, String> protocolServiceClassNames = this.servicesManager
+				.getProtocolServiceClassNames();
+		servletContext.setAttribute(PROTOCOL_SERVICES_CONTEXT_ATTRIBUTE,
+				protocolServiceClassNames);
+	}
 
-    private void initDocumentServices(ServletContextEvent event) {
+	private void initDocumentServices(ServletContextEvent event) {
 
-        ServletContext servletContext = event.getServletContext();
-        Map<String, String> documentServiceClassNames = this.servicesManager
-                .getDocumentServiceClassNames();
-        servletContext.setAttribute(DOCUMENT_SERVICES_CONTEXT_ATTRIBUTE,
-                documentServiceClassNames);
-    }
+		ServletContext servletContext = event.getServletContext();
+		Map<String, String> documentServiceClassNames = this.servicesManager
+				.getDocumentServiceClassNames();
+		servletContext.setAttribute(DOCUMENT_SERVICES_CONTEXT_ATTRIBUTE,
+				documentServiceClassNames);
+	}
 
-    /**
-     * @param context the servlet context
-     * @return map of protocol services with context path as key. This map
-     *         has been constructed during startup of the eID DSS service.
-     */
-    @SuppressWarnings("unchecked")
-    public static Map<String, String> getProtocolServiceClassNames(
-            ServletContext context) {
-        return (Map<String, String>) context
-                .getAttribute(PROTOCOL_SERVICES_CONTEXT_ATTRIBUTE);
-    }
+	/**
+	 * @param context
+	 *            the servlet context
+	 * @return map of protocol services with context path as key. This map has
+	 *         been constructed during startup of the eID DSS service.
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map<String, String> getProtocolServiceClassNames(
+			ServletContext context) {
+		return (Map<String, String>) context
+				.getAttribute(PROTOCOL_SERVICES_CONTEXT_ATTRIBUTE);
+	}
 
-    /**
-     * @param context the servlet context
-     * @return map of document service with content type as key. This map
-     *         has been constructed during startup of the eID DSS service.
-     */
-    @SuppressWarnings("unchecked")
-    public static Map<String, String> getDocumentServiceClassNames(
-            ServletContext context) {
-        return (Map<String, String>) context
-                .getAttribute(DOCUMENT_SERVICES_CONTEXT_ATTRIBUTE);
-    }
+	/**
+	 * @param context
+	 *            the servlet context
+	 * @return map of document service with content type as key. This map has
+	 *         been constructed during startup of the eID DSS service.
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map<String, String> getDocumentServiceClassNames(
+			ServletContext context) {
+		return (Map<String, String>) context
+				.getAttribute(DOCUMENT_SERVICES_CONTEXT_ATTRIBUTE);
+	}
 }

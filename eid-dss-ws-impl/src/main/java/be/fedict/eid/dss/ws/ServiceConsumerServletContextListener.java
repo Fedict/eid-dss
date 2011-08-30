@@ -32,49 +32,51 @@ import javax.servlet.ServletContextListener;
  * Service Consumer Servlet Context Listener. For the moment this is the only
  * way to retrieve the EJB session bean references in JAX-WS RI under JBoss AS
  * 5.
- *
+ * 
  * @author Frank Cornelis
  */
 public class ServiceConsumerServletContextListener implements
-        ServletContextListener {
+		ServletContextListener {
 
-    @EJB
-    private SignatureVerificationService signatureVerificationService;
+	@EJB
+	private SignatureVerificationService signatureVerificationService;
 
-    @EJB
-    private DocumentService documentService;
+	@EJB
+	private DocumentService documentService;
 
-    private static final Log LOG = LogFactory
-            .getLog(ServiceConsumerServletContextListener.class);
+	private static final Log LOG = LogFactory
+			.getLog(ServiceConsumerServletContextListener.class);
 
-    public void contextDestroyed(ServletContextEvent event) {
-        LOG.debug("context destroyed");
-    }
+	public void contextDestroyed(ServletContextEvent event) {
+		LOG.debug("context destroyed");
+	}
 
-    public void contextInitialized(ServletContextEvent event) {
+	public void contextInitialized(ServletContextEvent event) {
 
-        LOG.debug("context initialized");
-        ServletContext servletContext = event.getServletContext();
+		LOG.debug("context initialized");
+		ServletContext servletContext = event.getServletContext();
 
-        LOG.debug("SignatureVerificationService ref available: "
-                + (null != this.signatureVerificationService));
-        servletContext.setAttribute(SignatureVerificationService.class.getName(),
-                this.signatureVerificationService);
+		LOG.debug("SignatureVerificationService ref available: "
+				+ (null != this.signatureVerificationService));
+		servletContext.setAttribute(
+				SignatureVerificationService.class.getName(),
+				this.signatureVerificationService);
 
-        LOG.debug("DocumentService ref available: "
-                + (null != this.documentService));
-        servletContext.setAttribute(DocumentService.class.getName(),
-                this.documentService);
-    }
+		LOG.debug("DocumentService ref available: "
+				+ (null != this.documentService));
+		servletContext.setAttribute(DocumentService.class.getName(),
+				this.documentService);
+	}
 
-    public static SignatureVerificationService getSignatureVerificationService(
-            ServletContext context) {
-        return (SignatureVerificationService) context
-                .getAttribute(SignatureVerificationService.class.getName());
-    }
+	public static SignatureVerificationService getSignatureVerificationService(
+			ServletContext context) {
+		return (SignatureVerificationService) context
+				.getAttribute(SignatureVerificationService.class.getName());
+	}
 
-    public static DocumentService getDocumentService(ServletContext context) {
+	public static DocumentService getDocumentService(ServletContext context) {
 
-        return (DocumentService) context.getAttribute(DocumentService.class.getName());
-    }
+		return (DocumentService) context.getAttribute(DocumentService.class
+				.getName());
+	}
 }

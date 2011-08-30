@@ -35,173 +35,172 @@ import java.util.List;
  * <p/>
  * The domain is used by the signature * protocols for authentication.
  * <p/>
- * The certificate is (optionally, depending on
- * the protocol) used for verification of the signed authentication request
- * token.
+ * The certificate is (optionally, depending on the protocol) used for
+ * verification of the signed authentication request token.
  * <p/>
  * The attributes is the custom set of attributes related to this RP.
  */
 @Entity
 @Table(name = Constants.DATABASE_TABLE_PREFIX + "rp")
-@NamedQueries({@NamedQuery(name = RPEntity.LIST_ALL, query = "FROM RPEntity "),
-        @NamedQuery(name = RPEntity.FIND_DOMAIN, query = "SELECT rp FROM RPEntity " +
-                "AS rp WHERE rp.domain = :domain")})
+@NamedQueries({
+		@NamedQuery(name = RPEntity.LIST_ALL, query = "FROM RPEntity "),
+		@NamedQuery(name = RPEntity.FIND_DOMAIN, query = "SELECT rp FROM RPEntity "
+				+ "AS rp WHERE rp.domain = :domain") })
 public class RPEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public static final String LIST_ALL = "idp.rp.list.all";
-    public static final String FIND_DOMAIN = "idp.rp.find.domain";
+	public static final String LIST_ALL = "idp.rp.list.all";
+	public static final String FIND_DOMAIN = "idp.rp.find.domain";
 
-    private Long id;
+	private Long id;
 
-    // configurations
-    private String name;
-    private String domain;
+	// configurations
+	private String name;
+	private String domain;
 
-    // logo
-    @Lob
-    @Column(length = 500 * 1024, nullable = true)
-    protected byte[] logo;
+	// logo
+	@Lob
+	@Column(length = 500 * 1024, nullable = true)
+	protected byte[] logo;
 
-    // signing
-    private byte[] encodedCertificate;
-    private boolean requestSigningRequired;
+	// signing
+	private byte[] encodedCertificate;
+	private boolean requestSigningRequired;
 
-    public RPEntity(String name, String domain,
-                    byte[] logo, X509Certificate certificate,
-                    boolean requestSigningRequired)
-            throws CertificateEncodingException {
+	public RPEntity(String name, String domain, byte[] logo,
+			X509Certificate certificate, boolean requestSigningRequired)
+			throws CertificateEncodingException {
 
-        this.name = name;
-        this.domain = domain;
-        this.logo = logo;
-        this.encodedCertificate = certificate.getEncoded();
-        this.requestSigningRequired = requestSigningRequired;
-    }
+		this.name = name;
+		this.domain = domain;
+		this.logo = logo;
+		this.encodedCertificate = certificate.getEncoded();
+		this.requestSigningRequired = requestSigningRequired;
+	}
 
-    public RPEntity() {
-        super();
-    }
+	public RPEntity() {
+		super();
+	}
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long getId() {
-        return this.id;
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	public Long getId() {
+		return this.id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    @Column(nullable = false)
-    public String getName() {
-        return this.name;
-    }
+	@Column(nullable = false)
+	public String getName() {
+		return this.name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    @Column(nullable = true)
-    public String getDomain() {
-        return this.domain;
-    }
+	@Column(nullable = true)
+	public String getDomain() {
+		return this.domain;
+	}
 
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 
-    @Column(length = 500 * 1024, nullable = true)
-    @Basic(fetch = FetchType.LAZY)
-    public byte[] getLogo() {
-        return this.logo;
-    }
+	@Column(length = 500 * 1024, nullable = true)
+	@Basic(fetch = FetchType.LAZY)
+	public byte[] getLogo() {
+		return this.logo;
+	}
 
-    public void setLogo(byte[] logo) {
-        this.logo = logo;
-    }
+	public void setLogo(byte[] logo) {
+		this.logo = logo;
+	}
 
-    @Lob
-    @Column(length = 4 * 1024, nullable = true)
-    @Basic(fetch = FetchType.LAZY)
-    public byte[] getEncodedCertificate() {
-        return encodedCertificate;
-    }
+	@Lob
+	@Column(length = 4 * 1024, nullable = true)
+	@Basic(fetch = FetchType.LAZY)
+	public byte[] getEncodedCertificate() {
+		return encodedCertificate;
+	}
 
-    public void setEncodedCertificate(byte[] encodedCertificate) {
-        this.encodedCertificate = encodedCertificate;
-    }
+	public void setEncodedCertificate(byte[] encodedCertificate) {
+		this.encodedCertificate = encodedCertificate;
+	}
 
-    @Transient
-    public String getCertificateString() {
+	@Transient
+	public String getCertificateString() {
 
-        X509Certificate certificate = getCertificate();
-        if (null == certificate) {
-            return "";
-        }
+		X509Certificate certificate = getCertificate();
+		if (null == certificate) {
+			return "";
+		}
 
-        return certificate.toString().replaceAll("\\n", "<br/>");
-    }
+		return certificate.toString().replaceAll("\\n", "<br/>");
+	}
 
-    @Transient
-    public X509Certificate getCertificate() {
+	@Transient
+	public X509Certificate getCertificate() {
 
-        if (null == this.encodedCertificate) {
-            return null;
-        }
+		if (null == this.encodedCertificate) {
+			return null;
+		}
 
-        try {
-            CertificateFactory certificateFactory = CertificateFactory
-                    .getInstance("X.509");
-            InputStream certificateStream = new ByteArrayInputStream(
-                    this.encodedCertificate);
-            return (X509Certificate) certificateFactory
-                    .generateCertificate(certificateStream);
-        } catch (CertificateException e) {
-            throw new RuntimeException("cert factory error: " + e.getMessage());
-        }
-    }
+		try {
+			CertificateFactory certificateFactory = CertificateFactory
+					.getInstance("X.509");
+			InputStream certificateStream = new ByteArrayInputStream(
+					this.encodedCertificate);
+			return (X509Certificate) certificateFactory
+					.generateCertificate(certificateStream);
+		} catch (CertificateException e) {
+			throw new RuntimeException("cert factory error: " + e.getMessage());
+		}
+	}
 
-    @Transient
-    public void setCertificate(X509Certificate certificate)
-            throws CertificateEncodingException {
+	@Transient
+	public void setCertificate(X509Certificate certificate)
+			throws CertificateEncodingException {
 
-        this.encodedCertificate = certificate.getEncoded();
-    }
+		this.encodedCertificate = certificate.getEncoded();
+	}
 
-    @Transient
-    public String getCertificateSubject() {
+	@Transient
+	public String getCertificateSubject() {
 
-        if (null == this.encodedCertificate) {
-            return null;
-        }
-        return getCertificate().getSubjectDN().getName();
-    }
+		if (null == this.encodedCertificate) {
+			return null;
+		}
+		return getCertificate().getSubjectDN().getName();
+	}
 
-    public boolean isRequestSigningRequired() {
-        return this.requestSigningRequired;
-    }
+	public boolean isRequestSigningRequired() {
+		return this.requestSigningRequired;
+	}
 
-    public void setRequestSigningRequired(boolean requestSigningRequired) {
-        this.requestSigningRequired = requestSigningRequired;
-    }
+	public void setRequestSigningRequired(boolean requestSigningRequired) {
+		this.requestSigningRequired = requestSigningRequired;
+	}
 
-    @SuppressWarnings("unchecked")
-    public static List<RPEntity> listRPs(EntityManager entityManager) {
+	@SuppressWarnings("unchecked")
+	public static List<RPEntity> listRPs(EntityManager entityManager) {
 
-        Query query = entityManager.createNamedQuery(LIST_ALL);
-        return query.getResultList();
-    }
+		Query query = entityManager.createNamedQuery(LIST_ALL);
+		return query.getResultList();
+	}
 
-    public static RPEntity findRP(EntityManager entityManager, String domain) {
+	public static RPEntity findRP(EntityManager entityManager, String domain) {
 
-        Query query = entityManager.createNamedQuery(FIND_DOMAIN);
-        query.setParameter("domain", domain);
-        try {
-            return (RPEntity) query.getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
+		Query query = entityManager.createNamedQuery(FIND_DOMAIN);
+		query.setParameter("domain", domain);
+		try {
+			return (RPEntity) query.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
 }

@@ -29,54 +29,55 @@ import java.util.List;
  */
 @Entity
 @Table(name = Constants.DATABASE_TABLE_PREFIX + "accounting")
-@NamedQueries({@NamedQuery(name = AccountingEntity.LIST_ALL, query = "FROM AccountingEntity"),
-        @NamedQuery(name = AccountingEntity.RESET_ALL, query = "DELETE FROM AccountingEntity")})
+@NamedQueries({
+		@NamedQuery(name = AccountingEntity.LIST_ALL, query = "FROM AccountingEntity"),
+		@NamedQuery(name = AccountingEntity.RESET_ALL, query = "DELETE FROM AccountingEntity") })
 public class AccountingEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public static final String LIST_ALL = "dss.accounting.all";
-    public static final String RESET_ALL = "dss.accounting.reset.all";
+	public static final String LIST_ALL = "dss.accounting.all";
+	public static final String RESET_ALL = "dss.accounting.reset.all";
 
-    private String domain;
-    private Long requests;
+	private String domain;
+	private Long requests;
 
-    public AccountingEntity() {
-        super();
-    }
+	public AccountingEntity() {
+		super();
+	}
 
-    public AccountingEntity(String domain) {
-        this.domain = domain;
-        this.requests = 1L;
-    }
+	public AccountingEntity(String domain) {
+		this.domain = domain;
+		this.requests = 1L;
+	}
 
-    @Id
-    public String getDomain() {
-        return domain;
-    }
+	@Id
+	public String getDomain() {
+		return domain;
+	}
 
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 
-    public Long getRequests() {
-        return requests;
-    }
+	public Long getRequests() {
+		return requests;
+	}
 
-    public void setRequests(Long requests) {
-        this.requests = requests;
-    }
+	public void setRequests(Long requests) {
+		this.requests = requests;
+	}
 
-    @SuppressWarnings("unchecked")
-    public static List<AccountingEntity> listAll(EntityManager entityManager) {
+	@SuppressWarnings("unchecked")
+	public static List<AccountingEntity> listAll(EntityManager entityManager) {
 
-        return entityManager.createNamedQuery(AccountingEntity.LIST_ALL)
-                .getResultList();
-    }
+		return entityManager.createNamedQuery(AccountingEntity.LIST_ALL)
+				.getResultList();
+	}
 
-    public static int resetAll(EntityManager entityManager) {
+	public static int resetAll(EntityManager entityManager) {
 
-        return entityManager.createNamedQuery(AccountingEntity.RESET_ALL)
-                .executeUpdate();
-    }
+		return entityManager.createNamedQuery(AccountingEntity.RESET_ALL)
+				.executeUpdate();
+	}
 }

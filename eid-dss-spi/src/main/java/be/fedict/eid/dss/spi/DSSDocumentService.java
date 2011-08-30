@@ -34,71 +34,92 @@ import java.util.List;
 /**
  * Document Service interface. A document service interface knows all about a
  * document format, and how to sign it.
- *
+ * 
  * @author Frank Cornelis
  */
 public interface DSSDocumentService extends Serializable {
 
-    /**
-     * Initializes this component.
-     *
-     * @param context     DSS Document Context
-     * @param contentType the content-type that this document service should handle.
-     * @throws Exception something went wrong
-     */
-    void init(DSSDocumentContext context, String contentType) throws Exception;
+	/**
+	 * Initializes this component.
+	 * 
+	 * @param context
+	 *            DSS Document Context
+	 * @param contentType
+	 *            the content-type that this document service should handle.
+	 * @throws Exception
+	 *             something went wrong
+	 */
+	void init(DSSDocumentContext context, String contentType) throws Exception;
 
-    /**
-     * Checks the incoming document.
-     *
-     * @param document document to check
-     * @throws Exception something went wrong
-     */
-    void checkIncomingDocument(byte[] document) throws Exception;
+	/**
+	 * Checks the incoming document.
+	 * 
+	 * @param document
+	 *            document to check
+	 * @throws Exception
+	 *             something went wrong
+	 */
+	void checkIncomingDocument(byte[] document) throws Exception;
 
-    /**
-     * Handles the visualization of the given document.
-     *
-     * @param document document to visualize
-     * @param language the optional language to be used for visualization.
-     * @return info on how to handle the visualization
-     * @throws Exception something went wrong
-     */
-    DocumentVisualization visualizeDocument(byte[] document, String language)
-            throws Exception;
+	/**
+	 * Handles the visualization of the given document.
+	 * 
+	 * @param document
+	 *            document to visualize
+	 * @param language
+	 *            the optional language to be used for visualization.
+	 * @return info on how to handle the visualization
+	 * @throws Exception
+	 *             something went wrong
+	 */
+	DocumentVisualization visualizeDocument(byte[] document, String language)
+			throws Exception;
 
-    /**
-     * Factory for the signature service that will be used to signed the
-     * document. A new instance is being created for both preSign and postSign
-     * phases.
-     *
-     * @param documentInputStream       input stream to the to-be-signed document
-     * @param timeStampService          timestamping service
-     * @param timeStampServiceValidator timestamp service validator
-     * @param revocationDataService     revocation service
-     * @param signatureFacet            signature facet to be applied
-     * @param documentOutputStream      output stream for the signed document
-     * @param role                      optional role
-     * @param identity                  optional identity data object
-     * @param photo                     photo
-     * @param signatureDigestAlgo       optional signature digest algorithm
-     * @return the signature service implementation to use
-     * @throws Exception something went wrong
-     */
-    SignatureServiceEx getSignatureService(InputStream documentInputStream,
-                                           TimeStampService timeStampService,
-                                           TimeStampServiceValidator timeStampServiceValidator,
-                                           RevocationDataService revocationDataService,
-                                           SignatureFacet signatureFacet, OutputStream documentOutputStream,
-                                           String role, IdentityDTO identity, byte[] photo,
-                                           DigestAlgo signatureDigestAlgo) throws Exception;
+	/**
+	 * Factory for the signature service that will be used to signed the
+	 * document. A new instance is being created for both preSign and postSign
+	 * phases.
+	 * 
+	 * @param documentInputStream
+	 *            input stream to the to-be-signed document
+	 * @param timeStampService
+	 *            timestamping service
+	 * @param timeStampServiceValidator
+	 *            timestamp service validator
+	 * @param revocationDataService
+	 *            revocation service
+	 * @param signatureFacet
+	 *            signature facet to be applied
+	 * @param documentOutputStream
+	 *            output stream for the signed document
+	 * @param role
+	 *            optional role
+	 * @param identity
+	 *            optional identity data object
+	 * @param photo
+	 *            photo
+	 * @param signatureDigestAlgo
+	 *            optional signature digest algorithm
+	 * @return the signature service implementation to use
+	 * @throws Exception
+	 *             something went wrong
+	 */
+	SignatureServiceEx getSignatureService(InputStream documentInputStream,
+			TimeStampService timeStampService,
+			TimeStampServiceValidator timeStampServiceValidator,
+			RevocationDataService revocationDataService,
+			SignatureFacet signatureFacet, OutputStream documentOutputStream,
+			String role, IdentityDTO identity, byte[] photo,
+			DigestAlgo signatureDigestAlgo) throws Exception;
 
-    /**
-     * Verifies the signatures on the given document.
-     *
-     * @param document document to be verified
-     * @return list of signature info data objects
-     * @throws Exception something went wrong
-     */
-    List<SignatureInfo> verifySignatures(byte[] document) throws Exception;
+	/**
+	 * Verifies the signatures on the given document.
+	 * 
+	 * @param document
+	 *            document to be verified
+	 * @return list of signature info data objects
+	 * @throws Exception
+	 *             something went wrong
+	 */
+	List<SignatureInfo> verifySignatures(byte[] document) throws Exception;
 }

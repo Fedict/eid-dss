@@ -29,76 +29,76 @@ import java.util.List;
 @Stateless
 public class RPServiceBean implements RPService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+	@PersistenceContext
+	private EntityManager entityManager;
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<RPEntity> listRPs() {
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<RPEntity> listRPs() {
 
-        return RPEntity.listRPs(this.entityManager);
-    }
+		return RPEntity.listRPs(this.entityManager);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void remove(RPEntity rp) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public void remove(RPEntity rp) {
 
-        RPEntity attachedRp = this.entityManager.find(RPEntity.class, rp.getId());
-        this.entityManager.remove(attachedRp);
-    }
+		RPEntity attachedRp = this.entityManager.find(RPEntity.class,
+				rp.getId());
+		this.entityManager.remove(attachedRp);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public RPEntity save(RPEntity rp) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public RPEntity save(RPEntity rp) {
 
-        RPEntity attachedRp = null;
-        if (null != rp.getId()) {
-            attachedRp = this.entityManager.find(RPEntity.class, rp.getId());
-        }
-        if (null != attachedRp) {
-            // save
+		RPEntity attachedRp = null;
+		if (null != rp.getId()) {
+			attachedRp = this.entityManager.find(RPEntity.class, rp.getId());
+		}
+		if (null != attachedRp) {
+			// save
 
-            // configuration
-            attachedRp.setName(rp.getName());
-            attachedRp.setRequestSigningRequired(rp.isRequestSigningRequired());
-            if (null != rp.getDomain() && rp.getDomain().trim().isEmpty()) {
-                attachedRp.setDomain(null);
-            } else {
-                attachedRp.setDomain(rp.getDomain().trim());
-            }
+			// configuration
+			attachedRp.setName(rp.getName());
+			attachedRp.setRequestSigningRequired(rp.isRequestSigningRequired());
+			if (null != rp.getDomain() && rp.getDomain().trim().isEmpty()) {
+				attachedRp.setDomain(null);
+			} else {
+				attachedRp.setDomain(rp.getDomain().trim());
+			}
 
-            // logo
-            if (null != rp.getLogo()) {
-                attachedRp.setLogo(rp.getLogo());
-            }
+			// logo
+			if (null != rp.getLogo()) {
+				attachedRp.setLogo(rp.getLogo());
+			}
 
-            // signing
-            attachedRp.setEncodedCertificate(rp.getEncodedCertificate());
+			// signing
+			attachedRp.setEncodedCertificate(rp.getEncodedCertificate());
 
-            return attachedRp;
-        } else {
-            // add
-            if (null != rp.getDomain() &&
-                    rp.getDomain().trim().isEmpty()) {
-                rp.setDomain(null);
-            }
-            this.entityManager.persist(rp);
-            return rp;
-        }
-    }
+			return attachedRp;
+		} else {
+			// add
+			if (null != rp.getDomain() && rp.getDomain().trim().isEmpty()) {
+				rp.setDomain(null);
+			}
+			this.entityManager.persist(rp);
+			return rp;
+		}
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public RPEntity find(String domain) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public RPEntity find(String domain) {
 
-        if (null != domain) {
-            return RPEntity.findRP(this.entityManager, domain);
-        }
+		if (null != domain) {
+			return RPEntity.findRP(this.entityManager, domain);
+		}
 
-        return null;
-    }
+		return null;
+	}
 }
