@@ -9,8 +9,10 @@ primary artifacts:
 - README.txt			This file.
 - eid-dss-dev-guide.pdf		The eID DSS developer's guide.
 - eid-dss-client-x.y.z.jar	The eID DSS web service client JAR.
-- lib/				Contains the 3rd party JAR artifacts.
 - eid-dss-client-javadoc/	The javadoc of the web service client.
+- eid-dss-protocol-simple-client-x.y.z.jar The eID DSS Browser POST protocol.
+- eid-dss-protocol-simple-client-javadoc/ The javadoc of eID DSS Browser POST.
+- lib/				Contains the 3rd party JAR artifacts.
 
 We suggest to start by reading the eID Digital Signature Service 
 developer's guide.

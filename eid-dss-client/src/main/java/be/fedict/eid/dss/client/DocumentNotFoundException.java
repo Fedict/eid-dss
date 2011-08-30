@@ -20,11 +20,11 @@ package be.fedict.eid.dss.client;
 
 /**
  * Thrown in case no document was returned.
- *
+ * 
  * @author Wim Vandenhaute
  */
 public class DocumentNotFoundException extends Exception {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 }

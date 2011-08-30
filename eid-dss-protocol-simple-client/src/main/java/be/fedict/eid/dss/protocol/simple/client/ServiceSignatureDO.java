@@ -23,51 +23,53 @@ import java.util.List;
 
 /**
  * Signature Request Service Signature DO Object.
- *
+ * 
  * @author Wim Vandenhaute
  */
 public class ServiceSignatureDO implements Serializable {
 
-    private final String serviceSigned;
-    private final String serviceSignature;
-    private final String serviceCertificateChainSize;
-    private final List<String> serviceCertificates;
+	private static final long serialVersionUID = 1L;
 
-    public ServiceSignatureDO(String serviceSigned, String serviceSignature,
-                              String serviceCertificateChainSize,
-                              List<String> serviceCertificates) {
+	private final String serviceSigned;
+	private final String serviceSignature;
+	private final String serviceCertificateChainSize;
+	private final List<String> serviceCertificates;
 
-        this.serviceSigned = serviceSigned;
-        this.serviceSignature = serviceSignature;
-        this.serviceCertificateChainSize = serviceCertificateChainSize;
-        this.serviceCertificates = serviceCertificates;
-    }
+	public ServiceSignatureDO(String serviceSigned, String serviceSignature,
+			String serviceCertificateChainSize, List<String> serviceCertificates) {
 
-    /**
-     * @return contains the element that are used in the {@link #getServiceSignature()}.
-     */
-    public String getServiceSigned() {
-        return serviceSigned;
-    }
+		this.serviceSigned = serviceSigned;
+		this.serviceSignature = serviceSignature;
+		this.serviceCertificateChainSize = serviceCertificateChainSize;
+		this.serviceCertificates = serviceCertificates;
+	}
 
-    /**
-     * @return base64 encoded signature value.
-     */
-    public String getServiceSignature() {
-        return serviceSignature;
-    }
+	/**
+	 * @return contains the element that are used in the
+	 *         {@link #getServiceSignature()}.
+	 */
+	public String getServiceSigned() {
+		return serviceSigned;
+	}
 
-    /**
-     * @return certificate chain size of the SP Identity.
-     */
-    public String getServiceCertificateChainSize() {
-        return serviceCertificateChainSize;
-    }
+	/**
+	 * @return base64 encoded signature value.
+	 */
+	public String getServiceSignature() {
+		return serviceSignature;
+	}
 
-    /**
-     * @return base64 encoded certificate chain of the SP Identity.
-     */
-    public List<String> getServiceCertificates() {
-        return serviceCertificates;
-    }
+	/**
+	 * @return certificate chain size of the SP Identity.
+	 */
+	public String getServiceCertificateChainSize() {
+		return serviceCertificateChainSize;
+	}
+
+	/**
+	 * @return base64 encoded certificate chain of the SP Identity.
+	 */
+	public List<String> getServiceCertificates() {
+		return serviceCertificates;
+	}
 }

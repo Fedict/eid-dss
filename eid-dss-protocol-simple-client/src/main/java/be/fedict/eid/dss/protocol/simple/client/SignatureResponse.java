@@ -22,46 +22,45 @@ import java.security.cert.X509Certificate;
 
 /**
  * Signature response DTO.
- *
+ * 
  * @author Frank Cornelis
  */
 public class SignatureResponse {
 
-    private final byte[] decodedSignatureResponse;
+	private final byte[] decodedSignatureResponse;
 
-    private final String signatureResponseId;
+	private final String signatureResponseId;
 
-    private final X509Certificate signatureCertificate;
+	private final X509Certificate signatureCertificate;
 
-    public SignatureResponse(byte[] decodedSignatureResponse,
-                             String signatureResponseId,
-                             X509Certificate signatureCertificate) {
+	public SignatureResponse(byte[] decodedSignatureResponse,
+			String signatureResponseId, X509Certificate signatureCertificate) {
 
-        this.decodedSignatureResponse = decodedSignatureResponse;
-        this.signatureResponseId = signatureResponseId;
-        this.signatureCertificate = signatureCertificate;
-    }
+		this.decodedSignatureResponse = decodedSignatureResponse;
+		this.signatureResponseId = signatureResponseId;
+		this.signatureCertificate = signatureCertificate;
+	}
 
-    /**
-     * @return the signed document or <code>null</code> if signature response
-     *         ID is passed
-     */
-    public byte[] getDecodedSignatureResponse() {
-        return this.decodedSignatureResponse;
-    }
+	/**
+	 * @return the signed document or <code>null</code> if signature response ID
+	 *         is passed
+	 */
+	public byte[] getDecodedSignatureResponse() {
+		return this.decodedSignatureResponse;
+	}
 
-    /**
-     * @return the X509 certificate of the signatory.
-     */
-    public X509Certificate getSignatureCertificate() {
-        return this.signatureCertificate;
-    }
+	/**
+	 * @return the X509 certificate of the signatory.
+	 */
+	public X509Certificate getSignatureCertificate() {
+		return this.signatureCertificate;
+	}
 
-    /**
-     * @return the signature response ID or <code>null</code> case signature
-     *         response was not null.
-     */
-    public String getSignatureResponseId() {
-        return signatureResponseId;
-    }
+	/**
+	 * @return the signature response ID or <code>null</code> case signature
+	 *         response was not null.
+	 */
+	public String getSignatureResponseId() {
+		return signatureResponseId;
+	}
 }
