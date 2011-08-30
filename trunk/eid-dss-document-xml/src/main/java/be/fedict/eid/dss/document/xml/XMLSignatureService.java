@@ -39,75 +39,74 @@ import java.util.List;
 
 /**
  * XML signature service. Will create XAdES-X-L v1.4.1 co-signatures.
- *
+ * 
  * @author Frank Cornelis
  */
 public class XMLSignatureService extends AbstractXmlSignatureService implements
-        SignatureServiceEx {
+		SignatureServiceEx {
 
-    private final TemporaryDataStorage temporaryDataStorage;
+	private final TemporaryDataStorage temporaryDataStorage;
 
-    private final InputStream documentInputStream;
+	private final InputStream documentInputStream;
 
-    private final OutputStream documentOutputStream;
+	private final OutputStream documentOutputStream;
 
-    public XMLSignatureService(TimeStampServiceValidator validator,
-                               RevocationDataService revocationDataService,
-                               SignatureFacet signatureFacet, InputStream documentInputStream,
-                               OutputStream documentOutputStream,
-                               TimeStampService timeStampService, String role,
-                               IdentityDTO identity, byte[] photo,
-                               DigestAlgo signatureDigestAlgo) {
+	public XMLSignatureService(TimeStampServiceValidator validator,
+			RevocationDataService revocationDataService,
+			SignatureFacet signatureFacet, InputStream documentInputStream,
+			OutputStream documentOutputStream,
+			TimeStampService timeStampService, String role,
+			IdentityDTO identity, byte[] photo, DigestAlgo signatureDigestAlgo) {
 
-        super(signatureDigestAlgo);
-        this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
-        this.documentInputStream = documentInputStream;
-        this.documentOutputStream = documentOutputStream;
+		super(signatureDigestAlgo);
+		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
+		this.documentInputStream = documentInputStream;
+		this.documentOutputStream = documentOutputStream;
 
-        addSignatureFacet(new CoSignatureFacet(getSignatureDigestAlgorithm()));
-        addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
-        XAdESSignatureFacet xadesSignatureFacet = new XAdESSignatureFacet(
-                getSignatureDigestAlgorithm());
-        xadesSignatureFacet.setRole(role);
-        addSignatureFacet(xadesSignatureFacet);
-        addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
-                revocationDataService, getSignatureDigestAlgorithm()));
-        addSignatureFacet(signatureFacet);
+		addSignatureFacet(new CoSignatureFacet(getSignatureDigestAlgorithm()));
+		addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
+		XAdESSignatureFacet xadesSignatureFacet = new XAdESSignatureFacet(
+				getSignatureDigestAlgorithm());
+		xadesSignatureFacet.setRole(role);
+		addSignatureFacet(xadesSignatureFacet);
+		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
+				revocationDataService, getSignatureDigestAlgorithm()));
+		addSignatureFacet(signatureFacet);
 
-        setSignatureNamespacePrefix("ds");
+		setSignatureNamespacePrefix("ds");
 
-        if (null != identity) {
-            IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
-                    identity, photo, getSignatureDigestAlgorithm());
-            addSignatureFacet(identitySignatureFacet);
-        }
-    }
+		if (null != identity) {
+			IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
+					identity, photo, getSignatureDigestAlgorithm());
+			addSignatureFacet(identitySignatureFacet);
+		}
+	}
 
-    @Override
-    protected OutputStream getSignedDocumentOutputStream() {
-        return this.documentOutputStream;
-    }
+	@Override
+	protected OutputStream getSignedDocumentOutputStream() {
+		return this.documentOutputStream;
+	}
 
-    @Override
-    protected TemporaryDataStorage getTemporaryDataStorage() {
-        return this.temporaryDataStorage;
-    }
+	@Override
+	protected TemporaryDataStorage getTemporaryDataStorage() {
+		return this.temporaryDataStorage;
+	}
 
-    public String getFilesDigestAlgorithm() {
-        return null;
-    }
+	public String getFilesDigestAlgorithm() {
+		return null;
+	}
 
-    @Override
-    protected Document getEnvelopingDocument()
-            throws ParserConfigurationException, IOException, SAXException {
-        Document document = loadDocument(this.documentInputStream);
-        return document;
-    }
+	@Override
+	protected Document getEnvelopingDocument()
+			throws ParserConfigurationException, IOException, SAXException {
+		Document document = loadDocument(this.documentInputStream);
+		return document;
+	}
 
-    public DigestInfo preSign(List<DigestInfo> digestInfos,
-                              List<X509Certificate> signingCertificateChain,
-                              IdentityDTO identity, AddressDTO address, byte[] photo)
-            throws NoSuchAlgorithmException {
-        return super.preSign(digestInfos, signingCertificateChain);
-    }
+	public DigestInfo preSign(List<DigestInfo> digestInfos,
+			List<X509Certificate> signingCertificateChain,
+			IdentityDTO identity, AddressDTO address, byte[] photo)
+			throws NoSuchAlgorithmException {
+		return super.preSign(digestInfos, signingCertificateChain);
+	}
 }

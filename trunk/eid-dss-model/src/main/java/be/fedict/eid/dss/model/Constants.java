@@ -20,5 +20,5 @@ package be.fedict.eid.dss.model;
 
 public abstract class Constants {
 
-    public static final String DSS_JNDI_CONTEXT = "be/fedict/eid/dss/";
+	public static final String DSS_JNDI_CONTEXT = "be/fedict/eid/dss/";
 }

@@ -31,21 +31,22 @@ import java.util.List;
 
 @Stateless
 @Local(AuthenticationService.class)
-@LocalBinding(jndiBinding = AdminConstants.ADMIN_JNDI_CONTEXT + "AuthenticationServiceBean")
+@LocalBinding(jndiBinding = AdminConstants.ADMIN_JNDI_CONTEXT
+		+ "AuthenticationServiceBean")
 public class AuthenticationServiceBean implements AuthenticationService {
 
-    private static final Log LOG = LogFactory
-            .getLog(AuthenticationServiceBean.class);
+	private static final Log LOG = LogFactory
+			.getLog(AuthenticationServiceBean.class);
 
-    @Override
-    public void validateCertificateChain(List<X509Certificate> certificateChain)
-            throws ExpiredCertificateSecurityException,
-            RevokedCertificateSecurityException,
-            TrustCertificateSecurityException, CertificateSecurityException,
-            SecurityException {
-        /*
-           * Admin trust is based on the public key only.
-           */
-        LOG.debug("validateCertificateChain");
-    }
+	@Override
+	public void validateCertificateChain(List<X509Certificate> certificateChain)
+			throws ExpiredCertificateSecurityException,
+			RevokedCertificateSecurityException,
+			TrustCertificateSecurityException, CertificateSecurityException,
+			SecurityException {
+		/*
+		 * Admin trust is based on the public key only.
+		 */
+		LOG.debug("validateCertificateChain");
+	}
 }

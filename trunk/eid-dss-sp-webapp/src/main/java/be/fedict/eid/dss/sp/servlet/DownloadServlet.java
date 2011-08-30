@@ -31,34 +31,36 @@ import java.io.IOException;
 
 public class DownloadServlet extends HttpServlet {
 
-    private static final Log LOG = LogFactory.getLog(DownloadServlet.class);
+	private static final long serialVersionUID = 1L;
 
-    @Override
-    protected void doGet(HttpServletRequest request,
-                         HttpServletResponse response) throws ServletException, IOException {
+	private static final Log LOG = LogFactory.getLog(DownloadServlet.class);
 
-        LOG.debug("doGet");
-        HttpSession httpSession = request.getSession();
-        byte[] document = (byte[]) httpSession.getAttribute("document");
+	@Override
+	protected void doGet(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
 
-        response.setHeader("Cache-Control",
-                "no-cache, no-store, must-revalidate, max-age=-1"); // http 1.1
-        if (!request.getScheme().equals("https")) {
-            // else the download fails in IE
-            response.setHeader("Pragma", "no-cache"); // http 1.0
-        } else {
-            response.setHeader("Pragma", "public");
-        }
-        response.setDateHeader("Expires", -1);
-        response.setContentLength(document.length);
+		LOG.debug("doGet");
+		HttpSession httpSession = request.getSession();
+		byte[] document = (byte[]) httpSession.getAttribute("document");
 
-        String contentType = (String) httpSession.getAttribute("ContentType");
-        LOG.debug("content-type: " + contentType);
-        response.setContentType(contentType);
-        response.setContentLength(document.length);
-        ServletOutputStream out = response.getOutputStream();
-        out.write(document);
-        out.flush();
-    }
+		response.setHeader("Cache-Control",
+				"no-cache, no-store, must-revalidate, max-age=-1"); // http 1.1
+		if (!request.getScheme().equals("https")) {
+			// else the download fails in IE
+			response.setHeader("Pragma", "no-cache"); // http 1.0
+		} else {
+			response.setHeader("Pragma", "public");
+		}
+		response.setDateHeader("Expires", -1);
+		response.setContentLength(document.length);
+
+		String contentType = (String) httpSession.getAttribute("ContentType");
+		LOG.debug("content-type: " + contentType);
+		response.setContentType(contentType);
+		response.setContentLength(document.length);
+		ServletOutputStream out = response.getOutputStream();
+		out.write(document);
+		out.flush();
+	}
 
 }

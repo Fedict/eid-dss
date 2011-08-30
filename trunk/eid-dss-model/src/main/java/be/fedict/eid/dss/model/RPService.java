@@ -23,15 +23,21 @@ import be.fedict.eid.dss.entity.RPEntity;
 import javax.ejb.Local;
 import java.util.List;
 
+/**
+ * Interface for managing the Relying Parties.
+ * 
+ * @author Frank Cornelis
+ * 
+ */
 @Local
 public interface RPService {
 
-    List<RPEntity> listRPs();
+	List<RPEntity> listRPs();
 
-    void remove(RPEntity rp);
+	void remove(RPEntity rp);
 
-    RPEntity save(RPEntity rp);
+	RPEntity save(RPEntity rp);
 
-    RPEntity find(String domain);
+	RPEntity find(String domain);
 
 }

@@ -26,82 +26,83 @@ import javax.ejb.Local;
 @Local
 public interface Config {
 
-        /*
-        * Accessors.
-        */
-        String getXkmsUrl();
+	/*
+	 * Accessors.
+	 */
+	String getXkmsUrl();
 
-        void setXkmsUrl(String xkmsUrl);
+	void setXkmsUrl(String xkmsUrl);
 
-        String getTspUrl();
+	String getTspUrl();
 
-        void setTspUrl(String tspUrl);
+	void setTspUrl(String tspUrl);
 
-        String getTspPolicyOid();
+	String getTspPolicyOid();
 
-        void setTspPolicyOid(String tspPolicyOid);
+	void setTspPolicyOid(String tspPolicyOid);
 
-        Boolean getHttpProxy();
+	Boolean getHttpProxy();
 
-        void setHttpProxy(Boolean httpProxy);
+	void setHttpProxy(Boolean httpProxy);
 
-        String getHttpProxyHost();
+	String getHttpProxyHost();
 
-        void setHttpProxyHost(String httpProxyHost);
+	void setHttpProxyHost(String httpProxyHost);
 
-        Integer getHttpProxyPort();
+	Integer getHttpProxyPort();
 
-        void setHttpProxyPort(Integer httpProxyPort);
+	void setHttpProxyPort(Integer httpProxyPort);
 
-        TSPDigestAlgo[] getTspDigestAlgoArray();
+	TSPDigestAlgo[] getTspDigestAlgoArray();
 
-        TSPDigestAlgo getTspDigestAlgo();
+	TSPDigestAlgo getTspDigestAlgo();
 
-        void setTspDigestAlgo(TSPDigestAlgo tspDigestAlgo);
+	void setTspDigestAlgo(TSPDigestAlgo tspDigestAlgo);
 
-        String getSignTrustDomain();
+	String getSignTrustDomain();
 
-        void setSignTrustDomain(String signTrustDomain);
+	void setSignTrustDomain(String signTrustDomain);
 
-        String getVerifyTrustDomain();
+	String getVerifyTrustDomain();
 
-        void setVerifyTrustDomain(String verifyTrustDomain);
+	void setVerifyTrustDomain(String verifyTrustDomain);
 
-        String getIdentityTrustDomain();
+	String getIdentityTrustDomain();
 
-        void setIdentityTrustDomain(String identityTrustDomain);
+	void setIdentityTrustDomain(String identityTrustDomain);
 
-        String getTsaTrustDomain();
+	String getTsaTrustDomain();
 
-        void setTsaTrustDomain(String tsaTrustDomain);
+	void setTsaTrustDomain(String tsaTrustDomain);
 
-        DigestAlgo[] getSignatureDigestAlgoArray();
+	DigestAlgo[] getSignatureDigestAlgoArray();
 
-        DigestAlgo getSignatureDigestAlgo();
+	DigestAlgo getSignatureDigestAlgo();
 
-        void setSignatureDigestAlgo(DigestAlgo signatureDigestAlgo);
+	void setSignatureDigestAlgo(DigestAlgo signatureDigestAlgo);
 
-        Integer getDocumentStorageExpiration();
+	Integer getDocumentStorageExpiration();
 
-        void setDocumentStorageExpiration(Integer documentStorageExpiration);
+	void setDocumentStorageExpiration(Integer documentStorageExpiration);
 
-        String getDocumentCleanupTaskCronSchedule();
+	String getDocumentCleanupTaskCronSchedule();
 
-        void setDocumentCleanupTaskCronSchedule(String documentCleanupTaskCronSchedule);
+	void setDocumentCleanupTaskCronSchedule(
+			String documentCleanupTaskCronSchedule);
 
-        Long getTimestampMaxOffset();
+	Long getTimestampMaxOffset();
 
-        void setTimestampMaxOffset(Long timestampMaxOffset);
+	void setTimestampMaxOffset(Long timestampMaxOffset);
 
-        /*
-        * Actions.
-        */
-        String save();
+	/*
+	 * Actions.
+	 */
+	String save();
 
-        /*
-        * Lifecycle.
-        */
-        void destroy();
+	/*
+	 * Lifecycle.
+	 */
+	void destroy();
 
-        void postConstruct();
+	void postConstruct();
 }

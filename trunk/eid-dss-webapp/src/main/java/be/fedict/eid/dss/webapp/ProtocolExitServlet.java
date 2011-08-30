@@ -38,139 +38,139 @@ import java.security.cert.X509Certificate;
 
 /**
  * Protocol Exit Servlet. Operates as a broker towards protocol services.
- *
+ * 
  * @author Frank Cornelis
  */
 public class ProtocolExitServlet extends AbstractProtocolServiceServlet {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private static final Log LOG = LogFactory.getLog(ProtocolExitServlet.class);
+	private static final Log LOG = LogFactory.getLog(ProtocolExitServlet.class);
 
-    private String protocolErrorPageInitParam;
+	private String protocolErrorPageInitParam;
 
-    private String protocolErrorMessageSessionAttributeInitParam;
+	private String protocolErrorMessageSessionAttributeInitParam;
 
-    private String protocolResponsePostPageInitParam;
+	private String protocolResponsePostPageInitParam;
 
-    private String responseActionSessionAttributeInitParam;
+	private String responseActionSessionAttributeInitParam;
 
-    private String responseAttributesSessionAttributeInitParam;
+	private String responseAttributesSessionAttributeInitParam;
 
-    @EJB
-    private DocumentService documentService;
+	@EJB
+	private DocumentService documentService;
 
-    public ProtocolExitServlet() {
-        super(true, false);
-    }
+	public ProtocolExitServlet() {
+		super(true, false);
+	}
 
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
 
-        this.protocolErrorPageInitParam = super.getRequiredInitParameter(
-                config, "ProtocolErrorPage");
-        this.protocolErrorMessageSessionAttributeInitParam = super
-                .getRequiredInitParameter(config,
-                        "ProtocolErrorMessageSessionAttribute");
+		this.protocolErrorPageInitParam = super.getRequiredInitParameter(
+				config, "ProtocolErrorPage");
+		this.protocolErrorMessageSessionAttributeInitParam = super
+				.getRequiredInitParameter(config,
+						"ProtocolErrorMessageSessionAttribute");
 
-        this.protocolResponsePostPageInitParam = super
-                .getRequiredInitParameter(config, "ProtocolResponsePostPage");
-        this.responseActionSessionAttributeInitParam = super
-                .getRequiredInitParameter(config,
-                        "ResponseActionSessionAttribute");
-        this.responseAttributesSessionAttributeInitParam = super
-                .getRequiredInitParameter(config,
-                        "ResponseAttributesSessionAttribute");
-    }
+		this.protocolResponsePostPageInitParam = super
+				.getRequiredInitParameter(config, "ProtocolResponsePostPage");
+		this.responseActionSessionAttributeInitParam = super
+				.getRequiredInitParameter(config,
+						"ResponseActionSessionAttribute");
+		this.responseAttributesSessionAttributeInitParam = super
+				.getRequiredInitParameter(config,
+						"ResponseAttributesSessionAttribute");
+	}
 
-    @Override
-    protected void handleRequest(HttpServletRequest request,
-                                 HttpServletResponse response) throws IOException, ServletException {
+	@Override
+	protected void handleRequest(HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ServletException {
 
-        LOG.debug("doGet");
-        HttpSession httpSession = request.getSession();
-        String entryContextPath = ProtocolEntryServlet
-                .retrieveProtocolServiceEntryContextPath(httpSession);
-        DSSProtocolService protocolService = super
-                .findProtocolService(entryContextPath);
-        if (null == protocolService) {
-            error(request, response, "no protocol service active", null);
-            return;
-        }
+		LOG.debug("doGet");
+		HttpSession httpSession = request.getSession();
+		String entryContextPath = ProtocolEntryServlet
+				.retrieveProtocolServiceEntryContextPath(httpSession);
+		DSSProtocolService protocolService = super
+				.findProtocolService(entryContextPath);
+		if (null == protocolService) {
+			error(request, response, "no protocol service active", null);
+			return;
+		}
 
-        DocumentRepository documentRepository = new DocumentRepository(
-                httpSession);
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
 
-        byte[] signedDocument = documentRepository.getSignedDocument();
+		byte[] signedDocument = documentRepository.getSignedDocument();
 
-        String documentId = documentRepository.getDocumentId();
-        if (null != documentId && null != signedDocument) {
+		String documentId = documentRepository.getDocumentId();
+		if (null != documentId && null != signedDocument) {
 
-            // update document entry
-            try {
-                this.documentService.update(documentId, signedDocument);
-            } catch (DocumentNotFoundException e) {
-                error(request, response, "Document not found!", null);
-                return;
-            }
-        } else if (null != documentId) {
+			// update document entry
+			try {
+				this.documentService.update(documentId, signedDocument);
+			} catch (DocumentNotFoundException e) {
+				error(request, response, "Document not found!", null);
+				return;
+			}
+		} else if (null != documentId) {
 
-            // document artifact needs to be removed, user cancelled signing...
-            this.documentService.remove(documentId);
-        }
+			// document artifact needs to be removed, user cancelled signing...
+			this.documentService.remove(documentId);
+		}
 
-        SignatureStatus signatureStatus = documentRepository
-                .getSignatureStatus();
-        X509Certificate signerCertificate = documentRepository
-                .getSignerCertificate();
+		SignatureStatus signatureStatus = documentRepository
+				.getSignatureStatus();
+		X509Certificate signerCertificate = documentRepository
+				.getSignerCertificate();
 
-        BrowserPOSTResponse returnResponse;
-        try {
-            returnResponse = protocolService.handleResponse(signatureStatus,
-                    signedDocument, documentId, signerCertificate, httpSession,
-                    request, response);
-        } catch (Exception e) {
-            LOG.error("protocol error: " + e.getMessage(), e);
-            httpSession.setAttribute(
-                    this.protocolErrorMessageSessionAttributeInitParam,
-                    e.getMessage());
-            response.sendRedirect(request.getContextPath()
-                    + this.protocolErrorPageInitParam);
-            return;
-        }
-        if (null != returnResponse) {
-            /*
-                * This means that the protocol service wants us to construct some
-                * Browser POST response towards the Service Provider landing site.
-                */
-            LOG.debug("constructing generic Browser POST response...");
-            httpSession.setAttribute(
-                    this.responseActionSessionAttributeInitParam,
-                    returnResponse.getActionUrl());
-            httpSession.setAttribute(
-                    this.responseAttributesSessionAttributeInitParam,
-                    returnResponse.getAttributes());
-            response.sendRedirect(request.getContextPath()
-                    + this.protocolResponsePostPageInitParam);
-            return;
-        }
-        LOG.debug("protocol service managed its own protocol response");
-        /*
-           * Clean-up the session here as it is no longer used after this point.
-           */
-        httpSession.invalidate();
-    }
+		BrowserPOSTResponse returnResponse;
+		try {
+			returnResponse = protocolService.handleResponse(signatureStatus,
+					signedDocument, documentId, signerCertificate, httpSession,
+					request, response);
+		} catch (Exception e) {
+			LOG.error("protocol error: " + e.getMessage(), e);
+			httpSession.setAttribute(
+					this.protocolErrorMessageSessionAttributeInitParam,
+					e.getMessage());
+			response.sendRedirect(request.getContextPath()
+					+ this.protocolErrorPageInitParam);
+			return;
+		}
+		if (null != returnResponse) {
+			/*
+			 * This means that the protocol service wants us to construct some
+			 * Browser POST response towards the Service Provider landing site.
+			 */
+			LOG.debug("constructing generic Browser POST response...");
+			httpSession.setAttribute(
+					this.responseActionSessionAttributeInitParam,
+					returnResponse.getActionUrl());
+			httpSession.setAttribute(
+					this.responseAttributesSessionAttributeInitParam,
+					returnResponse.getAttributes());
+			response.sendRedirect(request.getContextPath()
+					+ this.protocolResponsePostPageInitParam);
+			return;
+		}
+		LOG.debug("protocol service managed its own protocol response");
+		/*
+		 * Clean-up the session here as it is no longer used after this point.
+		 */
+		httpSession.invalidate();
+	}
 
-    private void error(HttpServletRequest request, HttpServletResponse response,
-                       String errorMessage, Throwable t)
-            throws IOException {
+	private void error(HttpServletRequest request,
+			HttpServletResponse response, String errorMessage, Throwable t)
+			throws IOException {
 
-        LOG.error("Protocol error: " + errorMessage, t);
-        request.getSession().setAttribute(
-                this.protocolErrorMessageSessionAttributeInitParam,
-                errorMessage);
-        response.sendRedirect(request.getContextPath()
-                + this.protocolErrorPageInitParam);
-    }
+		LOG.error("Protocol error: " + errorMessage, t);
+		request.getSession().setAttribute(
+				this.protocolErrorMessageSessionAttributeInitParam,
+				errorMessage);
+		response.sendRedirect(request.getContextPath()
+				+ this.protocolErrorPageInitParam);
+	}
 }

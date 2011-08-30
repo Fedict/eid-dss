@@ -35,59 +35,59 @@ import static org.junit.Assert.assertTrue;
 
 public class PersistenceTest {
 
-    private static final Log LOG = LogFactory.getLog(PersistenceTest.class);
+	private static final Log LOG = LogFactory.getLog(PersistenceTest.class);
 
-    private EntityManager entityManager;
+	private EntityManager entityManager;
 
-    @Before
-    public void setUp() throws Exception {
-        Class.forName("org.hsqldb.jdbcDriver");
-        Ejb3Configuration configuration = new Ejb3Configuration();
-        configuration.setProperty("hibernate.dialect",
-                "org.hibernate.dialect.HSQLDialect");
-        configuration.setProperty("hibernate.connection.driver_class",
-                "org.hsqldb.jdbcDriver");
-        configuration.setProperty("hibernate.connection.url",
-                "jdbc:hsqldb:mem:beta");
-        configuration.setProperty("hibernate.hbm2ddl.auto", "create");
+	@Before
+	public void setUp() throws Exception {
+		Class.forName("org.hsqldb.jdbcDriver");
+		Ejb3Configuration configuration = new Ejb3Configuration();
+		configuration.setProperty("hibernate.dialect",
+				"org.hibernate.dialect.HSQLDialect");
+		configuration.setProperty("hibernate.connection.driver_class",
+				"org.hsqldb.jdbcDriver");
+		configuration.setProperty("hibernate.connection.url",
+				"jdbc:hsqldb:mem:beta");
+		configuration.setProperty("hibernate.hbm2ddl.auto", "create");
 
-        configuration.addAnnotatedClass(AdministratorEntity.class);
-        configuration.addAnnotatedClass(ConfigPropertyEntity.class);
-        configuration.addAnnotatedClass(DocumentEntity.class);
-        configuration.addAnnotatedClass(RPEntity.class);
-        configuration.addAnnotatedClass(AccountingEntity.class);
+		configuration.addAnnotatedClass(AdministratorEntity.class);
+		configuration.addAnnotatedClass(ConfigPropertyEntity.class);
+		configuration.addAnnotatedClass(DocumentEntity.class);
+		configuration.addAnnotatedClass(RPEntity.class);
+		configuration.addAnnotatedClass(AccountingEntity.class);
 
-        EntityManagerFactory entityManagerFactory = configuration
-                .buildEntityManagerFactory();
+		EntityManagerFactory entityManagerFactory = configuration
+				.buildEntityManagerFactory();
 
-        this.entityManager = entityManagerFactory.createEntityManager();
-        this.entityManager.getTransaction().begin();
-    }
+		this.entityManager = entityManagerFactory.createEntityManager();
+		this.entityManager.getTransaction().begin();
+	}
 
-    @After
-    public void tearDown() throws Exception {
-        EntityTransaction entityTransaction = this.entityManager
-                .getTransaction();
-        LOG.debug("entity manager open: " + this.entityManager.isOpen());
-        LOG.debug("entity transaction active: " + entityTransaction.isActive());
-        if (entityTransaction.isActive()) {
-            if (entityTransaction.getRollbackOnly()) {
-                entityTransaction.rollback();
-            } else {
-                entityTransaction.commit();
-            }
-        }
-        this.entityManager.close();
-    }
+	@After
+	public void tearDown() throws Exception {
+		EntityTransaction entityTransaction = this.entityManager
+				.getTransaction();
+		LOG.debug("entity manager open: " + this.entityManager.isOpen());
+		LOG.debug("entity transaction active: " + entityTransaction.isActive());
+		if (entityTransaction.isActive()) {
+			if (entityTransaction.getRollbackOnly()) {
+				entityTransaction.rollback();
+			} else {
+				entityTransaction.commit();
+			}
+		}
+		this.entityManager.close();
+	}
 
-    @Test
-    public void testHasAdminsQuery() throws Exception {
-        assertFalse(AdministratorEntity.hasAdmins(this.entityManager));
+	@Test
+	public void testHasAdminsQuery() throws Exception {
+		assertFalse(AdministratorEntity.hasAdmins(this.entityManager));
 
-        AdministratorEntity administratorEntity = new AdministratorEntity(
-                "foobar", "Mr. foobar", true);
-        this.entityManager.persist(administratorEntity);
+		AdministratorEntity administratorEntity = new AdministratorEntity(
+				"foobar", "Mr. foobar", true);
+		this.entityManager.persist(administratorEntity);
 
-        assertTrue(AdministratorEntity.hasAdmins(this.entityManager));
-    }
+		assertTrue(AdministratorEntity.hasAdmins(this.entityManager));
+	}
 }

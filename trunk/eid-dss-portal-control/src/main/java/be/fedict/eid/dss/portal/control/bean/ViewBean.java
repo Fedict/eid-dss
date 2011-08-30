@@ -44,82 +44,82 @@ import java.util.UUID;
 @LocalBinding(jndiBinding = "fedict/eid/dss/portal/ViewBean")
 public class ViewBean implements View {
 
-    @Logger
-    private Log log;
+	@Logger
+	private Log log;
 
-    @EJB
-    private SignatureVerificationService signatureVerificationService;
+	@EJB
+	private SignatureVerificationService signatureVerificationService;
 
-    @In(value = "document", scope = ScopeType.SESSION, required = true)
-    private byte[] document;
+	@In(value = "document", scope = ScopeType.SESSION, required = true)
+	private byte[] document;
 
-    @Out(value = "target", scope = ScopeType.SESSION, required = false)
-    private String target;
+	@Out(value = "target", scope = ScopeType.SESSION, required = false)
+	private String target;
 
-    @Out(value = "SignatureRequest", scope = ScopeType.SESSION, required = false)
-    private String signatureRequest;
+	@Out(value = "SignatureRequest", scope = ScopeType.SESSION, required = false)
+	private String signatureRequest;
 
-    @Out(value = "language", scope = ScopeType.SESSION, required = false)
-    private String language;
+	@Out(value = "language", scope = ScopeType.SESSION, required = false)
+	private String language;
 
-    @Out(value = "RelayState", scope = ScopeType.SESSION, required = false)
-    private String relayState;
+	@Out(value = "RelayState", scope = ScopeType.SESSION, required = false)
+	private String relayState;
 
-    @In(value = "filesize", scope = ScopeType.SESSION, required = false)
-    @Out(value = "filesize", scope = ScopeType.SESSION, required = false)
-    private Integer filesize;
+	@In(value = "filesize", scope = ScopeType.SESSION, required = false)
+	@Out(value = "filesize", scope = ScopeType.SESSION, required = false)
+	private Integer filesize;
 
-    @In(value = "ContentType", scope = ScopeType.SESSION, required = false)
-    private String contentType;
+	@In(value = "ContentType", scope = ScopeType.SESSION, required = false)
+	private String contentType;
 
-    @DataModel
-    private List<SignatureInfo> signatureInfos;
+	@DataModel
+	private List<SignatureInfo> signatureInfos;
 
-    @In
-    private LocaleSelector localeSelector;
+	@In
+	private LocaleSelector localeSelector;
 
-    @Remove
-    @Destroy
-    @Override
-    public void destroy() {
-        this.log.debug("destroy");
-    }
+	@Remove
+	@Destroy
+	@Override
+	public void destroy() {
+		this.log.debug("destroy");
+	}
 
-    @Override
-    public void verifySignatures() {
-        this.filesize = this.document.length;
-        try {
-            this.signatureInfos = this.signatureVerificationService.verify(
-                    this.document, this.contentType);
-        } catch (DocumentFormatException e) {
-            this.log.error("document format error: #0", e.getMessage());
-            return;
-        } catch (InvalidSignatureException e) {
-            this.log.error("invalid signature: #0", e.getMessage());
-            return;
-        }
-        this.log.debug("number of signatures: #0", this.signatureInfos.size());
-        for (SignatureInfo signatureInfo : this.signatureInfos) {
-            this.log.debug("signer: #0", signatureInfo.getSigner()
-                    .getSubjectX500Principal());
-            this.log.debug("signing time: #0", signatureInfo.getSigningTime());
-        }
-    }
+	@Override
+	public void verifySignatures() {
+		this.filesize = this.document.length;
+		try {
+			this.signatureInfos = this.signatureVerificationService.verify(
+					this.document, this.contentType);
+		} catch (DocumentFormatException e) {
+			this.log.error("document format error: #0", e.getMessage());
+			return;
+		} catch (InvalidSignatureException e) {
+			this.log.error("invalid signature: #0", e.getMessage());
+			return;
+		}
+		this.log.debug("number of signatures: #0", this.signatureInfos.size());
+		for (SignatureInfo signatureInfo : this.signatureInfos) {
+			this.log.debug("signer: #0", signatureInfo.getSigner()
+					.getSubjectX500Principal());
+			this.log.debug("signing time: #0", signatureInfo.getSigningTime());
+		}
+	}
 
-    @Override
-    public String sign() {
-        this.log.debug("sign");
-        this.signatureRequest = new String(Base64.encode(this.document));
+	@Override
+	public String sign() {
+		this.log.debug("sign");
+		this.signatureRequest = new String(Base64.encode(this.document));
 
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        ExternalContext externalContext = facesContext.getExternalContext();
-        String requestContextPath = externalContext.getRequestContextPath();
-        this.target = requestContextPath + "/dss-response";
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext externalContext = facesContext.getExternalContext();
+		String requestContextPath = externalContext.getRequestContextPath();
+		this.target = requestContextPath + "/dss-response";
 
-        this.language = this.localeSelector.getLanguage();
-        this.relayState = UUID.randomUUID().toString();
-        this.log.debug("RelayState: " + relayState);
+		this.language = this.localeSelector.getLanguage();
+		this.relayState = UUID.randomUUID().toString();
+		this.log.debug("RelayState: " + relayState);
 
-        return "submit";
-    }
+		return "submit";
+	}
 }

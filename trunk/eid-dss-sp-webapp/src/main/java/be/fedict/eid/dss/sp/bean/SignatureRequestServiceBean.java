@@ -31,63 +31,67 @@ import java.security.KeyStore;
 import java.util.Map;
 import java.util.UUID;
 
-public class SignatureRequestServiceBean implements SignatureRequestService, Serializable {
+public class SignatureRequestServiceBean implements SignatureRequestService,
+		Serializable {
 
-    private static final Log LOG = LogFactory.getLog(SignatureRequestServiceBean.class);
+	private static final long serialVersionUID = 1L;
 
-    @Override
-    public String getSPDestination() {
+	private static final Log LOG = LogFactory
+			.getLog(SignatureRequestServiceBean.class);
 
-        HttpServletRequest httpServletRequest = getHttpServletRequest();
+	@Override
+	public String getSPDestination() {
 
-        return httpServletRequest.getScheme() + "://"
-                + httpServletRequest.getServerName() + ":"
-                + httpServletRequest.getServerPort()
-                + httpServletRequest.getContextPath() + "/dss-response";
+		HttpServletRequest httpServletRequest = getHttpServletRequest();
 
-//        return "../eid-dss-sp/dss-response";
-    }
+		return httpServletRequest.getScheme() + "://"
+				+ httpServletRequest.getServerName() + ":"
+				+ httpServletRequest.getServerPort()
+				+ httpServletRequest.getContextPath() + "/dss-response";
 
-    @Override
-    public String getDssDestination() {
-        return "../eid-dss/protocol/simple";
-    }
+		// return "../eid-dss-sp/dss-response";
+	}
 
-    @Override
-    public String getRelayState(Map<String, String[]> parameterMap) {
-        return UUID.randomUUID().toString();
-    }
+	@Override
+	public String getDssDestination() {
+		return "../eid-dss/protocol/simple";
+	}
 
-    @Override
-    public KeyStore.PrivateKeyEntry getSPIdentity() {
+	@Override
+	public String getRelayState(Map<String, String[]> parameterMap) {
+		return UUID.randomUUID().toString();
+	}
 
-        LOG.debug("get SP Identity");
-        try {
-            KeyStore.PrivateKeyEntry pke = PkiServlet.getPrivateKeyEntry();
-            LOG.debug("certificate: " + pke.getCertificate());
-            return pke;
-        } catch (Exception e) {
-            LOG.error(e);
-            return null;
-        }
+	@Override
+	public KeyStore.PrivateKeyEntry getSPIdentity() {
 
-    }
+		LOG.debug("get SP Identity");
+		try {
+			KeyStore.PrivateKeyEntry pke = PkiServlet.getPrivateKeyEntry();
+			LOG.debug("certificate: " + pke.getCertificate());
+			return pke;
+		} catch (Exception e) {
+			LOG.error(e);
+			return null;
+		}
 
-    @Override
-    public String getLanguage() {
-        return "fr";
-    }
+	}
 
-    private static HttpServletRequest getHttpServletRequest() {
-        HttpServletRequest httpServletRequest;
-        try {
-            httpServletRequest = (HttpServletRequest) PolicyContext
-                    .getContext("javax.servlet.http.HttpServletRequest");
-        } catch (PolicyContextException e) {
-            throw new RuntimeException("JACC error: " + e.getMessage());
-        }
+	@Override
+	public String getLanguage() {
+		return "fr";
+	}
 
-        return httpServletRequest;
-    }
+	private static HttpServletRequest getHttpServletRequest() {
+		HttpServletRequest httpServletRequest;
+		try {
+			httpServletRequest = (HttpServletRequest) PolicyContext
+					.getContext("javax.servlet.http.HttpServletRequest");
+		} catch (PolicyContextException e) {
+			throw new RuntimeException("JACC error: " + e.getMessage());
+		}
+
+		return httpServletRequest;
+	}
 
 }

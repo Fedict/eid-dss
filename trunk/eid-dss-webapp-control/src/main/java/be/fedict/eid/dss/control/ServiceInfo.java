@@ -33,11 +33,11 @@ public interface ServiceInfo {
 	 */
 	void initDocumentFormatList();
 
-    void initProtocolServices();
+	void initProtocolServices();
 
 	void initXmlSchemaNamespacesList();
 
 	void initXmlStyleSheetNamespacesList();
-	
+
 	public String getServiceFingerprint();
 }

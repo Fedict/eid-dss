@@ -46,7 +46,7 @@ import java.util.List;
  * XML Signature Service bean. Acts as a proxy towards the actual
  * SignatureService implementation provided by some document service.
  * <p/>
- *
+ * 
  * @author Frank Cornelis
  */
 @Stateless
@@ -54,111 +54,112 @@ import java.util.List;
 @LocalBinding(jndiBinding = Constants.DSS_JNDI_CONTEXT + "SignatureServiceBean")
 public class SignatureServiceBean implements SignatureServiceEx {
 
-    private static final Log LOG = LogFactory.getLog(SignatureServiceBean.class);
+	private static final Log LOG = LogFactory
+			.getLog(SignatureServiceBean.class);
 
-    @EJB
-    private Configuration configuration;
+	@EJB
+	private Configuration configuration;
 
-    @EJB
-    private ServicesManager servicesManager;
+	@EJB
+	private ServicesManager servicesManager;
 
-    @EJB
-    private TrustValidationService trustValidationService;
+	@EJB
+	private TrustValidationService trustValidationService;
 
-    public String getFilesDigestAlgorithm() {
-        return null;
-    }
+	public String getFilesDigestAlgorithm() {
+		return null;
+	}
 
-    public DigestInfo preSign(List<DigestInfo> digestInfos,
-                              List<X509Certificate> signingCertificateChain)
-            throws NoSuchAlgorithmException {
-        throw new UnsupportedOperationException();
-    }
+	public DigestInfo preSign(List<DigestInfo> digestInfos,
+			List<X509Certificate> signingCertificateChain)
+			throws NoSuchAlgorithmException {
+		throw new UnsupportedOperationException();
+	}
 
-    public void postSign(byte[] signatureValue,
-                         List<X509Certificate> signingCertificateChain)
-            throws SecurityException {
+	public void postSign(byte[] signatureValue,
+			List<X509Certificate> signingCertificateChain)
+			throws SecurityException {
 
-        SignatureService signatureService = getSignatureService(null, null);
-        signatureService.postSign(signatureValue, signingCertificateChain);
-    }
+		SignatureService signatureService = getSignatureService(null, null);
+		signatureService.postSign(signatureValue, signingCertificateChain);
+	}
 
-    private SignatureServiceEx getSignatureService(IdentityDTO identity,
-                                                   byte[] photo) {
+	private SignatureServiceEx getSignatureService(IdentityDTO identity,
+			byte[] photo) {
 
-        XKMS2Client xkms2Client = this.trustValidationService.getXkms2Client();
+		XKMS2Client xkms2Client = this.trustValidationService.getXkms2Client();
 
-        String tspUrl = this.configuration.getValue(
-                ConfigProperty.TSP_URL, String.class);
-        String tspPolicyOid = this.configuration.getValue(
-                ConfigProperty.TSP_POLICY_OID, String.class);
+		String tspUrl = this.configuration.getValue(ConfigProperty.TSP_URL,
+				String.class);
+		String tspPolicyOid = this.configuration.getValue(
+				ConfigProperty.TSP_POLICY_OID, String.class);
 
-        String signTrustDomain = this.configuration.getValue(
-                ConfigProperty.SIGN_TRUST_DOMAIN, String.class);
-        String tsaTrustDomain = this.configuration.getValue(
-                ConfigProperty.TSA_TRUST_DOMAIN, String.class);
+		String signTrustDomain = this.configuration.getValue(
+				ConfigProperty.SIGN_TRUST_DOMAIN, String.class);
+		String tsaTrustDomain = this.configuration.getValue(
+				ConfigProperty.TSA_TRUST_DOMAIN, String.class);
 
-        Boolean useHttpProxy = this.configuration.getValue(
-                ConfigProperty.HTTP_PROXY_ENABLED, Boolean.class);
-        String httpProxyHost = this.configuration.getValue(
-                ConfigProperty.HTTP_PROXY_HOST, String.class);
-        Integer httpProxyPort = this.configuration.getValue(
-                ConfigProperty.HTTP_PROXY_PORT, Integer.class);
+		Boolean useHttpProxy = this.configuration.getValue(
+				ConfigProperty.HTTP_PROXY_ENABLED, Boolean.class);
+		String httpProxyHost = this.configuration.getValue(
+				ConfigProperty.HTTP_PROXY_HOST, String.class);
+		Integer httpProxyPort = this.configuration.getValue(
+				ConfigProperty.HTTP_PROXY_PORT, Integer.class);
 
-        DigestAlgo signatureDigestAlgo = this.configuration.getValue(
-                ConfigProperty.SIGNATURE_DIGEST_ALGO, DigestAlgo.class);
+		DigestAlgo signatureDigestAlgo = this.configuration.getValue(
+				ConfigProperty.SIGNATURE_DIGEST_ALGO, DigestAlgo.class);
 
-        LOG.debug("signatureDigestAlgo: " + signatureDigestAlgo);
+		LOG.debug("signatureDigestAlgo: " + signatureDigestAlgo);
 
-        RevocationDataService revocationDataService =
-                new TrustServiceRevocationDataService(xkms2Client, signTrustDomain);
-        SignatureFacet signatureFacet = new SignerCertificateSignatureFacet();
-        TimeStampServiceValidator timeStampServiceValidator =
-                new TrustServiceTimeStampServiceValidator(xkms2Client, tsaTrustDomain);
-        TSPTimeStampService timeStampService = new TSPTimeStampService(tspUrl,
-                timeStampServiceValidator);
-        if (useHttpProxy) {
-            timeStampService.setProxy(httpProxyHost, httpProxyPort);
-        }
-        if (null != tspPolicyOid && !tspPolicyOid.isEmpty()) {
-            timeStampService.setRequestPolicy(tspPolicyOid);
-        }
+		RevocationDataService revocationDataService = new TrustServiceRevocationDataService(
+				xkms2Client, signTrustDomain);
+		SignatureFacet signatureFacet = new SignerCertificateSignatureFacet();
+		TimeStampServiceValidator timeStampServiceValidator = new TrustServiceTimeStampServiceValidator(
+				xkms2Client, tsaTrustDomain);
+		TSPTimeStampService timeStampService = new TSPTimeStampService(tspUrl,
+				timeStampServiceValidator);
+		if (useHttpProxy) {
+			timeStampService.setProxy(httpProxyHost, httpProxyPort);
+		}
+		if (null != tspPolicyOid && !tspPolicyOid.isEmpty()) {
+			timeStampService.setRequestPolicy(tspPolicyOid);
+		}
 
-        HttpSession httpSession = HttpSessionTemporaryDataStorage
-                .getHttpSession();
-        DocumentRepository documentRepository = new DocumentRepository(
-                httpSession);
-        byte[] document = documentRepository.getDocument();
-        ByteArrayInputStream documentInputStream = new ByteArrayInputStream(
-                document);
-        String role = documentRepository.getRole();
+		HttpSession httpSession = HttpSessionTemporaryDataStorage
+				.getHttpSession();
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+		byte[] document = documentRepository.getDocument();
+		ByteArrayInputStream documentInputStream = new ByteArrayInputStream(
+				document);
+		String role = documentRepository.getRole();
 
-        OutputStream documentOutputStream = new DocumentRepositoryOutputStream();
+		OutputStream documentOutputStream = new DocumentRepositoryOutputStream();
 
-        DSSDocumentService documentService = this.servicesManager
-                .getDocumentService();
-        SignatureServiceEx signatureService;
-        try {
-            signatureService = documentService
-                    .getSignatureService(documentInputStream, timeStampService,
-                            timeStampServiceValidator, revocationDataService,
-                            signatureFacet, documentOutputStream, role,
-                            identity, photo, signatureDigestAlgo);
-        } catch (Exception e) {
-            throw new RuntimeException("error retrieving signature service: "
-                    + e.getMessage(), e);
-        }
-        return signatureService;
-    }
+		DSSDocumentService documentService = this.servicesManager
+				.getDocumentService();
+		SignatureServiceEx signatureService;
+		try {
+			signatureService = documentService.getSignatureService(
+					documentInputStream, timeStampService,
+					timeStampServiceValidator, revocationDataService,
+					signatureFacet, documentOutputStream, role, identity,
+					photo, signatureDigestAlgo);
+		} catch (Exception e) {
+			throw new RuntimeException("error retrieving signature service: "
+					+ e.getMessage(), e);
+		}
+		return signatureService;
+	}
 
-    public DigestInfo preSign(List<DigestInfo> digestInfos,
-                              List<X509Certificate> signingCertificateChain,
-                              IdentityDTO identity, AddressDTO address, byte[] photo)
-            throws NoSuchAlgorithmException {
+	public DigestInfo preSign(List<DigestInfo> digestInfos,
+			List<X509Certificate> signingCertificateChain,
+			IdentityDTO identity, AddressDTO address, byte[] photo)
+			throws NoSuchAlgorithmException {
 
-        SignatureServiceEx signatureService = getSignatureService(identity,
-                photo);
-        return signatureService.preSign(digestInfos, signingCertificateChain,
-                identity, address, photo);
-    }
+		SignatureServiceEx signatureService = getSignatureService(identity,
+				photo);
+		return signatureService.preSign(digestInfos, signingCertificateChain,
+				identity, address, photo);
+	}
 }

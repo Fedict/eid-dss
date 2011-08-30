@@ -31,50 +31,48 @@ import java.util.List;
 @Stateless
 public class AccountingServiceBean implements AccountingService {
 
-    private static Log LOG = LogFactory.getLog(AccountingServiceBean.class);
+	private static Log LOG = LogFactory.getLog(AccountingServiceBean.class);
 
-    @PersistenceContext
-    private EntityManager entityManager;
+	@PersistenceContext
+	private EntityManager entityManager;
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<AccountingEntity> listAll() {
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<AccountingEntity> listAll() {
 
-        LOG.debug("list all");
-        return AccountingEntity.listAll(this.entityManager);
-    }
+		LOG.debug("list all");
+		return AccountingEntity.listAll(this.entityManager);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void resetAll() {
+	/**
+	 * {@inheritDoc}
+	 */
+	public void resetAll() {
 
-        LOG.debug("reset all: #deleted=" +
-                AccountingEntity.resetAll(this.entityManager));
-    }
+		LOG.debug("reset all: #deleted="
+				+ AccountingEntity.resetAll(this.entityManager));
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public AccountingEntity addRequest(String domain) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public AccountingEntity addRequest(String domain) {
 
-        LOG.debug("Add request: " + domain);
+		LOG.debug("Add request: " + domain);
 
-        AccountingEntity accountingEntity = this.entityManager
-                .find(AccountingEntity.class, domain);
-        if (null == accountingEntity) {
+		AccountingEntity accountingEntity = this.entityManager.find(
+				AccountingEntity.class, domain);
+		if (null == accountingEntity) {
 
-            accountingEntity = new AccountingEntity(domain);
-            this.entityManager.persist(accountingEntity);
+			accountingEntity = new AccountingEntity(domain);
+			this.entityManager.persist(accountingEntity);
 
-        } else {
+		} else {
 
-            accountingEntity.setRequests(accountingEntity.getRequests() + 1);
+			accountingEntity.setRequests(accountingEntity.getRequests() + 1);
 
-        }
-        return accountingEntity;
-    }
+		}
+		return accountingEntity;
+	}
 }
-
-

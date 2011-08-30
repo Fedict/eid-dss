@@ -48,9 +48,9 @@ public interface XmlStyleSheet {
 	String getRevision();
 
 	void setRevision(String revision);
-	
+
 	String getNamespace();
-	
+
 	void setNamespace(String namespace);
 
 	/*

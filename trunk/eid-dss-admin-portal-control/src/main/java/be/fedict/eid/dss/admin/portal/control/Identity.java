@@ -25,61 +25,61 @@ import java.util.List;
 @Local
 public interface Identity {
 
-    /*
-    * Accessors.
-    */
-    String getIdentityLabel();
+	/*
+	 * Accessors.
+	 */
+	String getIdentityLabel();
 
-    String getName();
+	String getName();
 
-    void setName(String name);
+	void setName(String name);
 
-    Boolean isNameReadOnly();
+	Boolean isNameReadOnly();
 
-    String getKeyStoreType();
+	String getKeyStoreType();
 
-    void setKeyStoreType(String keyStoreType);
+	void setKeyStoreType(String keyStoreType);
 
-    String getKeyStorePath();
+	String getKeyStorePath();
 
-    void setKeyStorePath(String keyStorePath);
+	void setKeyStorePath(String keyStorePath);
 
-    String getKeyStorePassword();
+	String getKeyStorePassword();
 
-    void setKeyStorePassword(String keyStorePassword);
+	void setKeyStorePassword(String keyStorePassword);
 
-    String getKeyEntryPassword();
+	String getKeyEntryPassword();
 
-    void setKeyEntryPassword(String keyEntryPassword);
+	void setKeyEntryPassword(String keyEntryPassword);
 
-    String getKeyEntryAlias();
+	String getKeyEntryAlias();
 
-    void setKeyEntryAlias(String keyEntryAlias);
+	void setKeyEntryAlias(String keyEntryAlias);
 
-    boolean isActive();
+	boolean isActive();
 
-    /*
-    * Factories
-    */
-    List<SelectItem> getIdentityNames();
+	/*
+	 * Factories
+	 */
+	List<SelectItem> getIdentityNames();
 
-    List<SelectItem> keyStoreTypeFactory();
+	List<SelectItem> keyStoreTypeFactory();
 
-    /*
-    * Actions.
-    */
-    String save();
+	/*
+	 * Actions.
+	 */
+	String save();
 
-    String activate();
+	String activate();
 
-    String remove();
+	String remove();
 
-    String test();
+	String test();
 
-    /*
-    * Lifecycle.
-    */
-    void destroy();
+	/*
+	 * Lifecycle.
+	 */
+	void destroy();
 
-    void create();
+	void create();
 }

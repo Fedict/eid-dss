@@ -25,83 +25,82 @@ import java.util.List;
 
 @Entity
 @Table(name = Constants.DATABASE_TABLE_PREFIX + "documents")
-@NamedQueries({@NamedQuery(name = DocumentEntity.ALL, query = "FROM DocumentEntity"),
-        @NamedQuery(name = DocumentEntity.REMOVE_EXPIRED, query = "DELETE " +
-                "FROM DocumentEntity AS d WHERE :now > d.expiration")})
+@NamedQueries({
+		@NamedQuery(name = DocumentEntity.ALL, query = "FROM DocumentEntity"),
+		@NamedQuery(name = DocumentEntity.REMOVE_EXPIRED, query = "DELETE "
+				+ "FROM DocumentEntity AS d WHERE :now > d.expiration") })
 public class DocumentEntity implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public static final String ALL = "dss.doc.all";
-    public static final String REMOVE_EXPIRED = "dss.doc.rem.expired";
+	public static final String ALL = "dss.doc.all";
+	public static final String REMOVE_EXPIRED = "dss.doc.rem.expired";
 
-    private String id;
+	private String id;
 
-    private String contentType;
+	private String contentType;
 
-    private byte[] data;
+	private byte[] data;
 
-    private Date expiration;
+	private Date expiration;
 
-    public DocumentEntity() {
-        super();
-    }
+	public DocumentEntity() {
+		super();
+	}
 
-    public DocumentEntity(String id, String contentType, byte[] data,
-                          Date expiration) {
+	public DocumentEntity(String id, String contentType, byte[] data,
+			Date expiration) {
 
-        this.id = id;
-        this.contentType = contentType;
-        this.data = data;
-        this.expiration = expiration;
-    }
+		this.id = id;
+		this.contentType = contentType;
+		this.data = data;
+		this.expiration = expiration;
+	}
 
-    @Id
-    public String getId() {
-        return id;
-    }
+	@Id
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public String getContentType() {
-        return contentType;
-    }
+	public String getContentType() {
+		return contentType;
+	}
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
 
-    @Column(length = 100 * 1024, nullable = false)
-    public byte[] getData() {
-        return data;
-    }
+	@Column(length = 100 * 1024, nullable = false)
+	public byte[] getData() {
+		return data;
+	}
 
-    public void setData(byte[] data) {
-        this.data = data;
-    }
+	public void setData(byte[] data) {
+		this.data = data;
+	}
 
-    public Date getExpiration() {
-        return expiration;
-    }
+	public Date getExpiration() {
+		return expiration;
+	}
 
-    public void setExpiration(Date expiration) {
-        this.expiration = expiration;
-    }
+	public void setExpiration(Date expiration) {
+		this.expiration = expiration;
+	}
 
-    @SuppressWarnings("unchecked")
-    public static List<DocumentEntity> getAll(EntityManager entityManager) {
-        Query query = entityManager.createNamedQuery(ALL);
-        return query.getResultList();
-    }
+	@SuppressWarnings("unchecked")
+	public static List<DocumentEntity> getAll(EntityManager entityManager) {
+		Query query = entityManager.createNamedQuery(ALL);
+		return query.getResultList();
+	}
 
-    @SuppressWarnings("unchecked")
-    public static int removeExpired(EntityManager entityManager) {
-
-        Date now = new Date();
-        Query query = entityManager.createNamedQuery(REMOVE_EXPIRED).setParameter("now", now);
-        return query.executeUpdate();
-    }
-
+	public static int removeExpired(EntityManager entityManager) {
+		Date now = new Date();
+		Query query = entityManager.createNamedQuery(REMOVE_EXPIRED)
+				.setParameter("now", now);
+		return query.executeUpdate();
+	}
 }

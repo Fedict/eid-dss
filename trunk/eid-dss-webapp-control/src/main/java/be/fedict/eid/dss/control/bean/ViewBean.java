@@ -48,127 +48,127 @@ import java.io.OutputStream;
 @LocalBinding(jndiBinding = "fedict/eid/dss/ViewBean")
 public class ViewBean implements View {
 
-    @Logger
-    private Log log;
+	@Logger
+	private Log log;
 
-    @In(create = true)
-    private SessionContext sessionContext;
+	@In(create = true)
+	private SessionContext sessionContext;
 
-    @In
-    private LocaleSelector localeSelector;
+	@In
+	private LocaleSelector localeSelector;
 
-    @In(value = View.LANGUAGE_SESSION_ATTRIBUTE, scope = ScopeType.SESSION, required = false)
-    private String language;
+	@In(value = View.LANGUAGE_SESSION_ATTRIBUTE, scope = ScopeType.SESSION, required = false)
+	private String language;
 
-    private String role;
+	private String role;
 
-    private boolean includeIdentity;
+	private boolean includeIdentity;
 
-    public String cancel() {
+	public String cancel() {
 
-        HttpSession httpSession = HttpSessionTemporaryDataStorage
-                .getHttpSession();
-        DocumentRepository documentRepository = new DocumentRepository(
-                httpSession);
-        documentRepository.setSignatureStatus(SignatureStatus.USER_CANCELLED);
+		HttpSession httpSession = HttpSessionTemporaryDataStorage
+				.getHttpSession();
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+		documentRepository.setSignatureStatus(SignatureStatus.USER_CANCELLED);
 
-        FacesContext facesContext = FacesContext.getCurrentInstance();
-        ExternalContext externalContext = facesContext.getExternalContext();
-        HttpServletResponse httpServletResponse = (HttpServletResponse) externalContext
-                .getResponse();
-        HttpServletRequest httpServletRequest = (HttpServletRequest) externalContext
-                .getRequest();
-        String redirectUrl = httpServletRequest.getContextPath()
-                + "/protocol-exit";
-        try {
-            httpServletResponse.sendRedirect(redirectUrl);
-        } catch (IOException e) {
-            this.log.error("I/O error: #0", e, e.getMessage());
-        }
-        return null;
-    }
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext externalContext = facesContext.getExternalContext();
+		HttpServletResponse httpServletResponse = (HttpServletResponse) externalContext
+				.getResponse();
+		HttpServletRequest httpServletRequest = (HttpServletRequest) externalContext
+				.getRequest();
+		String redirectUrl = httpServletRequest.getContextPath()
+				+ "/protocol-exit";
+		try {
+			httpServletResponse.sendRedirect(redirectUrl);
+		} catch (IOException e) {
+			this.log.error("I/O error: #0", e, e.getMessage());
+		}
+		return null;
+	}
 
-    @Override
-    public void initLanguage() {
-        this.log.debug("language: #0", this.language);
-        if (null != this.language) {
-            this.localeSelector.setLocaleString(language);
-            this.localeSelector.select();
-        }
-    }
+	@Override
+	public void initLanguage() {
+		this.log.debug("language: #0", this.language);
+		if (null != this.language) {
+			this.localeSelector.setLocaleString(language);
+			this.localeSelector.select();
+		}
+	}
 
-    @Override
-    public String getRole() {
-        return this.role;
-    }
+	@Override
+	public String getRole() {
+		return this.role;
+	}
 
-    @Override
-    public void setRole(String role) {
-        this.role = role;
-    }
+	@Override
+	public void setRole(String role) {
+		this.role = role;
+	}
 
-    @Remove
-    @Destroy
-    @Override
-    public void destroy() {
-        this.log.debug("destroy");
-    }
+	@Remove
+	@Destroy
+	@Override
+	public void destroy() {
+		this.log.debug("destroy");
+	}
 
-    @Override
-    public String sign() {
-        HttpSession httpSession = HttpSessionTemporaryDataStorage
-                .getHttpSession();
-        DocumentRepository documentRepository = new DocumentRepository(
-                httpSession);
-        documentRepository.setRole(this.role);
-        documentRepository.setIncludeIdentity(this.includeIdentity);
-        return "sign";
-    }
+	@Override
+	public String sign() {
+		HttpSession httpSession = HttpSessionTemporaryDataStorage
+				.getHttpSession();
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+		documentRepository.setRole(this.role);
+		documentRepository.setIncludeIdentity(this.includeIdentity);
+		return "sign";
+	}
 
-    @Override
-    public boolean getIncludeIdentity() {
-        return this.includeIdentity;
-    }
+	@Override
+	public boolean getIncludeIdentity() {
+		return this.includeIdentity;
+	}
 
-    @Override
-    public void setIncludeIdentity(boolean includeIdentity) {
-        this.includeIdentity = includeIdentity;
-    }
+	@Override
+	public void setIncludeIdentity(boolean includeIdentity) {
+		this.includeIdentity = includeIdentity;
+	}
 
-    @Override
-    public String getRp() {
+	@Override
+	public String getRp() {
 
-        RPEntity rp = (RPEntity) this.sessionContext.get(RP_SESSION_ATTRIBUTE);
-        if (null != rp) {
-            return rp.getName();
-        }
-        return null;
-    }
+		RPEntity rp = (RPEntity) this.sessionContext.get(RP_SESSION_ATTRIBUTE);
+		if (null != rp) {
+			return rp.getName();
+		}
+		return null;
+	}
 
-    @Override
-    public boolean isRpLogo() {
+	@Override
+	public boolean isRpLogo() {
 
-        RPEntity rp = (RPEntity) this.sessionContext.get(RP_SESSION_ATTRIBUTE);
-        return null != rp && null != rp.getLogo();
+		RPEntity rp = (RPEntity) this.sessionContext.get(RP_SESSION_ATTRIBUTE);
+		return null != rp && null != rp.getLogo();
 
-    }
+	}
 
-    @Override
-    public void paint(OutputStream stream, Object object) throws IOException {
+	@Override
+	public void paint(OutputStream stream, Object object) throws IOException {
 
-        RPEntity rp = (RPEntity) this.sessionContext.get(RP_SESSION_ATTRIBUTE);
+		RPEntity rp = (RPEntity) this.sessionContext.get(RP_SESSION_ATTRIBUTE);
 
-        if (null != rp && null != rp.getLogo()) {
-            this.log.debug("paint logo");
-            stream.write(rp.getLogo());
-            stream.close();
-        }
-    }
+		if (null != rp && null != rp.getLogo()) {
+			this.log.debug("paint logo");
+			stream.write(rp.getLogo());
+			stream.close();
+		}
+	}
 
-    @Override
-    public long getTimeStamp() {
+	@Override
+	public long getTimeStamp() {
 
-        return System.currentTimeMillis();
-    }
+		return System.currentTimeMillis();
+	}
 
 }

@@ -26,9 +26,9 @@ import java.util.List;
 @Local
 public interface AccountingService {
 
-    List<AccountingEntity> listAll();
+	List<AccountingEntity> listAll();
 
-    void resetAll();
+	void resetAll();
 
-    AccountingEntity addRequest(String domain);
+	AccountingEntity addRequest(String domain);
 }

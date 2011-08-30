@@ -45,109 +45,110 @@ import java.util.zip.ZipInputStream;
 /**
  * Signature service implementation for ZIP containers. We basically use the ODF
  * signature container format and sign everything within the ZIP.
- *
+ * 
  * @author Frank Cornelis
  */
 public class ZIPSignatureService extends AbstractXmlSignatureService implements
-        SignatureServiceEx {
+		SignatureServiceEx {
 
-    private final TemporaryDataStorage temporaryDataStorage;
+	private final TemporaryDataStorage temporaryDataStorage;
 
-    private final OutputStream documentOutputStream;
+	private final OutputStream documentOutputStream;
 
-    private final File tmpFile;
+	private final File tmpFile;
 
-    public ZIPSignatureService(InputStream documentInputStream,
-                               SignatureFacet signatureFacet, OutputStream documentOutputStream,
-                               RevocationDataService revocationDataService,
-                               TimeStampService timeStampService, String role,
-                               IdentityDTO identity, byte[] photo, DigestAlgo signatureDigestAlgo)
-            throws IOException {
+	public ZIPSignatureService(InputStream documentInputStream,
+			SignatureFacet signatureFacet, OutputStream documentOutputStream,
+			RevocationDataService revocationDataService,
+			TimeStampService timeStampService, String role,
+			IdentityDTO identity, byte[] photo, DigestAlgo signatureDigestAlgo)
+			throws IOException {
 
-        super(signatureDigestAlgo);
-        this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
-        this.documentOutputStream = documentOutputStream;
+		super(signatureDigestAlgo);
+		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
+		this.documentOutputStream = documentOutputStream;
 
-        this.tmpFile = File.createTempFile("eid-dss-", ".zip");
-        FileOutputStream fileOutputStream;
-        fileOutputStream = new FileOutputStream(this.tmpFile);
-        IOUtils.copy(documentInputStream, fileOutputStream);
+		this.tmpFile = File.createTempFile("eid-dss-", ".zip");
+		FileOutputStream fileOutputStream;
+		fileOutputStream = new FileOutputStream(this.tmpFile);
+		IOUtils.copy(documentInputStream, fileOutputStream);
 
-        addSignatureFacet(new ZIPSignatureFacet(this.tmpFile, signatureDigestAlgo));
-        XAdESSignatureFacet xadesSignatureFacet = new XAdESSignatureFacet(
-                getSignatureDigestAlgorithm());
-        xadesSignatureFacet.setRole(role);
-        addSignatureFacet(xadesSignatureFacet);
-        addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
-        addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
-                revocationDataService, getSignatureDigestAlgorithm()));
-        addSignatureFacet(signatureFacet);
+		addSignatureFacet(new ZIPSignatureFacet(this.tmpFile,
+				signatureDigestAlgo));
+		XAdESSignatureFacet xadesSignatureFacet = new XAdESSignatureFacet(
+				getSignatureDigestAlgorithm());
+		xadesSignatureFacet.setRole(role);
+		addSignatureFacet(xadesSignatureFacet);
+		addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
+		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
+				revocationDataService, getSignatureDigestAlgorithm()));
+		addSignatureFacet(signatureFacet);
 
-        if (null != identity) {
-            IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
-                    identity, photo, getSignatureDigestAlgorithm());
-            addSignatureFacet(identitySignatureFacet);
-        }
-    }
+		if (null != identity) {
+			IdentitySignatureFacet identitySignatureFacet = new IdentitySignatureFacet(
+					identity, photo, getSignatureDigestAlgorithm());
+			addSignatureFacet(identitySignatureFacet);
+		}
+	}
 
-    public String getFilesDigestAlgorithm() {
-        return null;
-    }
+	public String getFilesDigestAlgorithm() {
+		return null;
+	}
 
-    @Override
-    protected String getSignatureDescription() {
-        return "ZIP container";
-    }
+	@Override
+	protected String getSignatureDescription() {
+		return "ZIP container";
+	}
 
-    @Override
-    protected OutputStream getSignedDocumentOutputStream() {
-        return new ZIPSignatureOutputStream(this.tmpFile,
-                new CloseActionOutputStream(this.documentOutputStream,
-                        new CloseAction()));
-    }
+	@Override
+	protected OutputStream getSignedDocumentOutputStream() {
+		return new ZIPSignatureOutputStream(this.tmpFile,
+				new CloseActionOutputStream(this.documentOutputStream,
+						new CloseAction()));
+	}
 
-    private class CloseAction implements Runnable {
-        public void run() {
-            ZIPSignatureService.this.tmpFile.delete();
-        }
-    }
+	private class CloseAction implements Runnable {
+		public void run() {
+			ZIPSignatureService.this.tmpFile.delete();
+		}
+	}
 
-    @Override
-    protected TemporaryDataStorage getTemporaryDataStorage() {
-        return this.temporaryDataStorage;
-    }
+	@Override
+	protected TemporaryDataStorage getTemporaryDataStorage() {
+		return this.temporaryDataStorage;
+	}
 
-    @Override
-    protected Document getEnvelopingDocument()
-            throws ParserConfigurationException, IOException, SAXException {
-        FileInputStream fileInputStream = new FileInputStream(this.tmpFile);
-        ZipInputStream zipInputStream = new ZipInputStream(fileInputStream);
-        ZipEntry zipEntry;
-        while (null != (zipEntry = zipInputStream.getNextEntry())) {
-            if (ODFUtil.isSignatureFile(zipEntry)) {
-                Document documentSignaturesDocument = ODFUtil
-                        .loadDocument(zipInputStream);
-                return documentSignaturesDocument;
-            }
-        }
-        Document document = ODFUtil.getNewDocument();
-        Element rootElement = document.createElementNS(ODFUtil.SIGNATURE_NS,
-                ODFUtil.SIGNATURE_ELEMENT);
-        rootElement.setAttributeNS(Constants.NamespaceSpecNS, "xmlns",
-                ODFUtil.SIGNATURE_NS);
-        document.appendChild(rootElement);
-        return document;
-    }
+	@Override
+	protected Document getEnvelopingDocument()
+			throws ParserConfigurationException, IOException, SAXException {
+		FileInputStream fileInputStream = new FileInputStream(this.tmpFile);
+		ZipInputStream zipInputStream = new ZipInputStream(fileInputStream);
+		ZipEntry zipEntry;
+		while (null != (zipEntry = zipInputStream.getNextEntry())) {
+			if (ODFUtil.isSignatureFile(zipEntry)) {
+				Document documentSignaturesDocument = ODFUtil
+						.loadDocument(zipInputStream);
+				return documentSignaturesDocument;
+			}
+		}
+		Document document = ODFUtil.getNewDocument();
+		Element rootElement = document.createElementNS(ODFUtil.SIGNATURE_NS,
+				ODFUtil.SIGNATURE_ELEMENT);
+		rootElement.setAttributeNS(Constants.NamespaceSpecNS, "xmlns",
+				ODFUtil.SIGNATURE_NS);
+		document.appendChild(rootElement);
+		return document;
+	}
 
-    @Override
-    protected URIDereferencer getURIDereferencer() {
-        return new ZIPURIDereferencer(this.tmpFile);
-    }
+	@Override
+	protected URIDereferencer getURIDereferencer() {
+		return new ZIPURIDereferencer(this.tmpFile);
+	}
 
-    public DigestInfo preSign(List<DigestInfo> digestInfos,
-                              List<X509Certificate> signingCertificateChain,
-                              IdentityDTO identity, AddressDTO address, byte[] photo)
-            throws NoSuchAlgorithmException {
-        return super.preSign(digestInfos, signingCertificateChain);
-    }
+	public DigestInfo preSign(List<DigestInfo> digestInfos,
+			List<X509Certificate> signingCertificateChain,
+			IdentityDTO identity, AddressDTO address, byte[] photo)
+			throws NoSuchAlgorithmException {
+		return super.preSign(digestInfos, signingCertificateChain);
+	}
 }

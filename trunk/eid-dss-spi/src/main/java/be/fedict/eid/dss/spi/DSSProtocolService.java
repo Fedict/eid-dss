@@ -28,52 +28,65 @@ import java.security.cert.X509Certificate;
 /**
  * Interface for Digital Signature Service protocol components. Protocol service
  * components have a life-cycle within the scope of a regular servlet.
- *
+ * 
  * @author Frank Cornelis
  */
 public interface DSSProtocolService extends Serializable {
 
-    /**
-     * Initializes this component.
-     *
-     * @param servletContext servlet content
-     * @param dssContext     DSS Protocol Context
-     */
-    void init(ServletContext servletContext, DSSProtocolContext dssContext);
+	/**
+	 * Initializes this component.
+	 * 
+	 * @param servletContext
+	 *            servlet content
+	 * @param dssContext
+	 *            DSS Protocol Context
+	 */
+	void init(ServletContext servletContext, DSSProtocolContext dssContext);
 
-    /**
-     * Handles an incoming request for this protocol.
-     *
-     * @param request  the HTTP request.
-     * @param response the HTTP response. Can be used if the protocol handler does
-     *                 not want to continue via the regular DSS flow.
-     * @return a DSS request object.
-     * @throws Exception in case this protocol service cannot handle the incoming
-     *                   request.
-     */
-    DSSRequest handleIncomingRequest(HttpServletRequest request,
-                                     HttpServletResponse response) throws Exception;
+	/**
+	 * Handles an incoming request for this protocol.
+	 * 
+	 * @param request
+	 *            the HTTP request.
+	 * @param response
+	 *            the HTTP response. Can be used if the protocol handler does
+	 *            not want to continue via the regular DSS flow.
+	 * @return a DSS request object.
+	 * @throws Exception
+	 *             in case this protocol service cannot handle the incoming
+	 *             request.
+	 */
+	DSSRequest handleIncomingRequest(HttpServletRequest request,
+			HttpServletResponse response) throws Exception;
 
-    /**
-     * Handles the outgoing response to return to the Service Provider web
-     * application.
-     *
-     * @param signatureStatus   the signature status.
-     * @param signedDocument    the signed document.
-     * @param artifact          the (optional) document's artifact.
-     * @param signerCertificate the certificate of the signer.
-     * @param httpSession       the HTTP session context.
-     * @param request           the HTTP request.
-     * @param response          the HTTP response.
-     * @return the response object in case a Browser POST should be constructed.
-     *         <code>null</code> in case this protocol service handles the
-     *         response generation itself.
-     * @throws Exception in case this protocol service cannot construct the outgoing
-     *                   response.
-     */
-    BrowserPOSTResponse handleResponse(SignatureStatus signatureStatus,
-                                       byte[] signedDocument, String artifact,
-                                       X509Certificate signerCertificate, HttpSession httpSession,
-                                       HttpServletRequest request, HttpServletResponse response)
-            throws Exception;
+	/**
+	 * Handles the outgoing response to return to the Service Provider web
+	 * application.
+	 * 
+	 * @param signatureStatus
+	 *            the signature status.
+	 * @param signedDocument
+	 *            the signed document.
+	 * @param artifact
+	 *            the (optional) document's artifact.
+	 * @param signerCertificate
+	 *            the certificate of the signer.
+	 * @param httpSession
+	 *            the HTTP session context.
+	 * @param request
+	 *            the HTTP request.
+	 * @param response
+	 *            the HTTP response.
+	 * @return the response object in case a Browser POST should be constructed.
+	 *         <code>null</code> in case this protocol service handles the
+	 *         response generation itself.
+	 * @throws Exception
+	 *             in case this protocol service cannot construct the outgoing
+	 *             response.
+	 */
+	BrowserPOSTResponse handleResponse(SignatureStatus signatureStatus,
+			byte[] signedDocument, String artifact,
+			X509Certificate signerCertificate, HttpSession httpSession,
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception;
 }

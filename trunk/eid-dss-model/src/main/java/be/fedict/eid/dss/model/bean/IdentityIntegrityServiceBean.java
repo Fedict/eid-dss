@@ -37,58 +37,59 @@ import java.util.List;
 
 /**
  * eID Applet Service Identity Integrity Service implementation.
- *
+ * 
  * @author Wim Vandenhaute
  */
 @Stateless
 @Local(IdentityIntegrityService.class)
-@LocalBinding(jndiBinding = Constants.DSS_JNDI_CONTEXT + "IdentityIntegrityServiceBean")
+@LocalBinding(jndiBinding = Constants.DSS_JNDI_CONTEXT
+		+ "IdentityIntegrityServiceBean")
 public class IdentityIntegrityServiceBean implements IdentityIntegrityService {
 
-    private static final Log LOG = LogFactory
-            .getLog(IdentityIntegrityServiceBean.class);
+	private static final Log LOG = LogFactory
+			.getLog(IdentityIntegrityServiceBean.class);
 
-    @EJB
-    private Configuration configuration;
+	@EJB
+	private Configuration configuration;
 
-    @EJB
-    private TrustValidationService trustValidationService;
+	@EJB
+	private TrustValidationService trustValidationService;
 
-    public void checkNationalRegistrationCertificate(
-            List<X509Certificate> certificateChain) throws SecurityException {
+	public void checkNationalRegistrationCertificate(
+			List<X509Certificate> certificateChain) throws SecurityException {
 
-        LOG.debug("validate national registry certificate: "
-                + certificateChain.get(0).getSubjectX500Principal());
+		LOG.debug("validate national registry certificate: "
+				+ certificateChain.get(0).getSubjectX500Principal());
 
-        XKMS2Client xkms2Client = this.trustValidationService.getXkms2Client();
+		XKMS2Client xkms2Client = this.trustValidationService.getXkms2Client();
 
-        String xkmsUrl = this.configuration.getValue(ConfigProperty.XKMS_URL,
-                String.class);
-        if (null == xkmsUrl || xkmsUrl.trim().isEmpty()) {
-            LOG.warn("no XKMS URL configured!");
-            return;
-        }
+		String xkmsUrl = this.configuration.getValue(ConfigProperty.XKMS_URL,
+				String.class);
+		if (null == xkmsUrl || xkmsUrl.trim().isEmpty()) {
+			LOG.warn("no XKMS URL configured!");
+			return;
+		}
 
-        String xkmsTrustDomain = this.configuration
-                .getValue(ConfigProperty.IDENTITY_TRUST_DOMAIN, String.class);
-        if (null != xkmsTrustDomain && xkmsTrustDomain.trim().isEmpty()) {
-            xkmsTrustDomain = null;
-        }
-        LOG.debug("Trust domain=" + xkmsTrustDomain);
+		String xkmsTrustDomain = this.configuration.getValue(
+				ConfigProperty.IDENTITY_TRUST_DOMAIN, String.class);
+		if (null != xkmsTrustDomain && xkmsTrustDomain.trim().isEmpty()) {
+			xkmsTrustDomain = null;
+		}
+		LOG.debug("Trust domain=" + xkmsTrustDomain);
 
-        try {
-            LOG.debug("validating certificate chain");
-            if (null != xkmsTrustDomain) {
-                xkms2Client.validate(xkmsTrustDomain, certificateChain);
-            } else {
-                xkms2Client.validate(certificateChain);
-            }
-        } catch (ValidationFailedException e) {
-            LOG.warn("invalid certificate");
-            throw new SecurityException("invalid certificate");
-        } catch (Exception e) {
-            LOG.warn("eID Trust Service error: " + e.getMessage(), e);
-            throw new SecurityException("eID Trust Service error");
-        }
-    }
+		try {
+			LOG.debug("validating certificate chain");
+			if (null != xkmsTrustDomain) {
+				xkms2Client.validate(xkmsTrustDomain, certificateChain);
+			} else {
+				xkms2Client.validate(certificateChain);
+			}
+		} catch (ValidationFailedException e) {
+			LOG.warn("invalid certificate");
+			throw new SecurityException("invalid certificate");
+		} catch (Exception e) {
+			LOG.warn("eID Trust Service error: " + e.getMessage(), e);
+			throw new SecurityException("eID Trust Service error");
+		}
+	}
 }

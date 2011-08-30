@@ -52,104 +52,103 @@ import java.util.List;
 
 public class OOXMLDSSDocumentService implements DSSDocumentService {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private static final Log LOG = LogFactory
-            .getLog(OOXMLDSSDocumentService.class);
+	private static final Log LOG = LogFactory
+			.getLog(OOXMLDSSDocumentService.class);
 
-    private DSSDocumentContext documentContext;
+	private DSSDocumentContext documentContext;
 
-    public void init(DSSDocumentContext context, String contentType)
-            throws Exception {
+	public void init(DSSDocumentContext context, String contentType)
+			throws Exception {
 
-        LOG.debug("init");
-        this.documentContext = context;
-        /*
-           * Next will probably break re-deployments.
-           */
-        OOXMLProvider.install();
-    }
+		LOG.debug("init");
+		this.documentContext = context;
+		/*
+		 * Next will probably break re-deployments.
+		 */
+		OOXMLProvider.install();
+	}
 
-    public void checkIncomingDocument(byte[] document) throws Exception {
+	public void checkIncomingDocument(byte[] document) throws Exception {
 
-        LOG.debug("checkIncomingDocument");
-    }
+		LOG.debug("checkIncomingDocument");
+	}
 
-    public DocumentVisualization visualizeDocument(byte[] document,
-                                                   String language)
-            throws Exception {
+	public DocumentVisualization visualizeDocument(byte[] document,
+			String language) throws Exception {
 
-        LOG.debug("visualizeDocument");
-        return null;
-    }
+		LOG.debug("visualizeDocument");
+		return null;
+	}
 
-    public SignatureServiceEx getSignatureService(
-            InputStream documentInputStream, TimeStampService timeStampService,
-            TimeStampServiceValidator timeStampServiceValidator,
-            RevocationDataService revocationDataService,
-            SignatureFacet signatureFacet, OutputStream documentOutputStream,
-            String role, IdentityDTO identity, byte[] photo,
-            DigestAlgo signatureDigestAlgo)
-            throws Exception {
+	public SignatureServiceEx getSignatureService(
+			InputStream documentInputStream, TimeStampService timeStampService,
+			TimeStampServiceValidator timeStampServiceValidator,
+			RevocationDataService revocationDataService,
+			SignatureFacet signatureFacet, OutputStream documentOutputStream,
+			String role, IdentityDTO identity, byte[] photo,
+			DigestAlgo signatureDigestAlgo) throws Exception {
 
-        return new OOXMLSignatureService(documentInputStream,
-                documentOutputStream, signatureFacet, role, identity, photo,
-                revocationDataService, timeStampService, signatureDigestAlgo);
-    }
+		return new OOXMLSignatureService(documentInputStream,
+				documentOutputStream, signatureFacet, role, identity, photo,
+				revocationDataService, timeStampService, signatureDigestAlgo);
+	}
 
-    public List<SignatureInfo> verifySignatures(byte[] document)
-            throws Exception {
+	public List<SignatureInfo> verifySignatures(byte[] document)
+			throws Exception {
 
-        OOXMLSignatureVerifier ooxmlSignatureVerifier = new OOXMLSignatureVerifier();
-        List<String> signatureResourceNames = ooxmlSignatureVerifier
-                .getSignatureResourceNames(document);
-        List<SignatureInfo> signatureInfos = new LinkedList<SignatureInfo>();
-        XAdESValidation xadesValidation = new XAdESValidation(
-                this.documentContext);
-        for (String signatureResourceName : signatureResourceNames) {
-            Document signatureDocument = ooxmlSignatureVerifier
-                    .getSignatureDocument(new ByteArrayInputStream(document),
-                            signatureResourceName);
-            if (null == signatureDocument) {
-                continue;
-            }
-            NodeList signatureNodeList = signatureDocument
-                    .getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
-            if (0 == signatureNodeList.getLength()) {
-                continue;
-            }
-            Element signatureElement = (Element) signatureNodeList.item(0);
-            KeyInfoKeySelector keySelector = new KeyInfoKeySelector();
-            DOMValidateContext domValidateContext = new DOMValidateContext(
-                    keySelector, signatureElement);
-            domValidateContext.setProperty(
-                    "org.jcp.xml.dsig.validateManifests", Boolean.TRUE);
-            OOXMLURIDereferencer dereferencer = new OOXMLURIDereferencer(
-                    document);
-            domValidateContext.setURIDereferencer(dereferencer);
+		OOXMLSignatureVerifier ooxmlSignatureVerifier = new OOXMLSignatureVerifier();
+		List<String> signatureResourceNames = ooxmlSignatureVerifier
+				.getSignatureResourceNames(document);
+		List<SignatureInfo> signatureInfos = new LinkedList<SignatureInfo>();
+		XAdESValidation xadesValidation = new XAdESValidation(
+				this.documentContext);
+		for (String signatureResourceName : signatureResourceNames) {
+			Document signatureDocument = ooxmlSignatureVerifier
+					.getSignatureDocument(new ByteArrayInputStream(document),
+							signatureResourceName);
+			if (null == signatureDocument) {
+				continue;
+			}
+			NodeList signatureNodeList = signatureDocument
+					.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
+			if (0 == signatureNodeList.getLength()) {
+				continue;
+			}
+			Element signatureElement = (Element) signatureNodeList.item(0);
+			KeyInfoKeySelector keySelector = new KeyInfoKeySelector();
+			DOMValidateContext domValidateContext = new DOMValidateContext(
+					keySelector, signatureElement);
+			domValidateContext.setProperty(
+					"org.jcp.xml.dsig.validateManifests", Boolean.TRUE);
+			OOXMLURIDereferencer dereferencer = new OOXMLURIDereferencer(
+					document);
+			domValidateContext.setURIDereferencer(dereferencer);
 
-            XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory
-                    .getInstance();
-            XMLSignature xmlSignature = xmlSignatureFactory
-                    .unmarshalXMLSignature(domValidateContext);
-            boolean valid = xmlSignature.validate(domValidateContext);
-            if (!valid) {
-                LOG.error("signature invalid");
-                continue;
-            }
+			XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory
+					.getInstance();
+			XMLSignature xmlSignature = xmlSignatureFactory
+					.unmarshalXMLSignature(domValidateContext);
+			boolean valid = xmlSignature.validate(domValidateContext);
+			if (!valid) {
+				LOG.error("signature invalid");
+				continue;
+			}
 
-             // check OOXML's XML DSig/XAdES requirements
-            if (!ooxmlSignatureVerifier.isValidOOXMLSignature(xmlSignature, document)) {
-                LOG.error("Invalid OOXML Signature");
-                continue;
-            }
+			// check OOXML's XML DSig/XAdES requirements
+			if (!ooxmlSignatureVerifier.isValidOOXMLSignature(xmlSignature,
+					document)) {
+				LOG.error("Invalid OOXML Signature");
+				continue;
+			}
 
-            X509Certificate signingCertificate = keySelector.getCertificate();
-            SignatureInfo signatureInfo = xadesValidation.validate(
-                    signatureDocument, xmlSignature, signatureElement,
-                    signingCertificate);
-            signatureInfos.add(signatureInfo);
-        }
-        return signatureInfos;
-    }
+			X509Certificate signingCertificate = keySelector.getCertificate();
+			SignatureInfo signatureInfo = xadesValidation.validate(
+					signatureDocument, xmlSignature, signatureElement,
+					signingCertificate);
+			signatureInfos.add(signatureInfo);
+		}
+		return signatureInfos;
+	}
 }

@@ -20,9 +20,9 @@ package be.fedict.eid.dss.model.exception;
 
 public class InvalidXmlSchemaException extends Exception {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public InvalidXmlSchemaException(String message, Throwable t) {
-        super(message, t);
-    }
+	public InvalidXmlSchemaException(String message, Throwable t) {
+		super(message, t);
+	}
 }

@@ -27,42 +27,42 @@ import java.util.Map;
 
 /**
  * Interface for component that manages the registered different services.
- *
+ * 
  * @author Frank Cornelis
  */
 @Local
 public interface ServicesManager {
 
-    /**
-     * @return map with (context path, protocol service class name) tuples.
-     */
-    Map<String, String> getProtocolServiceClassNames();
+	/**
+	 * @return map with (context path, protocol service class name) tuples.
+	 */
+	Map<String, String> getProtocolServiceClassNames();
 
-    /**
-     * @return list of DSS Protocol Service types.
-     */
-    List<DigitalSignatureServiceProtocolType> getProtocolServices();
+	/**
+	 * @return list of DSS Protocol Service types.
+	 */
+	List<DigitalSignatureServiceProtocolType> getProtocolServices();
 
-    /**
-     * @return map with (content type, document service class name) tuples.
-     */
-    Map<String, String> getDocumentServiceClassNames();
+	/**
+	 * @return map with (content type, document service class name) tuples.
+	 */
+	Map<String, String> getDocumentServiceClassNames();
 
-    /**
-     * @return list of supported document formats (mime-types).
-     */
-    List<String> getSupportedDocumentFormats();
+	/**
+	 * @return list of supported document formats (mime-types).
+	 */
+	List<String> getSupportedDocumentFormats();
 
-    /**
-     * @return the current document service to be used. The content-type is
-     *         retrieved from the currently active document repository.
-     */
-    DSSDocumentService getDocumentService();
+	/**
+	 * @return the current document service to be used. The content-type is
+	 *         retrieved from the currently active document repository.
+	 */
+	DSSDocumentService getDocumentService();
 
-    /**
-     * @param contentType content type to get {@link DSSDocumentService} for.
-     * @return the document service corresponding with the given content
-     *         type.
-     */
-    DSSDocumentService getDocumentService(String contentType);
+	/**
+	 * @param contentType
+	 *            content type to get {@link DSSDocumentService} for.
+	 * @return the document service corresponding with the given content type.
+	 */
+	DSSDocumentService getDocumentService(String contentType);
 }

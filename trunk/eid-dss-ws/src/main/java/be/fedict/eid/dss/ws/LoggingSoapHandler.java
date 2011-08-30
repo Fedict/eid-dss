@@ -32,7 +32,7 @@ import java.util.Set;
 /**
  * Logging JAX-WS SOAP handler.
  * 
- * @author fcorneli
+ * @author Frank Cornelis
  * 
  */
 public class LoggingSoapHandler implements SOAPHandler<SOAPMessageContext> {

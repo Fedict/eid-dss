@@ -50,331 +50,324 @@ import java.util.List;
  */
 public abstract class DSSUtil {
 
-    private static final Log LOG = LogFactory.getLog(DSSUtil.class);
+	private static final Log LOG = LogFactory.getLog(DSSUtil.class);
 
-    private static final be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory vrObjectFactory;
-    private static final be.fedict.eid.dss.ws.profile.vr.jaxb.dss.ObjectFactory vrDssObjectFactory;
-    private static final be.fedict.eid.dss.ws.profile.vr.jaxb.xmldsig.ObjectFactory vrXmldsigObjectFactory;
-    private static final be.fedict.eid.dss.ws.profile.vr.jaxb.xades.ObjectFactory vrXadesObjectFactory;
+	private static final be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory vrObjectFactory;
+	private static final be.fedict.eid.dss.ws.profile.vr.jaxb.dss.ObjectFactory vrDssObjectFactory;
+	private static final be.fedict.eid.dss.ws.profile.vr.jaxb.xmldsig.ObjectFactory vrXmldsigObjectFactory;
+	private static final be.fedict.eid.dss.ws.profile.vr.jaxb.xades.ObjectFactory vrXadesObjectFactory;
 
-    private static final Marshaller vrMarshaller;
-    private static final Marshaller artifactMarshaller;
-    private static final Unmarshaller artifactUnmarshaller;
-    private static final DocumentBuilder documentBuilder;
+	private static final Marshaller vrMarshaller;
+	private static final Marshaller artifactMarshaller;
+	private static final Unmarshaller artifactUnmarshaller;
+	private static final DocumentBuilder documentBuilder;
 
-    private static final DatatypeFactory datatypeFactory;
-    private static final be.fedict.eid.dss.ws.jaxb.dss.ObjectFactory dssObjectFactory;
-    private static final be.fedict.eid.dss.ws.profile.artifact.jaxb.ObjectFactory artifactObjectFactory;
+	private static final DatatypeFactory datatypeFactory;
+	private static final be.fedict.eid.dss.ws.jaxb.dss.ObjectFactory dssObjectFactory;
+	private static final be.fedict.eid.dss.ws.profile.artifact.jaxb.ObjectFactory artifactObjectFactory;
 
+	static {
+		vrObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory();
+		vrDssObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.dss.ObjectFactory();
+		vrXmldsigObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.xmldsig.ObjectFactory();
+		vrXadesObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.xades.ObjectFactory();
+		dssObjectFactory = new ObjectFactory();
+		artifactObjectFactory = new be.fedict.eid.dss.ws.profile.artifact.jaxb.ObjectFactory();
 
-    static {
-        vrObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory();
-        vrDssObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.dss.ObjectFactory();
-        vrXmldsigObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.xmldsig.ObjectFactory();
-        vrXadesObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.xades.ObjectFactory();
-        dssObjectFactory = new ObjectFactory();
-        artifactObjectFactory = new be.fedict.eid.dss.ws.profile.artifact.jaxb.ObjectFactory();
+		try {
+			JAXBContext vrJAXBContext = JAXBContext
+					.newInstance(be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory.class);
+			vrMarshaller = vrJAXBContext.createMarshaller();
 
+			JAXBContext artifactJAXBContext = JAXBContext
+					.newInstance(be.fedict.eid.dss.ws.profile.artifact.jaxb.ObjectFactory.class);
+			artifactMarshaller = artifactJAXBContext.createMarshaller();
+			artifactUnmarshaller = artifactJAXBContext.createUnmarshaller();
+		} catch (JAXBException e) {
+			throw new RuntimeException("JAXB error: " + e.getMessage(), e);
+		}
 
-        try {
-            JAXBContext vrJAXBContext = JAXBContext
-                    .newInstance(be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory.class);
-            vrMarshaller = vrJAXBContext.createMarshaller();
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+				.newInstance();
+		documentBuilderFactory.setNamespaceAware(true);
+		try {
+			documentBuilder = documentBuilderFactory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			throw new RuntimeException("document builder error: "
+					+ e.getMessage(), e);
+		}
 
-            JAXBContext artifactJAXBContext = JAXBContext
-                    .newInstance(be.fedict.eid.dss.ws.profile.artifact.jaxb.ObjectFactory.class);
-            artifactMarshaller = artifactJAXBContext.createMarshaller();
-            artifactUnmarshaller = artifactJAXBContext.createUnmarshaller();
-        } catch (JAXBException e) {
-            throw new RuntimeException("JAXB error: " + e.getMessage(), e);
-        }
+		try {
+			datatypeFactory = DatatypeFactory.newInstance();
+		} catch (DatatypeConfigurationException e) {
+			throw new RuntimeException("datatype config error: "
+					+ e.getMessage(), e);
+		}
+	}
 
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-                .newInstance();
-        documentBuilderFactory.setNamespaceAware(true);
-        try {
-            documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException("document builder error: "
-                    + e.getMessage(), e);
-        }
+	@SuppressWarnings("unchecked")
+	public static ReturnStoredDocument getReturnStoredDocument(
+			Element returnStoredDocumentElement) throws JAXBException {
 
-        try {
-            datatypeFactory = DatatypeFactory.newInstance();
-        } catch (DatatypeConfigurationException e) {
-            throw new RuntimeException("datatype config error: "
-                    + e.getMessage(), e);
-        }
-    }
+		JAXBElement<ReturnStoredDocument> jaxbElement = (JAXBElement<ReturnStoredDocument>) artifactUnmarshaller
+				.unmarshal(returnStoredDocumentElement);
+		return jaxbElement.getValue();
+	}
 
-    @SuppressWarnings("unchecked")
-    public static ReturnStoredDocument getReturnStoredDocument(
-            Element returnStoredDocumentElement) throws JAXBException {
+	/**
+	 * Adds a DSS Verification Report to specified optional output element from
+	 * the specified list of {@link SignatureInfo}'s
+	 * 
+	 * @param optionalOutput
+	 *            optional output to add verification report to
+	 * @param signatureInfos
+	 *            signature infos to use in verification report.
+	 */
+	public static void addVerificationReport(AnyType optionalOutput,
+			List<SignatureInfo> signatureInfos) {
 
-        JAXBElement<ReturnStoredDocument> jaxbElement =
-                (JAXBElement<ReturnStoredDocument>) artifactUnmarshaller
-                        .unmarshal(returnStoredDocumentElement);
-        return jaxbElement.getValue();
-    }
+		LOG.debug("return verification report");
+		VerificationReportType verificationReport = vrObjectFactory
+				.createVerificationReportType();
+		List<IndividualReportType> individualReports = verificationReport
+				.getIndividualReport();
+		for (SignatureInfo signatureInfo : signatureInfos) {
+			X509Certificate signerCertificate = signatureInfo.getSigner();
+			IndividualReportType individualReport = vrObjectFactory
+					.createIndividualReportType();
+			individualReports.add(individualReport);
 
-    /**
-     * Adds a DSS Verification Report to specified optional output element
-     * from the specified list of {@link SignatureInfo}'s
-     *
-     * @param optionalOutput optional output to add verification report to
-     * @param signatureInfos signature infos to use in verification report.
-     */
-    public static void addVerificationReport(AnyType optionalOutput,
-                                             List<SignatureInfo> signatureInfos) {
+			SignedObjectIdentifierType signedObjectIdentifier = vrObjectFactory
+					.createSignedObjectIdentifierType();
+			individualReport.setSignedObjectIdentifier(signedObjectIdentifier);
+			SignedPropertiesType signedProperties = vrObjectFactory
+					.createSignedPropertiesType();
+			signedObjectIdentifier.setSignedProperties(signedProperties);
+			SignedSignaturePropertiesType signedSignatureProperties = vrObjectFactory
+					.createSignedSignaturePropertiesType();
+			signedProperties
+					.setSignedSignatureProperties(signedSignatureProperties);
+			GregorianCalendar calendar = new GregorianCalendar();
+			calendar.setTime(signatureInfo.getSigningTime());
+			signedSignatureProperties.setSigningTime(datatypeFactory
+					.newXMLGregorianCalendar(calendar));
 
-        LOG.debug("return verification report");
-        VerificationReportType verificationReport = vrObjectFactory
-                .createVerificationReportType();
-        List<IndividualReportType> individualReports = verificationReport
-                .getIndividualReport();
-        for (SignatureInfo signatureInfo : signatureInfos) {
-            X509Certificate signerCertificate = signatureInfo.getSigner();
-            IndividualReportType individualReport = vrObjectFactory
-                    .createIndividualReportType();
-            individualReports.add(individualReport);
+			be.fedict.eid.dss.ws.profile.vr.jaxb.dss.Result individualResult = vrDssObjectFactory
+					.createResult();
+			individualReport.setResult(individualResult);
+			individualResult.setResultMajor(DSSConstants.RESULT_MAJOR_SUCCESS);
+			individualResult
+					.setResultMinor(DSSConstants.RESULT_MINOR_VALID_SIGNATURE);
 
-            SignedObjectIdentifierType signedObjectIdentifier = vrObjectFactory
-                    .createSignedObjectIdentifierType();
-            individualReport
-                    .setSignedObjectIdentifier(signedObjectIdentifier);
-            SignedPropertiesType signedProperties = vrObjectFactory
-                    .createSignedPropertiesType();
-            signedObjectIdentifier.setSignedProperties(signedProperties);
-            SignedSignaturePropertiesType signedSignatureProperties = vrObjectFactory
-                    .createSignedSignaturePropertiesType();
-            signedProperties
-                    .setSignedSignatureProperties(signedSignatureProperties);
-            GregorianCalendar calendar = new GregorianCalendar();
-            calendar.setTime(signatureInfo.getSigningTime());
-            signedSignatureProperties.setSigningTime(datatypeFactory
-                    .newXMLGregorianCalendar(calendar));
+			be.fedict.eid.dss.ws.profile.vr.jaxb.dss.AnyType details = vrDssObjectFactory
+					.createAnyType();
+			individualReport.setDetails(details);
 
-            be.fedict.eid.dss.ws.profile.vr.jaxb.dss.Result individualResult =
-                    vrDssObjectFactory.createResult();
-            individualReport.setResult(individualResult);
-            individualResult
-                    .setResultMajor(DSSConstants.RESULT_MAJOR_SUCCESS);
-            individualResult
-                    .setResultMinor(DSSConstants.RESULT_MINOR_VALID_SIGNATURE);
+			DetailedSignatureReportType detailedSignatureReport = vrObjectFactory
+					.createDetailedSignatureReportType();
+			details.getAny()
+					.add(vrObjectFactory
+							.createDetailedSignatureReport(detailedSignatureReport));
+			VerificationResultType formatOKVerificationResult = vrObjectFactory
+					.createVerificationResultType();
+			formatOKVerificationResult
+					.setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
+			detailedSignatureReport.setFormatOK(formatOKVerificationResult);
 
-            be.fedict.eid.dss.ws.profile.vr.jaxb.dss.AnyType details =
-                    vrDssObjectFactory.createAnyType();
-            individualReport.setDetails(details);
+			SignatureValidityType signatureOkSignatureValidity = vrObjectFactory
+					.createSignatureValidityType();
+			detailedSignatureReport
+					.setSignatureOK(signatureOkSignatureValidity);
+			VerificationResultType sigMathOkVerificationResult = vrObjectFactory
+					.createVerificationResultType();
+			signatureOkSignatureValidity
+					.setSigMathOK(sigMathOkVerificationResult);
+			sigMathOkVerificationResult
+					.setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
 
-            DetailedSignatureReportType detailedSignatureReport =
-                    vrObjectFactory.createDetailedSignatureReportType();
-            details.getAny().add(vrObjectFactory
-                    .createDetailedSignatureReport(detailedSignatureReport));
-            VerificationResultType formatOKVerificationResult =
-                    vrObjectFactory.createVerificationResultType();
-            formatOKVerificationResult
-                    .setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
-            detailedSignatureReport.setFormatOK(formatOKVerificationResult);
+			if (null != signatureInfo.getRole()) {
+				PropertiesType properties = vrObjectFactory
+						.createPropertiesType();
+				detailedSignatureReport.setProperties(properties);
+				SignedPropertiesType vrSignedProperties = vrObjectFactory
+						.createSignedPropertiesType();
+				properties.setSignedProperties(vrSignedProperties);
+				SignedSignaturePropertiesType vrSignedSignatureProperties = vrObjectFactory
+						.createSignedSignaturePropertiesType();
+				vrSignedProperties
+						.setSignedSignatureProperties(vrSignedSignatureProperties);
+				vrSignedSignatureProperties.setSigningTime(datatypeFactory
+						.newXMLGregorianCalendar(calendar));
+				SignerRoleType signerRole = vrObjectFactory
+						.createSignerRoleType();
+				vrSignedSignatureProperties.setSignerRole(signerRole);
+				ClaimedRolesListType claimedRolesList = vrXadesObjectFactory
+						.createClaimedRolesListType();
+				signerRole.setClaimedRoles(claimedRolesList);
+				be.fedict.eid.dss.ws.profile.vr.jaxb.xades.AnyType claimedRoleAny = vrXadesObjectFactory
+						.createAnyType();
+				claimedRolesList.getClaimedRole().add(claimedRoleAny);
+				claimedRoleAny.getContent().add(signatureInfo.getRole());
+			}
 
-            SignatureValidityType signatureOkSignatureValidity =
-                    vrObjectFactory.createSignatureValidityType();
-            detailedSignatureReport
-                    .setSignatureOK(signatureOkSignatureValidity);
-            VerificationResultType sigMathOkVerificationResult =
-                    vrObjectFactory.createVerificationResultType();
-            signatureOkSignatureValidity
-                    .setSigMathOK(sigMathOkVerificationResult);
-            sigMathOkVerificationResult
-                    .setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
+			CertificatePathValidityType certificatePathValidity = vrObjectFactory
+					.createCertificatePathValidityType();
+			detailedSignatureReport
+					.setCertificatePathValidity(certificatePathValidity);
 
-            if (null != signatureInfo.getRole()) {
-                PropertiesType properties =
-                        vrObjectFactory.createPropertiesType();
-                detailedSignatureReport.setProperties(properties);
-                SignedPropertiesType vrSignedProperties =
-                        vrObjectFactory.createSignedPropertiesType();
-                properties.setSignedProperties(vrSignedProperties);
-                SignedSignaturePropertiesType vrSignedSignatureProperties =
-                        vrObjectFactory.createSignedSignaturePropertiesType();
-                vrSignedProperties
-                        .setSignedSignatureProperties(vrSignedSignatureProperties);
-                vrSignedSignatureProperties.setSigningTime(datatypeFactory
-                        .newXMLGregorianCalendar(calendar));
-                SignerRoleType signerRole =
-                        vrObjectFactory.createSignerRoleType();
-                vrSignedSignatureProperties.setSignerRole(signerRole);
-                ClaimedRolesListType claimedRolesList =
-                        vrXadesObjectFactory.createClaimedRolesListType();
-                signerRole.setClaimedRoles(claimedRolesList);
-                be.fedict.eid.dss.ws.profile.vr.jaxb.xades.AnyType claimedRoleAny =
-                        vrXadesObjectFactory.createAnyType();
-                claimedRolesList.getClaimedRole().add(claimedRoleAny);
-                claimedRoleAny.getContent().add(signatureInfo.getRole());
-            }
+			VerificationResultType certPathVerificationResult = vrObjectFactory
+					.createVerificationResultType();
+			certPathVerificationResult
+					.setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
+			certificatePathValidity
+					.setPathValiditySummary(certPathVerificationResult);
 
-            CertificatePathValidityType certificatePathValidity =
-                    vrObjectFactory.createCertificatePathValidityType();
-            detailedSignatureReport
-                    .setCertificatePathValidity(certificatePathValidity);
+			X509IssuerSerialType certificateIdentifier = vrXmldsigObjectFactory
+					.createX509IssuerSerialType();
+			certificatePathValidity
+					.setCertificateIdentifier(certificateIdentifier);
+			certificateIdentifier.setX509IssuerName(signerCertificate
+					.getIssuerX500Principal().toString());
+			certificateIdentifier.setX509SerialNumber(signerCertificate
+					.getSerialNumber());
 
-            VerificationResultType certPathVerificationResult =
-                    vrObjectFactory.createVerificationResultType();
-            certPathVerificationResult
-                    .setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
-            certificatePathValidity
-                    .setPathValiditySummary(certPathVerificationResult);
+			CertificatePathValidityVerificationDetailType certificatePathValidityVerificationDetail = vrObjectFactory
+					.createCertificatePathValidityVerificationDetailType();
+			certificatePathValidity
+					.setPathValidityDetail(certificatePathValidityVerificationDetail);
+			CertificateValidityType certificateValidity = vrObjectFactory
+					.createCertificateValidityType();
+			certificatePathValidityVerificationDetail.getCertificateValidity()
+					.add(certificateValidity);
+			certificateValidity.setCertificateIdentifier(certificateIdentifier);
+			certificateValidity.setSubject(signerCertificate
+					.getSubjectX500Principal().toString());
 
-            X509IssuerSerialType certificateIdentifier =
-                    vrXmldsigObjectFactory.createX509IssuerSerialType();
-            certificatePathValidity
-                    .setCertificateIdentifier(certificateIdentifier);
-            certificateIdentifier.setX509IssuerName(signerCertificate
-                    .getIssuerX500Principal().toString());
-            certificateIdentifier.setX509SerialNumber(signerCertificate
-                    .getSerialNumber());
+			VerificationResultType chainingOkVerificationResult = vrObjectFactory
+					.createVerificationResultType();
+			certificateValidity.setChainingOK(chainingOkVerificationResult);
+			chainingOkVerificationResult
+					.setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
 
-            CertificatePathValidityVerificationDetailType certificatePathValidityVerificationDetail =
-                    vrObjectFactory
-                            .createCertificatePathValidityVerificationDetailType();
-            certificatePathValidity
-                    .setPathValidityDetail(certificatePathValidityVerificationDetail);
-            CertificateValidityType certificateValidity =
-                    vrObjectFactory.createCertificateValidityType();
-            certificatePathValidityVerificationDetail
-                    .getCertificateValidity().add(certificateValidity);
-            certificateValidity
-                    .setCertificateIdentifier(certificateIdentifier);
-            certificateValidity.setSubject(signerCertificate
-                    .getSubjectX500Principal().toString());
+			VerificationResultType validityPeriodOkVerificationResult = vrObjectFactory
+					.createVerificationResultType();
+			certificateValidity
+					.setValidityPeriodOK(validityPeriodOkVerificationResult);
+			validityPeriodOkVerificationResult
+					.setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
 
-            VerificationResultType chainingOkVerificationResult =
-                    vrObjectFactory.createVerificationResultType();
-            certificateValidity.setChainingOK(chainingOkVerificationResult);
-            chainingOkVerificationResult
-                    .setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
+			VerificationResultType extensionsOkVerificationResult = vrObjectFactory
+					.createVerificationResultType();
+			certificateValidity.setExtensionsOK(extensionsOkVerificationResult);
+			extensionsOkVerificationResult
+					.setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
 
-            VerificationResultType validityPeriodOkVerificationResult =
-                    vrObjectFactory.createVerificationResultType();
-            certificateValidity
-                    .setValidityPeriodOK(validityPeriodOkVerificationResult);
-            validityPeriodOkVerificationResult
-                    .setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
+			try {
+				certificateValidity.setCertificateValue(signerCertificate
+						.getEncoded());
+			} catch (CertificateEncodingException e) {
+				throw new RuntimeException("X509 encoding error: "
+						+ e.getMessage(), e);
+			}
 
-            VerificationResultType extensionsOkVerificationResult =
-                    vrObjectFactory.createVerificationResultType();
-            certificateValidity
-                    .setExtensionsOK(extensionsOkVerificationResult);
-            extensionsOkVerificationResult
-                    .setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
+			certificateValidity.setSignatureOK(signatureOkSignatureValidity);
 
-            try {
-                certificateValidity.setCertificateValue(signerCertificate
-                        .getEncoded());
-            } catch (CertificateEncodingException e) {
-                throw new RuntimeException("X509 encoding error: "
-                        + e.getMessage(), e);
-            }
+			CertificateStatusType certificateStatus = vrObjectFactory
+					.createCertificateStatusType();
+			certificateValidity.setCertificateStatus(certificateStatus);
+			VerificationResultType certStatusOkVerificationResult = vrObjectFactory
+					.createVerificationResultType();
+			certificateStatus.setCertStatusOK(certStatusOkVerificationResult);
+			certStatusOkVerificationResult
+					.setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
+		}
 
-            certificateValidity
-                    .setSignatureOK(signatureOkSignatureValidity);
+		Document newDocument = documentBuilder.newDocument();
+		Element newElement = newDocument.createElement("newNode");
+		try {
+			vrMarshaller.marshal(vrObjectFactory
+					.createVerificationReport(verificationReport), newElement);
+		} catch (JAXBException e) {
+			throw new RuntimeException("JAXB error: " + e.getMessage(), e);
+		}
+		Element verificationReportElement = (Element) newElement
+				.getFirstChild();
+		optionalOutput.getAny().add(verificationReportElement);
+	}
 
-            CertificateStatusType certificateStatus =
-                    vrObjectFactory.createCertificateStatusType();
-            certificateValidity.setCertificateStatus(certificateStatus);
-            VerificationResultType certStatusOkVerificationResult =
-                    vrObjectFactory.createVerificationResultType();
-            certificateStatus
-                    .setCertStatusOK(certStatusOkVerificationResult);
-            certStatusOkVerificationResult
-                    .setResultMajor(DSSConstants.VR_RESULT_MAJOR_VALID);
-        }
+	public static Element getStorageInfoElement(StorageInfo storageInfo) {
 
-        Document newDocument = documentBuilder.newDocument();
-        Element newElement = newDocument.createElement("newNode");
-        try {
-            vrMarshaller.marshal(vrObjectFactory
-                    .createVerificationReport(verificationReport), newElement);
-        } catch (JAXBException e) {
-            throw new RuntimeException("JAXB error: " + e.getMessage(), e);
-        }
-        Element verificationReportElement = (Element) newElement
-                .getFirstChild();
-        optionalOutput.getAny().add(verificationReportElement);
-    }
+		Document newDocument = documentBuilder.newDocument();
+		Element newElement = newDocument.createElement("newNode");
+		try {
+			artifactMarshaller.marshal(
+					artifactObjectFactory.createStorageInfo(storageInfo),
+					newElement);
+		} catch (JAXBException e) {
+			throw new RuntimeException("JAXB error: " + e.getMessage(), e);
+		}
+		return (Element) newElement.getFirstChild();
+	}
 
-    public static Element getStorageInfoElement(StorageInfo storageInfo) {
+	public static SignResponse createRequestorSignErrorResponse(
+			String requestId, String resultMinor, String message) {
 
-        Document newDocument = documentBuilder.newDocument();
-        Element newElement = newDocument.createElement("newNode");
-        try {
-            artifactMarshaller.marshal(artifactObjectFactory
-                    .createStorageInfo(storageInfo), newElement);
-        } catch (JAXBException e) {
-            throw new RuntimeException("JAXB error: " + e.getMessage(), e);
-        }
-        return (Element) newElement.getFirstChild();
-    }
+		LOG.error("Error: resultMinor=" + resultMinor + " message=" + message);
 
-    public static SignResponse createRequestorSignErrorResponse(String requestId,
-                                                                String resultMinor,
-                                                                String message) {
+		SignResponse signResponse = dssObjectFactory.createSignResponse();
+		signResponse.setRequestID(requestId);
+		signResponse
+				.setResult(getResult(DSSConstants.RESULT_MAJOR_REQUESTER_ERROR,
+						resultMinor, message));
+		return signResponse;
+	}
 
-        LOG.error("Error: resultMinor=" + resultMinor + " message=" + message);
+	public static ResponseBaseType createRequestorErrorResponse(String requestId) {
+		return createRequestorErrorResponse(requestId, null);
+	}
 
-        SignResponse signResponse = dssObjectFactory.createSignResponse();
-        signResponse.setRequestID(requestId);
-        signResponse.setResult(getResult(
-                DSSConstants.RESULT_MAJOR_REQUESTER_ERROR,
-                resultMinor, message));
-        return signResponse;
-    }
+	public static ResponseBaseType createRequestorErrorResponse(
+			String requestId, String resultMinor) {
 
-    public static ResponseBaseType createRequestorErrorResponse(String requestId) {
-        return createRequestorErrorResponse(requestId, null);
-    }
+		return createRequestorErrorResponse(requestId, resultMinor, null);
+	}
 
-    public static ResponseBaseType createRequestorErrorResponse(String requestId,
-                                                                String resultMinor) {
+	public static ResponseBaseType createRequestorErrorResponse(
+			String requestId, String resultMinor, String message) {
 
-        return createRequestorErrorResponse(requestId, resultMinor, null);
-    }
+		LOG.error("Error: resultMinor=" + resultMinor + " message=" + message);
 
-    public static ResponseBaseType createRequestorErrorResponse(String requestId,
-                                                                String resultMinor,
-                                                                String message) {
+		ResponseBaseType responseBase = dssObjectFactory
+				.createResponseBaseType();
+		responseBase.setRequestID(requestId);
+		responseBase
+				.setResult(getResult(DSSConstants.RESULT_MAJOR_REQUESTER_ERROR,
+						resultMinor, message));
+		return responseBase;
+	}
 
-        LOG.error("Error: resultMinor=" + resultMinor + " message=" + message);
+	private static Result getResult(String resultMajor, String resultMinor,
+			String message) {
 
-        ResponseBaseType responseBase = dssObjectFactory.createResponseBaseType();
-        responseBase.setRequestID(requestId);
-        responseBase.setResult(getResult(
-                DSSConstants.RESULT_MAJOR_REQUESTER_ERROR,
-                resultMinor, message));
-        return responseBase;
-    }
+		Result result = dssObjectFactory.createResult();
+		result.setResultMajor(resultMajor);
+		if (null != resultMinor) {
+			result.setResultMinor(resultMinor);
+		}
+		if (null != message) {
+			InternationalStringType resultMessage = dssObjectFactory
+					.createInternationalStringType();
+			resultMessage.setLang("en");
+			resultMessage.setValue(message);
+			result.setResultMessage(resultMessage);
+		}
+		return result;
+	}
 
-    private static Result getResult(String resultMajor, String resultMinor,
-                                    String message) {
+	public static XMLGregorianCalendar toXML(DateTime dateTime) {
 
-        Result result = dssObjectFactory.createResult();
-        result.setResultMajor(resultMajor);
-        if (null != resultMinor) {
-            result.setResultMinor(resultMinor);
-        }
-        if (null != message) {
-            InternationalStringType resultMessage =
-                    dssObjectFactory.createInternationalStringType();
-            resultMessage.setLang("en");
-            resultMessage.setValue(message);
-            result.setResultMessage(resultMessage);
-        }
-        return result;
-    }
-
-    public static XMLGregorianCalendar toXML(DateTime dateTime) {
-
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.setTimeInMillis(dateTime.getMillis());
-        return datatypeFactory.newXMLGregorianCalendar(calendar);
-    }
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTimeInMillis(dateTime.getMillis());
+		return datatypeFactory.newXMLGregorianCalendar(calendar);
+	}
 }

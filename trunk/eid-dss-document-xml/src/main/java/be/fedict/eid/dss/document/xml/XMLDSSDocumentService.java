@@ -61,165 +61,163 @@ import java.util.List;
 
 /**
  * Document Service implementation for XML documents.
- *
+ * 
  * @author Frank Cornelis
  */
 public class XMLDSSDocumentService implements DSSDocumentService {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private static final Log LOG = LogFactory
-            .getLog(XMLDSSDocumentService.class);
+	private static final Log LOG = LogFactory
+			.getLog(XMLDSSDocumentService.class);
 
-    private DocumentBuilder documentBuilder;
+	private DocumentBuilder documentBuilder;
 
-    private DSSDocumentContext context;
+	private DSSDocumentContext context;
 
-    private TransformerFactory transformerFactory;
+	private TransformerFactory transformerFactory;
 
-    public void checkIncomingDocument(byte[] document) throws Exception {
+	public void checkIncomingDocument(byte[] document) throws Exception {
 
-        LOG.debug("checking incoming document");
-        ByteArrayInputStream documentInputStream = new ByteArrayInputStream(
-                document);
-        Document dom = this.documentBuilder.parse(documentInputStream);
+		LOG.debug("checking incoming document");
+		ByteArrayInputStream documentInputStream = new ByteArrayInputStream(
+				document);
+		Document dom = this.documentBuilder.parse(documentInputStream);
 
-        String namespace = dom.getDocumentElement().getNamespaceURI();
-        if (null == namespace) {
-            LOG.debug("no namespace defined");
-            return;
-        }
+		String namespace = dom.getDocumentElement().getNamespaceURI();
+		if (null == namespace) {
+			LOG.debug("no namespace defined");
+			return;
+		}
 
-        byte[] xsd = this.context.getXmlSchema(namespace);
-        if (null == xsd) {
-            LOG.debug("no XML schema available for namespace: " + namespace);
-            return;
-        }
+		byte[] xsd = this.context.getXmlSchema(namespace);
+		if (null == xsd) {
+			LOG.debug("no XML schema available for namespace: " + namespace);
+			return;
+		}
 
-        LOG.debug("validating against XML schema: " + namespace);
-        SchemaFactory schemaFactory = SchemaFactory
-                .newInstance("http://www.w3.org/2001/XMLSchema");
-        schemaFactory
-                .setResourceResolver(new SignatureServiceLSResourceResolver(
-                        this.context));
-        StreamSource schemaSource = new StreamSource(new ByteArrayInputStream(
-                xsd));
-        Schema schema = schemaFactory.newSchema(schemaSource);
-        Validator validator = schema.newValidator();
-        DOMSource domSource = new DOMSource(dom);
-        validator.validate(domSource);
-    }
+		LOG.debug("validating against XML schema: " + namespace);
+		SchemaFactory schemaFactory = SchemaFactory
+				.newInstance("http://www.w3.org/2001/XMLSchema");
+		schemaFactory
+				.setResourceResolver(new SignatureServiceLSResourceResolver(
+						this.context));
+		StreamSource schemaSource = new StreamSource(new ByteArrayInputStream(
+				xsd));
+		Schema schema = schemaFactory.newSchema(schemaSource);
+		Validator validator = schema.newValidator();
+		DOMSource domSource = new DOMSource(dom);
+		validator.validate(domSource);
+	}
 
-    public void init(DSSDocumentContext context, String contentType)
-            throws Exception {
+	public void init(DSSDocumentContext context, String contentType)
+			throws Exception {
 
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-                .newInstance();
-        documentBuilderFactory.setNamespaceAware(true);
-        this.documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        this.context = context;
-        this.transformerFactory = TransformerFactory.newInstance();
-    }
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+				.newInstance();
+		documentBuilderFactory.setNamespaceAware(true);
+		this.documentBuilder = documentBuilderFactory.newDocumentBuilder();
+		this.context = context;
+		this.transformerFactory = TransformerFactory.newInstance();
+	}
 
-    public SignatureServiceEx getSignatureService(
-            InputStream documentInputStream, TimeStampService timeStampService,
-            TimeStampServiceValidator timeStampServiceValidator,
-            RevocationDataService revocationDataService,
-            SignatureFacet signatureFacet, OutputStream documentOutputStream,
-            String role, IdentityDTO identity, byte[] photo,
-            DigestAlgo signatureDigestAlgo) {
+	public SignatureServiceEx getSignatureService(
+			InputStream documentInputStream, TimeStampService timeStampService,
+			TimeStampServiceValidator timeStampServiceValidator,
+			RevocationDataService revocationDataService,
+			SignatureFacet signatureFacet, OutputStream documentOutputStream,
+			String role, IdentityDTO identity, byte[] photo,
+			DigestAlgo signatureDigestAlgo) {
 
-        return new XMLSignatureService(timeStampServiceValidator,
-                revocationDataService, signatureFacet, documentInputStream,
-                documentOutputStream, timeStampService, role, identity, photo,
-                signatureDigestAlgo);
-    }
+		return new XMLSignatureService(timeStampServiceValidator,
+				revocationDataService, signatureFacet, documentInputStream,
+				documentOutputStream, timeStampService, role, identity, photo,
+				signatureDigestAlgo);
+	}
 
-    public DocumentVisualization visualizeDocument(byte[] document,
-                                                   String language)
-            throws Exception {
+	public DocumentVisualization visualizeDocument(byte[] document,
+			String language) throws Exception {
 
-        // per default we do nothing
-        byte[] browserData = document;
-        String browserContentType = "text/xml";
+		// per default we do nothing
+		byte[] browserData = document;
+		String browserContentType = "text/xml";
 
-        ByteArrayInputStream documentInputStream = new ByteArrayInputStream(
-                document);
-        Document dom = this.documentBuilder.parse(documentInputStream);
-        String namespace = dom.getDocumentElement().getNamespaceURI();
-        if (null != namespace) {
-            LOG.debug("document namespace: " + namespace);
-            byte[] xsl = this.context.getXmlStyleSheet(namespace);
-            if (null != xsl) {
-                LOG.debug("XML style sheet present");
-                browserContentType = "text/html";
-                Transformer transformer = this.transformerFactory
-                        .newTransformer(new StreamSource(
-                                new ByteArrayInputStream(xsl)));
-                if (null != language) {
-                    transformer.setParameter("language", language);
-                }
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                transformer.transform(new DOMSource(dom), new StreamResult(
-                        outputStream));
-                browserData = outputStream.toByteArray();
-            }
-        }
+		ByteArrayInputStream documentInputStream = new ByteArrayInputStream(
+				document);
+		Document dom = this.documentBuilder.parse(documentInputStream);
+		String namespace = dom.getDocumentElement().getNamespaceURI();
+		if (null != namespace) {
+			LOG.debug("document namespace: " + namespace);
+			byte[] xsl = this.context.getXmlStyleSheet(namespace);
+			if (null != xsl) {
+				LOG.debug("XML style sheet present");
+				browserContentType = "text/html";
+				Transformer transformer = this.transformerFactory
+						.newTransformer(new StreamSource(
+								new ByteArrayInputStream(xsl)));
+				if (null != language) {
+					transformer.setParameter("language", language);
+				}
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				transformer.transform(new DOMSource(dom), new StreamResult(
+						outputStream));
+				browserData = outputStream.toByteArray();
+			}
+		}
 
-        return new DocumentVisualization(browserContentType, browserData);
-    }
+		return new DocumentVisualization(browserContentType, browserData);
+	}
 
-    public List<SignatureInfo> verifySignatures(byte[] documentData)
-            throws Exception {
-        Document document = this.documentBuilder
-                .parse(new ByteArrayInputStream(documentData));
+	public List<SignatureInfo> verifySignatures(byte[] documentData)
+			throws Exception {
+		Document document = this.documentBuilder
+				.parse(new ByteArrayInputStream(documentData));
 
-        List<SignatureInfo> signatureInfos = new LinkedList<SignatureInfo>();
-        NodeList signatureNodeList = document.getElementsByTagNameNS(
-                XMLSignature.XMLNS, "Signature");
-        if (0 == signatureNodeList.getLength()) {
-            LOG.debug("no XML signature found");
-            return signatureInfos;
-        }
+		List<SignatureInfo> signatureInfos = new LinkedList<SignatureInfo>();
+		NodeList signatureNodeList = document.getElementsByTagNameNS(
+				XMLSignature.XMLNS, "Signature");
+		if (0 == signatureNodeList.getLength()) {
+			LOG.debug("no XML signature found");
+			return signatureInfos;
+		}
 
-        XAdESValidation xadesValidation = new XAdESValidation(this.context);
+		XAdESValidation xadesValidation = new XAdESValidation(this.context);
 
-        for (int signatureNodeIdx = 0; signatureNodeIdx < signatureNodeList
-                .getLength(); signatureNodeIdx++) {
-            /*
-                * Check signature.
-                */
-            Element signatureElement = (Element) signatureNodeList
-                    .item(signatureNodeIdx);
-            KeyInfoKeySelector keyInfoKeySelector = new KeyInfoKeySelector();
-            DOMValidateContext domValidateContext = new DOMValidateContext(
-                    keyInfoKeySelector, signatureElement);
-            XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory
-                    .getInstance();
-            XMLSignature xmlSignature;
-            try {
-                xmlSignature = xmlSignatureFactory
-                        .unmarshalXMLSignature(domValidateContext);
-            } catch (MarshalException e) {
-                LOG.error("XML signature marshalling error: " + e.getMessage(),
-                        e);
-                continue;
-            }
-            LOG.debug("validating signature: " + xmlSignature.getId());
-            boolean signatureValid = xmlSignature
-                    .validate(domValidateContext);
-            LOG.debug("signature valid: " + signatureValid);
-            if (!signatureValid) {
-                LOG.error("invalid signature");
-                throw new RuntimeException("invalid signature");
-            }
+		for (int signatureNodeIdx = 0; signatureNodeIdx < signatureNodeList
+				.getLength(); signatureNodeIdx++) {
+			/*
+			 * Check signature.
+			 */
+			Element signatureElement = (Element) signatureNodeList
+					.item(signatureNodeIdx);
+			KeyInfoKeySelector keyInfoKeySelector = new KeyInfoKeySelector();
+			DOMValidateContext domValidateContext = new DOMValidateContext(
+					keyInfoKeySelector, signatureElement);
+			XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory
+					.getInstance();
+			XMLSignature xmlSignature;
+			try {
+				xmlSignature = xmlSignatureFactory
+						.unmarshalXMLSignature(domValidateContext);
+			} catch (MarshalException e) {
+				LOG.error("XML signature marshalling error: " + e.getMessage(),
+						e);
+				continue;
+			}
+			LOG.debug("validating signature: " + xmlSignature.getId());
+			boolean signatureValid = xmlSignature.validate(domValidateContext);
+			LOG.debug("signature valid: " + signatureValid);
+			if (!signatureValid) {
+				LOG.error("invalid signature");
+				throw new RuntimeException("invalid signature");
+			}
 
-            X509Certificate signingCertificate = keyInfoKeySelector
-                    .getCertificate();
-            SignatureInfo signatureInfo = xadesValidation.validate(document,
-                    xmlSignature, signatureElement, signingCertificate);
-            signatureInfos.add(signatureInfo);
-        }
-        return signatureInfos;
-    }
+			X509Certificate signingCertificate = keyInfoKeySelector
+					.getCertificate();
+			SignatureInfo signatureInfo = xadesValidation.validate(document,
+					xmlSignature, signatureElement, signingCertificate);
+			signatureInfos.add(signatureInfo);
+		}
+		return signatureInfos;
+	}
 }
