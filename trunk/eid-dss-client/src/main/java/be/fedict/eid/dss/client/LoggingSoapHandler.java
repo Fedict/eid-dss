@@ -33,54 +33,54 @@ import java.util.Set;
 
 /**
  * Logging JAX-WS SOAP handler.
- *
+ * 
  * @author Frank Cornelis
  */
 public class LoggingSoapHandler implements SOAPHandler<SOAPMessageContext> {
 
-    private static final Log LOG = LogFactory.getLog(LoggingSoapHandler.class);
+	private static final Log LOG = LogFactory.getLog(LoggingSoapHandler.class);
 
-    private final boolean logToFile;
+	private final boolean logToFile;
 
-    public LoggingSoapHandler(boolean logToFile) {
-        this.logToFile = logToFile;
-    }
+	public LoggingSoapHandler(boolean logToFile) {
+		this.logToFile = logToFile;
+	}
 
-    public Set<QName> getHeaders() {
-        return null;
-    }
+	public Set<QName> getHeaders() {
+		return null;
+	}
 
-    public void close(MessageContext context) {
-        LOG.debug("close");
-    }
+	public void close(MessageContext context) {
+		LOG.debug("close");
+	}
 
-    public boolean handleFault(SOAPMessageContext context) {
-        return true;
-    }
+	public boolean handleFault(SOAPMessageContext context) {
+		return true;
+	}
 
-    public boolean handleMessage(SOAPMessageContext context) {
-        LOG.debug("handle message");
-        Boolean outboundProperty = (Boolean) context
-                .get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-        LOG.debug("outbound message: " + outboundProperty);
-        SOAPMessage soapMessage = context.getMessage();
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        try {
-            if (this.logToFile) {
-                File tmpFile = File.createTempFile("eid-dss-soap-"
-                        + (outboundProperty ? "outbound" : "inbound") + "-",
-                        ".xml");
-                FileOutputStream fileOutputStream = new FileOutputStream(
-                        tmpFile);
-                soapMessage.writeTo(fileOutputStream);
-                fileOutputStream.close();
-                LOG.debug("tmp file: " + tmpFile.getAbsolutePath());
-            }
-            soapMessage.writeTo(output);
-        } catch (Exception e) {
-            LOG.error("SOAP error: " + e.getMessage());
-        }
-        LOG.debug("SOAP message: " + output.toString());
-        return true;
-    }
+	public boolean handleMessage(SOAPMessageContext context) {
+		LOG.debug("handle message");
+		Boolean outboundProperty = (Boolean) context
+				.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+		LOG.debug("outbound message: " + outboundProperty);
+		SOAPMessage soapMessage = context.getMessage();
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			if (this.logToFile) {
+				File tmpFile = File.createTempFile("eid-dss-soap-"
+						+ (outboundProperty ? "outbound" : "inbound") + "-",
+						".xml");
+				FileOutputStream fileOutputStream = new FileOutputStream(
+						tmpFile);
+				soapMessage.writeTo(fileOutputStream);
+				fileOutputStream.close();
+				LOG.debug("tmp file: " + tmpFile.getAbsolutePath());
+			}
+			soapMessage.writeTo(output);
+		} catch (Exception e) {
+			LOG.error("SOAP error: " + e.getMessage());
+		}
+		LOG.debug("SOAP message: " + output.toString());
+		return true;
+	}
 }

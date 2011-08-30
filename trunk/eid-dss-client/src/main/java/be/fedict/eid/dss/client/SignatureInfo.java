@@ -48,14 +48,29 @@ public class SignatureInfo {
 		this.role = role;
 	}
 
+	/**
+	 * Gives back the X509 certificate of the signatory.
+	 * 
+	 * @return the X509 certificate.
+	 */
 	public X509Certificate getSigner() {
 		return this.signer;
 	}
 
+	/**
+	 * Gives back the date/time the signature was created.
+	 * 
+	 * @return the signing time as date.
+	 */
 	public Date getSigningTime() {
 		return this.signingTime;
 	}
 
+	/**
+	 * Gives back the claimed role of the signatory.
+	 * 
+	 * @return the claimed role as string.
+	 */
 	public String getRole() {
 		return this.role;
 	}

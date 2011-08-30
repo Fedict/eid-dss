@@ -29,58 +29,73 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * HTTP/HTTPS proxy selector for the eID DSS web service client.
+ * 
+ * @author Frank Cornelis
+ * 
+ */
 public class DSSProxySelector extends ProxySelector {
 
-    private static final Log LOG = LogFactory.getLog(DSSProxySelector.class);
+	private static final Log LOG = LogFactory.getLog(DSSProxySelector.class);
 
-    private final ProxySelector defaultProxySelector;
+	private final ProxySelector defaultProxySelector;
 
-    private final Map<String, Proxy> proxies;
+	private final Map<String, Proxy> proxies;
 
-    public DSSProxySelector(ProxySelector proxySelector) {
-        this.defaultProxySelector = proxySelector;
-        this.proxies = new HashMap<String, Proxy>();
-    }
+	/**
+	 * Main constructor.
+	 * 
+	 * @param proxySelector
+	 *            the default proxy selector.
+	 */
+	public DSSProxySelector(ProxySelector proxySelector) {
+		this.defaultProxySelector = proxySelector;
+		this.proxies = new HashMap<String, Proxy>();
+	}
 
-    @Override
-    public List<Proxy> select(URI uri) {
-        LOG.debug("select: " + uri);
-        String hostname = uri.getHost();
-        Proxy proxy = this.proxies.get(hostname);
-        if (null != proxy) {
-            LOG.debug("using proxy: " + proxy);
-            return Collections.singletonList(proxy);
-        }
-        return this.defaultProxySelector.select(uri);
-    }
+	@Override
+	public List<Proxy> select(URI uri) {
+		LOG.debug("select: " + uri);
+		String hostname = uri.getHost();
+		Proxy proxy = this.proxies.get(hostname);
+		if (null != proxy) {
+			LOG.debug("using proxy: " + proxy);
+			return Collections.singletonList(proxy);
+		}
+		return this.defaultProxySelector.select(uri);
+	}
 
-    @Override
-    public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
-        this.defaultProxySelector.connectFailed(uri, sa, ioe);
-    }
+	@Override
+	public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
+		this.defaultProxySelector.connectFailed(uri, sa, ioe);
+	}
 
-    /**
-     * Sets the proxy for a certain location URL. If the proxyHost is null, we
-     * go DIRECT.
-     *
-     * @param location  location
-     * @param proxyHost proxy hostname
-     * @param proxyPort proxy port
-     */
-    public void setProxy(String location, String proxyHost, int proxyPort) {
-        String hostname;
-        try {
-            hostname = new URL(location).getHost();
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("URL error: " + e.getMessage(), e);
-        }
-        if (null == proxyHost) {
-            LOG.debug("removing proxy for: " + hostname);
-            this.proxies.remove(hostname);
-        } else {
-            LOG.debug("setting proxy for: " + hostname);
-            this.proxies.put(hostname, new Proxy(Type.HTTP,
-                    new InetSocketAddress(proxyHost, proxyPort)));
-        }
-    }
+	/**
+	 * Sets the proxy for a certain location URL. If the proxyHost is
+	 * <code>null</code, we go DIRECT.
+	 * 
+	 * @param location
+	 *            the location to proxy.
+	 * @param proxyHost
+	 *            proxy hostname
+	 * @param proxyPort
+	 *            proxy port
+	 */
+	public void setProxy(String location, String proxyHost, int proxyPort) {
+		String hostname;
+		try {
+			hostname = new URL(location).getHost();
+		} catch (MalformedURLException e) {
+			throw new RuntimeException("URL error: " + e.getMessage(), e);
+		}
+		if (null == proxyHost) {
+			LOG.debug("removing proxy for: " + hostname);
+			this.proxies.remove(hostname);
+		} else {
+			LOG.debug("setting proxy for: " + hostname);
+			this.proxies.put(hostname, new Proxy(Type.HTTP,
+					new InetSocketAddress(proxyHost, proxyPort)));
+		}
+	}
 }
