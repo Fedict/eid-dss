@@ -8,10 +8,10 @@
 			Fedict eID Digital Signature Service Administrator Manual
 		</title>
 		<copyright>
-			<year>2010</year>
+			<year>2010-2011</year>
 			<holder>Fedict</holder>
 		</copyright>
-		<releaseinfo>22 Dec 2010</releaseinfo>
+		<releaseinfo>31 Aug 2011</releaseinfo>
 		<authorgroup>
 			<author>
 				<firstname>Frank</firstname>
@@ -64,15 +64,19 @@
 						The eID DSS signature creation portal.
 					</para>
 					<para>
-						Via this portal Relying Parties can create signatures on
-						documents.
+						Via this portal Relying Party web applications can create
+						signatures on documents.
 					</para>
 				</listitem>
 			</orderedlist>
-			Besides these two service artifacts, the eID DSS also comes with an
+		</para>
+		<para>
+			Besides these service artifacts, the eID DSS also comes with an
 			Admin portal that allows administrators to manage the eID DSS via an
-			easy to use web portal interface. In the following sections we will
-			use
+			easy to use web portal interface.
+		</para>
+		<para>
+			In the following sections we will use
 			<code>$EID_DSS_ADDRESS</code>
 			as the (internal) web address where the eID DSS product has been
 			deployed.
@@ -94,7 +98,7 @@
 			the eID Trust Service JBoss distribution. This means that all generic
 			eID Trust Service configuration is also applicable to the eID Digital
 			Signature Service. We refer to the eID Trust Service Administrator
-			Manual for all non eID DSS specific configuration aspects. 
+			Manual for all non eID DSS specific configuration aspects.
 		</para>
 		<para>
 			The eID Digital Signature Service distribution also bundles the
@@ -105,13 +109,13 @@
 			<itemizedlist>
 				<listitem>
 					<para>
-						<code>jboss/server/default/deploy/eid-trust-service-deploy-1.0.0-SNAPSHOT.ear
+						<code>jboss/server/default/deploy/eid-trust-service-deploy-1.0.0.GA.ear
 						</code>
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						<code>jboss/server/all/deploy/eid-trust-service-deploy-1.0.0-SNAPSHOT.ear
+						<code>jboss/server/all/deploy/eid-trust-service-deploy-1.0.0.GA.ear
 						</code>
 					</para>
 				</listitem>
@@ -133,6 +137,10 @@
 						<para>Oracle</para>
 					</listitem>
 				</itemizedlist>
+			</para>
+			<para>
+				The JBoss AS database configuration is exactly the same as for
+				eID Trust Service.
 			</para>
 			<section>
 				<title>MySQL</title>
@@ -175,8 +183,8 @@
 	<section>
 		<title>Deployment</title>
 		<para>
-			Deploy the eID Digital Signature Service the same way you deploy
-			the eID Trust Service.
+			Deploy the eID Digital Signature Service the same way as you
+			deploy the eID Trust Service.
 		</para>
 		<section>
 			<title>eID DSS Admin Portal</title>
@@ -185,8 +193,8 @@
 				at
 				<code>$EID_DSS_ADDRESS/eid-dss-admin-portal/</code>
 				. After deployment of the eID Digital Signature Service you should
-				register an administrator by logging in into the admin portal. In
-				this admin portal you should at least configure the following under
+				register an administrator by logging into the admin portal. In this
+				admin portal you should at least configure the following under
 				<emphasis>PKI Validation</emphasis>
 				:
 				<itemizedlist>
@@ -208,12 +216,12 @@
 							<code>BE</code>
 						</para>
 					</listitem>
-                    <listitem>
-                        <para>
-                            Signature identity trust domain:
-                            <code>BE-NAT-REG</code>
-                        </para>
-                    </listitem>
+					<listitem>
+						<para>
+							Signature identity trust domain:
+							<code>BE-NAT-REG</code>
+						</para>
+					</listitem>
 					<listitem>
 						<para>
 							TSA trust domain:
@@ -221,10 +229,12 @@
 						</para>
 					</listitem>
 				</itemizedlist>
+			</para>
+			<para>
 				Under
 				<emphasis>TSP</emphasis>
 				you should configure the time-stamp service used by the eID DSS to
-				create its XAdES-T and XAdES-X signatures.
+				create its XAdES-X-X signatures.
 				<itemizedlist>
 					<listitem>
 						<para>
@@ -234,6 +244,24 @@
 					</listitem>
 				</itemizedlist>
 			</para>
+			<para>
+				The eID DSS needs to be able to do outgoing HTTP calls to both eID
+				Trust Service (for certificate validation) and to the TSP service
+				(for time-stamp generation). If your eID DSS instance sits behind an
+				HTTP proxy, you can configure the HTTP proxy settings under
+				<emphasis>Network</emphasis>
+				.
+			</para>
+			<para>
+				Via the admin portal you can also configure the eID DSS identity
+				under
+				<emphasis>Identity</emphasis>
+				. Using this configured keystore the eID DSS will be able to sign
+				its response messages. The signature on the eID DSS protocol
+				response messages should be used by the Relying Party web
+				applications to verify the integrity of the transferred protocol
+				messages between the DSS and the RP.
+			</para>
 		</section>
 		<section>
 			<title>eID DSS Core</title>
@@ -241,7 +269,8 @@
 				The eID Digital Signature Service core is available at:
 				<code>$EID_DSS_ADDRESS/eid-dss/</code>
 				. Check this site to find out which document formats and signature
-				protocols are provided by the eID DSS runtime.
+				protocols are provided by the eID DSS runtime. This site also
+				displays the eID DSS digital service identity.
 			</para>
 		</section>
 		<section>
@@ -251,7 +280,7 @@
 				available at:
 				<code>$EID_DSS_ADDRESS/eid-dss-ws/dss</code>
 				. Check this site to see whether the JAX-WS webservice stack is up
-				and running.
+				and running and accessible.
 			</para>
 		</section>
 		<section>
@@ -369,13 +398,19 @@
 				This is free software; you can redistribute it and/or modify it
 				under the terms of the GNU Lesser General Public License version 3.0
 				as published by the Free Software Foundation.
-
+			</code>
+		</para>
+		<para>
+			<code>
 				This software is
 				distributed in the hope that it will be useful, but WITHOUT ANY
 				WARRANTY; without even the implied warranty of MERCHANTABILITY or
 				FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
 				License for more details.
-
+			</code>
+		</para>
+		<para>
+			<code>
 				You should have received a copy of the GNU
 				Lesser General Public License along with this software; if not, see
 				http://www.gnu.org/licenses/.
@@ -402,6 +437,11 @@
 						<entry>21 Dec 2010</entry>
 						<entry>Frank Cornelis</entry>
 						<entry>Initial Version.</entry>
+					</row>
+					<row>
+						<entry>31 Aug 2011</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>Updates.</entry>
 					</row>
 				</tbody>
 			</tgroup>
