@@ -7,74 +7,74 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:s="http://jboss.com/products/seam/taglib">
 <body>
-<ui:composition template="/WEB-INF/template.xhtml">
-	<ui:param name="activeMenu" value="view" />
-	<ui:define name="body">
-		<h2>#{messages.documentOverview}</h2>
-		<h:panelGrid columns="2">
-			<h:outputText value="#{messages.fileDownload}:" />
-			<a
-				href="#{facesContext.externalContext.requestContextPath}/download/#{filename}">#{filename}</a>
+	<ui:composition template="/WEB-INF/template.xhtml">
+		<ui:param name="activeMenu" value="view" />
+		<ui:define name="body">
+			<h2>#{messages.documentOverview}</h2>
+			<h:panelGrid columns="2">
+				<h:outputText value="#{messages.fileDownload}:" />
+				<a
+					href="#{facesContext.externalContext.requestContextPath}/download/#{filename}">#{filename}</a>
 
-			<h:outputText value="#{messages.fileSize}:" />
-			<h:outputText value="#{filesize} bytes" />
-		</h:panelGrid>
+				<h:outputText value="#{messages.fileSize}:" />
+				<h:outputText value="#{filesize} bytes" />
+			</h:panelGrid>
 
-		<h:form>
-			<rich:dataGrid var="row" value="#{signatureInfos}" elements="5"
-				rendered="#{signatureInfos.rowCount > 0}" columns="1">
-				<f:facet name="header">
-					<h:outputText value="#{messages.signatures}"></h:outputText>
-				</f:facet>
-				<rich:panel>
-					<h:panelGrid columns="2">
-						<s:graphicImage value="#{row.photo}"
-							rendered="#{not empty row.photo}" />
+			<h:form>
+				<rich:dataGrid var="row" value="#{signatureInfos}" elements="5"
+					rendered="#{signatureInfos.rowCount > 0}" columns="1">
+					<f:facet name="header">
+						<h:outputText value="#{messages.signatures}"></h:outputText>
+					</f:facet>
+					<rich:panel>
 						<h:panelGrid columns="2">
-							<h:outputText value="#{messages.signer}:" />
-							<h:outputText value="#{row.signer.subjectX500Principal}" />
+							<s:graphicImage value="#{row.photo}"
+								rendered="#{not empty row.photo}" />
+							<h:panelGrid columns="2">
+								<h:outputText value="#{messages.signer}:" />
+								<h:outputText value="#{row.signer.subjectX500Principal}" />
 
-							<h:outputText value="#{messages.signingTime}:" />
-							<h:outputText value="#{row.signingTime}">
-								<f:convertDateTime type="both" dateStyle="full" timeStyle="long"
-									timeZone="Europe/Brussels"
-									locale="#{dssLanguageSelector.locale}" />
-							</h:outputText>
+								<h:outputText value="#{messages.signingTime}:" />
+								<h:outputText value="#{row.signingTime}">
+									<f:convertDateTime type="both" dateStyle="full"
+										timeStyle="long" timeZone="Europe/Brussels"
+										locale="#{dssLanguageSelector.locale}" />
+								</h:outputText>
 
-							<h:outputText value="#{messages.role}:"
-								rendered="#{not empty row.role}" />
-							<h:outputText value="#{row.role}"
-								rendered="#{not empty row.role}" />
+								<h:outputText value="#{messages.role}:"
+									rendered="#{not empty row.role}" />
+								<h:outputText value="#{row.role}"
+									rendered="#{not empty row.role}" />
 
-							<h:outputText value="#{messages.name}:"
-								rendered="#{not empty row.name}" />
-							<s:div rendered="#{not empty row.name}">
-								<h:outputText value="#{row.firstName} " />
-								<h:outputText value="#{row.name} " />
-								<h:outputText value="#{row.middleName}" />
-							</s:div>
+								<h:outputText value="#{messages.name}:"
+									rendered="#{not empty row.name}" />
+								<s:div rendered="#{not empty row.name}">
+									<h:outputText value="#{row.firstName} " />
+									<h:outputText value="#{row.name} " />
+									<h:outputText value="#{row.middleName}" />
+								</s:div>
 
-							<h:outputText value="#{messages.gender}:"
-								rendered="#{not empty row.gender}" />
-							<h:outputText value="#{row.gender}"
-								rendered="#{not empty row.gender}" />
+								<h:outputText value="#{messages.gender}:"
+									rendered="#{not empty row.gender}" />
+								<h:outputText value="#{row.gender}"
+									rendered="#{not empty row.gender}" />
+							</h:panelGrid>
 						</h:panelGrid>
-					</h:panelGrid>
-				</rich:panel>
-				<f:facet name="footer">
-					<rich:datascroller />
-				</f:facet>
-			</rich:dataGrid>
-		</h:form>
-		<h:outputText value="#{messages.noSignatures}"
-			rendered="#{signatureInfos.rowCount == 0}" />
+					</rich:panel>
+					<f:facet name="footer">
+						<rich:datascroller />
+					</f:facet>
+				</rich:dataGrid>
+			</h:form>
+			<h:outputText value="#{messages.noSignatures}"
+				rendered="#{signatureInfos.rowCount == 0}" />
 
-		<h:form>
-			<h:commandButton value="#{messages.addSignature}"
-				action="#{dssPortalView.sign}" />
-		</h:form>
+			<h:form>
+				<h:commandButton value="#{messages.addSignature}"
+					action="#{dssPortalView.sign}" />
+			</h:form>
 
-	</ui:define>
-</ui:composition>
+		</ui:define>
+	</ui:composition>
 </body>
 </html>

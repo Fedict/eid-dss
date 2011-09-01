@@ -5,78 +5,80 @@
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:f="http://java.sun.com/jsf/core">
 <body>
-<ui:composition template="/WEB-INF/template.xhtml">
-	<ui:define name="body">
-		<h2>#{messages.welcome}</h2>
-		<p>#{messages.welcomeInfo1}</p>
-        <p>#{messages.welcomeInfo2}</p>
+	<ui:composition template="/WEB-INF/template.xhtml">
+		<ui:define name="body">
+			<h2>#{messages.welcome}</h2>
+			<p>#{messages.welcomeInfo1}</p>
+			<p>#{messages.welcomeInfo2}</p>
 
-		<h3>#{messages.supportedDocumentFormats}</h3>
-		<h:form>
-			<rich:dataTable var="row" value="#{dssDocumentFormatList}" rows="10">
-				<rich:column>
-					<f:facet name="header">
-						<h:outputText value="#{messages.mimeType}" />
+			<h3>#{messages.supportedDocumentFormats}</h3>
+			<h:form>
+				<rich:dataTable var="row" value="#{dssDocumentFormatList}" rows="10">
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="#{messages.mimeType}" />
+						</f:facet>
+						<h:outputText value="#{row}" />
+					</rich:column>
+					<f:facet name="footer">
+						<rich:datascroller />
 					</f:facet>
-					<h:outputText value="#{row}" />
-				</rich:column>
-				<f:facet name="footer">
-					<rich:datascroller />
-				</f:facet>
-			</rich:dataTable>
-		</h:form>
+				</rich:dataTable>
+			</h:form>
 
-        <h3>#{messages.supportedProtocols}</h3>
-        <rich:dataTable value="#{dssProtocolServices}" var="row">
-            <rich:column>
-                <h:outputLink value="#{row.path}">
-                    <h:outputText value="#{row.name}"/>
-                </h:outputLink>
-            </rich:column>
-        </rich:dataTable>
-
-		<h3>#{messages.supportedXmlSchemas}</h3>
-		<h:form>
-			<rich:dataTable var="row" value="#{dssXmlSchemaNamespaces}" rows="10">
+			<h3>#{messages.supportedProtocols}</h3>
+			<rich:dataTable value="#{dssProtocolServices}" var="row">
 				<rich:column>
-					<f:facet name="header">
-						<h:outputText value="#{messages.xmlNamespace}" />
-					</f:facet>
-					<h:outputText value="#{row}" />
+					<h:outputLink value="#{row.path}">
+						<h:outputText value="#{row.name}" />
+					</h:outputLink>
 				</rich:column>
-				<f:facet name="footer">
-					<rich:datascroller />
-				</f:facet>
 			</rich:dataTable>
-		</h:form>
 
-		<h3>#{messages.supportedXmlStyleSheets}</h3>
-		<h:form>
-			<rich:dataTable var="row" value="#{dssXmlStyleSheetNamespaces}"
-				rows="10">
-				<rich:column>
-					<f:facet name="header">
-						<h:outputText value="#{messages.xmlNamespace}" />
+			<h3>#{messages.supportedXmlSchemas}</h3>
+			<h:form>
+				<rich:dataTable var="row" value="#{dssXmlSchemaNamespaces}"
+					rows="10">
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="#{messages.xmlNamespace}" />
+						</f:facet>
+						<h:outputText value="#{row}" />
+					</rich:column>
+					<f:facet name="footer">
+						<rich:datascroller />
 					</f:facet>
-					<h:outputText value="#{row}" />
-				</rich:column>
-				<f:facet name="footer">
-					<rich:datascroller />
-				</f:facet>
-			</rich:dataTable>
-		</h:form>
+				</rich:dataTable>
+			</h:form>
 
-        <h3>#{messages.serviceIdentity}</h3>
-        <p>#{messages.identityThumbprint} :
-            <h:outputText value="#{dssServiceFingerprint}"/>
-        </p>
+			<h3>#{messages.supportedXmlStyleSheets}</h3>
+			<h:form>
+				<rich:dataTable var="row" value="#{dssXmlStyleSheetNamespaces}"
+					rows="10">
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="#{messages.xmlNamespace}" />
+						</f:facet>
+						<h:outputText value="#{row}" />
+					</rich:column>
+					<f:facet name="footer">
+						<rich:datascroller />
+					</f:facet>
+				</rich:dataTable>
+			</h:form>
 
-        <p>
-            <h:outputLink value="./identity.pem">
-                <h:outputText value="#{messages.identityCertificateChain}"/>
-            </h:outputLink>
-        </p>
-	</ui:define>
-</ui:composition>
+			<h3>#{messages.serviceIdentity}</h3>
+			<p>
+				#{messages.identityThumbprint} :
+				<h:outputText value="#{dssServiceFingerprint}" />
+			</p>
+
+			<p>
+				<h:outputLink value="./identity.pem">
+					<h:outputText value="#{messages.identityCertificateChain}" />
+				</h:outputLink>
+			</p>
+		</ui:define>
+	</ui:composition>
 </body>
 </html>

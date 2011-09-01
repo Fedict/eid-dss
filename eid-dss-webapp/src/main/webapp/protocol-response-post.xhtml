@@ -5,27 +5,28 @@
 	xmlns:rich="http://richfaces.org/rich"
 	xmlns:f="http://java.sun.com/jsf/core">
 <body>
-<ui:composition template="/WEB-INF/template.xhtml">
-	<ui:define name="body">
-		<h2>Navigating back to web application...</h2>
-		<p>This page will automatically navigate you back to your web
-		application.</p>
-		<form id="response-form" method="post" action="#{dssResponseAction}">
-			<ui:repeat value="#{dssResponseAttributes}" var="item">
-				<input type="hidden" name="#{item.name}" value="#{item.value}" />
-			</ui:repeat>
-			<noscript>
-				<input type="submit" value="Submit" />
-			</noscript>
-		</form>
-		<script type="text/javascript">
-            if (document.getElementById('response-form').action == "" ||
-                document.getElementById('response-form').action.indexOf("protocol-response-post.seam") != -1) {
-                document.getElementById('response-form').action = "main.seam";
-	        }
-	        document.getElementById('response-form').submit();
-		</script>
-	</ui:define>
-</ui:composition>
+	<ui:composition template="/WEB-INF/template.xhtml">
+		<ui:define name="body">
+			<h2>Navigating back to web application...</h2>
+			<p>This page will automatically navigate you back to your web
+				application.</p>
+			<form id="response-form" method="post" action="#{dssResponseAction}">
+				<ui:repeat value="#{dssResponseAttributes}" var="item">
+					<input type="hidden" name="#{item.name}" value="#{item.value}" />
+				</ui:repeat>
+				<noscript>
+					<input type="submit" value="Submit" />
+				</noscript>
+			</form>
+			<script type="text/javascript">
+				if (document.getElementById('response-form').action == ""
+						|| document.getElementById('response-form').action
+								.indexOf("protocol-response-post.seam") != -1) {
+					document.getElementById('response-form').action = "main.seam";
+				}
+				document.getElementById('response-form').submit();
+			</script>
+		</ui:define>
+	</ui:composition>
 </body>
 </html>
