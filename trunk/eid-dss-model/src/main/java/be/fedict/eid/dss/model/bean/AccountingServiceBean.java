@@ -18,15 +18,17 @@
 
 package be.fedict.eid.dss.model.bean;
 
-import be.fedict.eid.dss.entity.AccountingEntity;
-import be.fedict.eid.dss.model.AccountingService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import be.fedict.eid.dss.entity.AccountingEntity;
+import be.fedict.eid.dss.model.AccountingService;
 
 @Stateless
 public class AccountingServiceBean implements AccountingService {
@@ -61,11 +63,18 @@ public class AccountingServiceBean implements AccountingService {
 
 		LOG.debug("Add request: " + domain);
 
+		String domainKey;
+		if (domain.indexOf("?") != -1) {
+			domainKey = domain.substring(0, domain.indexOf("?"));
+		} else {
+			domainKey = domain;
+		}
+
 		AccountingEntity accountingEntity = this.entityManager.find(
-				AccountingEntity.class, domain);
+				AccountingEntity.class, domainKey);
 		if (null == accountingEntity) {
 
-			accountingEntity = new AccountingEntity(domain);
+			accountingEntity = new AccountingEntity(domainKey);
 			this.entityManager.persist(accountingEntity);
 
 		} else {

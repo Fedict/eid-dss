@@ -171,7 +171,7 @@ public class XAdESValidationTest {
 				(Date) EasyMock.anyObject(),
 				(List<OCSPResp>) EasyMock.anyObject(),
 				(List<X509CRL>) EasyMock.anyObject());
-		expect(mockDSSDocumentContext.getTimestampMaxOffset()).andReturn(1000L);
+		expect(mockDSSDocumentContext.getTimestampMaxOffset()).andReturn(10 * 1000L);
 
 		// prepare
 		replay(mockDSSDocumentContext);
