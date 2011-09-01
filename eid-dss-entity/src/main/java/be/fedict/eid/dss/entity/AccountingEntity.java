@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Accounting entity holding info on eID DSS Usage.
  * <p/>
- * Holds <domain,#requests>.
+ * Holds &lt;domain,#requests&gt;.
  */
 @Entity
 @Table(name = Constants.DATABASE_TABLE_PREFIX + "accounting")

@@ -30,6 +30,8 @@ import org.bouncycastle.util.encoders.Base64;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.Random;
 import java.util.UUID;
 
 public class SPBean {
@@ -156,7 +158,8 @@ public class SPBean {
 		this.target = httpServletRequest.getScheme() + "://"
 				+ httpServletRequest.getServerName() + ":"
 				+ httpServletRequest.getServerPort()
-				+ httpServletRequest.getContextPath() + "/" + target;
+				+ httpServletRequest.getContextPath() + "/" + target
+				+ "?requestId=" + new Random().nextInt(1000);
 
 		// store data on session for response handling
 		httpServletRequest.getSession().setAttribute("target", this.target);
