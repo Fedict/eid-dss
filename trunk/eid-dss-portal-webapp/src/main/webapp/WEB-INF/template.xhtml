@@ -18,49 +18,57 @@
 
 <body>
 
-<div id="header">
+	<div id="header">
 
-<div id="language"><h:form>
-	<h:selectOneMenu id="language"
-		value="#{dssLanguageSelector.localeString}" onchange="submit();">
-		<f:selectItems value="#{dssLanguageSelector.supportedLocales}" />
-	</h:selectOneMenu>
-</h:form></div>
+		<div id="language">
+			<h:form>
+				<h:selectOneMenu id="language"
+					value="#{dssLanguageSelector.localeString}" onchange="submit();">
+					<f:selectItems value="#{dssLanguageSelector.supportedLocales}" />
+				</h:selectOneMenu>
+			</h:form>
+		</div>
 
-<div id="logo"><h:graphicImage id="logo" alt="Fedict Logo"
-	height="45" url="/images/fedict.png" /></div>
+		<div id="logo">
+			<h:graphicImage id="logo" alt="Fedict Logo" height="45"
+				url="/images/fedict.png" />
+		</div>
 
-<h1>#{messages.title}</h1>
+		<h1>#{messages.title}</h1>
 
-</div>
-
-<f:view>
-	<div id="menu">
-	<div id="menu-content">
-	<ul>
-		<li id="menu_item_main"><a
-			href="#{facesContext.externalContext.requestContextPath}/main.seam">Home</a></li>
-
-		<li id="menu_item_view"><a
-			href="#{facesContext.externalContext.requestContextPath}/upload.seam">#{messages.signVerify}</a></li>
-	</ul>
-	</div>
 	</div>
 
-	<script type="text/javascript">
-                function setClass(id, className) {
-                    obj = document.getElementById(id);
-                    if (null != obj) {
-                        obj.className = className;
-                    }
-                }
-                setClass("menu_item_#{activeMenu}", "selected");
-    </script>
+	<f:view>
+		<div id="menu">
+			<div id="menu-content">
+				<ul>
+					<li id="menu_item_main"><a
+						href="#{facesContext.externalContext.requestContextPath}/main.seam">Home</a>
+					</li>
 
-	<div id="content"><ui:insert name="body">
-		<p>Default Body</p>
-	</ui:insert></div>
-</f:view>
+					<li id="menu_item_view"><a
+						href="#{facesContext.externalContext.requestContextPath}/upload.seam">#{messages.signVerify}</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			function setClass(id, className) {
+				obj = document.getElementById(id);
+				if (null != obj) {
+					obj.className = className;
+				}
+			}
+			setClass("menu_item_#{activeMenu}", "selected");
+		</script>
+
+		<div id="content">
+			<ui:insert name="body">
+				<p>Default Body</p>
+			</ui:insert>
+		</div>
+	</f:view>
 
 </body>
 

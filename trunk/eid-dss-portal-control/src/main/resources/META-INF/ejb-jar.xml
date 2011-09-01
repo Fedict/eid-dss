@@ -4,7 +4,8 @@
 	version="3.0">
 
 	<display-name>eID Digital Signature Service Portal Controller
-		Components</display-name>
+		Components
+	</display-name>
 
 	<interceptors>
 		<interceptor>

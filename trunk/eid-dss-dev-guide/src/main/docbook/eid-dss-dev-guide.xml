@@ -1248,11 +1248,14 @@
 					</code>
 					element. After document retrieval, the eID DSS
 					removes the
-					document from its temporary storage. If the
+					document
+					from its temporary storage. If the
 					document is not
-					retrieved by the Relying Party, the eID DSS
+					retrieved by the
+					Relying Party, the eID DSS
 					removes the document
-					from the temporary storage after a
+					from the temporary
+					storage after a
 					certain time indicated by
 					<code>Validity/NotAfter</code>
 					within the
@@ -1451,7 +1454,8 @@
 		<para>
 			As you can see the XML Style Sheet receives a
 			<code>language</code>
-			parameter from the eID Digital Signature Service for localization of the view.
+			parameter from the eID Digital Signature Service for localization of
+			the view.
 		</para>
 		<para>
 			An XML Style Sheet can easily be developed using the following
@@ -1642,7 +1646,8 @@
 					<row>
 						<entry>26 August 2011</entry>
 						<entry>Frank Cornelis</entry>
-						<entry>Improved protocol and Java components documentation.</entry>
+						<entry>Improved protocol and Java components documentation.
+						</entry>
 					</row>
 				</tbody>
 			</tgroup>

@@ -6,23 +6,23 @@
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:f="http://java.sun.com/jsf/core">
 <body>
-<ui:composition template="/WEB-INF/template.xhtml">
-	<ui:param name="activeMenu" value="view" />
-	<ui:define name="body">
-		<h2>#{messages.uploadDocument}</h2>
-		<p>#{messages.uploadDocumentInfo}</p>
-		<a4j:form>
-			<rich:fileUpload autoclear="true" maxFilesQuantity="1"
-				fileUploadListener="#{dssUpload.listener}"
-				addControlLabel="#{messages.selectDocument}" immediateUpload="true"
-				allowFlash="false">
-				<a4j:support event="onuploadcomplete" action="#{dssUpload.done}" />
-				<f:facet name="label">
-					<h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}" />
-				</f:facet>
-			</rich:fileUpload>
-		</a4j:form>
-	</ui:define>
-</ui:composition>
+	<ui:composition template="/WEB-INF/template.xhtml">
+		<ui:param name="activeMenu" value="view" />
+		<ui:define name="body">
+			<h2>#{messages.uploadDocument}</h2>
+			<p>#{messages.uploadDocumentInfo}</p>
+			<a4j:form>
+				<rich:fileUpload autoclear="true" maxFilesQuantity="1"
+					fileUploadListener="#{dssUpload.listener}"
+					addControlLabel="#{messages.selectDocument}" immediateUpload="true"
+					allowFlash="false">
+					<a4j:support event="onuploadcomplete" action="#{dssUpload.done}" />
+					<f:facet name="label">
+						<h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}" />
+					</f:facet>
+				</rich:fileUpload>
+			</a4j:form>
+		</ui:define>
+	</ui:composition>
 </body>
 </html>

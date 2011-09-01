@@ -17,18 +17,22 @@
 
 <body>
 
-<div id="header">
-<div id="logo"><h:graphicImage id="logo" alt="Fedict Logo"
-	height="45" url="/images/fedict.png" /></div>
-<h1>eID Digital Signature Service</h1>
-</div>
+	<div id="header">
+		<div id="logo">
+			<h:graphicImage id="logo" alt="Fedict Logo" height="45"
+				url="/images/fedict.png" />
+		</div>
+		<h1>eID Digital Signature Service</h1>
+	</div>
 
-<!-- Seems to resolve deployJava.js/Chrome issue ... -->
-<f:view contentType="text/html">
-	<div id="content"><ui:insert name="body">
-		<p>Default Body</p>
-	</ui:insert></div>
-</f:view>
+	<!-- Seems to resolve deployJava.js/Chrome issue ... -->
+	<f:view contentType="text/html">
+		<div id="content">
+			<ui:insert name="body">
+				<p>Default Body</p>
+			</ui:insert>
+		</div>
+	</f:view>
 
 </body>
 
