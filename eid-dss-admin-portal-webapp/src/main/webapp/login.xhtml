@@ -3,35 +3,28 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html">
 <body>
-<ui:composition template="/WEB-INF/template.xhtml">
-	<ui:param name="activeMenu" value="login" />
-	<ui:define name="body">
-		<h2>Login</h2>
-		<p>Login using your eID card.</p>
-		<script type="text/javascript"
-			src="https://www.java.com/js/deployJava.js"></script>
-		<script type="text/javascript">
-        var attributes = {
-                code :'be.fedict.eid.applet.Applet.class',
-                archive :'eid-applet-package-${eid-applet.version}.jar',
-                width :600,
-                height :300
-        };
-        var javaArgs = '';
-        if (navigator.userAgent.indexOf('Mac OS X 10_6') != -1 ||
-            navigator.userAgent.indexOf('Mac OS X 10.6') != -1) {
-              javaArgs += '-d32';
-        }
-
-        var parameters = {
-                TargetPage :'postLogin.seam?conversationId=#{conversation.id}',
-                AppletService :'applet-service-authentication',
-                java_arguments: javaArgs
-        };
-        var version = '1.6';
-        deployJava.runApplet(attributes, parameters, version);
-</script>
-	</ui:define>
-</ui:composition>
+	<ui:composition template="/WEB-INF/template.xhtml">
+		<ui:param name="activeMenu" value="login" />
+		<ui:define name="body">
+			<h2>Login</h2>
+			<p>Login using your eID card.</p>
+			<script type="text/javascript"
+				src="https://www.java.com/js/deployJava.js"></script>
+			<script type="text/javascript" src="./deploy-eid-applet.js"></script>
+			<script type="text/javascript">
+				var attributes = {
+					code : 'be.fedict.eid.applet.Applet.class',
+					archive : 'eid-applet-package-${eid-applet.version}.jar',
+					width : 600,
+					height : 300
+				};
+				var parameters = {
+					TargetPage : 'postLogin.seam?conversationId=#{conversation.id}',
+					AppletService : 'applet-service-authentication'
+				};
+				deployJavaEIDApplet.runApplet(attributes, parameters);
+			</script>
+		</ui:define>
+	</ui:composition>
 </body>
 </html>
