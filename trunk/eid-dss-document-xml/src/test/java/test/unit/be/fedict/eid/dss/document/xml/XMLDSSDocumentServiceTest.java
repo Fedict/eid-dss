@@ -180,6 +180,8 @@ public class XMLDSSDocumentServiceTest {
 				EasyMock.capture(tsaCrlsCapture));
 		expect(mockDocumentContext.getTimestampMaxOffset()).andReturn(
 				16 * 1000L);
+		expect(mockDocumentContext.getMaxGracePeriod()).andReturn(
+				1000L * 60 * 60 * 24 * 7);
 
 		// prepare
 		EasyMock.replay(mockDocumentContext);

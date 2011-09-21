@@ -116,4 +116,13 @@ public class ModelDSSDocumentContext implements DSSDocumentContext {
 		this.trustValidationService.validate(timeStampToken, ocspResponses,
 				crls);
 	}
+
+	public Long getMaxGracePeriod() {
+		Long maxGracePeriod = this.configuration.getValue(
+				ConfigProperty.MAX_GRACE_PERIOD, Long.class);
+		if (null != maxGracePeriod) {
+			return maxGracePeriod;
+		}
+		return (Long) ConfigProperty.MAX_GRACE_PERIOD.getDefaultValue();
+	}
 }

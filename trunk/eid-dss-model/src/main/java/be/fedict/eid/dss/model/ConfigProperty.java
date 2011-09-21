@@ -62,7 +62,9 @@ public enum ConfigProperty {
 	 * caused by eID PIN validation, SignatureTimeStamp, eID certificate chain
 	 * PKI validation, TSA PKI validation, SigAndRefsTimeStamp.
 	 */
-	TIMESTAMP_MAX_OFFSET("timestamp-max-offset", Long.class, 5 * 60 * 1000L);
+	TIMESTAMP_MAX_OFFSET("timestamp-max-offset", Long.class, 5 * 60 * 1000L),
+
+	MAX_GRACE_PERIOD("max-grace-period", Long.class, 24 * 7L);
 
 	private final String name;
 

@@ -87,6 +87,8 @@ public class ConfigBean implements Config {
 
 	private Long timestampMaxOffset;
 
+	private Long maxGracePeriod;
+
 	@Override
 	@PostConstruct
 	public void postConstruct() {
@@ -127,6 +129,8 @@ public class ConfigBean implements Config {
 
 		this.timestampMaxOffset = this.configuration.getValue(
 				ConfigProperty.TIMESTAMP_MAX_OFFSET, Long.class);
+		this.maxGracePeriod = this.configuration.getValue(
+				ConfigProperty.MAX_GRACE_PERIOD, Long.class);
 	}
 
 	@Remove
@@ -172,6 +176,8 @@ public class ConfigBean implements Config {
 
 		this.configuration.setValue(ConfigProperty.TIMESTAMP_MAX_OFFSET,
 				this.timestampMaxOffset);
+		this.configuration.setValue(ConfigProperty.MAX_GRACE_PERIOD,
+				this.maxGracePeriod);
 
 		// start document cleanup task timer
 		try {
@@ -350,4 +356,13 @@ public class ConfigBean implements Config {
 		this.timestampMaxOffset = timestampMaxOffset;
 	}
 
+	@Override
+	public Long getMaxGracePeriod() {
+		return this.maxGracePeriod;
+	}
+
+	@Override
+	public void setMaxGracePeriod(Long maxGracePeriod) {
+		this.maxGracePeriod = maxGracePeriod;
+	}
 }

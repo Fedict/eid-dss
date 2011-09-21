@@ -54,6 +54,9 @@
                         <h:outputText value="Timestamp Max Offset (ms): "/>
                         <h:inputText value="#{dssConfig.timestampMaxOffset}"
                                      size="10"/>
+                                     
+                    	<h:outputText value="Max grace period (hours):"/>
+                    	<h:inputText value="#{dssConfig.maxGracePeriod}" size="10"/>
                     </h:panelGrid>
                     <h:commandButton value="Save" action="#{dssConfig.save}"/>
                 </rich:tab>
