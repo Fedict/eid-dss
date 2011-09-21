@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page xmlns="http://jboss.com/products/seam/pages"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://jboss.com/products/seam/pages http://www.jboss.com/products/seam/pages-2.2.xsd">
+
+    <navigation>
+        <rule if-outcome="modify">
+            <redirect view-id="/admin/rp-edit.xhtml"/>
+        </rule>
+    </navigation>
+
+    <navigation from-action="#{dssRP.remove}">
+        <rule if-outcome="success">
+            <redirect view-id="/admin/rps.xhtml"/>
+        </rule>
+    </navigation>
+
+</page>
