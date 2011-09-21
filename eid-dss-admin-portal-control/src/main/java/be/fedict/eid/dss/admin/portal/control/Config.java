@@ -94,6 +94,10 @@ public interface Config {
 
 	void setTimestampMaxOffset(Long timestampMaxOffset);
 
+	Long getMaxGracePeriod();
+
+	void setMaxGracePeriod(Long maxGracePeriod);
+
 	/*
 	 * Actions.
 	 */

@@ -86,6 +86,8 @@ public class OOXMLDSSDocumentServiceTest {
 				EasyMock.capture(tsaCrlsCapture));
 
 		expect(mockContext.getTimestampMaxOffset()).andReturn(17 * 1000L);
+		expect(mockContext.getMaxGracePeriod()).andReturn(
+				1000L * 60 * 60 * 24 * 7);
 
 		// prepare
 		EasyMock.replay(mockContext);
@@ -136,6 +138,8 @@ public class OOXMLDSSDocumentServiceTest {
 		mockContext.validate(EasyMock.capture(timeStampTokenCapture));
 		mockContext.validate(EasyMock.capture(timeStampTokenCapture));
 		expect(mockContext.getTimestampMaxOffset()).andReturn(33 * 1000L);
+		expect(mockContext.getMaxGracePeriod()).andReturn(
+				1000L * 60 * 60 * 24 * 7);
 
 		// prepare
 		EasyMock.replay(mockContext);

@@ -242,13 +242,15 @@ public class XAdESValidation {
 				}
 			}
 
+			long maxGracePeriod = this.documentContext.getMaxGracePeriod();
 			for (TimeStampToken sigAndRefsTimeStampToken : sigAndRefsTimeStampTokens) {
 				DateTime sigAndRefsTokenGenTime = new DateTime(
 						sigAndRefsTimeStampToken.getTimeStampInfo()
 								.getGenTime());
 				try {
 					XAdESUtils.checkCloseEnough(signingTime,
-							sigAndRefsTokenGenTime, timestampMaxOffset);
+							sigAndRefsTokenGenTime,
+							maxGracePeriod * 1000 * 60 * 60);
 				} catch (XAdESValidationException e) {
 					throw new XAdESValidationException(
 							"SigAndRefsTimeStamp too far from SigningTime", e);

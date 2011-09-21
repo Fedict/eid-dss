@@ -134,6 +134,8 @@ public class XAdESValidationTest {
 				(List<X509CRL>) EasyMock.anyObject());
 		expect(mockDSSDocumentContext.getTimestampMaxOffset()).andReturn(
 				2 * 1000L);
+		expect(mockDSSDocumentContext.getMaxGracePeriod()).andReturn(
+				1000L * 60 * 60 * 24 * 7);
 
 		// prepare
 		replay(mockDSSDocumentContext);
@@ -171,7 +173,10 @@ public class XAdESValidationTest {
 				(Date) EasyMock.anyObject(),
 				(List<OCSPResp>) EasyMock.anyObject(),
 				(List<X509CRL>) EasyMock.anyObject());
-		expect(mockDSSDocumentContext.getTimestampMaxOffset()).andReturn(10 * 1000L);
+		expect(mockDSSDocumentContext.getTimestampMaxOffset()).andReturn(
+				10 * 1000L);
+		expect(mockDSSDocumentContext.getMaxGracePeriod()).andReturn(
+				1000L * 60 * 60 * 24 * 7);
 
 		// prepare
 		replay(mockDSSDocumentContext);

@@ -96,4 +96,6 @@ public interface DSSDocumentContext extends Serializable {
 	 * @return the maximum offset (in ms) for timestamps.
 	 */
 	Long getTimestampMaxOffset();
+	
+	Long getMaxGracePeriod();
 }
