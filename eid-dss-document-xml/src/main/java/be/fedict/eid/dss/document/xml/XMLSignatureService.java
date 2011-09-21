@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * XML signature service. Will create XAdES-X-L v1.4.1 co-signatures.
@@ -63,11 +64,14 @@ public class XMLSignatureService extends AbstractXmlSignatureService implements
 		this.documentInputStream = documentInputStream;
 		this.documentOutputStream = documentOutputStream;
 
-		addSignatureFacet(new CoSignatureFacet(getSignatureDigestAlgorithm()));
+		String dsReferenceUri = "reference-" + UUID.randomUUID().toString();
+		addSignatureFacet(new CoSignatureFacet(getSignatureDigestAlgorithm(),
+				dsReferenceUri));
 		addSignatureFacet(new KeyInfoSignatureFacet(true, false, false));
 		XAdESSignatureFacet xadesSignatureFacet = new XAdESSignatureFacet(
 				getSignatureDigestAlgorithm());
 		xadesSignatureFacet.setRole(role);
+		xadesSignatureFacet.addMimeType(dsReferenceUri, "text/xml");
 		addSignatureFacet(xadesSignatureFacet);
 		addSignatureFacet(new XAdESXLSignatureFacet(timeStampService,
 				revocationDataService, getSignatureDigestAlgorithm()));
