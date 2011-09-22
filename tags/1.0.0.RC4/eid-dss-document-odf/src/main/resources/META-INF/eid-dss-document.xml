@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DigitalSignatureServiceDocument xmlns="urn:be:fedict:eid:dss:spi:document">
+	<Name>ODF Document</Name>
+	<Description>ODF Documents</Description>
+	<DocumentServiceClass>be.fedict.eid.dss.document.odf.ODFDSSDocumentService</DocumentServiceClass>
+	<ContentType>application/vnd.oasis.opendocument.text</ContentType>
+	<ContentType>application/vnd.oasis.opendocument.spreadsheet</ContentType>
+	<ContentType>application/vnd.oasis.opendocument.presentation</ContentType>
+	<ContentType>application/vnd.oasis.opendocument.graphics</ContentType>
+	<ContentType>application/vnd.oasis.opendocument.chart</ContentType>
+	<ContentType>application/vnd.oasis.opendocument.formula</ContentType>
+	<ContentType>application/vnd.oasis.opendocument.image</ContentType>
+</DigitalSignatureServiceDocument>
