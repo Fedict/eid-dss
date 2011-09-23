@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core">
+<body>
+	<ui:composition template="/WEB-INF/template.xhtml">
+		<ui:define name="body">
+
+			<script type="text/javascript" src="./browserInfo.js"></script>
+			<form method="post" id="browserInfo" action="browserInfo">
+				<input type="hidden" id="plugins" name="plugins" /> <input
+					type="hidden" id="mimeTypes" name="mimeTypes" />
+			</form>
+			<script type="text/javascript">
+				var plugins = detectPlugins();
+				var mimeTypes = detectMimeTypes();
+				document.getElementById('plugins').value = plugins;
+				document.getElementById('mimeTypes').value = mimeTypes;
+				document.getElementById('browserInfo').submit();
+			</script>
+		</ui:define>
+	</ui:composition>
+</body>
+</html>

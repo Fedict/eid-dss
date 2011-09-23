@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DigitalSignatureServiceDocument xmlns="urn:be:fedict:eid:dss:spi:document">
+	<Name>ZIP Document</Name>
+	<Description>ZIP Documents</Description>
+	<DocumentServiceClass>be.fedict.eid.dss.document.zip.ZIPDSSDocumentService</DocumentServiceClass>
+	<ContentType>application/zip</ContentType>
+</DigitalSignatureServiceDocument>
