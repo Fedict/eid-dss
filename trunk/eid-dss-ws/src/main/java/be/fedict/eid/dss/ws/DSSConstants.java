@@ -55,4 +55,9 @@ public class DSSConstants {
 	public static final String RETURN_STORAGE_INFO = "ReturnStorageInfo";
 
 	public static final String RETURN_STORED_DOCUMENT = "ReturnStoredDocument";
+
+	// original document constants
+	public static final String ORIGINAL_DOCUMENT_NAMESPACE = "be:fedict:eid:dss:profile:original-document:1.0";
+
+	public static final String ORIGINAL_DOCUMENT_ELEMENT = "OriginalDocument";
 }

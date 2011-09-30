@@ -43,8 +43,9 @@ public class SignatureVerificationServiceBean implements
 	@EJB
 	private ServicesManager servicesManager;
 
-	public List<SignatureInfo> verify(byte[] data, String mimeType)
-			throws DocumentFormatException, InvalidSignatureException {
+	public List<SignatureInfo> verify(byte[] data, String mimeType,
+			byte[] originalData) throws DocumentFormatException,
+			InvalidSignatureException {
 		LOG.debug("content type: " + mimeType);
 		DSSDocumentService documentService = this.servicesManager
 				.getDocumentService(mimeType);
@@ -62,7 +63,7 @@ public class SignatureVerificationServiceBean implements
 
 		List<SignatureInfo> signatureInfos;
 		try {
-			signatureInfos = documentService.verifySignatures(data);
+			signatureInfos = documentService.verifySignatures(data, originalData);
 		} catch (Exception e) {
 			LOG.error("error verifying signatures: " + e.getMessage(), e);
 			throw new InvalidSignatureException();

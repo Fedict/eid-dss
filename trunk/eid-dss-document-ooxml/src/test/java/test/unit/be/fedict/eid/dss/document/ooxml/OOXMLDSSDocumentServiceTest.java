@@ -95,7 +95,7 @@ public class OOXMLDSSDocumentServiceTest {
 		// operate
 		testedInstance.init(mockContext, "mime-type");
 		List<SignatureInfo> signatureInfos = testedInstance
-				.verifySignatures(document);
+				.verifySignatures(document, null);
 
 		// verify
 		EasyMock.verify(mockContext);
@@ -147,7 +147,7 @@ public class OOXMLDSSDocumentServiceTest {
 		// operate
 		testedInstance.init(mockContext, "mime-type");
 		List<SignatureInfo> signatureInfos = testedInstance
-				.verifySignatures(document);
+				.verifySignatures(document, null);
 
 		// verify
 		EasyMock.verify(mockContext);

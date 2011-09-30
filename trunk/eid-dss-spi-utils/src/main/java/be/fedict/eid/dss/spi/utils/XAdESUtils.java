@@ -45,6 +45,9 @@ import javax.xml.crypto.dsig.DigestMethod;
 import javax.xml.crypto.dsig.Reference;
 import javax.xml.crypto.dsig.SignedInfo;
 import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.logging.Log;
@@ -60,9 +63,12 @@ import org.bouncycastle.ocsp.OCSPResp;
 import org.bouncycastle.tsp.TimeStampToken;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
 import be.fedict.eid.applet.service.signer.jaxb.identity.IdentityType;
@@ -731,5 +737,27 @@ public abstract class XAdESUtils {
 			}
 		}
 		throw new XAdESValidationException("X509 certificate not referenced");
+	}
+
+	public static Document loadDocument(byte[] data) {
+		DocumentBuilderFactory domFactory = DocumentBuilderFactory
+				.newInstance();
+		domFactory.setNamespaceAware(true);
+		DocumentBuilder domBuilder;
+		try {
+			domBuilder = domFactory.newDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			throw new RuntimeException("parser configuration error: "
+					+ e.getMessage(), e);
+		}
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
+		InputSource inputSource = new InputSource(inputStream);
+		try {
+			return domBuilder.parse(inputSource);
+		} catch (SAXException e) {
+			throw new RuntimeException("SAX error: " + e.getMessage(), e);
+		} catch (IOException e) {
+			throw new RuntimeException("IO error: " + e.getMessage(), e);
+		}
 	}
 }

@@ -15,6 +15,12 @@
 			</jxb:schemaBindings>
 		</jxb:bindings>
 
+		<jxb:bindings schemaLocation="eid-dss-original-document-v1.0.xsd" node="/xs:schema">
+			<jxb:schemaBindings>
+				<jxb:package name="be.fedict.eid.dss.ws.profile.originaldocument.jaxb" />
+			</jxb:schemaBindings>
+		</jxb:bindings>
+
 		<jxb:bindings
 			schemaLocation="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"
 			node="/xs:schema">
