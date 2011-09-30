@@ -40,11 +40,15 @@ public interface SignatureVerificationService {
 	 * 
 	 * @param data
 	 *            the given data.
+	 * @param mimeType
+	 *            the mime type of the given data.
+	 * @param originalData
+	 *            the optional original data.
 	 * @return the list of all signing parties.
 	 * @exception DocumentFormatException
 	 *                in case the given data is not valid.
 	 * @throws InvalidSignatureException
 	 */
-	List<SignatureInfo> verify(byte[] data, String mimeType)
+	List<SignatureInfo> verify(byte[] data, String mimeType, byte[] originalData)
 			throws DocumentFormatException, InvalidSignatureException;
 }

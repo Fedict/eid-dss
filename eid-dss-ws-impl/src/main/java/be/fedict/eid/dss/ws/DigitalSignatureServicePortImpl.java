@@ -18,28 +18,41 @@
 
 package be.fedict.eid.dss.ws;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+
+import javax.ejb.EJB;
+import javax.jws.WebService;
+import javax.xml.bind.JAXBException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+import org.w3c.dom.Element;
+
 import be.fedict.eid.dss.entity.DocumentEntity;
 import be.fedict.eid.dss.model.DocumentService;
 import be.fedict.eid.dss.model.SignatureVerificationService;
 import be.fedict.eid.dss.model.exception.DocumentFormatException;
 import be.fedict.eid.dss.model.exception.InvalidSignatureException;
 import be.fedict.eid.dss.spi.SignatureInfo;
-import be.fedict.eid.dss.ws.jaxb.dss.*;
+import be.fedict.eid.dss.ws.jaxb.dss.AnyType;
+import be.fedict.eid.dss.ws.jaxb.dss.Base64Data;
+import be.fedict.eid.dss.ws.jaxb.dss.DocumentType;
+import be.fedict.eid.dss.ws.jaxb.dss.DocumentWithSignature;
+import be.fedict.eid.dss.ws.jaxb.dss.InputDocuments;
+import be.fedict.eid.dss.ws.jaxb.dss.ObjectFactory;
+import be.fedict.eid.dss.ws.jaxb.dss.ResponseBaseType;
+import be.fedict.eid.dss.ws.jaxb.dss.Result;
+import be.fedict.eid.dss.ws.jaxb.dss.SignRequest;
+import be.fedict.eid.dss.ws.jaxb.dss.SignResponse;
+import be.fedict.eid.dss.ws.jaxb.dss.VerifyRequest;
 import be.fedict.eid.dss.ws.profile.artifact.jaxb.ReturnStoredDocument;
 import be.fedict.eid.dss.ws.profile.artifact.jaxb.StorageInfo;
 import be.fedict.eid.dss.ws.profile.artifact.jaxb.ValidityType;
-import com.sun.xml.ws.developer.UsesJAXBContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-import org.w3c.dom.Element;
 
-import javax.ejb.EJB;
-import javax.jws.WebService;
-import javax.xml.bind.JAXBException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import com.sun.xml.ws.developer.UsesJAXBContext;
 
 /**
  * Implementation of the DSS verification web service JAX-WS endpoint.
@@ -88,6 +101,7 @@ public class DigitalSignatureServicePortImpl implements
 		byte[] data = documents.get(0).getDocumentData();
 		String mimeType = documents.get(0).getContentType();
 
+		byte[] originalData = null;
 		boolean returnVerificationReport = false;
 		AnyType optionalInput = verifyRequest.getOptionalInputs();
 		if (null != optionalInput) {
@@ -105,6 +119,19 @@ public class DigitalSignatureServicePortImpl implements
 						 */
 						returnVerificationReport = true;
 					}
+					if (DSSConstants.ORIGINAL_DOCUMENT_NAMESPACE.equals(element
+							.getNamespaceURI())
+							&& DSSConstants.ORIGINAL_DOCUMENT_ELEMENT
+									.equals(element.getLocalName())) {
+						try {
+							originalData = DSSUtil.getOriginalDocument(element);
+						} catch (JAXBException e) {
+							return DSSUtil
+									.createRequestorErrorResponse(
+											requestId,
+											DSSConstants.RESULT_MINOR_NOT_PARSEABLE_XML_DOCUMENT);
+						}
+					}
 				}
 			}
 		}
@@ -115,7 +142,7 @@ public class DigitalSignatureServicePortImpl implements
 		List<SignatureInfo> signatureInfos;
 		try {
 			signatureInfos = this.signatureVerificationService.verify(data,
-					mimeType);
+					mimeType, originalData);
 		} catch (DocumentFormatException e) {
 			return DSSUtil.createRequestorErrorResponse(requestId,
 					DSSConstants.RESULT_MINOR_NOT_PARSEABLE_XML_DOCUMENT);

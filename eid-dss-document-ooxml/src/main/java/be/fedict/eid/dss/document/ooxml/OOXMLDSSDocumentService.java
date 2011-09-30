@@ -95,8 +95,13 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 				revocationDataService, timeStampService, signatureDigestAlgo);
 	}
 
-	public List<SignatureInfo> verifySignatures(byte[] document)
-			throws Exception {
+	@Override
+	public List<SignatureInfo> verifySignatures(byte[] document,
+			byte[] originalDocument) throws Exception {
+		if (null != originalDocument) {
+			throw new IllegalArgumentException(
+					"cannot perform original document verifications");
+		}
 
 		OOXMLSignatureVerifier ooxmlSignatureVerifier = new OOXMLSignatureVerifier();
 		List<String> signatureResourceNames = ooxmlSignatureVerifier

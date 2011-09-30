@@ -110,8 +110,12 @@ public class ASiCDSSDocumentService implements DSSDocumentService {
 	}
 
 	@Override
-	public List<SignatureInfo> verifySignatures(byte[] document)
-			throws Exception {
+	public List<SignatureInfo> verifySignatures(byte[] document,
+			byte[] originalDocument) throws Exception {
+		if (null != originalDocument) {
+			throw new IllegalArgumentException(
+					"cannot perform original document verifications");
+		}
 		ZipInputStream zipInputStream = new ZipInputStream(
 				new ByteArrayInputStream(document));
 		ZipEntry zipEntry;

@@ -18,6 +18,23 @@
 
 package be.fedict.eid.dss.document.zip;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.cert.X509Certificate;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.dom.DOMValidateContext;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
@@ -32,21 +49,6 @@ import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DocumentVisualization;
 import be.fedict.eid.dss.spi.SignatureInfo;
 import be.fedict.eid.dss.spi.utils.XAdESValidation;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.dom.DOMValidateContext;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.cert.X509Certificate;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class ZIPDSSDocumentService implements DSSDocumentService {
 
@@ -97,8 +99,13 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 				role, identity, photo, signatureDigestAlgo);
 	}
 
-	public List<SignatureInfo> verifySignatures(byte[] document)
-			throws Exception {
+	@Override
+	public List<SignatureInfo> verifySignatures(byte[] document,
+			byte[] originalDocument) throws Exception {
+		if (null != originalDocument) {
+			throw new IllegalArgumentException(
+					"cannot perform original document verifications");
+		}
 
 		ZipInputStream zipInputStream = new ZipInputStream(
 				new ByteArrayInputStream(document));

@@ -58,6 +58,9 @@
 								<schemaInclude>
 									eid-dss-artifact-binding-schema-v1.0.xsd
 								</schemaInclude>
+								<schemaInclude>
+									eid-dss-original-document-v1.0.xsd
+								</schemaInclude>
 							</schemaIncludes>
 							<debug>true</debug>
 							<verbose>true</verbose>

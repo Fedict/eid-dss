@@ -90,7 +90,7 @@ public class ViewBean implements View {
 		this.filesize = this.document.length;
 		try {
 			this.signatureInfos = this.signatureVerificationService.verify(
-					this.document, this.contentType);
+					this.document, this.contentType, null);
 		} catch (DocumentFormatException e) {
 			this.log.error("document format error: #0", e.getMessage());
 			return;

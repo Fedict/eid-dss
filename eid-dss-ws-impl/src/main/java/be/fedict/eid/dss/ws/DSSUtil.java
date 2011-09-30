@@ -18,32 +18,58 @@
 
 package be.fedict.eid.dss.ws;
 
-import be.fedict.eid.dss.spi.SignatureInfo;
-import be.fedict.eid.dss.ws.jaxb.dss.*;
-import be.fedict.eid.dss.ws.jaxb.dss.ObjectFactory;
-import be.fedict.eid.dss.ws.profile.artifact.jaxb.ReturnStoredDocument;
-import be.fedict.eid.dss.ws.profile.artifact.jaxb.StorageInfo;
-import be.fedict.eid.dss.ws.profile.vr.jaxb.*;
-import be.fedict.eid.dss.ws.profile.vr.jaxb.PropertiesType;
-import be.fedict.eid.dss.ws.profile.vr.jaxb.xades.ClaimedRolesListType;
-import be.fedict.eid.dss.ws.profile.vr.jaxb.xmldsig.X509IssuerSerialType;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+import java.util.GregorianCalendar;
+import java.util.List;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
-import java.util.GregorianCalendar;
-import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import be.fedict.eid.dss.spi.SignatureInfo;
+import be.fedict.eid.dss.ws.jaxb.dss.AnyType;
+import be.fedict.eid.dss.ws.jaxb.dss.InternationalStringType;
+import be.fedict.eid.dss.ws.jaxb.dss.ObjectFactory;
+import be.fedict.eid.dss.ws.jaxb.dss.ResponseBaseType;
+import be.fedict.eid.dss.ws.jaxb.dss.Result;
+import be.fedict.eid.dss.ws.jaxb.dss.SignResponse;
+import be.fedict.eid.dss.ws.profile.artifact.jaxb.ReturnStoredDocument;
+import be.fedict.eid.dss.ws.profile.artifact.jaxb.StorageInfo;
+import be.fedict.eid.dss.ws.profile.originaldocument.jaxb.OriginalDocumentType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.CertificatePathValidityType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.CertificatePathValidityVerificationDetailType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.CertificateStatusType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.CertificateValidityType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.DetailedSignatureReportType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.IndividualReportType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.PropertiesType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.SignatureValidityType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.SignedObjectIdentifierType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.SignedPropertiesType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.SignedSignaturePropertiesType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.SignerRoleType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.VerificationReportType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.VerificationResultType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.dss.Base64Data;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.dss.DocumentType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.dss.InputDocuments;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.xades.ClaimedRolesListType;
+import be.fedict.eid.dss.ws.profile.vr.jaxb.xmldsig.X509IssuerSerialType;
 
 /**
  * DSS WS Utility class
@@ -66,6 +92,8 @@ public abstract class DSSUtil {
 	private static final be.fedict.eid.dss.ws.jaxb.dss.ObjectFactory dssObjectFactory;
 	private static final be.fedict.eid.dss.ws.profile.artifact.jaxb.ObjectFactory artifactObjectFactory;
 
+	private static final Unmarshaller originalDocumentUnmarshaller;
+
 	static {
 		vrObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.ObjectFactory();
 		vrDssObjectFactory = new be.fedict.eid.dss.ws.profile.vr.jaxb.dss.ObjectFactory();
@@ -83,6 +111,11 @@ public abstract class DSSUtil {
 					.newInstance(be.fedict.eid.dss.ws.profile.artifact.jaxb.ObjectFactory.class);
 			artifactMarshaller = artifactJAXBContext.createMarshaller();
 			artifactUnmarshaller = artifactJAXBContext.createUnmarshaller();
+
+			JAXBContext originalDocumentJAXBContext = JAXBContext
+					.newInstance(be.fedict.eid.dss.ws.profile.originaldocument.jaxb.ObjectFactory.class);
+			originalDocumentUnmarshaller = originalDocumentJAXBContext
+					.createUnmarshaller();
 		} catch (JAXBException e) {
 			throw new RuntimeException("JAXB error: " + e.getMessage(), e);
 		}
@@ -369,5 +402,33 @@ public abstract class DSSUtil {
 		GregorianCalendar calendar = new GregorianCalendar();
 		calendar.setTimeInMillis(dateTime.getMillis());
 		return datatypeFactory.newXMLGregorianCalendar(calendar);
+	}
+
+	public static byte[] getOriginalDocument(Element element)
+			throws JAXBException {
+		JAXBElement<OriginalDocumentType> originalDocumentElement = (JAXBElement<OriginalDocumentType>) originalDocumentUnmarshaller
+				.unmarshal(element);
+		OriginalDocumentType originalDocument = originalDocumentElement
+				.getValue();
+		InputDocuments inputDocuments = originalDocument.getInputDocuments();
+		List<Object> documentObjects = inputDocuments
+				.getDocumentOrTransformedDataOrDocumentHash();
+		for (Object documentObject : documentObjects) {
+			if (!(documentObject instanceof DocumentType)) {
+				continue;
+			}
+			DocumentType document = (DocumentType) documentObject;
+			Base64Data base64Data = document.getBase64Data();
+			byte[] data;
+			if (null != base64Data) {
+				data = base64Data.getValue();
+			} else {
+				data = document.getBase64XML();
+			}
+			if (null != data) {
+				return data;
+			}
+		}
+		return null;
 	}
 }

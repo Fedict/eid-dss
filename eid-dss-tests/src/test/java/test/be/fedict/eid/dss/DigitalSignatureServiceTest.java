@@ -197,13 +197,17 @@ public class DigitalSignatureServiceTest {
 				.getResourceAsStream("/signed-document.xml");
 		String signedDocument = IOUtils.toString(signedDocumentInputStream);
 
+		// String dssUrl = "https://www.e-contract.be/eid-dss-ws/dss";
+		String dssUrl = "http://localhost/eid-dss-ws/dss";
 		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
-				"https://www.e-contract.be/eid-dss-ws/dss");
-		client.setProxy("proxy.yourict.net", 8080);
+				dssUrl);
+		// client.setProxy("proxy.yourict.net", 8080);
+		client.setLogging(true, true);
 
 		// operate
 		List<SignatureInfo> signers = client.verifyWithSigners(
-				signedDocument.getBytes(), "text/xml");
+				signedDocument.getBytes(), "text/xml",
+				signedDocument.getBytes());
 
 		// verify
 		assertNotNull(signers);
@@ -214,6 +218,35 @@ public class DigitalSignatureServiceTest {
 		assertTrue(signatureInfo.getSigner().getSubjectX500Principal()
 				.toString().contains("Frank Cornelis"));
 		LOG.debug("signing time: " + signatureInfo.getSigningTime());
+	}
+
+	@Test
+	public void testVerifyChangedOriginalDocument() throws Exception {
+		// setup
+		InputStream signedDocumentInputStream = DigitalSignatureServiceTest.class
+				.getResourceAsStream("/signed-document.xml");
+		String signedDocument = IOUtils.toString(signedDocumentInputStream);
+
+		InputStream fakeOriginalDocumentInputStream = DigitalSignatureServiceTest.class
+				.getResourceAsStream("/fake-original-document.xml");
+		byte[] fakeOriginalDocument = IOUtils
+				.toByteArray(fakeOriginalDocumentInputStream);
+
+		// String dssUrl = "https://www.e-contract.be/eid-dss-ws/dss";
+		String dssUrl = "http://localhost/eid-dss-ws/dss";
+		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
+				dssUrl);
+		// client.setProxy("proxy.yourict.net", 8080);
+		client.setLogging(true, true);
+
+		// operate
+		try {
+			client.verifyWithSigners(signedDocument.getBytes(), "text/xml",
+					fakeOriginalDocument);
+			fail();
+		} catch (RuntimeException e) {
+			// expected
+		}
 	}
 
 	@Test

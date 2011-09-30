@@ -18,27 +18,17 @@
 
 package be.fedict.eid.dss.document.xml;
 
-import be.fedict.eid.applet.service.signer.DigestAlgo;
-import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
-import be.fedict.eid.applet.service.signer.SignatureFacet;
-import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
-import be.fedict.eid.applet.service.signer.time.TimeStampService;
-import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
-import be.fedict.eid.applet.service.spi.IdentityDTO;
-import be.fedict.eid.applet.service.spi.SignatureServiceEx;
-import be.fedict.eid.dss.spi.DSSDocumentContext;
-import be.fedict.eid.dss.spi.DSSDocumentService;
-import be.fedict.eid.dss.spi.DocumentVisualization;
-import be.fedict.eid.dss.spi.SignatureInfo;
-import be.fedict.eid.dss.spi.utils.XAdESValidation;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.SignedInfo;
 import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.crypto.dsig.XMLSignatureFactory;
 import javax.xml.crypto.dsig.dom.DOMValidateContext;
@@ -52,12 +42,33 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.cert.X509Certificate;
-import java.util.LinkedList;
-import java.util.List;
+
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.xml.security.Init;
+import org.apache.xml.security.c14n.Canonicalizer;
+import org.apache.xml.security.transforms.Transforms;
+import org.apache.xml.security.transforms.params.XPathContainer;
+import org.apache.xml.security.utils.Constants;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import be.fedict.eid.applet.service.signer.DigestAlgo;
+import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
+import be.fedict.eid.applet.service.signer.SignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
+import be.fedict.eid.applet.service.signer.time.TimeStampService;
+import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
+import be.fedict.eid.applet.service.spi.IdentityDTO;
+import be.fedict.eid.applet.service.spi.SignatureServiceEx;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
+import be.fedict.eid.dss.spi.DSSDocumentService;
+import be.fedict.eid.dss.spi.DocumentVisualization;
+import be.fedict.eid.dss.spi.SignatureInfo;
+import be.fedict.eid.dss.spi.utils.XAdESUtils;
+import be.fedict.eid.dss.spi.utils.XAdESValidation;
 
 /**
  * Document Service implementation for XML documents.
@@ -76,6 +87,14 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 	private DSSDocumentContext context;
 
 	private TransformerFactory transformerFactory;
+
+	static {
+		/*
+		 * Initialize the Apache XML Security library, else we get an NPE on
+		 * Transforms.addTransform.
+		 */
+		Init.init();
+	}
 
 	public void checkIncomingDocument(byte[] document) throws Exception {
 
@@ -168,8 +187,9 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 		return new DocumentVisualization(browserContentType, browserData);
 	}
 
-	public List<SignatureInfo> verifySignatures(byte[] documentData)
-			throws Exception {
+	@Override
+	public List<SignatureInfo> verifySignatures(byte[] documentData,
+			byte[] originalDocument) throws Exception {
 		Document document = this.documentBuilder
 				.parse(new ByteArrayInputStream(documentData));
 
@@ -210,6 +230,57 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 			if (!signatureValid) {
 				LOG.error("invalid signature");
 				throw new RuntimeException("invalid signature");
+			}
+
+			if (null != originalDocument) {
+				Document originalDomDocument = XAdESUtils
+						.loadDocument(originalDocument);
+				LOG.debug("performing original document verification");
+				SignedInfo signedInfo = xmlSignature.getSignedInfo();
+				List<Reference> references = signedInfo.getReferences();
+				for (Reference reference : references) {
+					LOG.debug("reference type: " + reference.getType());
+					if (null != reference.getType()) {
+						/*
+						 * We skip XAdES and eID identity ds:Reference.
+						 */
+						continue;
+					}
+					String digestAlgo = reference.getDigestMethod()
+							.getAlgorithm();
+					LOG.debug("ds:Reference digest algo: " + digestAlgo);
+					byte[] digestValue = reference.getDigestValue();
+
+					org.apache.xml.security.signature.XMLSignature xmldsig = new org.apache.xml.security.signature.XMLSignature(
+							originalDomDocument,
+							org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA512,
+							Canonicalizer.ALGO_ID_C14N_EXCL_WITH_COMMENTS);
+
+					Transforms transforms = new Transforms(originalDomDocument);
+					XPathContainer xpath = new XPathContainer(
+							originalDomDocument);
+					xpath.setXPathNamespaceContext("ds",
+							Constants.SignatureSpecNS);
+					xpath.setXPath("not(ancestor-or-self::ds:Signature)");
+					transforms.addTransform(Transforms.TRANSFORM_XPATH,
+							xpath.getElementPlusReturns());
+					transforms
+							.addTransform(Transforms.TRANSFORM_C14N_EXCL_OMIT_COMMENTS);
+					xmldsig.addDocument("", transforms, digestAlgo);
+
+					org.apache.xml.security.signature.SignedInfo apacheSignedInfo = xmldsig
+							.getSignedInfo();
+					org.apache.xml.security.signature.Reference apacheReference = apacheSignedInfo
+							.item(0);
+					apacheReference.generateDigestValue();
+					byte[] originalDigestValue = apacheReference
+							.getDigestValue();
+					if (false == Arrays
+							.equals(originalDigestValue, digestValue)) {
+						throw new RuntimeException("not original document");
+					}
+					LOG.debug("original document verified");
+				}
 			}
 
 			X509Certificate signingCertificate = keyInfoKeySelector

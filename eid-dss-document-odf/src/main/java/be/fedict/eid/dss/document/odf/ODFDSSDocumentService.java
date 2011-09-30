@@ -99,8 +99,13 @@ public class ODFDSSDocumentService implements DSSDocumentService {
 				signatureDigestAlgo);
 	}
 
-	public List<SignatureInfo> verifySignatures(byte[] document)
-			throws Exception {
+	@Override
+	public List<SignatureInfo> verifySignatures(byte[] document,
+			byte[] originalDocument) throws Exception {
+		if (null != originalDocument) {
+			throw new IllegalArgumentException(
+					"cannot perform original document verifications");
+		}
 
 		List<SignatureInfo> signatureInfos = new LinkedList<SignatureInfo>();
 		ZipInputStream odfZipInputStream = new ZipInputStream(

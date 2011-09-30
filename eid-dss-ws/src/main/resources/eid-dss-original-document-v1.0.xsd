@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="be:fedict:eid:dss:profile:original-document:1.0"
+	xmlns:tns="be:fedict:eid:dss:profile:original-document:1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:dss="urn:oasis:names:tc:dss:1.0:core:schema"
+	elementFormDefault="qualified">
+	<xsd:annotation>
+		<xsd:documentation>
+			XML Schema for the Original Document DSS profile.
+
+			Copyright (C) 2011 FedICT.
+
+			Profile URI:
+			be:fedict:eid:dss:profile:original-document:1.0
+
+			Via the Original
+			Document DSS profile, relying parties can provide the
+			original
+			document when verifying signed documents. If the document service
+			implements original document verification, the content of the signed
+			document will be checked against the content of the original
+			document.
+		</xsd:documentation>
+	</xsd:annotation>
+
+	<import namespace="urn:oasis:names:tc:dss:1.0:core:schema"
+		schemaLocation="http://docs.oasis-open.org/dss/v1.0/oasis-dss-core-schema-v1.0-os.xsd" />
+
+	<element name="OriginalDocument" type="tns:OriginalDocumentType"/>
+		
+	<complexType name="OriginalDocumentType">
+		<sequence>
+			<element ref="dss:InputDocuments" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+</schema>

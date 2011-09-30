@@ -116,10 +116,13 @@ public interface DSSDocumentService extends Serializable {
 	 * Verifies the signatures on the given document.
 	 * 
 	 * @param document
-	 *            document to be verified
+	 *            document to be verified.
+	 * @param originalDocument
+	 *            the optional original document.
 	 * @return list of signature info data objects
 	 * @throws Exception
 	 *             something went wrong
 	 */
-	List<SignatureInfo> verifySignatures(byte[] document) throws Exception;
+	List<SignatureInfo> verifySignatures(byte[] document,
+			byte[] originalDocument) throws Exception;
 }

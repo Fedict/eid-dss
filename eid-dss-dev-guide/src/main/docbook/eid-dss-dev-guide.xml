@@ -894,6 +894,14 @@
 							<code>be:fedict:eid:dss:profile:artifact-binding:1.0</code>
 						</entry>
 					</row>
+					<row>
+						<entry>
+							<code>origdoc</code>
+						</entry>
+						<entry>
+							<code>be:fedict:eid:dss:profile:original-document:1.0</code>
+						</entry>
+					</row>
 				</tbody>
 			</tgroup>
 		</table>
@@ -1050,6 +1058,34 @@
 					</vr:SignedProperties>
 				</vr:Properties>
 				]]></programlisting>
+			</para>
+			<para>
+				If the Relying Party provides the original document as part of the
+				signature validation request, the eID DSS will check whether the
+				content of the signed document corresponds with the content of the
+				given original document. The original document should be provided as
+				<code>OptionalInput</code>
+				element as shown in the following example:
+				<programlisting role="XML"><![CDATA[<soap:Envelope>
+	<soap:Body>
+		<dss:VerifyRequest RequestID="id-1234">
+			<dss:OptionalInputs>
+				<origdoc:OriginalDocument>
+					<dss:InputDocuments>
+						<dss:Document>
+							<dss:Base64XML>the_original_document</dss:Base64XML>
+						</dss:Document>
+					</dss:InputDocuments>
+				</origdoc:OriginalDocument>
+			</dss:OptionalInputs>
+			<dss:InputDocuments>
+				<dss:Document>
+					<dss:Base64XML>the_signed_document</dss:Base64XML>
+				</dss:Document>
+			</dss:InputDocuments>
+		</dss:VerifyRequest>
+	</soap:Body>
+</soap:Envelope>]]></programlisting>
 			</para>
 		</section>
 		<section>
@@ -1512,6 +1548,39 @@
 			uses the eID DSS OASIS Web Service. As a second step the Relying
 			Party application should check the digest values against the
 			available documents in its document repository.
+		</para>
+	</section>
+	<section>
+		<title>Security Considerations</title>
+		<para>
+			When a Relying Party does not use the eID DSS Browser POST protocol
+			signature security mechanism, the Relying Party should check whether
+			the content of the signed document corresponds with the agreed
+			(between RP and end-user) business data. Otherwise the end-user could
+			change the to-be-signed data before entering into the eID DSS
+			signature flow. We provide two security mechanisms to detect this:
+			<itemizedlist>
+				<listitem>
+					<para>
+						On is to use the eID DSS Browser POST protocol request
+						signature mechanism. This requires an explicit registration within
+						the eID DSS via the admin console.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						A Relying Party can also provide the original document as
+						part of the OASIS DSS verification web service call to verify the
+						signatures on a signed document.
+					</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+		<para>
+			The eID DSS Browser POST response message can also be signed by
+			the eID DSS service itself so the Relying Party can have some
+			guarantee that the document was indeed processed by the eID DSS
+			service.
 		</para>
 	</section>
 	<appendix>
