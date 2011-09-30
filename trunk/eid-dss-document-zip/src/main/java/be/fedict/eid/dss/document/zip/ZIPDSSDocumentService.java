@@ -22,15 +22,21 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.cert.X509Certificate;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.SignedInfo;
 import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.crypto.dsig.XMLSignatureFactory;
 import javax.xml.crypto.dsig.dom.DOMValidateContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -53,6 +59,9 @@ import be.fedict.eid.dss.spi.utils.XAdESValidation;
 public class ZIPDSSDocumentService implements DSSDocumentService {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Log LOG = LogFactory
+			.getLog(ZIPDSSDocumentService.class);
 
 	private DSSDocumentContext documentContext;
 
@@ -141,6 +150,27 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 			if (!valid) {
 				continue;
 			}
+
+			// check whether all files have been signed properly
+			SignedInfo signedInfo = xmlSignature.getSignedInfo();
+			List<Reference> references = signedInfo.getReferences();
+			Set<String> referenceUris = new HashSet<String>();
+			for (Reference reference : references) {
+				referenceUris.add(reference.getURI());
+			}
+			zipInputStream = new ZipInputStream(new ByteArrayInputStream(
+					document));
+			while (null != (zipEntry = zipInputStream.getNextEntry())) {
+				if (ODFUtil.isSignatureFile(zipEntry)) {
+					continue;
+				}
+				if (false == referenceUris.contains(zipEntry.getName())) {
+					LOG.warn("no ds:Reference for ZIP entry: "
+							+ zipEntry.getName());
+					return signatureInfos;
+				}
+			}
+
 			X509Certificate signer = keySelector.getCertificate();
 			SignatureInfo signatureInfo = xadesValidation.validate(
 					documentSignaturesDocument, xmlSignature, signatureElement,
