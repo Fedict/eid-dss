@@ -1,6 +1,7 @@
 /*
  * eID Digital Signature Service Project.
  * Copyright (C) 2010 FedICT.
+ * Copyright (C) 2011 Frank Cornelis.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -22,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +39,9 @@ import javax.xml.crypto.dsig.dom.DOMValidateContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xml.security.Init;
+import org.apache.xml.security.c14n.Canonicalizer;
+import org.apache.xml.security.utils.resolver.ResourceResolverSpi;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -64,6 +69,14 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 			.getLog(ZIPDSSDocumentService.class);
 
 	private DSSDocumentContext documentContext;
+
+	static {
+		/*
+		 * Initialize the Apache XML Security library, else we get an NPE on
+		 * Transforms.addTransform.
+		 */
+		Init.init();
+	}
 
 	public void init(DSSDocumentContext context, String contentType)
 			throws Exception {
@@ -111,11 +124,6 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 	@Override
 	public List<SignatureInfo> verifySignatures(byte[] document,
 			byte[] originalDocument) throws Exception {
-		if (null != originalDocument) {
-			throw new IllegalArgumentException(
-					"cannot perform original document verifications");
-		}
-
 		ZipInputStream zipInputStream = new ZipInputStream(
 				new ByteArrayInputStream(document));
 		ZipEntry zipEntry;
@@ -153,6 +161,7 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 
 			// check whether all files have been signed properly
 			SignedInfo signedInfo = xmlSignature.getSignedInfo();
+			@SuppressWarnings("unchecked")
 			List<Reference> references = signedInfo.getReferences();
 			Set<String> referenceUris = new HashSet<String>();
 			for (Reference reference : references) {
@@ -168,6 +177,72 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 					LOG.warn("no ds:Reference for ZIP entry: "
 							+ zipEntry.getName());
 					return signatureInfos;
+				}
+			}
+
+			if (null != originalDocument) {
+				for (Reference reference : references) {
+					if (null != reference.getType()) {
+						/*
+						 * We skip XAdES and eID identity ds:Reference.
+						 */
+						continue;
+					}
+					String digestAlgo = reference.getDigestMethod()
+							.getAlgorithm();
+					LOG.debug("ds:Reference digest algo: " + digestAlgo);
+					String referenceUri = reference.getURI();
+					LOG.debug("ds:Reference URI: " + referenceUri);
+					byte[] digestValue = reference.getDigestValue();
+
+					org.apache.xml.security.signature.XMLSignature xmldsig = new org.apache.xml.security.signature.XMLSignature(
+							documentSignaturesDocument,
+							org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA512,
+							Canonicalizer.ALGO_ID_C14N_EXCL_WITH_COMMENTS);
+					xmldsig.addDocument(referenceUri, null, digestAlgo);
+					ResourceResolverSpi zipResourceResolver = new ZIPResourceResolver(
+							originalDocument);
+					xmldsig.addResourceResolver(zipResourceResolver);
+					org.apache.xml.security.signature.SignedInfo apacheSignedInfo = xmldsig
+							.getSignedInfo();
+					org.apache.xml.security.signature.Reference apacheReference = apacheSignedInfo
+							.item(0);
+					apacheReference.generateDigestValue();
+					byte[] originalDigestValue = apacheReference
+							.getDigestValue();
+					if (false == Arrays
+							.equals(originalDigestValue, digestValue)) {
+						throw new RuntimeException("not original document");
+					}
+				}
+				/*
+				 * So we already checked whether no files were changed, and that
+				 * no files were added compared to the original document. Still
+				 * have to check whether no files were removed.
+				 */
+				ZipInputStream originalZipInputStream = new ZipInputStream(
+						new ByteArrayInputStream(originalDocument));
+				ZipEntry originalZipEntry;
+				Set<String> referencedEntryNames = new HashSet<String>();
+				for (Reference reference : references) {
+					if (null != reference.getType()) {
+						continue;
+					}
+					referencedEntryNames.add(reference.getURI());
+				}
+				while (null != (originalZipEntry = originalZipInputStream
+						.getNextEntry())) {
+					if (ODFUtil.isSignatureFile(originalZipEntry)) {
+						continue;
+					}
+					if (false == referencedEntryNames.contains(originalZipEntry
+							.getName())) {
+						LOG.warn("missing ds:Reference for ZIP entry: "
+								+ originalZipEntry.getName());
+						throw new RuntimeException(
+								"missing ds:Reference for ZIP entry: "
+										+ originalZipEntry.getName());
+					}
 				}
 			}
 
