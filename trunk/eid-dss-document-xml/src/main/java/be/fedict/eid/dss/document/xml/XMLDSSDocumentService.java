@@ -1,6 +1,7 @@
 /*
  * eID Digital Signature Service Project.
  * Copyright (C) 2010 FedICT.
+ * Copyright (C) 2011 Frank Cornelis.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -48,6 +49,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.Init;
 import org.apache.xml.security.c14n.Canonicalizer;
+import org.apache.xml.security.exceptions.Base64DecodingException;
+import org.apache.xml.security.exceptions.XMLSecurityException;
+import org.apache.xml.security.signature.ReferenceNotInitializedException;
+import org.apache.xml.security.signature.XMLSignatureException;
+import org.apache.xml.security.transforms.TransformationException;
 import org.apache.xml.security.transforms.Transforms;
 import org.apache.xml.security.transforms.params.XPathContainer;
 import org.apache.xml.security.utils.Constants;
@@ -236,51 +242,14 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 				Document originalDomDocument = XAdESUtils
 						.loadDocument(originalDocument);
 				LOG.debug("performing original document verification");
-				SignedInfo signedInfo = xmlSignature.getSignedInfo();
-				List<Reference> references = signedInfo.getReferences();
-				for (Reference reference : references) {
-					LOG.debug("reference type: " + reference.getType());
-					if (null != reference.getType()) {
-						/*
-						 * We skip XAdES and eID identity ds:Reference.
-						 */
-						continue;
-					}
-					String digestAlgo = reference.getDigestMethod()
-							.getAlgorithm();
-					LOG.debug("ds:Reference digest algo: " + digestAlgo);
-					byte[] digestValue = reference.getDigestValue();
-
-					org.apache.xml.security.signature.XMLSignature xmldsig = new org.apache.xml.security.signature.XMLSignature(
-							originalDomDocument,
-							org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA512,
-							Canonicalizer.ALGO_ID_C14N_EXCL_WITH_COMMENTS);
-
-					Transforms transforms = new Transforms(originalDomDocument);
-					XPathContainer xpath = new XPathContainer(
-							originalDomDocument);
-					xpath.setXPathNamespaceContext("ds",
-							Constants.SignatureSpecNS);
-					xpath.setXPath("not(ancestor-or-self::ds:Signature)");
-					transforms.addTransform(Transforms.TRANSFORM_XPATH,
-							xpath.getElementPlusReturns());
-					transforms
-							.addTransform(Transforms.TRANSFORM_C14N_EXCL_OMIT_COMMENTS);
-					xmldsig.addDocument("", transforms, digestAlgo);
-
-					org.apache.xml.security.signature.SignedInfo apacheSignedInfo = xmldsig
-							.getSignedInfo();
-					org.apache.xml.security.signature.Reference apacheReference = apacheSignedInfo
-							.item(0);
-					apacheReference.generateDigestValue();
-					byte[] originalDigestValue = apacheReference
-							.getDigestValue();
-					if (false == Arrays
-							.equals(originalDigestValue, digestValue)) {
-						throw new RuntimeException("not original document");
-					}
-					LOG.debug("original document verified");
-				}
+				verifyCoSignatureReference(xmlSignature, originalDomDocument);
+				LOG.debug("original document verified");
+			} else {
+				/*
+				 * We can still check whether the co-signature ds:Reference is
+				 * indeed doing a co-signature.
+				 */
+				verifyCoSignatureReference(xmlSignature, document);
 			}
 
 			X509Certificate signingCertificate = keyInfoKeySelector
@@ -290,5 +259,52 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 			signatureInfos.add(signatureInfo);
 		}
 		return signatureInfos;
+	}
+
+	private void verifyCoSignatureReference(XMLSignature xmlSignature,
+			Document originalDomDocument) throws XMLSecurityException,
+			TransformationException, XMLSignatureException,
+			ReferenceNotInitializedException, Base64DecodingException {
+		SignedInfo signedInfo = xmlSignature.getSignedInfo();
+		@SuppressWarnings("unchecked")
+		List<Reference> references = signedInfo.getReferences();
+		for (Reference reference : references) {
+			LOG.debug("reference type: " + reference.getType());
+			if (null != reference.getType()) {
+				/*
+				 * We skip XAdES and eID identity ds:Reference.
+				 */
+				continue;
+			}
+			String digestAlgo = reference.getDigestMethod().getAlgorithm();
+			LOG.debug("ds:Reference digest algo: " + digestAlgo);
+			byte[] digestValue = reference.getDigestValue();
+
+			org.apache.xml.security.signature.XMLSignature xmldsig = new org.apache.xml.security.signature.XMLSignature(
+					originalDomDocument,
+					org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA512,
+					Canonicalizer.ALGO_ID_C14N_EXCL_WITH_COMMENTS);
+
+			Transforms transforms = new Transforms(originalDomDocument);
+			XPathContainer xpath = new XPathContainer(originalDomDocument);
+			xpath.setXPathNamespaceContext("ds", Constants.SignatureSpecNS);
+			xpath.setXPath("not(ancestor-or-self::ds:Signature)");
+			transforms.addTransform(Transforms.TRANSFORM_XPATH,
+					xpath.getElementPlusReturns());
+			transforms
+					.addTransform(Transforms.TRANSFORM_C14N_EXCL_OMIT_COMMENTS);
+			xmldsig.addDocument("", transforms, digestAlgo);
+
+			org.apache.xml.security.signature.SignedInfo apacheSignedInfo = xmldsig
+					.getSignedInfo();
+			org.apache.xml.security.signature.Reference apacheReference = apacheSignedInfo
+					.item(0);
+			apacheReference.generateDigestValue();
+			byte[] originalDigestValue = apacheReference.getDigestValue();
+			if (false == Arrays.equals(originalDigestValue, digestValue)) {
+				throw new RuntimeException("not original document");
+			}
+			LOG.debug("co-signature ds:Reference checked");
+		}
 	}
 }
