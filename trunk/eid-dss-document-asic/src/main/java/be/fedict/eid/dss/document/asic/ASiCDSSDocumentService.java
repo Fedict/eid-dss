@@ -60,6 +60,8 @@ import be.fedict.eid.dss.spi.utils.XAdESValidation;
 
 /**
  * Associated Signature Container document service implementation.
+ * <p/>
+ * Specification: ETSI TS 102 918 v1.1.1 (2011-04)
  * 
  * @author Frank Cornelis
  * 
@@ -90,13 +92,36 @@ public class ASiCDSSDocumentService implements DSSDocumentService {
 				new ByteArrayInputStream(document));
 		ZipEntry zipEntry;
 		StringBuffer stringBuffer = new StringBuffer();
-		stringBuffer.append("<html><body>");
+		stringBuffer.append("<html>");
+		stringBuffer.append("<head>");
+		stringBuffer.append("<title>Associated Signature Container</title>");
+		stringBuffer.append("</head>");
+		stringBuffer.append("<body>");
 		stringBuffer.append("<h1>Associated Signature Container</h1>");
 		while (null != (zipEntry = zipInputStream.getNextEntry())) {
 			if (ASiCUtil.isSignatureZipEntry(zipEntry)) {
 				continue;
 			}
 			String zipEntryName = zipEntry.getName();
+			if ("META-INF/container.xml".equals(zipEntryName)) {
+				continue;
+			}
+			if ("META-INF/manifest.xml".equals(zipEntryName)) {
+				continue;
+			}
+			if ("META-INF/metadata.xml".equals(zipEntryName)) {
+				continue;
+			}
+			if ("mimetype".equals(zipEntryName)) {
+				continue;
+			}
+			if (zipEntryName.startsWith("META-INF/")) {
+				if (zipEntryName.endsWith(".xml")) {
+					if (zipEntryName.indexOf("signatures") != -1) {
+						continue;
+					}
+				}
+			}
 			stringBuffer.append("<p>" + zipEntryName + "</p>");
 		}
 		stringBuffer.append("</body></html>");
@@ -162,6 +187,7 @@ public class ASiCDSSDocumentService implements DSSDocumentService {
 
 			// check whether all files have been signed properly
 			SignedInfo signedInfo = xmlSignature.getSignedInfo();
+			@SuppressWarnings("unchecked")
 			List<Reference> references = signedInfo.getReferences();
 			Set<String> referenceUris = new HashSet<String>();
 			for (Reference reference : references) {
