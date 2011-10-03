@@ -21,7 +21,9 @@ package test.unit.be.fedict.eid.dss.document.asic;
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.Security;
 import java.security.cert.X509CRL;
@@ -30,6 +32,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.xpath.XPathAPI;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.ocsp.OCSPResp;
 import org.bouncycastle.tsp.TimeStampToken;
@@ -37,12 +42,19 @@ import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.tidy.Tidy;
 
 import be.fedict.eid.dss.document.asic.ASiCDSSDocumentService;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
+import be.fedict.eid.dss.spi.DocumentVisualization;
 import be.fedict.eid.dss.spi.SignatureInfo;
 
 public class ASiCDSSDocumentServiceTest {
+
+	private static final Log LOG = LogFactory
+			.getLog(ASiCDSSDocumentServiceTest.class);
 
 	@Before
 	public void setUp() {
@@ -122,5 +134,73 @@ public class ASiCDSSDocumentServiceTest {
 		EasyMock.verify(mockDocumentContext);
 		assertNotNull(result);
 		assertEquals(0, result.size());
+	}
+
+	@Test
+	public void testVisualizationSignedASiC() throws Exception {
+		// setup
+		InputStream originalInputStream = ASiCDSSDocumentServiceTest.class
+				.getResourceAsStream("/signed.asice");
+		byte[] originalDocument = IOUtils.toByteArray(originalInputStream);
+		ASiCDSSDocumentService testedInstance = new ASiCDSSDocumentService();
+
+		// operate
+		DocumentVisualization result = testedInstance.visualizeDocument(
+				originalDocument, "en");
+
+		// verify
+		assertNotNull(result);
+		LOG.debug("browser content-type: " + result.getBrowserContentType());
+		assertEquals("text/html", result.getBrowserContentType());
+		String content = new String(result.getBrowserData());
+		LOG.debug("content: " + content);
+		Tidy tidy = new Tidy();
+		Document document = tidy.parseDOM(
+				new ByteArrayInputStream(result.getBrowserData()), null);
+		Node filenameNode = XPathAPI.selectSingleNode(document,
+				"//*[text() = 'helloworld.txt']");
+		assertNotNull(filenameNode);
+		Node signatureFilenameNode = XPathAPI.selectSingleNode(document,
+				"//*[text() = 'META-INF/signatures.xml']");
+		assertNull(signatureFilenameNode);
+	}
+
+	@Test
+	public void testVisualizationSkipMetadataEntries() throws Exception {
+		// setup
+		InputStream originalInputStream = ASiCDSSDocumentServiceTest.class
+				.getResourceAsStream("/visualization.asice");
+		byte[] originalDocument = IOUtils.toByteArray(originalInputStream);
+		ASiCDSSDocumentService testedInstance = new ASiCDSSDocumentService();
+
+		// operate
+		DocumentVisualization result = testedInstance.visualizeDocument(
+				originalDocument, "en");
+
+		// verify
+		assertNotNull(result);
+		LOG.debug("browser content-type: " + result.getBrowserContentType());
+		assertEquals("text/html", result.getBrowserContentType());
+		String content = new String(result.getBrowserData());
+		LOG.debug("content: " + content);
+		Tidy tidy = new Tidy();
+		Document document = tidy.parseDOM(
+				new ByteArrayInputStream(result.getBrowserData()), null);
+		Node filenameNode = XPathAPI.selectSingleNode(document,
+				"//*[text() = 'helloworld.txt']");
+		assertNotNull(filenameNode);
+		Node signatureFilenameNode = XPathAPI.selectSingleNode(document,
+				"//*[text() = 'META-INF/signatures.xml']");
+		assertNull(signatureFilenameNode);
+		assertNull(XPathAPI.selectSingleNode(document,
+				"//*[text() = 'META-INF/container.xml']"));
+		assertNull(XPathAPI.selectSingleNode(document,
+				"//*[text() = 'META-INF/foobar-signatures-foobar.xml']"));
+		assertNull(XPathAPI.selectSingleNode(document,
+				"//*[text() = 'META-INF/manifest.xml']"));
+		assertNull(XPathAPI.selectSingleNode(document,
+				"//*[text() = 'META-INF/metadata.xml']"));
+		assertNull(XPathAPI.selectSingleNode(document,
+				"//*[text() = 'mimetype']"));
 	}
 }
