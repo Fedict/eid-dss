@@ -157,7 +157,7 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 		return new XMLSignatureService(timeStampServiceValidator,
 				revocationDataService, signatureFacet, documentInputStream,
 				documentOutputStream, timeStampService, role, identity, photo,
-				signatureDigestAlgo);
+				signatureDigestAlgo, this.context);
 	}
 
 	public DocumentVisualization visualizeDocument(byte[] document,

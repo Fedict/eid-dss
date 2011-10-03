@@ -18,18 +18,6 @@
 
 package be.fedict.eid.dss.document.xml;
 
-import be.fedict.eid.applet.service.signer.*;
-import be.fedict.eid.applet.service.signer.facets.*;
-import be.fedict.eid.applet.service.signer.time.TimeStampService;
-import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
-import be.fedict.eid.applet.service.spi.AddressDTO;
-import be.fedict.eid.applet.service.spi.DigestInfo;
-import be.fedict.eid.applet.service.spi.IdentityDTO;
-import be.fedict.eid.applet.service.spi.SignatureServiceEx;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,6 +25,30 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.UUID;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import be.fedict.eid.applet.service.signer.AbstractXmlSignatureService;
+import be.fedict.eid.applet.service.signer.DigestAlgo;
+import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
+import be.fedict.eid.applet.service.signer.SignatureFacet;
+import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
+import be.fedict.eid.applet.service.signer.facets.CoSignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.KeyInfoSignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
+import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
+import be.fedict.eid.applet.service.signer.time.TimeStampService;
+import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
+import be.fedict.eid.applet.service.spi.AddressDTO;
+import be.fedict.eid.applet.service.spi.DigestInfo;
+import be.fedict.eid.applet.service.spi.IdentityDTO;
+import be.fedict.eid.applet.service.spi.SignatureServiceEx;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
 
 /**
  * XML signature service. Will create XAdES-X-L v1.4.1 co-signatures.
@@ -57,7 +69,8 @@ public class XMLSignatureService extends AbstractXmlSignatureService implements
 			SignatureFacet signatureFacet, InputStream documentInputStream,
 			OutputStream documentOutputStream,
 			TimeStampService timeStampService, String role,
-			IdentityDTO identity, byte[] photo, DigestAlgo signatureDigestAlgo) {
+			IdentityDTO identity, byte[] photo, DigestAlgo signatureDigestAlgo,
+			DSSDocumentContext documentContext) {
 
 		super(signatureDigestAlgo);
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
@@ -84,6 +97,10 @@ public class XMLSignatureService extends AbstractXmlSignatureService implements
 					identity, photo, getSignatureDigestAlgorithm());
 			addSignatureFacet(identitySignatureFacet);
 		}
+
+		StyleSheetSignatureFacet styleSheetSignatureFacet = new StyleSheetSignatureFacet(
+				documentContext, signatureDigestAlgo);
+		addSignatureFacet(styleSheetSignatureFacet);
 	}
 
 	@Override
