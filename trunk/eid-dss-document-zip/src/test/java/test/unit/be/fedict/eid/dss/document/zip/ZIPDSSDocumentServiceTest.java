@@ -19,10 +19,13 @@
 package test.unit.be.fedict.eid.dss.document.zip;
 
 import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.Security;
 import java.security.cert.X509CRL;
@@ -33,6 +36,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xpath.XPathAPI;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.ocsp.OCSPResp;
 import org.bouncycastle.tsp.TimeStampToken;
@@ -40,9 +44,13 @@ import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.tidy.Tidy;
 
 import be.fedict.eid.dss.document.zip.ZIPDSSDocumentService;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
+import be.fedict.eid.dss.spi.DocumentVisualization;
 import be.fedict.eid.dss.spi.SignatureInfo;
 
 public class ZIPDSSDocumentServiceTest {
@@ -273,5 +281,60 @@ public class ZIPDSSDocumentServiceTest {
 			// verify
 			EasyMock.verify(mockContext);
 		}
+	}
+
+	@Test
+	public void testVisualizationUnsignedZIP() throws Exception {
+		// setup
+		InputStream originalInputStream = ZIPDSSDocumentServiceTest.class
+				.getResourceAsStream("/original.zip");
+		byte[] originalDocument = IOUtils.toByteArray(originalInputStream);
+		ZIPDSSDocumentService testedInstance = new ZIPDSSDocumentService();
+
+		// operate
+		DocumentVisualization result = testedInstance.visualizeDocument(
+				originalDocument, "en");
+
+		// verify
+		assertNotNull(result);
+		LOG.debug("browser content-type: " + result.getBrowserContentType());
+		assertEquals("text/html", result.getBrowserContentType());
+		String content = new String(result.getBrowserData());
+		LOG.debug("content: " + content);
+		Tidy tidy = new Tidy();
+		Document document = tidy.parseDOM(
+				new ByteArrayInputStream(result.getBrowserData()), null);
+		Node filenameNode = XPathAPI.selectSingleNode(document,
+				"//*[text() = 'helloworld.txt']");
+		assertNotNull(filenameNode);
+	}
+
+	@Test
+	public void testVisualizationSignedZIP() throws Exception {
+		// setup
+		InputStream originalInputStream = ZIPDSSDocumentServiceTest.class
+				.getResourceAsStream("/signed.zip");
+		byte[] originalDocument = IOUtils.toByteArray(originalInputStream);
+		ZIPDSSDocumentService testedInstance = new ZIPDSSDocumentService();
+
+		// operate
+		DocumentVisualization result = testedInstance.visualizeDocument(
+				originalDocument, "en");
+
+		// verify
+		assertNotNull(result);
+		LOG.debug("browser content-type: " + result.getBrowserContentType());
+		assertEquals("text/html", result.getBrowserContentType());
+		String content = new String(result.getBrowserData());
+		LOG.debug("content: " + content);
+		Tidy tidy = new Tidy();
+		Document document = tidy.parseDOM(
+				new ByteArrayInputStream(result.getBrowserData()), null);
+		Node filenameNode = XPathAPI.selectSingleNode(document,
+				"//*[text() = 'helloworld.txt']");
+		assertNotNull(filenameNode);
+		Node signatureFilenameNode = XPathAPI.selectSingleNode(document,
+				"//*[text() = 'META-INF/documentsignatures.xml']");
+		assertNull(signatureFilenameNode);
 	}
 }

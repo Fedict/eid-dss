@@ -93,7 +93,11 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 				new ByteArrayInputStream(document));
 		ZipEntry zipEntry;
 		StringBuffer stringBuffer = new StringBuffer();
-		stringBuffer.append("<html><body>");
+		stringBuffer.append("<html>");
+		stringBuffer.append("<head>");
+		stringBuffer.append("<title>ZIP package</title>");
+		stringBuffer.append("</head>");
+		stringBuffer.append("<body>");
 		stringBuffer.append("<h1>ZIP package</h1>");
 		while (null != (zipEntry = zipInputStream.getNextEntry())) {
 			if (ODFUtil.isSignatureFile(zipEntry)) {
