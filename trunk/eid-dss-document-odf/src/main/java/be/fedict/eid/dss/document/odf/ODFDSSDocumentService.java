@@ -18,6 +18,30 @@
 
 package be.fedict.eid.dss.document.odf;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.cert.X509Certificate;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.SignedInfo;
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.dom.DOMValidateContext;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
@@ -33,23 +57,6 @@ import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DocumentVisualization;
 import be.fedict.eid.dss.spi.SignatureInfo;
 import be.fedict.eid.dss.spi.utils.XAdESValidation;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.dom.DOMValidateContext;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.cert.X509Certificate;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * Document Service implementation of OpenOffice formats.
@@ -102,11 +109,6 @@ public class ODFDSSDocumentService implements DSSDocumentService {
 	@Override
 	public List<SignatureInfo> verifySignatures(byte[] document,
 			byte[] originalDocument) throws Exception {
-		if (null != originalDocument) {
-			throw new IllegalArgumentException(
-					"cannot perform original document verifications");
-		}
-
 		List<SignatureInfo> signatureInfos = new LinkedList<SignatureInfo>();
 		ZipInputStream odfZipInputStream = new ZipInputStream(
 				new ByteArrayInputStream(document));
@@ -140,6 +142,9 @@ public class ODFDSSDocumentService implements DSSDocumentService {
 						LOG.debug("invalid signature");
 						continue;
 					}
+
+					checkIntegrity(xmlSignature, document, originalDocument);
+
 					X509Certificate signingCertificate = keySelector
 							.getCertificate();
 					SignatureInfo signatureInfo = xadesValidation.validate(
@@ -151,5 +156,35 @@ public class ODFDSSDocumentService implements DSSDocumentService {
 			}
 		}
 		return signatureInfos;
+	}
+
+	private void checkIntegrity(XMLSignature xmlSignature, byte[] document,
+			byte[] originalDocument) throws IOException {
+		if (null != originalDocument) {
+			throw new IllegalArgumentException(
+					"cannot perform original document verifications");
+		}
+		Set<String> dsReferenceUris = new HashSet<String>();
+		SignedInfo signedInfo = xmlSignature.getSignedInfo();
+		@SuppressWarnings("unchecked")
+		List<Reference> references = signedInfo.getReferences();
+		for (Reference reference : references) {
+			String referenceUri = reference.getURI();
+			dsReferenceUris.add(referenceUri);
+		}
+		ZipInputStream odfZipInputStream = new ZipInputStream(
+				new ByteArrayInputStream(document));
+		ZipEntry zipEntry;
+		while (null != (zipEntry = odfZipInputStream.getNextEntry())) {
+			if (false == ODFUtil.isToBeSigned(zipEntry)) {
+				continue;
+			}
+			String uri = zipEntry.getName().replaceAll(" ", "%20");
+			if (false == dsReferenceUris.contains(uri)) {
+				LOG.warn("no ds:Reference for ODF entry: " + zipEntry.getName());
+				throw new RuntimeException("no ds:Reference for ODF entry: "
+						+ zipEntry.getName());
+			}
+		}
 	}
 }
