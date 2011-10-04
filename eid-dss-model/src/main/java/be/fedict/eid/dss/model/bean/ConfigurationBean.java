@@ -18,19 +18,21 @@
 
 package be.fedict.eid.dss.model.bean;
 
-import be.fedict.eid.dss.entity.ConfigPropertyEntity;
-import be.fedict.eid.dss.model.ConfigProperty;
-import be.fedict.eid.dss.model.Configuration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Startup;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.LinkedList;
-import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import be.fedict.eid.dss.entity.ConfigPropertyEntity;
+import be.fedict.eid.dss.model.ConfigProperty;
+import be.fedict.eid.dss.model.Configuration;
 
 @Startup
 @Stateless
@@ -134,7 +136,6 @@ public class ConfigurationBean implements Configuration {
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings({ "unchecked", "static-access" })
 	public <T> T getValue(ConfigProperty configProperty, Class<T> type) {
 		return getValue(configProperty, null, type);
 	}
@@ -142,7 +143,7 @@ public class ConfigurationBean implements Configuration {
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings({ "unchecked", "static-access" })
+	@SuppressWarnings({ "unchecked" })
 	public <T> T getValue(ConfigProperty configProperty, String index,
 			Class<T> type) {
 

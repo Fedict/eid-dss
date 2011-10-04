@@ -64,7 +64,11 @@ public enum ConfigProperty {
 	 */
 	TIMESTAMP_MAX_OFFSET("timestamp-max-offset", Long.class, 5 * 60 * 1000L),
 
-	MAX_GRACE_PERIOD("max-grace-period", Long.class, 24 * 7L);
+	MAX_GRACE_PERIOD("max-grace-period", Long.class, 24 * 7L),
+
+	SMTP_SERVER("smtp-server", String.class), MAIL_FROM("mail-from",
+			String.class), MAIL_PREFIX("mail-prefix", String.class), MAIL_SIGNED_DOCUMENT(
+			"mail-signed-document", Boolean.class);
 
 	private final String name;
 

@@ -18,11 +18,18 @@
 
 package be.fedict.eid.dss.control.bean;
 
-import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
-import be.fedict.eid.dss.control.View;
-import be.fedict.eid.dss.entity.RPEntity;
-import be.fedict.eid.dss.model.DocumentRepository;
-import be.fedict.eid.dss.spi.SignatureStatus;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.ejb.EJB;
+import javax.ejb.Remove;
+import javax.ejb.Stateful;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
@@ -33,15 +40,12 @@ import org.jboss.seam.contexts.SessionContext;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.log.Log;
 
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.OutputStream;
+import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
+import be.fedict.eid.dss.control.View;
+import be.fedict.eid.dss.entity.RPEntity;
+import be.fedict.eid.dss.model.DocumentRepository;
+import be.fedict.eid.dss.model.MailManager;
+import be.fedict.eid.dss.spi.SignatureStatus;
 
 @Stateful
 @Name("dssView")
@@ -63,6 +67,11 @@ public class ViewBean implements View {
 	private String role;
 
 	private boolean includeIdentity;
+
+	private String email;
+
+	@EJB
+	private MailManager mailManager;
 
 	public String cancel() {
 
@@ -121,6 +130,7 @@ public class ViewBean implements View {
 		DocumentRepository documentRepository = new DocumentRepository(
 				httpSession);
 		documentRepository.setRole(this.role);
+		documentRepository.setEmail(this.email);
 		documentRepository.setIncludeIdentity(this.includeIdentity);
 		return "sign";
 	}
@@ -167,8 +177,21 @@ public class ViewBean implements View {
 
 	@Override
 	public long getTimeStamp() {
-
 		return System.currentTimeMillis();
 	}
 
+	@Override
+	public String getEmail() {
+		return this.email;
+	}
+
+	@Override
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	@Override
+	public boolean getDisplayMailSignedDocument() {
+		return this.mailManager.sendSignedDocumentEnabled();
+	}
 }

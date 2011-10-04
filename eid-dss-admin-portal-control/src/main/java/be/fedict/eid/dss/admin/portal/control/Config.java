@@ -18,10 +18,10 @@
 
 package be.fedict.eid.dss.admin.portal.control;
 
+import javax.ejb.Local;
+
 import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.dss.model.TSPDigestAlgo;
-
-import javax.ejb.Local;
 
 @Local
 public interface Config {
@@ -97,6 +97,22 @@ public interface Config {
 	Long getMaxGracePeriod();
 
 	void setMaxGracePeriod(Long maxGracePeriod);
+
+	Boolean getMailSignedDocument();
+
+	void setMailSignedDocument(Boolean mailSignedDocument);
+
+	String getSmtpServer();
+
+	void setSmtpServer(String smtpServer);
+
+	String getMailFrom();
+
+	void setMailFrom(String mailFrom);
+
+	String getMailPrefix();
+
+	void setMailPrefix(String mailPrefix);
 
 	/*
 	 * Actions.

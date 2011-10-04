@@ -18,12 +18,14 @@
 
 package be.fedict.eid.dss.model;
 
-import be.fedict.eid.dss.spi.SignatureStatus;
+import java.security.cert.X509Certificate;
+
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.servlet.http.HttpSession;
-import java.security.cert.X509Certificate;
+import be.fedict.eid.dss.spi.SignatureStatus;
 
 /**
  * A document repository based on HTTP session storage.
@@ -61,6 +63,9 @@ public class DocumentRepository {
 	public static final String INCLUDE_IDENTITY_SESSION_ATTRIBUTE = DocumentRepository.class
 			.getName() + ".includeIdentity";
 
+	public static final String EMAIL_SESSION_ATTRIBUTE = DocumentRepository.class
+			.getName() + ".email";
+
 	public final HttpSession httpSession;
 
 	public DocumentRepository(HttpSession httpSession) {
@@ -78,6 +83,7 @@ public class DocumentRepository {
 		this.httpSession.removeAttribute(SIGNER_CERTIFICATE_SESSION_ATTRIBUTE);
 		this.httpSession.removeAttribute(ROLE_SESSION_ATTRIBUTE);
 		this.httpSession.removeAttribute(INCLUDE_IDENTITY_SESSION_ATTRIBUTE);
+		this.httpSession.removeAttribute(EMAIL_SESSION_ATTRIBUTE);
 	}
 
 	public void setDocument(byte[] document) {
@@ -164,5 +170,13 @@ public class DocumentRepository {
 	public boolean getIncludeIdentity() {
 		return (Boolean) this.httpSession
 				.getAttribute(INCLUDE_IDENTITY_SESSION_ATTRIBUTE);
+	}
+
+	public void setEmail(String email) {
+		this.httpSession.setAttribute(EMAIL_SESSION_ATTRIBUTE, email);
+	}
+
+	public String getEmail() {
+		return (String) this.httpSession.getAttribute(EMAIL_SESSION_ATTRIBUTE);
 	}
 }

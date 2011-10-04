@@ -18,14 +18,8 @@
 
 package be.fedict.eid.dss.webapp;
 
-import be.fedict.eid.dss.model.DocumentRepository;
-import be.fedict.eid.dss.model.DocumentService;
-import be.fedict.eid.dss.model.exception.DocumentNotFoundException;
-import be.fedict.eid.dss.spi.BrowserPOSTResponse;
-import be.fedict.eid.dss.spi.DSSProtocolService;
-import be.fedict.eid.dss.spi.SignatureStatus;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.IOException;
+import java.security.cert.X509Certificate;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletConfig;
@@ -33,8 +27,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.security.cert.X509Certificate;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import be.fedict.eid.dss.model.DocumentRepository;
+import be.fedict.eid.dss.model.DocumentService;
+import be.fedict.eid.dss.model.MailManager;
+import be.fedict.eid.dss.model.exception.DocumentNotFoundException;
+import be.fedict.eid.dss.spi.BrowserPOSTResponse;
+import be.fedict.eid.dss.spi.DSSProtocolService;
+import be.fedict.eid.dss.spi.SignatureStatus;
 
 /**
  * Protocol Exit Servlet. Operates as a broker towards protocol services.
@@ -59,6 +62,9 @@ public class ProtocolExitServlet extends AbstractProtocolServiceServlet {
 
 	@EJB
 	private DocumentService documentService;
+
+	@EJB
+	private MailManager mailManager;
 
 	public ProtocolExitServlet() {
 		super(true, false);
@@ -103,6 +109,13 @@ public class ProtocolExitServlet extends AbstractProtocolServiceServlet {
 				httpSession);
 
 		byte[] signedDocument = documentRepository.getSignedDocument();
+
+		if (null != signedDocument) {
+			String mimetype = documentRepository.getDocumentContentType();
+			String email = documentRepository.getEmail();
+			this.mailManager.sendSignedDocument(email, "en", mimetype,
+					signedDocument);
+		}
 
 		String documentId = documentRepository.getDocumentId();
 		if (null != documentId && null != signedDocument) {
