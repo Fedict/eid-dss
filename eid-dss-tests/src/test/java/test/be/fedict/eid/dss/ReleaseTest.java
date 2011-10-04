@@ -62,7 +62,7 @@ public class ReleaseTest {
 	private static final Log LOG = LogFactory.getLog(ReleaseTest.class);
 
 	// 1.0.0-SNAPSHOT
-	private static final String CURRENT_VERSION = "1.0.0.RC4";
+	private static final String CURRENT_VERSION = "1.0.0.RC5";
 
 	// 1.0.0.RC1
 	private static final String NEW_VERSION = "1.0.0-SNAPSHOT";
