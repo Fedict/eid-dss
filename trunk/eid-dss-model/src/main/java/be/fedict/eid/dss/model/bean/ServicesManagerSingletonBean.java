@@ -87,7 +87,6 @@ public class ServicesManagerSingletonBean {
 		return this.protocolServiceClassNames;
 	}
 
-	@SuppressWarnings("unchecked")
 	private Map<String, String> loadProtocolServiceClassNames() {
 
 		LOG.debug("load protocol service class names");

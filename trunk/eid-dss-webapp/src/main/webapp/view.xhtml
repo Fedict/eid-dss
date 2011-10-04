@@ -30,6 +30,11 @@
 						<h:selectBooleanCheckbox value="#{dssView.includeIdentity}" />
 						<h:outputText value="#{messages.includeIdentity}" />
 					</h:panelGrid>
+					<h:panelGrid columns="2"
+						rendered="#{dssView.displayMailSignedDocument}">
+						<h:outputText value="#{messages.mailSignedDocumentTo}:" />
+						<h:inputText value="#{dssView.email}" size="40" />
+					</h:panelGrid>
 				</rich:simpleTogglePanel>
 				<rich:spacer height="5" />
 			</h:form>

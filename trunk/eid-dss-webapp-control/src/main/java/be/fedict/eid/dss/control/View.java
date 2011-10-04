@@ -18,9 +18,10 @@
 
 package be.fedict.eid.dss.control;
 
-import javax.ejb.Local;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import javax.ejb.Local;
 
 @Local
 public interface View {
@@ -55,6 +56,12 @@ public interface View {
 	void paint(OutputStream stream, Object object) throws IOException;
 
 	long getTimeStamp();
+
+	String getEmail();
+
+	void setEmail(String email);
+
+	boolean getDisplayMailSignedDocument();
 
 	/*
 	 * Lifecycle.

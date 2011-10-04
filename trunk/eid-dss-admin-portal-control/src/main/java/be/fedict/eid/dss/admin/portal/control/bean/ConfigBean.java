@@ -18,14 +18,11 @@
 
 package be.fedict.eid.dss.admin.portal.control.bean;
 
-import be.fedict.eid.applet.service.signer.DigestAlgo;
-import be.fedict.eid.dss.admin.portal.control.AdminConstants;
-import be.fedict.eid.dss.admin.portal.control.Config;
-import be.fedict.eid.dss.model.ConfigProperty;
-import be.fedict.eid.dss.model.Configuration;
-import be.fedict.eid.dss.model.DocumentService;
-import be.fedict.eid.dss.model.TSPDigestAlgo;
-import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.ejb.Remove;
+import javax.ejb.Stateful;
+
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
@@ -35,10 +32,14 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.jboss.seam.log.Log;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
+import be.fedict.eid.applet.service.signer.DigestAlgo;
+import be.fedict.eid.dss.admin.portal.control.AdminConstants;
+import be.fedict.eid.dss.admin.portal.control.Config;
+import be.fedict.eid.dss.model.ConfigProperty;
+import be.fedict.eid.dss.model.Configuration;
+import be.fedict.eid.dss.model.DocumentService;
+import be.fedict.eid.dss.model.TSPDigestAlgo;
+import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
 
 @Stateful
 @Name("dssConfig")
@@ -89,6 +90,14 @@ public class ConfigBean implements Config {
 
 	private Long maxGracePeriod;
 
+	private Boolean sendSignedMail;
+
+	private String smtpServer;
+
+	private String mailFrom;
+
+	private String mailPrefix;
+
 	@Override
 	@PostConstruct
 	public void postConstruct() {
@@ -131,6 +140,15 @@ public class ConfigBean implements Config {
 				ConfigProperty.TIMESTAMP_MAX_OFFSET, Long.class);
 		this.maxGracePeriod = this.configuration.getValue(
 				ConfigProperty.MAX_GRACE_PERIOD, Long.class);
+
+		this.sendSignedMail = this.configuration.getValue(
+				ConfigProperty.MAIL_SIGNED_DOCUMENT, Boolean.class);
+		this.smtpServer = this.configuration.getValue(
+				ConfigProperty.SMTP_SERVER, String.class);
+		this.mailFrom = this.configuration.getValue(ConfigProperty.MAIL_FROM,
+				String.class);
+		this.mailPrefix = this.configuration.getValue(
+				ConfigProperty.MAIL_PREFIX, String.class);
 	}
 
 	@Remove
@@ -191,6 +209,14 @@ public class ConfigBean implements Config {
 		this.configuration.setValue(
 				ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE,
 				this.documentCleanupTaskCronSchedule);
+
+		this.configuration.setValue(ConfigProperty.MAIL_SIGNED_DOCUMENT,
+				this.sendSignedMail);
+		this.configuration
+				.setValue(ConfigProperty.SMTP_SERVER, this.smtpServer);
+		this.configuration.setValue(ConfigProperty.MAIL_FROM, this.mailFrom);
+		this.configuration
+				.setValue(ConfigProperty.MAIL_PREFIX, this.mailPrefix);
 
 		return null;
 	}
@@ -364,5 +390,45 @@ public class ConfigBean implements Config {
 	@Override
 	public void setMaxGracePeriod(Long maxGracePeriod) {
 		this.maxGracePeriod = maxGracePeriod;
+	}
+
+	@Override
+	public Boolean getMailSignedDocument() {
+		return this.sendSignedMail;
+	}
+
+	@Override
+	public void setMailSignedDocument(Boolean mailSignedDocument) {
+		this.sendSignedMail = mailSignedDocument;
+	}
+
+	@Override
+	public String getSmtpServer() {
+		return this.smtpServer;
+	}
+
+	@Override
+	public void setSmtpServer(String smtpServer) {
+		this.smtpServer = smtpServer;
+	}
+
+	@Override
+	public String getMailFrom() {
+		return this.mailFrom;
+	}
+
+	@Override
+	public void setMailFrom(String mailFrom) {
+		this.mailFrom = mailFrom;
+	}
+
+	@Override
+	public String getMailPrefix() {
+		return this.mailPrefix;
+	}
+
+	@Override
+	public void setMailPrefix(String mailPrefix) {
+		this.mailPrefix = mailPrefix;
 	}
 }
