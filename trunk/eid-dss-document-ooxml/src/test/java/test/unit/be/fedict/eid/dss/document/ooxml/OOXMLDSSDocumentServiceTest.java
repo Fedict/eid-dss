@@ -94,8 +94,8 @@ public class OOXMLDSSDocumentServiceTest {
 
 		// operate
 		testedInstance.init(mockContext, "mime-type");
-		List<SignatureInfo> signatureInfos = testedInstance
-				.verifySignatures(document, null);
+		List<SignatureInfo> signatureInfos = testedInstance.verifySignatures(
+				document, null);
 
 		// verify
 		EasyMock.verify(mockContext);
@@ -146,8 +146,8 @@ public class OOXMLDSSDocumentServiceTest {
 
 		// operate
 		testedInstance.init(mockContext, "mime-type");
-		List<SignatureInfo> signatureInfos = testedInstance
-				.verifySignatures(document, null);
+		List<SignatureInfo> signatureInfos = testedInstance.verifySignatures(
+				document, null);
 
 		// verify
 		EasyMock.verify(mockContext);
@@ -163,6 +163,69 @@ public class OOXMLDSSDocumentServiceTest {
 				.getValue().get(0));
 		assertEquals(1, ocspResponsesCapture.getValue().size());
 		assertEquals(1, crlsCapture.getValue().size());
+		for (X509Certificate certificate : certificateChainCapture.getValue()) {
+			LOG.debug("certificate: " + certificate.getSubjectX500Principal());
+		}
+	}
+
+	/**
+	 * When you register the root-signed Belgium Root CA2 within Windows Trust
+	 * Store, Office 2010 SP1 will use a certificate chain up to GlobalSign Root
+	 * CA instead of the self-signed Belgium Root CA2.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testVerifySignaturesTest123Office() throws Exception {
+		// setup
+		OOXMLDSSDocumentService testedInstance = new OOXMLDSSDocumentService();
+		byte[] document = IOUtils.toByteArray(OOXMLDSSDocumentServiceTest.class
+				.getResourceAsStream("/Office2010-SP1-GlobalSign.docx"));
+
+		DSSDocumentContext mockContext = EasyMock
+				.createMock(DSSDocumentContext.class);
+		Capture<List<X509Certificate>> certificateChainCapture = new Capture<List<X509Certificate>>();
+		Capture<Date> validationDateCapture = new Capture<Date>();
+		Capture<List<OCSPResp>> ocspResponsesCapture = new Capture<List<OCSPResp>>();
+		Capture<List<X509CRL>> crlsCapture = new Capture<List<X509CRL>>();
+		Capture<TimeStampToken> timeStampTokenCapture = new Capture<TimeStampToken>();
+		mockContext.validate(EasyMock.capture(certificateChainCapture),
+				EasyMock.capture(validationDateCapture),
+				EasyMock.capture(ocspResponsesCapture),
+				EasyMock.capture(crlsCapture));
+		mockContext.validate(EasyMock.capture(timeStampTokenCapture));
+		mockContext.validate(EasyMock.capture(timeStampTokenCapture));
+		expect(mockContext.getTimestampMaxOffset()).andReturn(33 * 1000L);
+		expect(mockContext.getMaxGracePeriod()).andReturn(
+				1000L * 60 * 60 * 24 * 7);
+
+		// prepare
+		EasyMock.replay(mockContext);
+
+		// operate
+		testedInstance.init(mockContext, "mime-type");
+		List<SignatureInfo> signatureInfos = testedInstance.verifySignatures(
+				document, null);
+
+		// verify
+		EasyMock.verify(mockContext);
+		assertNotNull(signatureInfos);
+		assertEquals(1, signatureInfos.size());
+		SignatureInfo signatureInfo = signatureInfos.get(0);
+		assertNotNull(signatureInfo.getSigner());
+		assertNotNull(signatureInfo.getSigningTime());
+		LOG.debug("signing time: " + signatureInfo.getSigningTime());
+		assertEquals(signatureInfo.getSigningTime(),
+				validationDateCapture.getValue());
+		assertEquals(signatureInfo.getSigner(), certificateChainCapture
+				.getValue().get(0));
+		assertEquals(1, ocspResponsesCapture.getValue().size());
+		assertEquals(2, crlsCapture.getValue().size());
+		List<X509CRL> crls = crlsCapture.getValue();
+		for (X509CRL crl : crls) {
+			LOG.debug("CRL: " + crl.getIssuerX500Principal());
+		}
+		assertEquals(4, certificateChainCapture.getValue().size());
 		for (X509Certificate certificate : certificateChainCapture.getValue()) {
 			LOG.debug("certificate: " + certificate.getSubjectX500Principal());
 		}
