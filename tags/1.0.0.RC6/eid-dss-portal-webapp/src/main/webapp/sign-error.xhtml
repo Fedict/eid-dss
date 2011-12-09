@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html">
+<body>
+	<ui:composition template="/WEB-INF/template.xhtml">
+		<ui:param name="activeMenu" value="sign" />
+		<ui:define name="body">
+			<h2>Signature Error</h2>
+			<p style="color: red;">An error occurred while signing the
+				document.</p>
+			<p style="color: red;">
+				Error code:
+				<h:outputText value="#{SignatureErrorMessage}" />
+			</p>
+			<p>
+				<a
+					href="#{facesContext.externalContext.requestContextPath}/upload.seam">Click
+					here to sign/verify another document.</a>
+			</p>
+		</ui:define>
+	</ui:composition>
+</body>
+</html>

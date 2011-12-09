@@ -1,0 +1,77 @@
+##
+## Velocity Template for DSS Simple Protocol HTTP-POST binding
+##
+## Velocity context may contain the following properties
+## action - String - the action URL for the form
+## RelayState - String - the relay state for the message
+## SignatureRequest - String - the Base64 encoded Signature Request
+## SignatureRequestId - String - the Signature Request ID.
+## Language - String(ISO-639) - the language to use in linkID.
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+
+        <head>
+                <meta http-equiv="pragma" content="no-cache"/>
+                <meta http-equiv="cache-control" content="no-cache, must-revalidate"/>
+                <meta http-equiv="expires" content="-1"/>
+        </head>
+
+    <body onload="document.forms[0].submit()">
+        <noscript>
+            <p>
+                <strong>Note:</strong> Since your browser does not support JavaScript,
+                you must press the Continue button once to proceed.
+            </p>
+        </noscript>
+
+        <form action="${action}" method="post" autocomplete="off">
+
+            #if($SignatureRequest)
+                <input type="hidden" name="SignatureRequest" value="${SignatureRequest}"/>
+            #end
+
+            #if($SignatureRequestId)
+                <input type="hidden" name="SignatureRequestId" value="${SignatureRequestId}"/>
+            #end
+
+            #if($ContentType)
+                <input type="hidden" name="ContentType" value="${ContentType}"/>
+            #end
+
+            #if($RelayState)
+                <input type="hidden" name="RelayState" value="${RelayState}"/>
+            #end
+
+            #if($Target)
+                <input type="hidden" name="target" value="${Target}"/>
+            #end
+
+            #if($Language)
+                <input type="hidden" name="language" value="${Language}"/>
+            #end
+
+            #if($ServiceSigned)
+                <input type="hidden" name="ServiceSigned" value="${ServiceSigned}"/>
+            #end
+
+            #if($ServiceSignature)
+                <input type="hidden" name="ServiceSignature" value="${ServiceSignature}"/>
+            #end
+
+            #if($ServiceCertificateChainSize)
+                <input type="hidden" name="ServiceCertificateChainSize" value="${ServiceCertificateChainSize}"/>
+            #end
+
+            #if($ServiceCertificates)
+                #foreach( $ServiceCertificate in $ServiceCertificates )
+                    <input type="hidden" name="ServiceCertificate.${velocityCount}" value="${ServiceCertificate}"/>
+                #end
+            #end
+
+            <noscript>
+                <input type="submit" value="Continue"/>
+            </noscript>
+        </form>
+
+    </body>
+</html>
