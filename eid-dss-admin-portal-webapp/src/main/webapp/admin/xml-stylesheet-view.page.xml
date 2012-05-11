@@ -3,14 +3,8 @@
 	xsi:schemaLocation="http://jboss.com/products/seam/pages http://www.jboss.com/products/seam/pages-2.2.xsd">
 
 	<navigation>
-		<rule if-outcome="success">
+		<rule if-outcome="back">
 			<redirect view-id="/admin/xml.xhtml" />
-		</rule>
-		<rule if-outcome="view-schema">
-			<redirect view-id="/admin/xml-schema-view.xhtml" />
-		</rule>
-		<rule if-outcome="view-stylesheet">
-			<redirect view-id="/admin/xml-stylesheet-view.xhtml" />
 		</rule>
 	</navigation>
 

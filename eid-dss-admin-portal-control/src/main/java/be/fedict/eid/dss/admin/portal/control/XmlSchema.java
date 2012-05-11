@@ -1,5 +1,5 @@
 /*
- * eID Identity Provider Project.
+ * eID Digital Signature Service Project.
  * Copyright (C) 2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -36,6 +36,8 @@ public interface XmlSchema {
 	String add();
 
 	void delete();
+	
+	String view();
 
 	/*
 	 * Accessors.
