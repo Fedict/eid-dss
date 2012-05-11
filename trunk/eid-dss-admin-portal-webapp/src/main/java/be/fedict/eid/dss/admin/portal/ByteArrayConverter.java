@@ -18,28 +18,22 @@
 
 package be.fedict.eid.dss.admin.portal;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.convert.Converter;
 
-public class IE9CompatablityFixFilter implements Filter {
+public class ByteArrayConverter implements Converter {
 
 	@Override
-	public void init(FilterConfig filterConfig) throws ServletException {
-
+	public Object getAsObject(FacesContext context, UIComponent component,
+			String value) {
+		return value.getBytes();
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
-
-		// else RichFaces' ajax4jsf javascript no workie
-		((HttpServletResponse) response).setHeader("X-UA-Compatible",
-				"IE=EmulateIE7");
-		chain.doFilter(request, response);
-	}
-
-	@Override
-	public void destroy() {
+	public String getAsString(FacesContext context, UIComponent component,
+			Object value) {
+		byte[] byteArray = (byte[]) value;
+		return new String(byteArray);
 	}
 }

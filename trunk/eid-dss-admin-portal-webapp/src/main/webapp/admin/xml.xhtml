@@ -36,6 +36,8 @@
                             <h:commandLink value="Delete"
                                            action="#{dssXmlSchema.delete}"
                                            onclick="return askDeleteQuestion()"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink value="View" action="#{dssXmlSchema.view}"/>
                         </rich:column>
                         <f:facet name="footer">
                             <rich:datascroller/>
@@ -108,6 +110,8 @@
                             <h:commandLink value="Delete"
                                            action="#{dssXmlStyleSheet.delete}"
                                            onclick="return askDeleteQuestion()"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink value="View" action="#{dssXmlStyleSheet.view}"/>
                         </rich:column>
                         <f:facet name="footer">
                             <rich:datascroller/>

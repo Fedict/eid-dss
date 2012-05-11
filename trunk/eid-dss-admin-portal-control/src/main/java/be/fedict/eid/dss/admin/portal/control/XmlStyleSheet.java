@@ -1,5 +1,5 @@
 /*
- * eID Identity Provider Project.
+ * eID Digital Signature Service Project.
  * Copyright (C) 2010 FedICT.
  * Copyright (C) 2010 Frank Cornelis.
  *
@@ -37,6 +37,8 @@ public interface XmlStyleSheet {
 	String add();
 
 	void delete();
+	
+	String view();
 
 	/*
 	 * Accessors.

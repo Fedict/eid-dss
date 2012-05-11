@@ -9,4 +9,9 @@
 		<view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
 	</application>
 
+	<converter>
+		<converter-id>ByteArrayConverter</converter-id>
+		<converter-class>be.fedict.eid.dss.admin.portal.ByteArrayConverter</converter-class>
+	</converter>
+
 </faces-config>
