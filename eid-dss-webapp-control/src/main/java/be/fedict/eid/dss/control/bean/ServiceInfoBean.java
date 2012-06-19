@@ -36,6 +36,8 @@ import org.jboss.seam.log.Log;
 import javax.ejb.EJB;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
+
+import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -126,5 +128,19 @@ public class ServiceInfoBean implements ServiceInfo {
 			return "<No identity configured>";
 		}
 		return thumbprint;
+	}
+
+	@Override
+	public String getIdentityCertificateChain() {
+		List<X509Certificate> identityCertificateChain = this.identityService
+				.getIdentityCertificateChain();
+		if (identityCertificateChain.isEmpty()) {
+			return "No service identity configured.";
+		}
+		StringBuffer stringBuffer = new StringBuffer();
+		for (X509Certificate cert : identityCertificateChain) {
+			stringBuffer.append(cert.toString());
+		}
+		return stringBuffer.toString();
 	}
 }
