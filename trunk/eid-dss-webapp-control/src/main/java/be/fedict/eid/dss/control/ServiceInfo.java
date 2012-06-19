@@ -39,5 +39,10 @@ public interface ServiceInfo {
 
 	void initXmlStyleSheetNamespacesList();
 
+	/*
+	 * Accessors.
+	 */
 	public String getServiceFingerprint();
+
+	String getIdentityCertificateChain();
 }

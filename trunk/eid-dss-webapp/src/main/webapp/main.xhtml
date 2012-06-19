@@ -68,16 +68,26 @@
 			</h:form>
 
 			<h3>#{messages.serviceIdentity}</h3>
-			<p>
-				#{messages.identityThumbprint} :
+			<h:panelGrid columns="2">
+				<h:outputText value="#{messages.identityThumbprint}:" />
 				<h:outputText value="#{dssServiceFingerprint}" />
-			</p>
+			</h:panelGrid>
 
 			<p>
 				<h:outputLink value="./identity.pem">
 					<h:outputText value="#{messages.identityCertificateChain}" />
 				</h:outputLink>
 			</p>
+
+			<h:panelGrid columns="1">
+				<rich:simpleTogglePanel switchType="client"
+					label="#{messages.identityCertificateChain}" opened="false">
+					<pre>
+						<h:outputText value="#{dssServiceInfo.identityCertificateChain}" />
+					</pre>
+				</rich:simpleTogglePanel>
+			</h:panelGrid>
+
 		</ui:define>
 	</ui:composition>
 </body>
