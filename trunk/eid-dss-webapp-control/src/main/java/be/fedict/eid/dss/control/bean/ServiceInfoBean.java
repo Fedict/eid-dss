@@ -18,13 +18,14 @@
 
 package be.fedict.eid.dss.control.bean;
 
-import be.fedict.eid.dss.control.ServiceEndpoint;
-import be.fedict.eid.dss.control.ServiceInfo;
-import be.fedict.eid.dss.model.IdentityService;
-import be.fedict.eid.dss.model.ServicesManager;
-import be.fedict.eid.dss.model.XmlSchemaManager;
-import be.fedict.eid.dss.model.XmlStyleSheetManager;
-import be.fedict.eid.dss.spi.protocol.DigitalSignatureServiceProtocolType;
+import java.security.cert.X509Certificate;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Remove;
+import javax.ejb.Stateful;
+
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
@@ -33,13 +34,13 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.log.Log;
 
-import javax.ejb.EJB;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-
-import java.security.cert.X509Certificate;
-import java.util.LinkedList;
-import java.util.List;
+import be.fedict.eid.dss.control.ServiceEndpoint;
+import be.fedict.eid.dss.control.ServiceInfo;
+import be.fedict.eid.dss.model.IdentityService;
+import be.fedict.eid.dss.model.ServicesManager;
+import be.fedict.eid.dss.model.XmlSchemaManager;
+import be.fedict.eid.dss.model.XmlStyleSheetManager;
+import be.fedict.eid.dss.spi.protocol.DigitalSignatureServiceProtocolType;
 
 @Stateful
 @Name("dssServiceInfo")

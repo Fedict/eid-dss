@@ -18,14 +18,14 @@
 
 package be.fedict.eid.dss.spi;
 
-import org.bouncycastle.ocsp.OCSPResp;
-import org.bouncycastle.tsp.TimeStampToken;
-
 import java.io.Serializable;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
+
+import org.bouncycastle.ocsp.OCSPResp;
+import org.bouncycastle.tsp.TimeStampToken;
 
 /**
  * Document context interface. Should only allow access to resources that are
@@ -96,6 +96,6 @@ public interface DSSDocumentContext extends Serializable {
 	 * @return the maximum offset (in ms) for timestamps.
 	 */
 	Long getTimestampMaxOffset();
-	
+
 	Long getMaxGracePeriod();
 }

@@ -18,10 +18,16 @@
 
 package test.unit.be.fedict.eid.dss;
 
-import be.fedict.eid.dss.entity.ConfigPropertyEntity;
-import be.fedict.eid.dss.model.ConfigProperty;
-import be.fedict.eid.dss.model.TSPDigestAlgo;
-import be.fedict.eid.dss.model.bean.ConfigurationBean;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.lang.reflect.Field;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.ejb.Ejb3Configuration;
@@ -29,14 +35,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceContext;
-import java.lang.reflect.Field;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import be.fedict.eid.dss.entity.ConfigPropertyEntity;
+import be.fedict.eid.dss.model.ConfigProperty;
+import be.fedict.eid.dss.model.TSPDigestAlgo;
+import be.fedict.eid.dss.model.bean.ConfigurationBean;
 
 public class ConfigurationBeanTest {
 

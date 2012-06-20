@@ -18,16 +18,22 @@
 
 package be.fedict.eid.dss.admin.portal.control.bean;
 
-import be.fedict.eid.applet.service.spi.*;
-import be.fedict.eid.dss.admin.portal.control.AdminConstants;
+import java.security.cert.X509Certificate;
+import java.util.List;
+
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.ejb3.annotation.LocalBinding;
 
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import java.security.cert.X509Certificate;
-import java.util.List;
+import be.fedict.eid.applet.service.spi.AuthenticationService;
+import be.fedict.eid.applet.service.spi.CertificateSecurityException;
+import be.fedict.eid.applet.service.spi.ExpiredCertificateSecurityException;
+import be.fedict.eid.applet.service.spi.RevokedCertificateSecurityException;
+import be.fedict.eid.applet.service.spi.TrustCertificateSecurityException;
+import be.fedict.eid.dss.admin.portal.control.AdminConstants;
 
 @Stateless
 @Local(AuthenticationService.class)

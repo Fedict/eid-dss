@@ -18,14 +18,9 @@
 
 package be.fedict.eid.dss.webapp;
 
-import be.fedict.eid.dss.model.*;
-import be.fedict.eid.dss.model.bean.ModelDSSDocumentContext;
-import be.fedict.eid.dss.spi.DSSDocumentContext;
-import be.fedict.eid.dss.spi.DSSDocumentService;
-import be.fedict.eid.dss.spi.DSSProtocolContext;
-import be.fedict.eid.dss.spi.DSSProtocolService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletConfig;
@@ -34,9 +29,20 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import be.fedict.eid.dss.model.Configuration;
+import be.fedict.eid.dss.model.IdentityService;
+import be.fedict.eid.dss.model.TrustValidationService;
+import be.fedict.eid.dss.model.XmlSchemaManager;
+import be.fedict.eid.dss.model.XmlStyleSheetManager;
+import be.fedict.eid.dss.model.bean.ModelDSSDocumentContext;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
+import be.fedict.eid.dss.spi.DSSDocumentService;
+import be.fedict.eid.dss.spi.DSSProtocolContext;
+import be.fedict.eid.dss.spi.DSSProtocolService;
 
 /**
  * The base class for servlets that need to use various services. Manages the

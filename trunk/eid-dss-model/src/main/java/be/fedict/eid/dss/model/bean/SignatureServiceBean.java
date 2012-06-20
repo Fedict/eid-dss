@@ -18,29 +18,40 @@
 
 package be.fedict.eid.dss.model.bean;
 
+import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jboss.ejb3.annotation.LocalBinding;
+
 import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
 import be.fedict.eid.applet.service.signer.time.TSPTimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
-import be.fedict.eid.applet.service.spi.*;
-import be.fedict.eid.dss.model.*;
+import be.fedict.eid.applet.service.spi.AddressDTO;
+import be.fedict.eid.applet.service.spi.DigestInfo;
+import be.fedict.eid.applet.service.spi.IdentityDTO;
+import be.fedict.eid.applet.service.spi.SignatureService;
+import be.fedict.eid.applet.service.spi.SignatureServiceEx;
+import be.fedict.eid.dss.model.ConfigProperty;
+import be.fedict.eid.dss.model.Configuration;
+import be.fedict.eid.dss.model.Constants;
+import be.fedict.eid.dss.model.DocumentRepository;
+import be.fedict.eid.dss.model.ServicesManager;
+import be.fedict.eid.dss.model.TrustValidationService;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.trust.client.XKMS2Client;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.ejb3.annotation.LocalBinding;
-
-import javax.ejb.EJB;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.servlet.http.HttpSession;
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.List;
 
 /**
  * XML Signature Service bean. Acts as a proxy towards the actual

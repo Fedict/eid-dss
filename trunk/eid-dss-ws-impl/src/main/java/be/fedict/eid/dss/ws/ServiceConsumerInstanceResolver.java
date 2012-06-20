@@ -18,17 +18,20 @@
 
 package be.fedict.eid.dss.ws;
 
-import be.fedict.eid.dss.model.DocumentService;
-import be.fedict.eid.dss.model.SignatureVerificationService;
-import com.sun.xml.ws.api.message.Packet;
-import com.sun.xml.ws.server.AbstractMultiInstanceResolver;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.lang.reflect.Field;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
 import javax.xml.ws.handler.MessageContext;
-import java.lang.reflect.Field;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import be.fedict.eid.dss.model.DocumentService;
+import be.fedict.eid.dss.model.SignatureVerificationService;
+
+import com.sun.xml.ws.api.message.Packet;
+import com.sun.xml.ws.server.AbstractMultiInstanceResolver;
 
 /**
  * JAX-WS RI Instance Resolver implementation to inject services into JAX-WS

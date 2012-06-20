@@ -18,17 +18,14 @@
 
 package be.fedict.eid.dss.model.bean;
 
-import be.fedict.eid.dss.model.Configuration;
-import be.fedict.eid.dss.model.TrustValidationService;
-import be.fedict.eid.dss.model.XmlSchemaManager;
-import be.fedict.eid.dss.model.XmlStyleSheetManager;
-import be.fedict.eid.dss.spi.DSSDocumentContext;
-import be.fedict.eid.dss.spi.DSSDocumentService;
-import be.fedict.eid.dss.spi.document.DigitalSignatureServiceDocumentType;
-import be.fedict.eid.dss.spi.protocol.DigitalSignatureServiceProtocolType;
-import be.fedict.eid.dss.spi.protocol.ObjectFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -38,9 +35,19 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.IOException;
-import java.net.URL;
-import java.util.*;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import be.fedict.eid.dss.model.Configuration;
+import be.fedict.eid.dss.model.TrustValidationService;
+import be.fedict.eid.dss.model.XmlSchemaManager;
+import be.fedict.eid.dss.model.XmlStyleSheetManager;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
+import be.fedict.eid.dss.spi.DSSDocumentService;
+import be.fedict.eid.dss.spi.document.DigitalSignatureServiceDocumentType;
+import be.fedict.eid.dss.spi.protocol.DigitalSignatureServiceProtocolType;
+import be.fedict.eid.dss.spi.protocol.ObjectFactory;
 
 /**
  * EJB 3.1 singleton services manager bean.

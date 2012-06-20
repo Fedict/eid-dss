@@ -18,25 +18,6 @@
 
 package be.fedict.eid.dss.admin.portal.control.bean;
 
-import be.fedict.eid.dss.admin.portal.control.AdminConstants;
-import be.fedict.eid.dss.admin.portal.control.RP;
-import be.fedict.eid.dss.entity.RPEntity;
-import be.fedict.eid.dss.model.RPService;
-import org.apache.commons.io.FileUtils;
-import org.jboss.ejb3.annotation.LocalBinding;
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.*;
-import org.jboss.seam.annotations.datamodel.DataModel;
-import org.jboss.seam.annotations.datamodel.DataModelSelection;
-import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.log.Log;
-import org.richfaces.event.UploadEvent;
-import org.richfaces.model.UploadItem;
-
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -44,6 +25,34 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.ejb.Remove;
+import javax.ejb.Stateful;
+
+import org.apache.commons.io.FileUtils;
+import org.jboss.ejb3.annotation.LocalBinding;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Begin;
+import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.End;
+import org.jboss.seam.annotations.Factory;
+import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Logger;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Out;
+import org.jboss.seam.annotations.datamodel.DataModel;
+import org.jboss.seam.annotations.datamodel.DataModelSelection;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.log.Log;
+import org.richfaces.event.UploadEvent;
+import org.richfaces.model.UploadItem;
+
+import be.fedict.eid.dss.admin.portal.control.AdminConstants;
+import be.fedict.eid.dss.admin.portal.control.RP;
+import be.fedict.eid.dss.entity.RPEntity;
+import be.fedict.eid.dss.model.RPService;
 
 @Stateful
 @Name("dssRP")

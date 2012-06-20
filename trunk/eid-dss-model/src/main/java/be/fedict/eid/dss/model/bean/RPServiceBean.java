@@ -18,13 +18,14 @@
 
 package be.fedict.eid.dss.model.bean;
 
-import be.fedict.eid.dss.entity.RPEntity;
-import be.fedict.eid.dss.model.RPService;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.List;
+
+import be.fedict.eid.dss.entity.RPEntity;
+import be.fedict.eid.dss.model.RPService;
 
 @Stateless
 public class RPServiceBean implements RPService {

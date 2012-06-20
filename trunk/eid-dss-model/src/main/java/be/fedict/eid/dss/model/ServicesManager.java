@@ -18,12 +18,13 @@
 
 package be.fedict.eid.dss.model;
 
-import be.fedict.eid.dss.spi.DSSDocumentService;
-import be.fedict.eid.dss.spi.protocol.DigitalSignatureServiceProtocolType;
-
-import javax.ejb.Local;
 import java.util.List;
 import java.util.Map;
+
+import javax.ejb.Local;
+
+import be.fedict.eid.dss.spi.DSSDocumentService;
+import be.fedict.eid.dss.spi.protocol.DigitalSignatureServiceProtocolType;
 
 /**
  * Interface for component that manages the registered different services.

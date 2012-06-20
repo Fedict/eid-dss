@@ -18,6 +18,12 @@
 
 package be.fedict.eid.dss.model.bean;
 
+import java.security.cert.X509Certificate;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import be.fedict.eid.applet.service.signer.facets.RevocationData;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.trust.client.XKMS2Client;
@@ -25,11 +31,6 @@ import be.fedict.trust.client.jaxb.xades132.CRLValuesType;
 import be.fedict.trust.client.jaxb.xades132.EncapsulatedPKIDataType;
 import be.fedict.trust.client.jaxb.xades132.OCSPValuesType;
 import be.fedict.trust.client.jaxb.xades132.RevocationValuesType;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.security.cert.X509Certificate;
-import java.util.List;
 
 public class TrustServiceTimeStampServiceValidator implements
 		TimeStampServiceValidator {

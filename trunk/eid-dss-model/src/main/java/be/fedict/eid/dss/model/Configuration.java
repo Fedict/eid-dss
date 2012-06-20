@@ -18,8 +18,9 @@
 
 package be.fedict.eid.dss.model;
 
-import javax.ejb.Local;
 import java.util.List;
+
+import javax.ejb.Local;
 
 @Local
 public interface Configuration {

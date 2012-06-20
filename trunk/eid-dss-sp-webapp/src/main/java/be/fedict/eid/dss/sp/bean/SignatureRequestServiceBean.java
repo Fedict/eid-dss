@@ -18,18 +18,20 @@
 
 package be.fedict.eid.dss.sp.bean;
 
-import be.fedict.eid.dss.protocol.simple.client.SignatureRequestService;
-import be.fedict.eid.dss.sp.servlet.PkiServlet;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import javax.security.jacc.PolicyContext;
-import javax.security.jacc.PolicyContextException;
-import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.security.KeyStore;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.security.jacc.PolicyContext;
+import javax.security.jacc.PolicyContextException;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import be.fedict.eid.dss.protocol.simple.client.SignatureRequestService;
+import be.fedict.eid.dss.sp.servlet.PkiServlet;
 
 public class SignatureRequestServiceBean implements SignatureRequestService,
 		Serializable {

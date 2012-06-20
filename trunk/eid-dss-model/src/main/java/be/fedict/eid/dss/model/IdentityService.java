@@ -18,12 +18,13 @@
 
 package be.fedict.eid.dss.model;
 
-import be.fedict.eid.dss.model.exception.KeyStoreLoadException;
-
-import javax.ejb.Local;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.List;
+
+import javax.ejb.Local;
+
+import be.fedict.eid.dss.model.exception.KeyStoreLoadException;
 
 /**
  * Interface for the identity service. The identity service maintains the

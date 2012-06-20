@@ -18,6 +18,21 @@
 
 package be.fedict.eid.dss.webapp;
 
+import java.io.IOException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+
+import javax.ejb.EJB;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import be.fedict.eid.dss.control.View;
 import be.fedict.eid.dss.entity.DocumentEntity;
 import be.fedict.eid.dss.entity.RPEntity;
@@ -29,19 +44,6 @@ import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DSSProtocolService;
 import be.fedict.eid.dss.spi.DSSRequest;
 import be.fedict.eid.dss.spi.SignatureStatus;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import javax.ejb.EJB;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
 
 /**
  * The main entry point for DSS protocols. This servlet serves as a broker

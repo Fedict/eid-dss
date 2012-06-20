@@ -18,6 +18,17 @@
 
 package be.fedict.eid.dss.model.bean;
 
+import java.security.cert.X509Certificate;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jboss.ejb3.annotation.LocalBinding;
+
 import be.fedict.eid.applet.service.spi.IdentityIntegrityService;
 import be.fedict.eid.dss.model.ConfigProperty;
 import be.fedict.eid.dss.model.Configuration;
@@ -25,15 +36,6 @@ import be.fedict.eid.dss.model.Constants;
 import be.fedict.eid.dss.model.TrustValidationService;
 import be.fedict.trust.client.XKMS2Client;
 import be.fedict.trust.client.exception.ValidationFailedException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.ejb3.annotation.LocalBinding;
-
-import javax.ejb.EJB;
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import java.security.cert.X509Certificate;
-import java.util.List;
 
 /**
  * eID Applet Service Identity Integrity Service implementation.

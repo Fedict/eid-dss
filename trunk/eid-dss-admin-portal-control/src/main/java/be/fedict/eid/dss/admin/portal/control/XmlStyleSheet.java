@@ -37,7 +37,7 @@ public interface XmlStyleSheet {
 	String add();
 
 	void delete();
-	
+
 	String view();
 
 	/*

@@ -18,22 +18,24 @@
 
 package be.fedict.eid.dss.webapp;
 
-import be.fedict.eid.dss.model.IdentityService;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.bouncycastle.openssl.PEMWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.security.KeyStore;
+import java.security.cert.Certificate;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.security.KeyStore;
-import java.security.cert.Certificate;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.openssl.PEMWriter;
+
+import be.fedict.eid.dss.model.IdentityService;
 
 /**
  * Identity servlet exposing the full certificate chain of the active eID DSS's

@@ -18,7 +18,13 @@
 
 package test.unit.be.fedict.eid.dss.entity;
 
-import be.fedict.eid.dss.entity.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.ejb.Ejb3Configuration;
@@ -26,12 +32,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import be.fedict.eid.dss.entity.AccountingEntity;
+import be.fedict.eid.dss.entity.AdministratorEntity;
+import be.fedict.eid.dss.entity.ConfigPropertyEntity;
+import be.fedict.eid.dss.entity.DocumentEntity;
+import be.fedict.eid.dss.entity.RPEntity;
 
 public class PersistenceTest {
 

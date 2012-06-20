@@ -18,10 +18,12 @@
 
 package be.fedict.eid.dss.admin.portal.control.bean;
 
-import be.fedict.eid.dss.admin.portal.control.AdminConstants;
-import be.fedict.eid.dss.admin.portal.control.Admins;
-import be.fedict.eid.dss.entity.AdministratorEntity;
-import be.fedict.eid.dss.model.AdministratorManager;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Remove;
+import javax.ejb.Stateful;
+
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Factory;
@@ -31,10 +33,10 @@ import org.jboss.seam.annotations.datamodel.DataModel;
 import org.jboss.seam.annotations.datamodel.DataModelSelection;
 import org.jboss.seam.log.Log;
 
-import javax.ejb.EJB;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-import java.util.List;
+import be.fedict.eid.dss.admin.portal.control.AdminConstants;
+import be.fedict.eid.dss.admin.portal.control.Admins;
+import be.fedict.eid.dss.entity.AdministratorEntity;
+import be.fedict.eid.dss.model.AdministratorManager;
 
 @Stateful
 @Name("dssAdmins")

@@ -18,8 +18,37 @@
 
 package be.fedict.eid.dss.document.zip;
 
-import be.fedict.eid.applet.service.signer.*;
-import be.fedict.eid.applet.service.signer.facets.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import javax.xml.crypto.URIDereferencer;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.xml.security.utils.Constants;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
+import be.fedict.eid.applet.service.signer.AbstractXmlSignatureService;
+import be.fedict.eid.applet.service.signer.DigestAlgo;
+import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
+import be.fedict.eid.applet.service.signer.SignatureFacet;
+import be.fedict.eid.applet.service.signer.TemporaryDataStorage;
+import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.KeyInfoSignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
+import be.fedict.eid.applet.service.signer.facets.XAdESSignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.XAdESXLSignatureFacet;
 import be.fedict.eid.applet.service.signer.odf.ODFUtil;
 import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.spi.AddressDTO;
@@ -27,20 +56,6 @@ import be.fedict.eid.applet.service.spi.DigestInfo;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureServiceEx;
 import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
-import org.apache.commons.io.IOUtils;
-import org.apache.xml.security.utils.Constants;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
-import javax.xml.crypto.URIDereferencer;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * Signature service implementation for ZIP containers. We basically use the ODF

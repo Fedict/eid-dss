@@ -18,15 +18,20 @@
 
 package be.fedict.eid.dss.model.bean;
 
-import be.fedict.eid.dss.model.*;
-import be.fedict.eid.dss.spi.DSSDocumentContext;
-import org.bouncycastle.ocsp.OCSPResp;
-import org.bouncycastle.tsp.TimeStampToken;
-
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
+
+import org.bouncycastle.ocsp.OCSPResp;
+import org.bouncycastle.tsp.TimeStampToken;
+
+import be.fedict.eid.dss.model.ConfigProperty;
+import be.fedict.eid.dss.model.Configuration;
+import be.fedict.eid.dss.model.TrustValidationService;
+import be.fedict.eid.dss.model.XmlSchemaManager;
+import be.fedict.eid.dss.model.XmlStyleSheetManager;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
 
 /**
  * Implementation of DSS document context.

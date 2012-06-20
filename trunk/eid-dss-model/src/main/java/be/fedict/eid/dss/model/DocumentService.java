@@ -18,13 +18,14 @@
 
 package be.fedict.eid.dss.model;
 
+import javax.ejb.Local;
+import javax.ejb.Timer;
+
+import org.joda.time.DateTime;
+
 import be.fedict.eid.dss.entity.DocumentEntity;
 import be.fedict.eid.dss.model.exception.DocumentNotFoundException;
 import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
-import org.joda.time.DateTime;
-
-import javax.ejb.Local;
-import javax.ejb.Timer;
 
 /**
  * Interface for the document service. The document service maintains the

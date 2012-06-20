@@ -18,12 +18,13 @@
 
 package be.fedict.eid.dss.spi;
 
+import java.io.Serializable;
+import java.security.cert.X509Certificate;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.Serializable;
-import java.security.cert.X509Certificate;
 
 /**
  * Interface for Digital Signature Service protocol components. Protocol service

@@ -18,10 +18,10 @@
 
 package be.fedict.eid.dss.webapp;
 
+import java.security.KeyStore.PrivateKeyEntry;
+
 import be.fedict.eid.dss.model.IdentityService;
 import be.fedict.eid.dss.spi.DSSProtocolContext;
-
-import java.security.KeyStore.PrivateKeyEntry;
 
 /**
  * Implementation of the DSS Protocol Context.

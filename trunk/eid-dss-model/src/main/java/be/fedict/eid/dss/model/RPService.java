@@ -18,10 +18,11 @@
 
 package be.fedict.eid.dss.model;
 
-import be.fedict.eid.dss.entity.RPEntity;
+import java.util.List;
 
 import javax.ejb.Local;
-import java.util.List;
+
+import be.fedict.eid.dss.entity.RPEntity;
 
 /**
  * Interface for managing the Relying Parties.

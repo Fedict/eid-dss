@@ -36,7 +36,7 @@ public interface XmlSchema {
 	String add();
 
 	void delete();
-	
+
 	String view();
 
 	/*

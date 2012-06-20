@@ -1,5 +1,5 @@
 /*
- * eID Identity Provider Project.
+ * eID Digital Signature Service Project.
  * Copyright (C) 2010 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
@@ -18,7 +18,6 @@
 
 package be.fedict.eid.dss.entity;
 
-import javax.persistence.*;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -27,6 +26,22 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.List;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Relying Party (RP) entity.

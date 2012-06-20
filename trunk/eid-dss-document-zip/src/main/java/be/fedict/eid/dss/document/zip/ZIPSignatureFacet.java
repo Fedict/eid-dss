@@ -18,16 +18,6 @@
 
 package be.fedict.eid.dss.document.zip;
 
-import be.fedict.eid.applet.service.signer.DigestAlgo;
-import be.fedict.eid.applet.service.signer.SignatureFacet;
-import be.fedict.eid.applet.service.signer.odf.ODFUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import javax.xml.crypto.dsig.DigestMethod;
-import javax.xml.crypto.dsig.Reference;
-import javax.xml.crypto.dsig.XMLObject;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,6 +29,18 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import javax.xml.crypto.dsig.DigestMethod;
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.XMLObject;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import be.fedict.eid.applet.service.signer.DigestAlgo;
+import be.fedict.eid.applet.service.signer.SignatureFacet;
+import be.fedict.eid.applet.service.signer.odf.ODFUtil;
 
 public class ZIPSignatureFacet implements SignatureFacet {
 
