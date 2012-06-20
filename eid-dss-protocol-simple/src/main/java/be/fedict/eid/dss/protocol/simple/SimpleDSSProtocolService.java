@@ -18,18 +18,13 @@
 
 package be.fedict.eid.dss.protocol.simple;
 
-import be.fedict.eid.dss.spi.*;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -37,6 +32,21 @@ import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import be.fedict.eid.dss.spi.BrowserPOSTResponse;
+import be.fedict.eid.dss.spi.DSSProtocolContext;
+import be.fedict.eid.dss.spi.DSSProtocolService;
+import be.fedict.eid.dss.spi.DSSRequest;
+import be.fedict.eid.dss.spi.SignatureStatus;
 
 /**
  * Implementation of a very simple DSS protocol.

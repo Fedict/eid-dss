@@ -18,6 +18,11 @@
 
 package be.fedict.eid.dss.spi;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.List;
+
 import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
@@ -25,11 +30,6 @@ import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureServiceEx;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * Document Service interface. A document service interface knows all about a

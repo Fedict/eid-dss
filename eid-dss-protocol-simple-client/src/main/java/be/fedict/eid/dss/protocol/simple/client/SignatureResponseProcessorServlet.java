@@ -18,12 +18,7 @@
 
 package be.fedict.eid.dss.protocol.simple.client;
 
-import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
-import be.fedict.eid.dss.client.DocumentNotFoundException;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.IOException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -31,7 +26,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
+
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
+import be.fedict.eid.dss.client.DocumentNotFoundException;
 
 /**
  * Processes the response from the eID DSS simple protocol.

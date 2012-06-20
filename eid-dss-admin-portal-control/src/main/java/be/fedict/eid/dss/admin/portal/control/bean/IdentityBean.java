@@ -18,25 +18,33 @@
 
 package be.fedict.eid.dss.admin.portal.control.bean;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Remove;
+import javax.ejb.Stateful;
+import javax.faces.model.SelectItem;
+
+import org.jboss.ejb3.annotation.LocalBinding;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Create;
+import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.Factory;
+import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Logger;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Out;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
+import org.jboss.seam.log.Log;
+
 import be.fedict.eid.dss.admin.portal.control.AdminConstants;
 import be.fedict.eid.dss.admin.portal.control.Identity;
 import be.fedict.eid.dss.model.DSSIdentityConfig;
 import be.fedict.eid.dss.model.IdentityService;
 import be.fedict.eid.dss.model.KeyStoreType;
 import be.fedict.eid.dss.model.exception.KeyStoreLoadException;
-import org.jboss.ejb3.annotation.LocalBinding;
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.*;
-import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.international.StatusMessage;
-import org.jboss.seam.log.Log;
-
-import javax.ejb.EJB;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-import javax.faces.model.SelectItem;
-import java.util.LinkedList;
-import java.util.List;
 
 @Stateful
 @Name("dssIdentity")

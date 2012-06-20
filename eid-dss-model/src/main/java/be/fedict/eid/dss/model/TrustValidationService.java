@@ -18,17 +18,6 @@
 
 package be.fedict.eid.dss.model;
 
-import be.fedict.trust.client.XKMS2Client;
-import be.fedict.trust.client.exception.RevocationDataNotFoundException;
-import be.fedict.trust.client.exception.TrustDomainNotFoundException;
-import be.fedict.trust.client.exception.ValidationFailedException;
-
-import org.bouncycastle.cms.CMSException;
-import org.bouncycastle.ocsp.OCSPResp;
-import org.bouncycastle.tsp.TimeStampToken;
-
-import javax.ejb.Local;
-
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertStoreException;
@@ -37,6 +26,17 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.List;
+
+import javax.ejb.Local;
+
+import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.ocsp.OCSPResp;
+import org.bouncycastle.tsp.TimeStampToken;
+
+import be.fedict.trust.client.XKMS2Client;
+import be.fedict.trust.client.exception.RevocationDataNotFoundException;
+import be.fedict.trust.client.exception.TrustDomainNotFoundException;
+import be.fedict.trust.client.exception.ValidationFailedException;
 
 /**
  * Interface for trust validation service component.

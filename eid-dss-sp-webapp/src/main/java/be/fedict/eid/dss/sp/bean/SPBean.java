@@ -18,21 +18,22 @@
 
 package be.fedict.eid.dss.sp.bean;
 
+import java.util.Random;
+import java.util.UUID;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.util.encoders.Base64;
+
 import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
 import be.fedict.eid.dss.client.StorageInfoDO;
 import be.fedict.eid.dss.protocol.simple.client.ServiceSignatureDO;
 import be.fedict.eid.dss.protocol.simple.client.SignatureRequestUtil;
 import be.fedict.eid.dss.sp.servlet.PkiServlet;
 import be.fedict.eid.dss.sp.servlet.UploadServlet;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.bouncycastle.util.encoders.Base64;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.Random;
-import java.util.UUID;
 
 public class SPBean {
 

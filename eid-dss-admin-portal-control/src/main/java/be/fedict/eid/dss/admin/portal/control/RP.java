@@ -18,11 +18,12 @@
 
 package be.fedict.eid.dss.admin.portal.control;
 
-import org.richfaces.event.UploadEvent;
-
-import javax.ejb.Local;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import javax.ejb.Local;
+
+import org.richfaces.event.UploadEvent;
 
 @Local
 public interface RP {

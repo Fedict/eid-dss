@@ -18,18 +18,19 @@
 
 package be.fedict.eid.dss.model.bean;
 
+import javax.ejb.Local;
+import javax.ejb.Stateless;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jboss.ejb3.annotation.LocalBinding;
+
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.spi.IdentityRequest;
 import be.fedict.eid.applet.service.spi.IdentityService;
 import be.fedict.eid.dss.model.Constants;
 import be.fedict.eid.dss.model.DocumentRepository;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jboss.ejb3.annotation.LocalBinding;
-
-import javax.ejb.Local;
-import javax.ejb.Stateless;
-import javax.servlet.http.HttpSession;
 
 @Stateless
 @Local(IdentityService.class)

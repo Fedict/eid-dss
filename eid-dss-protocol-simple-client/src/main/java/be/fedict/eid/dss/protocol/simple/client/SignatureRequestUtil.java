@@ -18,6 +18,19 @@
 
 package be.fedict.eid.dss.protocol.simple.client;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.cert.CertificateEncodingException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,14 +39,6 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.log.JdkLogChute;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.security.*;
-import java.security.cert.CertificateEncodingException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * Utility class for sending out DSS Simple Protocol Signature Requests.

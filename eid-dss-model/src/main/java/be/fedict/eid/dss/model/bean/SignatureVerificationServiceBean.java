@@ -63,7 +63,8 @@ public class SignatureVerificationServiceBean implements
 
 		List<SignatureInfo> signatureInfos;
 		try {
-			signatureInfos = documentService.verifySignatures(data, originalData);
+			signatureInfos = documentService.verifySignatures(data,
+					originalData);
 		} catch (Exception e) {
 			LOG.error("error verifying signatures: " + e.getMessage(), e);
 			throw new InvalidSignatureException();

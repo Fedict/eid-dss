@@ -18,6 +18,19 @@
 
 package be.fedict.eid.dss.document.ooxml;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+
 import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
@@ -33,14 +46,6 @@ import be.fedict.eid.applet.service.spi.DigestInfo;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureServiceEx;
 import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
-import org.apache.commons.io.IOUtils;
-
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.List;
 
 public class OOXMLSignatureService extends AbstractOOXMLSignatureService
 		implements SignatureServiceEx {

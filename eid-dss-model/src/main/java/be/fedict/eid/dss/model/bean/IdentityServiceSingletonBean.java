@@ -18,28 +18,34 @@
 
 package be.fedict.eid.dss.model.bean;
 
-import be.fedict.eid.dss.model.ConfigProperty;
-import be.fedict.eid.dss.model.Configuration;
-import be.fedict.eid.dss.model.DSSIdentityConfig;
-import be.fedict.eid.dss.model.KeyStoreType;
-import be.fedict.eid.dss.model.exception.KeyStoreLoadException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import sun.security.pkcs11.SunPKCS11;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStore.PrivateKeyEntry;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Security;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
+import java.util.Enumeration;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.security.*;
-import java.security.KeyStore.PrivateKeyEntry;
-import java.security.cert.CertificateException;
-import java.util.Enumeration;
-import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import sun.security.pkcs11.SunPKCS11;
+import be.fedict.eid.dss.model.ConfigProperty;
+import be.fedict.eid.dss.model.Configuration;
+import be.fedict.eid.dss.model.DSSIdentityConfig;
+import be.fedict.eid.dss.model.KeyStoreType;
+import be.fedict.eid.dss.model.exception.KeyStoreLoadException;
 
 @Singleton
 @Startup

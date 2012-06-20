@@ -18,17 +18,19 @@
 
 package be.fedict.eid.dss.webapp;
 
-import be.fedict.eid.dss.model.DocumentService;
-import be.fedict.eid.dss.model.ServicesManager;
-import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import be.fedict.eid.dss.model.DocumentService;
+import be.fedict.eid.dss.model.ServicesManager;
+import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
 
 /**
  * Startup servlet component. This servlet context listener boots up the eID DSS

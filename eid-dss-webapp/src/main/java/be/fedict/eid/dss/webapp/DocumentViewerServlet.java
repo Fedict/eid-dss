@@ -18,20 +18,22 @@
 
 package be.fedict.eid.dss.webapp;
 
-import be.fedict.eid.dss.control.View;
-import be.fedict.eid.dss.model.DocumentRepository;
-import be.fedict.eid.dss.spi.DSSDocumentService;
-import be.fedict.eid.dss.spi.DocumentVisualization;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import be.fedict.eid.dss.control.View;
+import be.fedict.eid.dss.model.DocumentRepository;
+import be.fedict.eid.dss.spi.DSSDocumentService;
+import be.fedict.eid.dss.spi.DocumentVisualization;
 
 /**
  * A servlet for visualizing a document.

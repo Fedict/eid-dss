@@ -18,13 +18,18 @@
 
 package be.fedict.eid.dss.sp;
 
-import be.fedict.eid.dss.sp.bean.SignatureRequestServiceBean;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.naming.*;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import be.fedict.eid.dss.sp.bean.SignatureRequestServiceBean;
 
 public class StartupServletContextListener implements ServletContextListener {
 

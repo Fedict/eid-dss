@@ -18,22 +18,30 @@
 
 package be.fedict.eid.dss.model.bean;
 
+import java.util.Collection;
+
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.ejb.ScheduleExpression;
+import javax.ejb.Stateless;
+import javax.ejb.Timeout;
+import javax.ejb.Timer;
+import javax.ejb.TimerConfig;
+import javax.ejb.TimerService;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+import org.joda.time.chrono.ISOChronology;
+
 import be.fedict.eid.dss.entity.DocumentEntity;
 import be.fedict.eid.dss.model.ConfigProperty;
 import be.fedict.eid.dss.model.Configuration;
 import be.fedict.eid.dss.model.DocumentService;
 import be.fedict.eid.dss.model.exception.DocumentNotFoundException;
 import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-import org.joda.time.chrono.ISOChronology;
-
-import javax.annotation.Resource;
-import javax.ejb.*;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.Collection;
 
 @Stateless
 public class DocumentServiceBean implements DocumentService {

@@ -19,9 +19,11 @@
 
 package be.fedict.eid.dss.admin.portal.control.bean;
 
-import be.fedict.eid.dss.admin.portal.control.AdminConstants;
-import be.fedict.eid.dss.admin.portal.control.Authenticator;
-import be.fedict.eid.dss.model.AdministratorManager;
+import java.security.cert.X509Certificate;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.ejb3.annotation.LocalBinding;
@@ -31,9 +33,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.security.Credentials;
 import org.jboss.seam.security.Identity;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import java.security.cert.X509Certificate;
+import be.fedict.eid.dss.admin.portal.control.AdminConstants;
+import be.fedict.eid.dss.admin.portal.control.Authenticator;
+import be.fedict.eid.dss.model.AdministratorManager;
 
 @Name("authenticator")
 @Stateless

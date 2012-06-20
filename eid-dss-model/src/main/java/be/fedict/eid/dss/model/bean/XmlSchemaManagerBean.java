@@ -18,15 +18,11 @@
 
 package be.fedict.eid.dss.model.bean;
 
-import be.fedict.eid.dss.entity.XmlSchemaEntity;
-import be.fedict.eid.dss.model.XmlSchemaManager;
-import be.fedict.eid.dss.model.exception.ExistingXmlSchemaException;
-import be.fedict.eid.dss.model.exception.InvalidXmlSchemaException;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -36,11 +32,17 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.LinkedList;
-import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import be.fedict.eid.dss.entity.XmlSchemaEntity;
+import be.fedict.eid.dss.model.XmlSchemaManager;
+import be.fedict.eid.dss.model.exception.ExistingXmlSchemaException;
+import be.fedict.eid.dss.model.exception.InvalidXmlSchemaException;
 
 @Stateless
 public class XmlSchemaManagerBean implements XmlSchemaManager {

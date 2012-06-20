@@ -18,21 +18,23 @@
 
 package be.fedict.eid.dss.model.bean;
 
-import be.fedict.eid.dss.model.DSSIdentityConfig;
-import be.fedict.eid.dss.model.IdentityService;
-import be.fedict.eid.dss.model.exception.KeyStoreLoadException;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import be.fedict.eid.dss.model.DSSIdentityConfig;
+import be.fedict.eid.dss.model.IdentityService;
+import be.fedict.eid.dss.model.exception.KeyStoreLoadException;
 
 @Stateless
 public class IdentityServiceBean implements IdentityService {

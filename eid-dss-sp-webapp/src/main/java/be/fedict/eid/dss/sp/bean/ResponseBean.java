@@ -18,15 +18,17 @@
 
 package be.fedict.eid.dss.sp.bean;
 
-import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
-import be.fedict.eid.dss.client.NotParseableXMLDocumentException;
-import be.fedict.eid.dss.client.SignatureInfo;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.List;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
+import be.fedict.eid.dss.client.NotParseableXMLDocumentException;
+import be.fedict.eid.dss.client.SignatureInfo;
 
 public class ResponseBean {
 
