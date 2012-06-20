@@ -4,7 +4,8 @@
 	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
-	xmlns:s="http://jboss.com/products/seam/taglib">
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:rich="http://richfaces.org/rich">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <meta http-equiv="Content-Script-Type" content="text/javascript" />
@@ -19,89 +20,72 @@
 
 <body>
 
-<div id="header">
+	<div id="header">
+		<div id="logo">
+			<h:graphicImage id="logo" alt="Fedict Logo" height="45"
+				url="/images/fedict.png" />
+		</div>
+		<h1>eID Digital Signature Service Admin Portal</h1>
+	</div>
 
-<div id="logo"><h:graphicImage id="logo" alt="Fedict Logo"
-	height="45" url="/images/fedict.png" /></div>
+	<f:view contentType="text/html">
 
-<h1>eID Digital Signature Service Admin Portal</h1>
-
-</div>
-
-<f:view>
-	<h:form>
 		<div id="menu">
-		<div id="menu-content">
-		<ul>
-			<s:div rendered="#{!identity.isLoggedIn()}">
-				<li id="menu_item_main"><a
-					href="#{facesContext.externalContext.requestContextPath}/main.seam">Home</a></li>
-			</s:div>
-
-			<s:div rendered="#{!identity.isLoggedIn()}">
-				<li id="menu_item_login"><a
-					href="#{facesContext.externalContext.requestContextPath}/admin/main.seam">Login</a></li>
-			</s:div>
-
-			<s:div rendered="#{identity.isLoggedIn()}">
-				<li id="menu_item_main"><a
-					href="#{facesContext.externalContext.requestContextPath}/admin/main.seam">Home</a></li>
-			</s:div>
-
-			<s:div rendered="#{identity.isLoggedIn()}">
-				<li id="menu_item_config"><a
-					href="#{facesContext.externalContext.requestContextPath}/admin/config.seam">Config</a></li>
-			</s:div>
-
-            <s:div rendered="#{identity.isLoggedIn()}">
-                <li id="menu_item_identity"><a
-                    href="#{facesContext.externalContext.requestContextPath}/admin/identity.seam">Identity</a></li>
-            </s:div>
-
-            <s:div rendered="#{identity.isLoggedIn()}">
-                <li id="menu_item_rps"><a
-                    href="#{facesContext.externalContext.requestContextPath}/admin/rps.seam">Relying Parties</a></li>
-            </s:div>
-
-			<s:div rendered="#{identity.isLoggedIn()}">
-				<li id="menu_item_xml"><a
-					href="#{facesContext.externalContext.requestContextPath}/admin/xml.seam">XML</a></li>
-			</s:div>
-
-			<s:div rendered="#{identity.isLoggedIn()}">
-				<li id="menu_item_admins"><a
-					href="#{facesContext.externalContext.requestContextPath}/admin/admins.seam">Admins</a></li>
-			</s:div>
-
-            <s:div rendered="#{identity.isLoggedIn()}">
-                <li id="menu_item_accounting"><a
-                        href="#{facesContext.externalContext.requestContextPath}/admin/accounting.seam">Accounting</a>
-                </li>
-            </s:div>
-
-			<s:div rendered="#{identity.isLoggedIn()}">
-				<li><s:link value="Logout" view="/main.xhtml"
-					action="#{identity.logout}" /></li>
-			</s:div>
-		</ul>
+			<div id="menuPanel">
+				<h:form>
+					<rich:panelMenu value="#{dssMenuController.selectedChild}">
+						<rich:panelMenuItem label="Home" action="/main.xhtml"
+							rendered="#{!identity.isLoggedIn()}" />
+						<rich:panelMenuItem label="Login" action="/admin/main.xhtml"
+							rendered="#{!identity.isLoggedIn()}" />
+						<rich:panelMenuItem label="Home" action="/admin/main.xhtml"
+							rendered="#{identity.isLoggedIn()}" />
+						<rich:panelMenuItem label="Configuration"
+							action="/admin/config.xhtml" rendered="#{s:hasRole('admin')}" />
+						<rich:panelMenuItem label="Service Identity"
+							action="/admin/identity.xhtml" rendered="#{s:hasRole('admin')}" />
+						<rich:panelMenuItem label="Relying Parties"
+							action="/admin/rps.xhtml" rendered="#{s:hasRole('admin')}" />
+						<rich:panelMenuItem label="XML" action="/admin/xml.xhtml"
+							rendered="#{s:hasRole('admin')}" />
+						<rich:panelMenuItem label="Privileges"
+							action="/admin/admins.xhtml" rendered="#{s:hasRole('admin')}" />
+						<rich:panelMenuItem label="Accounting"
+							action="/admin/accounting.xhtml" rendered="#{s:hasRole('admin')}" />
+						<rich:panelMenuItem label="About" action="/admin/about.xhtml"
+							rendered="#{s:hasRole('admin')}" />
+					</rich:panelMenu>
+				</h:form>
+			</div>
 		</div>
+
+		<div id="login">
+			<s:div rendered="#{identity.isLoggedIn()}" id="loginPanel">
+				<h:panelGrid columns="2">
+					<s:graphicImage value="#{eid.photo}" />
+					<h:panelGroup>
+						<h:panelGrid columns="1">
+							<h:outputText
+								value="#{eid.identity.firstName} #{eid.identity.name}" />
+							<h:outputText value="#{eid.identity.dateOfBirth.time}">
+								<f:convertDateTime timeZone="Europe/Paris" dateStyle="default"
+									type="date" />
+							</h:outputText>
+						</h:panelGrid>
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:form>
+					<h:commandButton value="Logout" action="#{identity.logout()}" />
+				</h:form>
+			</s:div>
 		</div>
-	</h:form>
 
-	<script type="text/javascript">
-	function setClass(id, className) {
-		obj = document.getElementById(id);
-		if (null != obj) {
-			obj.className = className;
-		}
-	}
-	setClass("menu_item_#{activeMenu}", "selected");
-</script>
-
-	<div id="content"><ui:insert name="body">
-		<p>Default Body</p>
-	</ui:insert></div>
-</f:view>
+		<div id="content">
+			<ui:insert name="body">
+				<p>Default Body</p>
+			</ui:insert>
+		</div>
+	</f:view>
 
 </body>
 

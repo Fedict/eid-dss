@@ -8,6 +8,10 @@
 	<application>
 		<view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
 	</application>
+	
+	<lifecycle>
+		<phase-listener>be.fedict.eid.dss.admin.portal.SessionTimeoutPhaseListener</phase-listener>
+	</lifecycle>
 
 	<converter>
 		<converter-id>ByteArrayConverter</converter-id>

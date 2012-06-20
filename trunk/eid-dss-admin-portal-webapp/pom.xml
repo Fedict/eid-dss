@@ -70,7 +70,7 @@
 							<filtering>true</filtering>
 							<includes>
 								<include>login.xhtml</include>
-								<include>admin/main.xhtml</include>
+								<include>admin/about.xhtml</include>
 							</includes>
 						</resource>
 					</webResources>
