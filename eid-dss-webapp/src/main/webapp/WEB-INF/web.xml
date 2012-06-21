@@ -184,6 +184,20 @@
         <servlet-name>ProtocolExitServlet</servlet-name>
         <url-pattern>/protocol-exit</url-pattern>
     </servlet-mapping>
+    
+    <!-- HSTS filter -->
+    <filter>
+    	<filter-name>HSTSFilter</filter-name>
+    	<filter-class>be.fedict.eid.applet.service.HSTSFilter</filter-class>
+    	<init-param>
+    		<param-name>TransportService</param-name>
+    		<param-value>be/fedict/eid/dss/TransportServiceBean</param-value>
+    	</init-param>
+    </filter>
+    <filter-mapping>
+    	<filter-name>HSTSFilter</filter-name>
+    	<servlet-name>ProtocolEntryServlet</servlet-name>
+    </filter-mapping>
 
     <!-- eID Identity Servlet -->
     <servlet>

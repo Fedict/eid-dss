@@ -119,6 +119,9 @@
 						<h:panelGrid columns="2">
 							<h:outputText value="Remove eID Card" />
 							<h:selectBooleanCheckbox value="#{dssConfig.removeCard}" />
+
+							<h:outputText value="HTTP Strict Transport Security" />
+							<h:selectBooleanCheckbox value="#{dssConfig.hsts}" />
 						</h:panelGrid>
 						<h:commandButton value="Save" action="#{dssConfig.save}" />
 					</rich:tab>

@@ -70,7 +70,8 @@ public enum ConfigProperty {
 			String.class), MAIL_PREFIX("mail-prefix", String.class), MAIL_SIGNED_DOCUMENT(
 			"mail-signed-document", Boolean.class),
 
-	SECURITY_REMOVE_CARD("security-remove-card", Boolean.class);
+	SECURITY_REMOVE_CARD("security-remove-card", Boolean.class), SECURITY_HSTS(
+			"security-hsts", Boolean.class);
 
 	private final String name;
 

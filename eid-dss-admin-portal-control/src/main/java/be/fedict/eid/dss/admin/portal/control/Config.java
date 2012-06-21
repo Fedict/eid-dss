@@ -118,6 +118,10 @@ public interface Config {
 
 	void setRemoveCard(Boolean removeCard);
 
+	Boolean getHsts();
+
+	void setHsts(Boolean hsts);
+
 	/*
 	 * Actions.
 	 */
