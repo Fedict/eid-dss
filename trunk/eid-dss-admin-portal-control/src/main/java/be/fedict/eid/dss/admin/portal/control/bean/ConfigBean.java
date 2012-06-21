@@ -100,6 +100,8 @@ public class ConfigBean implements Config {
 
 	private Boolean removeCard;
 
+	private Boolean hsts;
+
 	@Override
 	@PostConstruct
 	public void postConstruct() {
@@ -154,6 +156,8 @@ public class ConfigBean implements Config {
 
 		this.removeCard = this.configuration.getValue(
 				ConfigProperty.SECURITY_REMOVE_CARD, Boolean.class);
+		this.hsts = this.configuration.getValue(ConfigProperty.SECURITY_HSTS,
+				Boolean.class);
 	}
 
 	@Remove
@@ -225,6 +229,7 @@ public class ConfigBean implements Config {
 
 		this.configuration.setValue(ConfigProperty.SECURITY_REMOVE_CARD,
 				this.removeCard);
+		this.configuration.setValue(ConfigProperty.SECURITY_HSTS, this.hsts);
 
 		return null;
 	}
@@ -448,5 +453,15 @@ public class ConfigBean implements Config {
 	@Override
 	public void setRemoveCard(Boolean removeCard) {
 		this.removeCard = removeCard;
+	}
+
+	@Override
+	public Boolean getHsts() {
+		return this.hsts;
+	}
+
+	@Override
+	public void setHsts(Boolean hsts) {
+		this.hsts = hsts;
 	}
 }
