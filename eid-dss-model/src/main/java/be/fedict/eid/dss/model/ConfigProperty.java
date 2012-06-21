@@ -68,7 +68,9 @@ public enum ConfigProperty {
 
 	SMTP_SERVER("smtp-server", String.class), MAIL_FROM("mail-from",
 			String.class), MAIL_PREFIX("mail-prefix", String.class), MAIL_SIGNED_DOCUMENT(
-			"mail-signed-document", Boolean.class);
+			"mail-signed-document", Boolean.class),
+
+	SECURITY_REMOVE_CARD("security-remove-card", Boolean.class);
 
 	private final String name;
 

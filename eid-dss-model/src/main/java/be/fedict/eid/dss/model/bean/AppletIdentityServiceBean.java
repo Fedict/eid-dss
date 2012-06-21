@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.model.bean;
 
+import javax.ejb.EJB;
 import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.servlet.http.HttpSession;
@@ -29,6 +30,8 @@ import org.jboss.ejb3.annotation.LocalBinding;
 import be.fedict.eid.applet.service.signer.HttpSessionTemporaryDataStorage;
 import be.fedict.eid.applet.service.spi.IdentityRequest;
 import be.fedict.eid.applet.service.spi.IdentityService;
+import be.fedict.eid.dss.model.ConfigProperty;
+import be.fedict.eid.dss.model.Configuration;
 import be.fedict.eid.dss.model.Constants;
 import be.fedict.eid.dss.model.DocumentRepository;
 
@@ -40,6 +43,9 @@ public class AppletIdentityServiceBean implements IdentityService {
 
 	private static final Log LOG = LogFactory
 			.getLog(AppletIdentityServiceBean.class);
+
+	@EJB
+	private Configuration configuration;
 
 	public IdentityRequest getIdentityRequest() {
 
@@ -57,6 +63,13 @@ public class AppletIdentityServiceBean implements IdentityService {
 			includePhoto = false;
 		}
 		LOG.debug("include identity: " + includeIdentity);
-		return new IdentityRequest(includeIdentity, false, includePhoto, true);
+		Boolean removeCard = this.configuration.getValue(
+				ConfigProperty.SECURITY_REMOVE_CARD, Boolean.class);
+		if (null == removeCard) {
+			removeCard = false;
+		}
+		LOG.debug("remove card: " + removeCard);
+		return new IdentityRequest(includeIdentity, false, includePhoto, true,
+				removeCard);
 	}
 }

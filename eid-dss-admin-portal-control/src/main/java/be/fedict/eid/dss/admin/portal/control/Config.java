@@ -114,6 +114,10 @@ public interface Config {
 
 	void setMailPrefix(String mailPrefix);
 
+	Boolean getRemoveCard();
+
+	void setRemoveCard(Boolean removeCard);
+
 	/*
 	 * Actions.
 	 */

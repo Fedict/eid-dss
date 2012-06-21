@@ -98,6 +98,8 @@ public class ConfigBean implements Config {
 
 	private String mailPrefix;
 
+	private Boolean removeCard;
+
 	@Override
 	@PostConstruct
 	public void postConstruct() {
@@ -149,6 +151,9 @@ public class ConfigBean implements Config {
 				String.class);
 		this.mailPrefix = this.configuration.getValue(
 				ConfigProperty.MAIL_PREFIX, String.class);
+
+		this.removeCard = this.configuration.getValue(
+				ConfigProperty.SECURITY_REMOVE_CARD, Boolean.class);
 	}
 
 	@Remove
@@ -217,6 +222,9 @@ public class ConfigBean implements Config {
 		this.configuration.setValue(ConfigProperty.MAIL_FROM, this.mailFrom);
 		this.configuration
 				.setValue(ConfigProperty.MAIL_PREFIX, this.mailPrefix);
+
+		this.configuration.setValue(ConfigProperty.SECURITY_REMOVE_CARD,
+				this.removeCard);
 
 		return null;
 	}
@@ -430,5 +438,15 @@ public class ConfigBean implements Config {
 	@Override
 	public void setMailPrefix(String mailPrefix) {
 		this.mailPrefix = mailPrefix;
+	}
+
+	@Override
+	public Boolean getRemoveCard() {
+		return this.removeCard;
+	}
+
+	@Override
+	public void setRemoveCard(Boolean removeCard) {
+		this.removeCard = removeCard;
 	}
 }

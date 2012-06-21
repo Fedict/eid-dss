@@ -115,6 +115,14 @@
 						<h:commandButton value="Save" action="#{dssConfig.save}" />
 					</rich:tab>
 
+					<rich:tab label="Security">
+						<h:panelGrid columns="2">
+							<h:outputText value="Remove eID Card" />
+							<h:selectBooleanCheckbox value="#{dssConfig.removeCard}" />
+						</h:panelGrid>
+						<h:commandButton value="Save" action="#{dssConfig.save}" />
+					</rich:tab>
+
 				</rich:tabPanel>
 
 			</h:form>
