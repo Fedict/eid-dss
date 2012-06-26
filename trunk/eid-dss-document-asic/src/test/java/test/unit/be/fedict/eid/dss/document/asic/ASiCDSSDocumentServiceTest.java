@@ -151,7 +151,7 @@ public class ASiCDSSDocumentServiceTest {
 		// verify
 		assertNotNull(result);
 		LOG.debug("browser content-type: " + result.getBrowserContentType());
-		assertEquals("text/html", result.getBrowserContentType());
+		assertEquals("text/html;charset=utf-8", result.getBrowserContentType());
 		String content = new String(result.getBrowserData());
 		LOG.debug("content: " + content);
 		Tidy tidy = new Tidy();
@@ -180,7 +180,7 @@ public class ASiCDSSDocumentServiceTest {
 		// verify
 		assertNotNull(result);
 		LOG.debug("browser content-type: " + result.getBrowserContentType());
-		assertEquals("text/html", result.getBrowserContentType());
+		assertEquals("text/html;charset=utf-8", result.getBrowserContentType());
 		String content = new String(result.getBrowserData());
 		LOG.debug("content: " + content);
 		Tidy tidy = new Tidy();
