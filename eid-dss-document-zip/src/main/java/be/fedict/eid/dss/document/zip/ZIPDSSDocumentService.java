@@ -22,6 +22,7 @@ package be.fedict.eid.dss.document.zip;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLDecoder;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -95,6 +96,8 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 		StringBuffer stringBuffer = new StringBuffer();
 		stringBuffer.append("<html>");
 		stringBuffer.append("<head>");
+		stringBuffer
+				.append("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">");
 		stringBuffer.append("<title>ZIP package</title>");
 		stringBuffer.append("</head>");
 		stringBuffer.append("<body>");
@@ -108,8 +111,8 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 		}
 		stringBuffer.append("</body></html>");
 
-		return new DocumentVisualization("text/html", stringBuffer.toString()
-				.getBytes());
+		return new DocumentVisualization("text/html;charset=utf-8",
+				stringBuffer.toString().getBytes());
 	}
 
 	public SignatureServiceEx getSignatureService(
@@ -169,7 +172,8 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 			List<Reference> references = signedInfo.getReferences();
 			Set<String> referenceUris = new HashSet<String>();
 			for (Reference reference : references) {
-				referenceUris.add(reference.getURI());
+				String referenceUri = reference.getURI();
+				referenceUris.add(URLDecoder.decode(referenceUri, "UTF-8"));
 			}
 			zipInputStream = new ZipInputStream(new ByteArrayInputStream(
 					document));

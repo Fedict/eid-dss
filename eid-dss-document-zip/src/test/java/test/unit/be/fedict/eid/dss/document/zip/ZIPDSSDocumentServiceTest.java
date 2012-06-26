@@ -108,6 +108,50 @@ public class ZIPDSSDocumentServiceTest {
 	}
 
 	@Test
+	public void testVerifySignatureEncoding() throws Exception {
+		// setup
+		InputStream documentInputStream = ZIPDSSDocumentServiceTest.class
+				.getResourceAsStream("/signed-encoding.zip");
+		byte[] document = IOUtils.toByteArray(documentInputStream);
+		ZIPDSSDocumentService testedInstance = new ZIPDSSDocumentService();
+
+		DSSDocumentContext mockContext = EasyMock
+				.createMock(DSSDocumentContext.class);
+		Capture<List<X509Certificate>> certificateChainCapture = new Capture<List<X509Certificate>>();
+		Capture<Date> validationDateCapture = new Capture<Date>();
+		Capture<List<OCSPResp>> ocspResponsesCapture = new Capture<List<OCSPResp>>();
+		Capture<List<X509CRL>> crlsCapture = new Capture<List<X509CRL>>();
+		mockContext.validate(EasyMock.capture(certificateChainCapture),
+				EasyMock.capture(validationDateCapture),
+				EasyMock.capture(ocspResponsesCapture),
+				EasyMock.capture(crlsCapture));
+
+		Capture<TimeStampToken> timeStampTokenCapture = new Capture<TimeStampToken>();
+		Capture<List<OCSPResp>> tsaOcspResponsesCapture = new Capture<List<OCSPResp>>();
+		Capture<List<X509CRL>> tsaCrlsCapture = new Capture<List<X509CRL>>();
+		mockContext.validate(EasyMock.capture(timeStampTokenCapture),
+				EasyMock.capture(tsaOcspResponsesCapture),
+				EasyMock.capture(tsaCrlsCapture));
+		mockContext.validate(EasyMock.capture(timeStampTokenCapture),
+				EasyMock.capture(tsaOcspResponsesCapture),
+				EasyMock.capture(tsaCrlsCapture));
+
+		expect(mockContext.getTimestampMaxOffset()).andReturn(16 * 1000L);
+		expect(mockContext.getMaxGracePeriod()).andReturn(
+				1000L * 60 * 60 * 24 * 7);
+
+		// prepare
+		EasyMock.replay(mockContext);
+
+		// operate
+		testedInstance.init(mockContext, "application/zip");
+		testedInstance.verifySignatures(document, null);
+
+		// verify
+		EasyMock.verify(mockContext);
+	}
+
+	@Test
 	public void testVerifySignatureChangedContainer() throws Exception {
 		// setup
 		InputStream documentInputStream = ZIPDSSDocumentServiceTest.class
@@ -298,7 +342,7 @@ public class ZIPDSSDocumentServiceTest {
 		// verify
 		assertNotNull(result);
 		LOG.debug("browser content-type: " + result.getBrowserContentType());
-		assertEquals("text/html", result.getBrowserContentType());
+		assertEquals("text/html;charset=utf-8", result.getBrowserContentType());
 		String content = new String(result.getBrowserData());
 		LOG.debug("content: " + content);
 		Tidy tidy = new Tidy();
@@ -324,7 +368,7 @@ public class ZIPDSSDocumentServiceTest {
 		// verify
 		assertNotNull(result);
 		LOG.debug("browser content-type: " + result.getBrowserContentType());
-		assertEquals("text/html", result.getBrowserContentType());
+		assertEquals("text/html;charset=utf-8", result.getBrowserContentType());
 		String content = new String(result.getBrowserData());
 		LOG.debug("content: " + content);
 		Tidy tidy = new Tidy();
@@ -336,5 +380,26 @@ public class ZIPDSSDocumentServiceTest {
 		Node signatureFilenameNode = XPathAPI.selectSingleNode(document,
 				"//*[text() = 'META-INF/documentsignatures.xml']");
 		assertNull(signatureFilenameNode);
+	}
+
+	@Test
+	public void testVisualizationEncodingZIP() throws Exception {
+		// setup
+		InputStream originalInputStream = ZIPDSSDocumentServiceTest.class
+				.getResourceAsStream("/encoding.zip");
+		byte[] originalDocument = IOUtils.toByteArray(originalInputStream);
+		ZIPDSSDocumentService testedInstance = new ZIPDSSDocumentService();
+
+		// operate
+		DocumentVisualization result = testedInstance.visualizeDocument(
+				originalDocument, "en");
+
+		// verify
+		assertNotNull(result);
+		LOG.debug("browser content-type: " + result.getBrowserContentType());
+		assertEquals("text/html;charset=utf-8", result.getBrowserContentType());
+		String content = new String(result.getBrowserData());
+		LOG.debug("content: " + content);
+
 	}
 }
