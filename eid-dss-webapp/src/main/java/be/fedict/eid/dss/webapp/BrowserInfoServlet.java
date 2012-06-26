@@ -81,14 +81,21 @@ public class BrowserInfoServlet extends HttpServlet {
 
 	@SuppressWarnings("unchecked")
 	public static List<String> getPlugins(HttpSession httpSession) {
-		return (List<String>) httpSession
+		List<String> plugins = (List<String>) httpSession
 				.getAttribute(PLUGINS_SESSION_ATTRIBUTE);
+		if (null == plugins) {
+			plugins = new LinkedList<String>();
+		}
+		return plugins;
 	}
 
 	@SuppressWarnings("unchecked")
 	public static List<MimeType> getMimeTypes(HttpSession httpSession) {
-		return (List<MimeType>) httpSession
+		List<MimeType> mimeTypes = (List<MimeType>) httpSession
 				.getAttribute(MIMETYPES_SESSION_ATTRIBUTE);
+		if (null == mimeTypes) {
+			mimeTypes = new LinkedList<MimeType>();
+		}
+		return mimeTypes;
 	}
-
 }
