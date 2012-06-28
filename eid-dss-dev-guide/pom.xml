@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>be.fedict</groupId>
@@ -16,7 +18,7 @@
 			<plugin>
 				<groupId>org.jboss.maven.plugins</groupId>
 				<artifactId>maven-jdocbook-plugin</artifactId>
-				<version>2.1.2</version>
+				<version>2.2.3</version>
 				<!-- https://jira.jboss.org/jira/browse/MPJDOCBOOK-14 -->
 				<dependencies>
 					<dependency>
@@ -37,7 +39,7 @@
 							<formatName>pdf</formatName>
 							<stylesheetResource> classpath:/xslt/org/jboss/pdf.xsl
 							</stylesheetResource>
-							<finalName>${pom.artifactId}.pdf</finalName>
+							<finalName>${project.artifactId}.pdf</finalName>
 						</format>
 					</formats>
 					<sourceDocumentName>eid-dss-dev-guide.xml</sourceDocumentName>
@@ -52,6 +54,12 @@
 						<!-- could also locate the docbook dependency and inspect its version... -->
 						<docbookVersion>1.72.0</docbookVersion>
 					</options>
+					<injections>
+						<injection>
+							<name>project.version</name>
+							<value>${project.version}</value>
+						</injection>
+					</injections>
 				</configuration>
 				<executions>
 					<execution>

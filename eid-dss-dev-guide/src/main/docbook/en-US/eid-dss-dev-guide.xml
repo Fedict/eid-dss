@@ -9,6 +9,9 @@
 			Integrating the eID Digital Signature Service within your
 			web applications.
 		</subtitle>
+		<subtitle>
+			Version &project.version;
+		</subtitle>
 		<copyright>
 			<year>2009-2011</year>
 			<holder>FedICT</holder>
@@ -198,7 +201,7 @@
     document.getElementById('dss-request-form').submit();
 </script>
                 ]]>
-            </programlisting>
+			</programlisting>
 			<section>
 				<title>Service Signature</title>
 				<para>
@@ -293,7 +296,7 @@
         document.getElementById('dss-signed-request-form').submit();
     </script>
                     ]]>
-                </programlisting>
+				</programlisting>
 			</section>
 			<section>
 				<title>Java SDK</title>
@@ -502,7 +505,7 @@
         <url-pattern>/dss-request</url-pattern>
     </servlet-mapping>
                     ]]>
-                </programlisting>
+				</programlisting>
 				<para>
 					If you wish to control yourself the page that posts the
 					signature
@@ -1139,7 +1142,7 @@
     </soap:Body>
 </soap:Envelope>
                     ]]>
-                </programlisting>
+				</programlisting>
 				<para>
 					The to be signed document is passed as base64 encoded in
 					the OASIS
@@ -1200,7 +1203,7 @@
     </soap:Body>
 </soap:Envelope>
                     ]]>
-                </programlisting>
+				</programlisting>
 				<para>
 					The
 					<code>SignResponse</code>
@@ -1259,7 +1262,7 @@
     </soap:Body>
 </soap:Envelope>
                     ]]>
-                </programlisting>
+				</programlisting>
 				<para>
 					The identifier is the identifier of the signed document in
 					the eID
@@ -1325,7 +1328,7 @@
     </soap:Body>
 </soap:Envelope>
                     ]]>
-                </programlisting>
+				</programlisting>
 				<para>
 					The
 					<code>SignResponse</code>
@@ -1660,7 +1663,7 @@
 		<title>Revision history</title>
 		<table>
 			<title>Revision history</title>
-			<tgroup cols="2">
+			<tgroup cols="3">
 				<colspec colwidth="1*" />
 				<colspec colwidth="1*" />
 				<colspec colwidth="2*" />
