@@ -1506,6 +1506,11 @@
 			you can submit this to the eID Digital Signature Service hosting
 			party for registration within the eID DSS service.
 		</para>
+		<para>
+			Per document type, and thus per XML Style Sheet, you should have
+			different XML namespaces. The eID DSS selects the XML Style Sheet
+			based on the XML namespace of the received document.
+		</para>
 	</section>
 	<section>
 		<title>Batch Signing</title>
