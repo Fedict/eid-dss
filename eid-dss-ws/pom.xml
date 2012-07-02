@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.0.RC7</version>
 	</parent>
 	<name>FedICT eID DSS Web Service</name>
 	<description>OASIS DSS Web Service definition for eID Digital Signature
@@ -11,7 +11,7 @@
     </description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-ws</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0.RC7</version>
 	<packaging>jar</packaging>
 	<build>
 		<plugins>
