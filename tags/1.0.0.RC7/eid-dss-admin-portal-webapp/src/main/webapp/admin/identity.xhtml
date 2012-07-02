@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:s="http://jboss.com/products/seam/taglib">
+    <body>
+        <ui:composition template="/WEB-INF/template.xhtml">
+            <ui:define name="body">
+                <h2>DSS Identity</h2>
+
+                <h:form>
+
+                    <h:panelGrid columns="2">
+
+                        <h:outputLabel value="#{dssIdentity.identityLabel}"
+                                       for="identity"/>
+                        <h:selectOneMenu id="identity"
+                                         value="#{dssIdentity.name}"
+                                         onchange="submit();">
+                            <f:selectItems
+                                    value="#{dssIdentity.identityNames}"/>
+                        </h:selectOneMenu>
+                    </h:panelGrid>
+                </h:form>
+
+                <p/>
+
+                <h:form>
+
+                    <h:panelGrid columns="2">
+                        <h:outputLabel
+                                value="Name (*)"
+                                for="identity_name"/>
+                        <s:decorate>
+                            <h:inputText id="identity_name"
+                                         value="#{dssIdentity.name}"
+                                         required="true"
+                                         readonly="#{dssIdentity.isNameReadOnly()}">
+                            </h:inputText>
+                            <h:message for="identity_name" styleClass="error"/>
+                        </s:decorate>
+
+
+                        <h:outputLabel value="Keystore Type (*)"
+                                       for="keystore_type"/>
+                        <s:decorate>
+                            <h:selectOneMenu id="keystore_type"
+                                             value="#{dssIdentity.keyStoreType}"
+                                             required="true">
+                                <f:selectItems value="#{keyStoreTypes}"/>
+                                <h:message for="keystore_type"
+                                           styleClass="error"/>
+                            </h:selectOneMenu>
+                        </s:decorate>
+                        <h:outputLabel
+                                value="Keystore Path (*)"
+                                for="keystore_path"/>
+                        <s:decorate>
+                            <h:inputText id="keystore_path"
+                                         value="#{dssIdentity.keyStorePath}"
+                                         required="true" size="50">
+                            </h:inputText>
+                            <h:message for="keystore_path" styleClass="error"/>
+                        </s:decorate>
+
+                        <h:outputLabel
+                                value="Keystore Password (*)"
+                                for="keystore_pw"/>
+                        <s:decorate>
+                            <h:inputText id="keystore_pw"
+                                         value="#{dssIdentity.keyStorePassword}"
+                                         required="true">
+                            </h:inputText>
+                            <h:message for="keystore_pw" styleClass="error"/>
+                        </s:decorate>
+
+                        <h:outputLabel
+                                value="Key Entry Password (*)"
+                                for="keyentry_pw"/>
+                        <s:decorate>
+                            <h:inputText id="keyentry_pw"
+                                         value="#{dssIdentity.keyEntryPassword}"
+                                         required="true">
+                            </h:inputText>
+                        </s:decorate>
+
+                        <h:outputLabel
+                                value="Key Entry Alias"
+                                for="keyentry_alias"/>
+                        <h:inputText id="keyentry_alias"
+                                     value="#{dssIdentity.keyEntryAlias}">
+                        </h:inputText>
+
+                    </h:panelGrid>
+
+
+                    <h:panelGrid columns="4">
+                        <h:commandButton id="identity_activate" value="Activate"
+                                         action="#{dssIdentity.activate}"
+                                         rendered="#{!dssIdentity.active}"/>
+                        <h:commandButton id="identity_test" value="Test"
+                                         action="#{dssIdentity.test}"/>
+                        <h:commandButton id="identity_save" value="Save"
+                                         action="#{dssIdentity.save}"/>
+                        <h:commandButton id="identity_remove" value="Remove"
+                                         action="#{dssIdentity.remove}"/>
+                    </h:panelGrid>
+
+                    <h:messages styleClass="error"/>
+
+                </h:form>
+
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
