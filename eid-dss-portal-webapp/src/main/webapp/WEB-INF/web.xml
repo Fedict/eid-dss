@@ -42,8 +42,8 @@
         </init-param>
         <init-param>
             <param-name>maxRequestSize</param-name>
-            <param-value>5242880</param-value>
-            <!-- 1024*1024*5 = 5 MiB -->
+            <param-value>20971520</param-value>
+            <!-- 1024*1024*20 = 20 MiB -->
         </init-param>
     </filter>
     <filter-mapping>

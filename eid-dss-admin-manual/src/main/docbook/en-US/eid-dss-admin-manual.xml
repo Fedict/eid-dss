@@ -7,11 +7,14 @@
 		<title>
 			Fedict eID Digital Signature Service Administrator Manual
 		</title>
+		<subtitle>
+			Version &project.version;
+		</subtitle>
 		<copyright>
-			<year>2010-2011</year>
+			<year>2010-2012</year>
 			<holder>Fedict</holder>
 		</copyright>
-		<releaseinfo>31 Aug 2011</releaseinfo>
+		<releaseinfo>29 Jun 2012</releaseinfo>
 		<authorgroup>
 			<author>
 				<firstname>Frank</firstname>
@@ -179,6 +182,24 @@
 				</para>
 			</section>
 		</section>
+		<section>
+			<title>Uploading large files</title>
+			<para>
+				If the default POST size is not sufficient for the size of the
+				documents to be processed by the eID DSS you can increase this by
+				reconfiguring the Tomcat connector under
+				<code>jboss/server/default/deploy/jbossweb.sar/server.xml</code>
+				.
+				<programlisting><![CDATA[<Connector ...
+maxPostSize="20971520"/>]]></programlisting>
+				Where the
+				<code>maxPostSize</code>
+				is expressed in bytes. Keep in mind that the eID DSS Simple Browser
+				POST protocol (and the OASIS DSS verification web service) encodes
+				your files in base64. This means that the actual upload size is
+				smaller.
+			</para>
+		</section>
 	</section>
 	<section>
 		<title>Deployment</title>
@@ -234,7 +255,7 @@
 				Under
 				<emphasis>TSP</emphasis>
 				you should configure the time-stamp service used by the eID DSS to
-				create its XAdES-X-X signatures.
+				create its XAdES-X-L signatures.
 				<itemizedlist>
 					<listitem>
 						<para>
@@ -446,6 +467,11 @@
 						<entry>31 Aug 2011</entry>
 						<entry>Frank Cornelis</entry>
 						<entry>Updates.</entry>
+					</row>
+					<row>
+						<entry>29 Jun 2012</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>Uploading large files.</entry>
 					</row>
 				</tbody>
 			</tgroup>
