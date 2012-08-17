@@ -7,7 +7,7 @@
 			anyway. -->
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-applet</artifactId>
-		<version>1.0.5.Beta5</version>
+		<version>1.0.5-SNAPSHOT</version>
 	</parent>
 	<groupId>be.fedict</groupId>
 	<artifactId>eid-dss</artifactId>
