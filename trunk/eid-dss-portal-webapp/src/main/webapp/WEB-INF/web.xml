@@ -134,6 +134,11 @@
             <param-name>SignatureRequestSessionAttribute</param-name>
             <param-value>SignatureRequest</param-value>
         </init-param>
+        <!-- Artificact binding configuration -->
+        <init-param>
+            <param-name>DssWSUrl</param-name>
+            <param-value>http://localhost:8080/eid-dss-ws/dss</param-value>
+        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>DSSResponseProcessor</servlet-name>
