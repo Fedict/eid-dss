@@ -122,7 +122,17 @@
 							<artifactId>eid-dss-document-asic</artifactId>
 							<includeInApplicationXml>true</includeInApplicationXml>
 						</jarModule>
-						<ejbModule>
+                        <jarModule>
+                            <groupId>be.fedict.eid-dss</groupId>
+                            <artifactId>eid-dss-client</artifactId>
+                            <includeInApplicationXml>true</includeInApplicationXml>
+                        </jarModule>
+                        <jarModule>
+                            <groupId>be.fedict.eid-dss</groupId>
+                            <artifactId>eid-dss-ws</artifactId>
+                            <includeInApplicationXml>true</includeInApplicationXml>
+                        </jarModule>
+                        <ejbModule>
 							<groupId>be.fedict.eid-dss</groupId>
 							<artifactId>eid-dss-entity</artifactId>
 						</ejbModule>
@@ -297,7 +307,17 @@
 			<artifactId>eid-dss-document-asic</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<!-- dependencies on other eID projects -->
+        <dependency>
+            <groupId>be.fedict.eid-dss</groupId>
+            <artifactId>eid-dss-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>be.fedict.eid-dss</groupId>
+            <artifactId>eid-dss-ws</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- dependencies on other eID projects -->
 		<dependency>
 			<groupId>be.fedict.eid-applet</groupId>
 			<artifactId>eid-applet-shared</artifactId>

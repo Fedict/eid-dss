@@ -34,9 +34,9 @@ public class StorageInfoDO {
 	/**
 	 * Main constructor.
 	 * 
-	 * @param artifact
-	 * @param notBefore
-	 * @param notAfter
+	 * @param artifact the artifact ID
+	 * @param notBefore lifetime of artifact in DSS temporary document repository
+	 * @param notAfter lifetime of artifact in DSS temporary document repository
 	 */
 	public StorageInfoDO(String artifact, Date notBefore, Date notAfter) {
 

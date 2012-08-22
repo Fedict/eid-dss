@@ -18,32 +18,27 @@
 
 package be.fedict.eid.dss.portal.control.bean;
 
-import java.util.List;
-import java.util.UUID;
+import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
+import be.fedict.eid.dss.client.StorageInfoDO;
+import be.fedict.eid.dss.model.SignatureVerificationService;
+import be.fedict.eid.dss.model.exception.DocumentFormatException;
+import be.fedict.eid.dss.model.exception.InvalidSignatureException;
+import be.fedict.eid.dss.portal.control.View;
+import be.fedict.eid.dss.spi.SignatureInfo;
+import org.jboss.ejb3.annotation.LocalBinding;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.*;
+import org.jboss.seam.annotations.datamodel.DataModel;
+import org.jboss.seam.international.LocaleSelector;
+import org.jboss.seam.log.Log;
 
 import javax.ejb.EJB;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-
-import org.bouncycastle.util.encoders.Base64;
-import org.jboss.ejb3.annotation.LocalBinding;
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Logger;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Out;
-import org.jboss.seam.annotations.datamodel.DataModel;
-import org.jboss.seam.international.LocaleSelector;
-import org.jboss.seam.log.Log;
-
-import be.fedict.eid.dss.model.SignatureVerificationService;
-import be.fedict.eid.dss.model.exception.DocumentFormatException;
-import be.fedict.eid.dss.model.exception.InvalidSignatureException;
-import be.fedict.eid.dss.portal.control.View;
-import be.fedict.eid.dss.spi.SignatureInfo;
+import java.util.List;
+import java.util.UUID;
 
 @Stateful
 @Name("dssPortalView")
@@ -62,8 +57,8 @@ public class ViewBean implements View {
 	@Out(value = "target", scope = ScopeType.SESSION, required = false)
 	private String target;
 
-	@Out(value = "SignatureRequest", scope = ScopeType.SESSION, required = false)
-	private String signatureRequest;
+	@Out(value = "SignatureRequestId", scope = ScopeType.SESSION, required = false)
+	private String signatureRequestId;
 
 	@Out(value = "language", scope = ScopeType.SESSION, required = false)
 	private String language;
@@ -115,7 +110,14 @@ public class ViewBean implements View {
 	@Override
 	public String sign() {
 		this.log.debug("sign");
-		this.signatureRequest = new String(Base64.encode(this.document));
+
+        // store document via WS
+        DigitalSignatureServiceClient dssClient = new DigitalSignatureServiceClient();
+        dssClient.setLogging(true, false);
+        StorageInfoDO storageInfoDO = dssClient.store(document, this.contentType);
+
+        this.signatureRequestId = storageInfoDO.getArtifact();
+        this.log.debug("DSS Artifact ID: " + this.signatureRequestId);
 
 		FacesContext facesContext = FacesContext.getCurrentInstance();
 		ExternalContext externalContext = facesContext.getExternalContext();

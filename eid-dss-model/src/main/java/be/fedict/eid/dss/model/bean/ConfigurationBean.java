@@ -18,21 +18,19 @@
 
 package be.fedict.eid.dss.model.bean;
 
-import java.util.LinkedList;
-import java.util.List;
+import be.fedict.eid.dss.entity.ConfigPropertyEntity;
+import be.fedict.eid.dss.model.ConfigProperty;
+import be.fedict.eid.dss.model.Configuration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Startup;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import be.fedict.eid.dss.entity.ConfigPropertyEntity;
-import be.fedict.eid.dss.model.ConfigProperty;
-import be.fedict.eid.dss.model.Configuration;
+import java.util.LinkedList;
+import java.util.List;
 
 @Startup
 @Stateless
@@ -157,12 +155,20 @@ public class ConfigurationBean implements Configuration {
 		ConfigPropertyEntity configPropertyEntity = this.entityManager.find(
 				ConfigPropertyEntity.class, propertyName);
 		if (null == configPropertyEntity) {
-			return null;
+            if (Boolean.class == configProperty.getType()) {
+                return (T) Boolean.FALSE;
+            } else {
+                return null;
+            }
 		}
 		String value = configPropertyEntity.getValue();
 		if (null == value || value.trim().length() == 0) {
-			return null;
-		}
+            if (Boolean.class == configProperty.getType()) {
+                return (T) Boolean.FALSE;
+            } else {
+                return null;
+            }
+        }
 
 		if (String.class == configProperty.getType()) {
 			return (T) value;

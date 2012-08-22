@@ -39,6 +39,11 @@
 			<type>ejb-client</type>
 			<scope>provided</scope>
 		</dependency>
+        <dependency>
+            <groupId>be.fedict.eid-dss</groupId>
+            <artifactId>eid-dss-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging-api</artifactId>
