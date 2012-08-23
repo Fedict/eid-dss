@@ -1,20 +1,88 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://java.sun.com/jsf/facelets"
-	xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
 <body>
-	<ui:composition template="/WEB-INF/template.xhtml">
-		<ui:param name="activeMenu" value="main" />
-		<ui:define name="body">
-            <div class="title">
-                <h1>#{messages.homeTitle}</h1>
-            </div>
-			<p>#{messages.welcomeInfo}</p>
-			<p>
-				<a
-					href="#{facesContext.externalContext.requestContextPath}/upload.seam">#{messages.clickToContinue}</a>
-			</p>
-		</ui:define>
-	</ui:composition>
+<ui:composition template="/WEB-INF/template.xhtml">
+    <ui:define name="body">
+        <div class="title">
+            <h1>#{messages.homeTitle}</h1>
+        </div>
+
+        <table>
+            <tr>
+                <td class="requirements">
+                    <h2>#{messages.requirements}</h2>
+
+                    <table>
+                        <tr>
+                            <td >
+                                <a href="http://eid.belgium.be/" target="_blank">
+                                    <img src="./images/eid.png" alt="#{messages.eidCardReader}" />
+                                </a>
+                                <br/>
+                                #{messages.eidCard}
+                                <br/>
+                                #{messages.eidCardReader}
+                                <br/>
+                                <a href="http://eid.belgium.be/" target="_blank">
+                                    #{messages.eidInstall}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="#" onclick="return popitup('./compatibility.seam')">
+                                    <img src="./images/browser.png" alt="#{messages.browserMoreInfo}" />
+                                </a>
+                                <br/>
+                                #{messages.correctBrowser}
+                                <br/>
+                                &nbsp;
+                                <br/>
+                                <a href="#" onclick="return popitup('./compatibility.seam')">
+                                    #{messages.browserMoreInfo}
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="startSign">
+                    <h2>
+                        #{messages.startProcessTitle}
+                    </h2>
+                    <p>
+                        #{messages.startProcess}
+                    </p>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+
+                    <p class="button">
+                        <a href="#{facesContext.externalContext.requestContextPath}/upload.seam">
+                            #{messages.start}
+                        </a>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" colspan="2" class="requirements">
+                    <h2 class="overline" />
+
+                    <div class="center">
+                        <p>
+                            #{messages.descriptionMain}
+                        </p>
+                    </div>
+
+                </td>
+            </tr>
+        </table>
+
+    </ui:define>
+</ui:composition>
 </body>
 </html>
