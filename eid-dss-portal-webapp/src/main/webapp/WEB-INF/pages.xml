@@ -4,6 +4,7 @@
 
 	<page view-id="/view.xhtml">
 		<action execute="#{dssPortalView.verifySignatures}" />
+        <action execute="#{dssPortalView.prepareForSigning}" />
 	</page>
 
 </pages>

@@ -103,6 +103,10 @@
             be.fedict.eid.dss.protocol.simple.client.SignatureResponseProcessorServlet
         </servlet-class>
         <init-param>
+            <param-name>IFrame</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
             <param-name>NextPage</param-name>
             <param-value>/view.seam</param-value>
         </init-param>
