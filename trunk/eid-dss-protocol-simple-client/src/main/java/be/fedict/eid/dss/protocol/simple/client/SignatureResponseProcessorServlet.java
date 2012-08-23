@@ -286,7 +286,7 @@ public class SignatureResponseProcessorServlet extends HttpServlet {
                      */
                 httpSession.setAttribute(this.signedDocumentSessionAttribute,
                         previousSignedDocument);
-                response.sendRedirect(request.getContextPath()
+                redirectTo(response, request.getContextPath()
                         + this.cancelPage);
                 return;
             }
