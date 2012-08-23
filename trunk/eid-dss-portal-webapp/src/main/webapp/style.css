@@ -143,6 +143,36 @@ div.title {
     margin:             0 auto;
 }
 
+.step1 {
+    width:              17%;
+}
+.stepDivider {
+    width:              3%;
+}
+
+.uploadForm {
+    margin-top:         20px;
+}
+
+/*
+ * RichFaces
+ */
+.rich-fileupload-toolbar-decor {
+    width:              400px   !important;
+}
+.rich-fileupload-list-overflow  {
+    height:             60px    !important;
+}
+.rich-fileupload-button {
+    /*background:         #69c none;*/
+    /*border-color:       black;*/
+    /*color:              white;*/
+}
+.rich-fileupload-font {
+    font-family:        Arial, Helvetica, sans-serif;
+    font-size:          small;
+}
+
 /*
  * From seria
  */
@@ -186,4 +216,28 @@ p.button a.stop:hover {
     color: #444;
     background-color: #ddd;
     border: 1px solid #ddd;
+}
+
+div.steps {
+    border: 1px solid #d0d0d0;
+    height: 40px;
+    width:725px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+div.steps table {
+    height: 40px;
+}
+div.steps table td {
+    font-weight: bold;
+    color: #444;
+}
+div.steps table td.next {
+    font-weight: bold;
+    color: #777;
+}
+div.steps table  img {
+    margin: 0 6px 0 8px;
+    margin-bottom:.25em;
+    vertical-align:middle;
 }
