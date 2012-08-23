@@ -91,6 +91,10 @@ h3 {
     width:              688px !important;
 }
 
+.signatureForm h2 {
+    margin-top:         20px;
+}
+
 #content table, #compatibility table {
     width:              730px;
 }
