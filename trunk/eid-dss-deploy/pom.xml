@@ -544,5 +544,6 @@
 			<artifactId>mail</artifactId>
 			<scope>provided</scope>
 		</dependency>
-	</dependencies>
+
+    </dependencies>
 </project>

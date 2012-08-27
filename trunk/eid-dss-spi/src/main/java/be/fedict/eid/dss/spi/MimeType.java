@@ -16,7 +16,7 @@
  * http://www.gnu.org/licenses/.
  */
 
-package be.fedict.eid.dss.webapp;
+package be.fedict.eid.dss.spi;
 
 public class MimeType {
 

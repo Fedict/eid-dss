@@ -18,11 +18,6 @@
 
 package be.fedict.eid.dss.spi;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.util.List;
-
 import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
 import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
@@ -31,17 +26,22 @@ import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureServiceEx;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.util.List;
+
 /**
  * Document Service interface. A document service interface knows all about a
  * document format, and how to sign it.
- * 
+ *
  * @author Frank Cornelis
  */
 public interface DSSDocumentService extends Serializable {
 
 	/**
 	 * Initializes this component.
-	 * 
+	 *
 	 * @param context
 	 *            DSS Document Context
 	 * @param contentType
@@ -53,7 +53,7 @@ public interface DSSDocumentService extends Serializable {
 
 	/**
 	 * Checks the incoming document.
-	 * 
+	 *
 	 * @param document
 	 *            document to check
 	 * @throws Exception
@@ -63,7 +63,7 @@ public interface DSSDocumentService extends Serializable {
 
 	/**
 	 * Handles the visualization of the given document.
-	 * 
+	 *
 	 * @param document
 	 *            document to visualize
 	 * @param language
@@ -72,14 +72,18 @@ public interface DSSDocumentService extends Serializable {
 	 * @throws Exception
 	 *             something went wrong
 	 */
-	DocumentVisualization visualizeDocument(byte[] document, String language)
+	DocumentVisualization visualizeDocument(byte[] document, String language,
+                                            List<MimeType> mimeTypes, String documentViewerServlet)
 			throws Exception;
+
+    DocumentVisualization findDocument(byte[] parentDocument, String resourceId)
+            throws Exception;
 
 	/**
 	 * Factory for the signature service that will be used to signed the
 	 * document. A new instance is being created for both preSign and postSign
 	 * phases.
-	 * 
+	 *
 	 * @param documentInputStream
 	 *            input stream to the to-be-signed document
 	 * @param timeStampService
@@ -114,7 +118,7 @@ public interface DSSDocumentService extends Serializable {
 
 	/**
 	 * Verifies the signatures on the given document.
-	 * 
+	 *
 	 * @param document
 	 *            document to be verified.
 	 * @param originalDocument
