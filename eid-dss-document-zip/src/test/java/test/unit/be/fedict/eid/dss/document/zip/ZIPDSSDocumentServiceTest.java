@@ -18,21 +18,11 @@
 
 package test.unit.be.fedict.eid.dss.document.zip;
 
-import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.security.Security;
-import java.security.cert.X509CRL;
-import java.security.cert.X509Certificate;
-import java.util.Date;
-import java.util.List;
-
+import be.fedict.eid.dss.document.zip.ZIPDSSDocumentService;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
+import be.fedict.eid.dss.spi.DocumentVisualization;
+import be.fedict.eid.dss.spi.MimeType;
+import be.fedict.eid.dss.spi.SignatureInfo;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,10 +38,17 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.tidy.Tidy;
 
-import be.fedict.eid.dss.document.zip.ZIPDSSDocumentService;
-import be.fedict.eid.dss.spi.DSSDocumentContext;
-import be.fedict.eid.dss.spi.DocumentVisualization;
-import be.fedict.eid.dss.spi.SignatureInfo;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.security.Security;
+import java.security.cert.X509CRL;
+import java.security.cert.X509Certificate;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+
+import static org.easymock.EasyMock.expect;
+import static org.junit.Assert.*;
 
 public class ZIPDSSDocumentServiceTest {
 
@@ -337,7 +334,7 @@ public class ZIPDSSDocumentServiceTest {
 
 		// operate
 		DocumentVisualization result = testedInstance.visualizeDocument(
-				originalDocument, "en");
+				originalDocument, "en", new LinkedList<MimeType>(), "http://eid-dss.be/document?resource=");
 
 		// verify
 		assertNotNull(result);
@@ -363,7 +360,7 @@ public class ZIPDSSDocumentServiceTest {
 
 		// operate
 		DocumentVisualization result = testedInstance.visualizeDocument(
-				originalDocument, "en");
+				originalDocument, "en",new LinkedList<MimeType>(), "http://eid-dss.be/document?resource=");
 
 		// verify
 		assertNotNull(result);
@@ -392,7 +389,7 @@ public class ZIPDSSDocumentServiceTest {
 
 		// operate
 		DocumentVisualization result = testedInstance.visualizeDocument(
-				originalDocument, "en");
+				originalDocument, "en",new LinkedList<MimeType>(), "http://eid-dss.be/document?resource=");
 
 		// verify
 		assertNotNull(result);
