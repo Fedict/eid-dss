@@ -73,6 +73,7 @@
 		</plugins>
 	</build>
 	<dependencies>
+
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-model</artifactId>

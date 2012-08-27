@@ -18,30 +18,6 @@
 
 package be.fedict.eid.dss.document.asic;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLDecoder;
-import java.security.cert.X509Certificate;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import javax.xml.crypto.dsig.Reference;
-import javax.xml.crypto.dsig.SignedInfo;
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.dom.DOMValidateContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
@@ -53,11 +29,30 @@ import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureServiceEx;
-import be.fedict.eid.dss.spi.DSSDocumentContext;
-import be.fedict.eid.dss.spi.DSSDocumentService;
-import be.fedict.eid.dss.spi.DocumentVisualization;
-import be.fedict.eid.dss.spi.SignatureInfo;
+import be.fedict.eid.dss.spi.*;
 import be.fedict.eid.dss.spi.utils.XAdESValidation;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.SignedInfo;
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.dom.DOMValidateContext;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLDecoder;
+import java.security.cert.X509Certificate;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Associated Signature Container document service implementation.
@@ -86,9 +81,16 @@ public class ASiCDSSDocumentService implements DSSDocumentService {
 	public void checkIncomingDocument(byte[] document) throws Exception {
 	}
 
-	@Override
+    public DocumentVisualization findDocument(byte[] parentDocument, String resourceId)
+            throws Exception {
+
+        return null;
+    }
+
+    @Override
 	public DocumentVisualization visualizeDocument(byte[] document,
-			String language) throws Exception {
+			String language, List<MimeType> mimeTypes,
+            String documentViewerServlet) throws Exception {
 		ZipInputStream zipInputStream = new ZipInputStream(
 				new ByteArrayInputStream(document));
 		ZipEntry zipEntry;

@@ -18,23 +18,6 @@
 
 package be.fedict.eid.dss.document.ooxml;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.cert.X509Certificate;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.dom.DOMValidateContext;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import be.fedict.eid.applet.service.signer.DigestAlgo;
 import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
 import be.fedict.eid.applet.service.signer.SignatureFacet;
@@ -46,11 +29,23 @@ import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureServiceEx;
-import be.fedict.eid.dss.spi.DSSDocumentContext;
-import be.fedict.eid.dss.spi.DSSDocumentService;
-import be.fedict.eid.dss.spi.DocumentVisualization;
-import be.fedict.eid.dss.spi.SignatureInfo;
+import be.fedict.eid.dss.spi.*;
 import be.fedict.eid.dss.spi.utils.XAdESValidation;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.dom.DOMValidateContext;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.cert.X509Certificate;
+import java.util.LinkedList;
+import java.util.List;
 
 public class OOXMLDSSDocumentService implements DSSDocumentService {
 
@@ -77,8 +72,15 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 		LOG.debug("checkIncomingDocument");
 	}
 
-	public DocumentVisualization visualizeDocument(byte[] document,
-			String language) throws Exception {
+    public DocumentVisualization findDocument(byte[] parentDocument, String resourceId)
+            throws Exception {
+
+        return null;
+    }
+
+    public DocumentVisualization visualizeDocument(byte[] document,
+			String language, List<MimeType> mimeTypes,
+            String documentViewerServlet) throws Exception {
 
 		LOG.debug("visualizeDocument");
 		return null;
