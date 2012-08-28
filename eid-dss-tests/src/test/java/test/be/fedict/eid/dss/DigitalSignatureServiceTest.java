@@ -221,6 +221,30 @@ public class DigitalSignatureServiceTest {
 	}
 
 	@Test
+	public void testVerifyZIPDocument() throws Exception {
+		// setup
+		InputStream documentInputStream = DigitalSignatureServiceTest.class
+				.getResourceAsStream("/test.zip");
+		assertNotNull(documentInputStream);
+		byte[] document = IOUtils.toByteArray(documentInputStream);
+		String dssUrl = "https://www.e-contract.be/eid-dss-ws/dss";
+		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
+				dssUrl);
+		client.setProxy("proxy.yourict.net", 8080);
+		client.setLogging(true, true);
+
+		// operate
+		List<SignatureInfo> signers = client.verifyWithSigners(document,
+				"application/zip");
+
+		// verify
+		for (SignatureInfo signer : signers) {
+			LOG.debug("signer: " + signer.getSigner().getSubjectX500Principal());
+			LOG.debug("signing time: " + signer.getSigningTime());
+		}
+	}
+
+	@Test
 	public void testVerifyChangedOriginalDocument() throws Exception {
 		// setup
 		InputStream signedDocumentInputStream = DigitalSignatureServiceTest.class
