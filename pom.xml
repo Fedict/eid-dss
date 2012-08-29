@@ -7,7 +7,7 @@
 			anyway. -->
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-applet</artifactId>
-		<version>1.0.5-SNAPSHOT</version>
+		<version>1.0.5.RC1</version>
 	</parent>
 	<groupId>be.fedict</groupId>
 	<artifactId>eid-dss</artifactId>
@@ -230,8 +230,20 @@
 			</snapshots>
 		</repository>
 	</repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>e-contract.be</id>
+            <url>http://www.e-contract.be/maven2/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 	<properties>
-		<eid-applet.version>1.0.5.Beta5</eid-applet.version>
+		<eid-applet.version>1.0.5.RC1</eid-applet.version>
 		<eid-applet.SkipSecureConnectionCheck>false</eid-applet.SkipSecureConnectionCheck>
 		<eid-trust-service.version>1.0.1.RC1</eid-trust-service.version>
 		<jtrust.version>1.1.2</jtrust.version>
