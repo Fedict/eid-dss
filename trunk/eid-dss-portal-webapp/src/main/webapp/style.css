@@ -88,7 +88,6 @@ h3 {
 }
 
 .signatureForm table {
-    /*width:              688px !important;*/
     width:              545px !important;
 }
 
@@ -177,11 +176,6 @@ div.title {
 }
 .rich-fileupload-list-overflow  {
     height:             60px    !important;
-}
-.rich-fileupload-button {
-    /*background:         #69c none;*/
-    /*border-color:       black;*/
-    /*color:              white;*/
 }
 .rich-fileupload-font {
     font-family:        Arial, Helvetica, sans-serif;
