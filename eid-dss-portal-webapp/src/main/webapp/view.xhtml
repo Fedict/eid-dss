@@ -90,42 +90,53 @@
                 <rich:dataGrid var="row" value="#{signatureInfos}" elements="5"
                                rendered="#{signatureInfos.rowCount > 0}" columns="1">
                     <f:facet name="header">
-                        <h:outputText value="#{messages.signatures}"></h:outputText>
+                        <h:outputText value="#{messages.signatures}" />
                     </f:facet>
                     <rich:panel>
-                        <h:panelGrid columns="2">
-                            <s:graphicImage value="#{row.photo}"
-                                            rendered="#{not empty row.photo}"/>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="#{messages.signer}:"/>
-                                <h:outputText value="#{row.signer.subjectX500Principal}"/>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <!-- sign data -->
+                                        <h:panelGrid columns="2">
+                                            <h:outputText value="#{messages.signer}:"/>
+                                            <h:outputText value="#{row.signer.subjectX500Principal}"/>
 
-                                <h:outputText value="#{messages.signingTime}:"/>
-                                <h:outputText value="#{row.signingTime}">
-                                    <f:convertDateTime type="both" dateStyle="full"
-                                                       timeStyle="long" timeZone="Europe/Brussels"
-                                                       locale="#{dssLanguageSelector.locale}"/>
-                                </h:outputText>
+                                            <h:outputText value="#{messages.signingTime}:"/>
+                                            <h:outputText value="#{row.signingTime}">
+                                                <f:convertDateTime type="both" dateStyle="full"
+                                                                   timeStyle="long" timeZone="Europe/Brussels"
+                                                                   locale="#{dssLanguageSelector.locale}"/>
+                                            </h:outputText>
 
-                                <h:outputText value="#{messages.role}:"
-                                              rendered="#{not empty row.role}"/>
-                                <h:outputText value="#{row.role}"
-                                              rendered="#{not empty row.role}"/>
+                                            <h:outputText value="#{messages.role}:"
+                                                          rendered="#{not empty row.role}"/>
+                                            <h:outputText value="#{row.role}"
+                                                          rendered="#{not empty row.role}"/>
 
-                                <h:outputText value="#{messages.name}:"
-                                              rendered="#{not empty row.name}"/>
-                                <s:div rendered="#{not empty row.name}">
-                                    <h:outputText value="#{row.firstName} "/>
-                                    <h:outputText value="#{row.name} "/>
-                                    <h:outputText value="#{row.middleName}"/>
-                                </s:div>
+                                            <h:outputText value="#{messages.name}:"
+                                                          rendered="#{not empty row.name}"/>
+                                            <s:div rendered="#{not empty row.name}">
+                                                <h:outputText value="#{row.firstName} "/>
+                                                <h:outputText value="#{row.name} "/>
+                                                <h:outputText value="#{row.middleName}"/>
+                                            </s:div>
 
-                                <h:outputText value="#{messages.gender}:"
-                                              rendered="#{not empty row.gender}"/>
-                                <h:outputText value="#{row.gender}"
-                                              rendered="#{not empty row.gender}"/>
-                            </h:panelGrid>
-                        </h:panelGrid>
+                                            <h:outputText value="#{messages.gender}:"
+                                                          rendered="#{not empty row.gender}"/>
+                                            <h:outputText value="#{row.gender}"
+                                                          rendered="#{not empty row.gender}"/>
+                                        </h:panelGrid>
+                                    </td>
+                                    <td>
+                                        <!-- photo -->
+                                        <s:graphicImage value="#{row.photo}"
+                                                        rendered="#{not empty row.photo}" styleClass="signaturePhoto"/>
+                                        <s:div rendered="#{empty row.photo}" style="width:140px;"></s:div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </rich:panel>
                     <f:facet name="footer">
                         <rich:datascroller/>
