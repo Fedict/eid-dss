@@ -108,15 +108,15 @@
         </init-param>
         <init-param>
             <param-name>NextPage</param-name>
-            <param-value>/view.seam</param-value>
+            <param-value>/view</param-value>
         </init-param>
         <init-param>
             <param-name>CancelPage</param-name>
-            <param-value>/view.seam</param-value>
+            <param-value>/view</param-value>
         </init-param>
         <init-param>
             <param-name>ErrorPage</param-name>
-            <param-value>/sign-error.seam</param-value>
+            <param-value>/sign-error</param-value>
         </init-param>
         <init-param>
             <param-name>ErrorMessageSessionAttribute</param-name>
