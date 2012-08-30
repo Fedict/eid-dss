@@ -22,4 +22,6 @@
 	<international:locale-selector
 		cookie-enabled="true" />
 
+    <web:rewrite-filter view-mapping="*.seam" />
+
 </components>
