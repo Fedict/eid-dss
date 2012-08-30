@@ -88,7 +88,8 @@ h3 {
 }
 
 .signatureForm table {
-    width:              688px !important;
+    /*width:              688px !important;*/
+    width:              545px !important;
 }
 
 .signatureForm h2 {
