@@ -42,6 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.smartcardio.CardException;
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.DigestMethod;
@@ -85,7 +86,7 @@ import be.fedict.eid.applet.Messages;
 import be.fedict.eid.applet.Messages.MESSAGE_ID;
 import be.fedict.eid.applet.Status;
 import be.fedict.eid.applet.View;
-import be.fedict.eid.applet.sc.Pkcs11Eid;
+import be.fedict.eid.applet.sc.PcscEid;
 import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
 import be.fedict.eid.dss.client.NotParseableXMLDocumentException;
 import be.fedict.eid.dss.client.SignatureInfo;
@@ -333,14 +334,16 @@ public class DigitalSignatureServiceTest {
 			NoSuchMethodException, KeyStoreException, NoSuchAlgorithmException,
 			CertificateException, UnrecoverableEntryException,
 			InvalidAlgorithmParameterException, MarshalException,
-			XMLSignatureException {
+			XMLSignatureException, CardException {
 		Messages messages = new Messages(Locale.getDefault());
-		Pkcs11Eid pkcs11Eid = new Pkcs11Eid(new TestView(), messages);
-		if (false == pkcs11Eid.isEidPresent()) {
+		PcscEid pcscEid = new PcscEid(new TestView(), messages);
+		if (false == pcscEid.isEidPresent()) {
 			LOG.debug("insert eID...");
-			pkcs11Eid.waitForEidPresent();
+			pcscEid.waitForEidPresent();
 		}
-		PrivateKeyEntry privateKeyEntry = pkcs11Eid.getPrivateKeyEntry();
+		// PrivateKeyEntry privateKeyEntry = pcscEid.getPrivateKeyEntry();
+		PrivateKeyEntry privateKeyEntry = null;
+		// TODO: refactor once Commons eID has been released.
 
 		XMLSignatureFactory signatureFactory = XMLSignatureFactory.getInstance(
 				"DOM", new org.jcp.xml.dsig.internal.dom.XMLDSigRI());
@@ -375,7 +378,7 @@ public class DigitalSignatureServiceTest {
 				.newXMLSignature(signedInfo, keyInfo);
 		xmlSignature.sign(signContext);
 
-		pkcs11Eid.close();
+		pcscEid.close();
 	}
 
 	private Document loadDocument(InputStream documentInputStream)
