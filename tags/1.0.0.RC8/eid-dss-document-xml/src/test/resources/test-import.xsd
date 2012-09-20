@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:test2"
+	xmlns:tns="urn:test2" elementFormDefault="qualified" xmlns:test="urn:test"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<xsd:import namespace="urn:test" schemaLocation="http://www.foobar.com/test.xsd" />
+	<element name="test2" type="tns:TestType" />
+	<xsd:complexType name="TestType">
+		<xsd:sequence>
+			<xsd:element ref="test:test" />
+		</xsd:sequence>
+	</xsd:complexType>
+</schema>
