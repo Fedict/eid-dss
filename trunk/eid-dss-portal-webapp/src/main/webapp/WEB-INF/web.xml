@@ -143,6 +143,10 @@
             <param-name>DssWSUrl</param-name>
             <param-value>http://localhost:8080/eid-dss-ws/dss</param-value>
         </init-param>
+        <init-param>
+        	<param-name>SignatureRequestIdSessionAttribute</param-name>
+        	<param-value>SignatureRequestId</param-value>
+        </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>DSSResponseProcessor</servlet-name>
