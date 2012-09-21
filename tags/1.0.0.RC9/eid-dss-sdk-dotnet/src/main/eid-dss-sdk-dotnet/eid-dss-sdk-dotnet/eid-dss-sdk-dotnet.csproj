@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AB9F93FB-6405-4EDC-922A-8BA599204578}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>eid_dss_sdk_dotnet</RootNamespace>
+    <AssemblyName>eid-dss-sdk-dotnet</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\main\cs\DSSRequestFailedException.cs" />
+    <Compile Include="src\main\cs\KeyStoreUtil.cs" />
+    <Compile Include="src\main\cs\ServiceSignatureDO.cs" />
+    <Compile Include="src\main\cs\DocumentNotFoundException.cs" />
+    <Compile Include="src\main\cs\SignatureRequestUtil.cs" />
+    <Compile Include="src\main\cs\StorageInfoDO.cs" />
+    <Compile Include="src\main\cs\UserCancelledSignatureResponseProcessorException.cs" />
+    <Compile Include="src\main\cs\SignatureResponseProcessorException.cs" />
+    <Compile Include="src\main\cs\DigitalSignatureServiceClient.cs" />
+    <Compile Include="src\main\cs\DigitalSignatureServiceClientImpl.cs" />
+    <Compile Include="src\main\cs\DSSConstants.cs" />
+    <Compile Include="src\main\cs\LoggingBehavior.cs" />
+    <Compile Include="src\main\cs\NotParseableXMLDocumentException.cs" />
+    <Compile Include="src\main\cs\SignatureInfo.cs" />
+    <Compile Include="src\main\cs\SignatureReponse.cs" />
+    <Compile Include="src\main\cs\SignatureResponseProcessor.cs" />
+    <Compile Include="src\main\cs\WCFUtil.cs" />
+    <Compile Include="target\services\DigitalSignatureService.cs">
+      <Autogen>True</Autogen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="target\services\eid-dss-artifact-binding-schema-v1_0.cs">
+      <Autogen>True</Autogen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="target\services\oasis-dssx-1_0-profiles-vr-cd1.cs">
+      <Autogen>True</Autogen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="src\main\resources\*" />
+    <None Include="src\main\resources\wsdl\*" />
+    <None Include="src\main\resources\xsd\*" />
+  </ItemGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets. -->
+  <Target Name="BeforeBuild">
+    <MakeDir Directories="target\services" />
+    <Exec Command="SvcUtil /namespace:*,DSSWSNamespace /directory:target\services src\main\resources\wsdl\eid-dss-ws.wsdl src\main\resources\wsdl\oasis-dss-core-schema-v1.0-os.xsd src\main\resources\wsdl\oasis-sstc-saml-schema-protocol-1.1.xsd src\main\resources\wsdl\xmldsig-core-schema.xsd" />
+    <Exec Command="xsd /outputdir:target\services /language:cs /namespace:DSSXSDNamespace /classes src\main\resources\xsd\eid-dss-artifact-binding-schema-v1.0.xsd" />
+    <Exec Command="xsd /outputdir:target\services /language:cs /namespace:DSSXSDNamespace /classes src\main\resources\xsd\oasis-dss-core-schema-v1.0-os.xsd src\main\resources\xsd\xmldsig-core-schema.xsd src\main\resources\xsd\saml-schema-assertion-2.0.xsd src\main\resources\xsd\oasis-sstc-saml-schema-protocol-1.1.xsd src\main\resources\xsd\XAdES.xsd src\main\resources\xsd\schema.xsd src\main\resources\xsd\xenc-schema.xsd src\main\resources\xsd\oasis-dssx-1.0-profiles-vr-cd1.xsd" />
+  </Target>
+</Project>

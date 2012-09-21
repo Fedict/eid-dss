@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core">
+<body>
+	<ui:composition template="/WEB-INF/template.xhtml">
+		<ui:define name="body">
+			<h2>#{messages.navigatingBack}</h2>
+			<c:choose>
+				<c:when test="#{not empty dssResponseAction}">
+					<p>#{messages.navigatingBackInfo}</p>
+					<form id="response-form" method="post"
+						action="#{dssResponseAction}">
+						<ui:repeat value="#{dssResponseAttributes}" var="item">
+							<input type="hidden" name="#{item.name}" value="#{item.value}" />
+						</ui:repeat>
+						<noscript>
+							<input type="submit" value="Submit" />
+						</noscript>
+					</form>
+					<script type="text/javascript">
+						document.getElementById('response-form').submit();
+					</script>
+				</c:when>
+				<c:otherwise>
+					<p>An error occurred while generating the response message.</p>
+				</c:otherwise>
+			</c:choose>
+		</ui:define>
+	</ui:composition>
+</body>
+</html>

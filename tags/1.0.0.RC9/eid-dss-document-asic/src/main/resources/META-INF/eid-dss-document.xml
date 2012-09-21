@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DigitalSignatureServiceDocument xmlns="urn:be:fedict:eid:dss:spi:document">
+	<Name>ASiC Document</Name>
+	<Description>Associated Signature Container Documents</Description>
+	<DocumentServiceClass>be.fedict.eid.dss.document.asic.ASiCDSSDocumentService</DocumentServiceClass>
+	<ContentType>application/vnd.etsi.asic-s+zip</ContentType>
+	<ContentType>application/vnd.etsi.asic-e+zip</ContentType>
+</DigitalSignatureServiceDocument>
