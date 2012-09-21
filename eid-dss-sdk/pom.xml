@@ -3,13 +3,13 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.0.0-SNAPSHOT</version>
+		<version>1.0.0.RC9</version>
 	</parent>
 	<name>FedICT eID DSS SDK</name>
 	<description>SDK for eID Digital Signature Service</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-sdk</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0.RC9</version>
 	<packaging>pom</packaging>
 	<build>
 		<plugins>
