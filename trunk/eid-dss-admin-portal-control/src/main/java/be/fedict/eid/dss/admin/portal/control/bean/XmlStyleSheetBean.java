@@ -80,13 +80,14 @@ public class XmlStyleSheetBean implements XmlStyleSheet {
 
 	@Override
 	public String add() {
-		this.log.debug("add #0 #1", this.namespace, this.revision);
+		String namespace = this.namespace.trim();
+		this.log.debug("add \"#0\" #1", namespace, this.revision);
 		if (null == this.uploadedFile) {
 			this.facesMessages.addToControl("file", "missing XML schema");
 			return null;
 		}
 		try {
-			this.xmlStyleSheetManager.add(this.namespace, this.revision,
+			this.xmlStyleSheetManager.add(namespace, this.revision,
 					this.uploadedFile);
 		} catch (ExistingXmlStyleSheetException e) {
 			this.facesMessages.addToControl("file", "existing XML schema");
