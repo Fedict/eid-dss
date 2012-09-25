@@ -37,7 +37,7 @@
 							<formatName>pdf</formatName>
 							<stylesheetResource> classpath:/xslt/org/jboss/pdf.xsl
 							</stylesheetResource>
-							<finalName>${pom.artifactId}.pdf</finalName>
+							<finalName>${project.artifactId}.pdf</finalName>
 						</format>
 					</formats>
 					<sourceDocumentName>eid-dss-admin-manual.xml</sourceDocumentName>
