@@ -71,7 +71,10 @@ public enum ConfigProperty {
 			"mail-signed-document", Boolean.class),
 
 	SECURITY_REMOVE_CARD("security-remove-card", Boolean.class), SECURITY_HSTS(
-			"security-hsts", Boolean.class);
+			"security-hsts", Boolean.class),
+
+	DSS_WS_URL("dss-ws-url", String.class,
+			"http://localhost:8080/eid-dss-ws/dss");
 
 	private final String name;
 

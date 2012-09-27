@@ -62,6 +62,9 @@
 							<h:inputText id="documentCleanupTaskCronSchedule"
 								value="#{dssConfig.documentCleanupTaskCronSchedule}" size="10" />
 
+							<h:outputText value="Local DSS Web Service URL:" />
+							<h:inputText value="#{dssConfig.dssWSUrl}" size="50" />
+
 						</h:panelGrid>
 						<h:commandButton value="Save" action="#{dssConfig.save}" />
 					</rich:tab>

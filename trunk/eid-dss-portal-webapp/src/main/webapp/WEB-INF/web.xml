@@ -138,14 +138,14 @@
             <param-name>SignatureRequestSessionAttribute</param-name>
             <param-value>SignatureRequest</param-value>
         </init-param>
-        <!-- Artificact binding configuration -->
-        <init-param>
-            <param-name>DssWSUrl</param-name>
-            <param-value>http://localhost:8080/eid-dss-ws/dss</param-value>
-        </init-param>
+        <!-- Artifact binding configuration -->
         <init-param>
         	<param-name>SignatureRequestIdSessionAttribute</param-name>
         	<param-value>SignatureRequestId</param-value>
+        </init-param>
+        <init-param>
+        	<param-name>SignatureResponseService</param-name>
+        	<param-value>fedict/eid/dss/portal/SignatureResponseServiceBean</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

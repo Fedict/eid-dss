@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2010 FedICT.
+ * Copyright (C) 2010-2012 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -102,6 +102,8 @@ public class ConfigBean implements Config {
 
 	private Boolean hsts;
 
+	private String dssWSUrl;
+
 	@Override
 	@PostConstruct
 	public void postConstruct() {
@@ -139,6 +141,8 @@ public class ConfigBean implements Config {
 				ConfigProperty.DOCUMENT_STORAGE_EXPIRATION, Integer.class);
 		this.documentCleanupTaskCronSchedule = this.configuration.getValue(
 				ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE, String.class);
+		this.dssWSUrl = this.configuration.getValue(ConfigProperty.DSS_WS_URL,
+				String.class);
 
 		this.timestampMaxOffset = this.configuration.getValue(
 				ConfigProperty.TIMESTAMP_MAX_OFFSET, Long.class);
@@ -200,6 +204,7 @@ public class ConfigBean implements Config {
 
 		this.configuration.setValue(ConfigProperty.DOCUMENT_STORAGE_EXPIRATION,
 				this.documentStorageExpiration);
+		this.configuration.setValue(ConfigProperty.DSS_WS_URL, this.dssWSUrl);
 
 		this.configuration.setValue(ConfigProperty.TIMESTAMP_MAX_OFFSET,
 				this.timestampMaxOffset);
@@ -463,5 +468,15 @@ public class ConfigBean implements Config {
 	@Override
 	public void setHsts(Boolean hsts) {
 		this.hsts = hsts;
+	}
+
+	@Override
+	public String getDssWSUrl() {
+		return this.dssWSUrl;
+	}
+
+	@Override
+	public void setDssWSUrl(String dssWSUrl) {
+		this.dssWSUrl = dssWSUrl;
 	}
 }
