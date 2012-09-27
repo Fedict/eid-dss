@@ -139,7 +139,7 @@
                         </table>
                     </rich:panel>
                     <f:facet name="footer">
-                        <rich:datascroller/>
+                        <rich:datascroller rendered="#{signatureInfos.rowCount > 5}"/>
                     </f:facet>
                 </rich:dataGrid>
             </h:form>
