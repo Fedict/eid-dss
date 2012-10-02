@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:s="http://jboss.com/products/seam/taglib">
+    <body>
+        <ui:composition template="/WEB-INF/template.xhtml">
+            <ui:define name="body">
+
+                <h2>Relying Party: #{selectedRP.name}</h2>
+
+                <h:form>
+
+                    <rich:tabPanel switchType="client"
+                                   selectedTab="#{dssRP.selectedTab}">
+
+                        <rich:tab name="tab_config" label="Configuration">
+                            <h:panelGrid columns="2" border="0">
+
+                                <h:outputLabel for="name" value="Name"/>
+                                <s:decorate>
+                                    <h:inputText id="name"
+                                                 value="#{selectedRP.name}"
+                                                 size="50"/>
+                                    <h:message for="name" styleClass="error"/>
+                                </s:decorate>
+
+                                <h:outputLabel for="domain"
+                                               value="Domain"/>
+                                <s:decorate>
+                                    <h:inputText id="domain"
+                                                 value="#{selectedRP.domain}"
+                                                 size="50"/>
+                                    <h:message for="domain" styleClass="error"/>
+                                </s:decorate>
+
+                            </h:panelGrid>
+                        </rich:tab>
+
+                        <rich:tab name="tab_logo" label="Logo">
+
+                            <h:panelGrid columns="4" border="0">
+                                <h:outputLabel for="uploadLogo" value="Logo"/>
+                                <rich:fileUpload
+                                        fileUploadListener="#{dssRP.uploadListenerLogo}"
+                                        maxFilesQuantity="1" id="uploadLogo"
+                                        immediateUpload="true"
+                                        acceptedTypes="jpg, gif, png, bmp">
+                                    <a4j:support event="onuploadcomplete"
+                                                 reRender="logo"/>
+                                </rich:fileUpload>
+                                <h:message for="uploadLogo" styleClass="error"/>
+
+                                <a4j:mediaOutput id="logo" element="img"
+                                                 mimeType="image/jpeg"
+                                                 createContent="#{dssRP.paint}"
+                                                 style="width:100px; height:100px;"
+                                                 cacheable="false">
+                                    <f:param value="#{dssRP.timeStamp}"
+                                             name="time"/>
+                                    <s:conversationId
+                                            value="#{conversation.id}"/>
+                                </a4j:mediaOutput>
+                            </h:panelGrid>
+
+                        </rich:tab>
+
+
+                        <rich:tab name="tab_signing" label="Signing">
+                            <h:panelGrid columns="2" border="0">
+
+                                <h:outputText
+                                        value="Requires request signing?"/>
+                                <h:selectBooleanCheckbox
+                                        value="#{selectedRP.requestSigningRequired}"/>
+
+
+                                <h:outputLabel value="Certificate Subject"/>
+                                <h:outputLabel
+                                        value="#{selectedRP.certificateSubject}"/>
+
+                                <h:outputLabel for="upload"
+                                               value="Certificate"/>
+                                <rich:fileUpload
+                                        fileUploadListener="#{dssRP.uploadListener}"
+                                        maxFilesQuantity="1" id="upload"
+                                        immediateUpload="true">
+                                    <a4j:support event="onuploadcomplete"
+                                                 reRender="cert_panel"/>
+                                </rich:fileUpload>
+                                <h:message for="upload"
+                                           styleClass="error"/>
+
+                                <h:commandButton value="Remove certificate"
+                                                 action="#{dssRP.removeCertificate}"
+                                                 rendered="#{selectedRP.certificate != null}"/>
+
+                            </h:panelGrid>
+
+                            <p>
+                                <rich:simpleTogglePanel id="cert_panel"
+                                                        switchType="client"
+                                                        opened="true"
+                                                        label="Certificate">
+                                    <h:outputText id="cert_view"
+                                                  styleClass="text block"
+                                                  escape="false"
+                                                  value="#{selectedRP.certificateString}"/>
+                                </rich:simpleTogglePanel>
+                            </p>
+
+                        </rich:tab>
+
+                    </rich:tabPanel>
+
+                    <h:panelGrid columns="2" border="0">
+
+                        <h:commandButton action="#{dssRP.save}" id="save"
+                                         value="Save"/>
+                        <h:commandButton action="#{dssRP.back}" id="back"
+                                         value="Back"
+                                         immediate="true"/>
+                    </h:panelGrid>
+
+                    <h:messages globalOnly="true" styleClass="error"/>
+
+                </h:form>
+
+
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

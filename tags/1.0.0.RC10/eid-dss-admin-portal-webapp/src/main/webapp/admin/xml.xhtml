@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:s="http://jboss.com/products/seam/taglib"
+      xmlns:html="http://www.w3.org/1999/xhtml">
+    <body>
+        <ui:composition template="/WEB-INF/template.xhtml">
+            <ui:define name="body">
+
+                <h2>XML Schemas</h2>
+                <h:form>
+                    <rich:dataTable var="row" value="#{dssXmlSchemaList}"
+                                    rows="10"
+                                    rendered="#{dssXmlSchemaList.rowCount > 0}">
+                        <rich:column>
+                            <f:facet name="header">
+                                <h:outputText value="namespace"/>
+                            </f:facet>
+                            <h:outputText value="#{row.namespace}"/>
+                        </rich:column>
+                        <rich:column>
+                            <f:facet name="header">
+                                <h:outputText value="revision"/>
+                            </f:facet>
+                            <h:outputText value="#{row.revision}"/>
+                        </rich:column>
+                        <rich:column>
+                            <f:facet name="header">
+                                <h:outputText value="actions"/>
+                            </f:facet>
+                            <h:commandLink value="Delete"
+                                           action="#{dssXmlSchema.delete}"
+                                           onclick="return askDeleteQuestion()"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink value="View" action="#{dssXmlSchema.view}"/>
+                        </rich:column>
+                        <f:facet name="footer">
+                            <rich:datascroller/>
+                        </f:facet>
+                    </rich:dataTable>
+                    <h:outputText value="No XML schemas available."
+                                  rendered="#{dssXmlSchemaList.rowCount == 0}"/>
+                    <script type="text/javascript">
+                       function askDeleteQuestion() {
+                            var agree = confirm("Remove XML schema?");
+                            if (agree) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                    </script>
+                </h:form>
+
+                <p/>
+
+                <h:form enctype="multipart/form-data">
+                    <fieldset>
+                        <legend>Add XML Schema</legend>
+                        <h:panelGrid columns="2">
+                            <h:outputText value="Revision:"/>
+                            <h:inputText value="#{dssXmlSchema.revision}"
+                                         required="true"
+                                         size="50" id="revision"/>
+                            <h:message for="revision" styleClass="error"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <h:outputText value="XSD file:"/>
+                            <s:fileUpload data="#{dssXmlSchema.uploadedFile}"
+                                          size="60"
+                                          required="true" id="file"/>
+                        </h:panelGrid>
+
+                        <h:panelGrid>
+                            <h:message for="file" styleClass="error"/>
+                        </h:panelGrid>
+
+                        <h:commandButton action="#{dssXmlSchema.add}"
+                                         value="Add"/>
+                    </fieldset>
+                </h:form>
+                <h:messages globalOnly="true" styleClass="error"/>
+
+                <h2>XML Style Sheets</h2>
+                <h:form>
+                    <rich:dataTable var="row" value="#{dssXmlStyleSheetList}"
+                                    rows="10"
+                                    rendered="#{dssXmlStyleSheetList.rowCount > 0}">
+                        <rich:column>
+                            <f:facet name="header">
+                                <h:outputText value="namespace"/>
+                            </f:facet>
+                            <h:outputText value="#{row.namespace}"/>
+                        </rich:column>
+                        <rich:column>
+                            <f:facet name="header">
+                                <h:outputText value="revision"/>
+                            </f:facet>
+                            <h:outputText value="#{row.revision}"/>
+                        </rich:column>
+                        <rich:column>
+                            <f:facet name="header">
+                                <h:outputText value="actions"/>
+                            </f:facet>
+                            <h:commandLink value="Delete"
+                                           action="#{dssXmlStyleSheet.delete}"
+                                           onclick="return askDeleteQuestion()"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink value="View" action="#{dssXmlStyleSheet.view}"/>
+                        </rich:column>
+                        <f:facet name="footer">
+                            <rich:datascroller/>
+                        </f:facet>
+                    </rich:dataTable>
+                    <h:outputText value="No XML style sheets available."
+                                  rendered="#{dssXmlStyleSheetList.rowCount == 0}"/>
+                    <script type="text/javascript">
+                        function askDeleteQuestion() {
+                            var agree = confirm("Remove XML style sheet?");
+                            if (agree) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                    </script>
+                </h:form>
+
+                <p/>
+
+                <h:form enctype="multipart/form-data">
+                    <fieldset>
+                        <legend>Add XML Style Sheet</legend>
+                        <h:panelGrid columns="3">
+                            <h:outputText value="Namespace:"/>
+                            <h:inputText value="#{dssXmlStyleSheet.namespace}"
+                                         required="true"
+                                         size="50" id="namespace"/>
+                            <h:message for="namespace" styleClass="error"/>
+
+                            <h:outputText value="Revision:"/>
+                            <h:inputText value="#{dssXmlStyleSheet.revision}"
+                                         required="true"
+                                         size="50" id="revision"/>
+                            <h:message for="revision" styleClass="error"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="3">
+                            <h:outputText value="XSL file:"/>
+                            <s:fileUpload
+                                    data="#{dssXmlStyleSheet.uploadedFile}"
+                                    size="60"
+                                    required="true" id="file"/>
+                        </h:panelGrid>
+
+                        <h:panelGrid>
+                            <h:message for="file" styleClass="error"/>
+                        </h:panelGrid>
+
+                        <h:commandButton action="#{dssXmlStyleSheet.add}"
+                                         value="Add"/>
+                    </fieldset>
+                </h:form>
+                <h:messages globalOnly="true" styleClass="error"/>
+
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

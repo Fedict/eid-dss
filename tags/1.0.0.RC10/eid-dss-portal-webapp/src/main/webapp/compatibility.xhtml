@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+    <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+    <meta http-equiv="Content-Style-Type" content="text/css"/>
+    <meta http-equiv="expires" content="0"/>
+    <meta http-equiv="cache-control" content="no-cache, no-store"/>
+    <meta http-equiv="pragma" content="no-cache"/>
+    <title>#{messages.title} - #{messages.compatibilityTitle}</title>
+    <link rel="stylesheet" type="text/css"
+          href="#{facesContext.externalContext.requestContextPath}/style.css"/>
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    <div id="compatibility">
+
+        <div class="title">
+            <h1>#{messages.compatibilityTitle}</h1>
+        </div>
+
+        <div class="center">
+            <table border="0" width="420" align="center">
+                <tr>
+                    <td align="center" width="33%">
+                        <img src="./images/win.png" border="0" width="110" alt="Windows"/>
+                    </td>
+                    <td align="center" width="33%">
+                        <img src="./images/lin.png" border="0" width="110" alt="Linux"/>
+                    </td>
+                    <td align="center">
+                        <img src="./images/mac.png" border="0" width="110" alt="Mac OS X"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p align="center">Microsoft Windows XP, Vista, 7</p>
+                    </td>
+                    <td>
+                        <p align="center">Linux</p>
+                    </td>
+                    <td>
+                        <p align="center">Apple OS X 10.x</p>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td valign="top">
+                        <p align="center">IExplorer &gt; 7.x</p>
+
+                        <p align="center">Firefox &gt; 10.x</p>
+
+                        <p align="center">Safari &gt; 4.X</p>
+
+                        <p align="center">Chrome &gt; 15.X</p>
+                    </td>
+                    <td valign="top">
+                        <p align="center">Firefox &gt; 10.x</p>
+
+                        <p align="center">Chrome &gt; 15.X</p>
+                    </td>
+                    <td valign="top">
+                        <p align="center">Safari &gt; 4.X</p>
+
+                        <p align="center">Firefox &gt; 10.x</p>
+
+                        <p align="center">Chrome &gt; 15.X</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+    <div id="footer">
+        <p align="center">#{messages.copyright}</p>
+    </div>
+
+</div>
+
+</body>
+
+</html>

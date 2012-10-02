@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:be:fedict:eid:dss:example"
+	xmlns:tns="urn:be:fedict:eid:dss:example" elementFormDefault="qualified"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<element name="Transaction" type="tns:TransactionType" />
+	<complexType name="TransactionType">
+		<sequence>
+			<element name="From" type="xsd:string" />
+			<element name="To" type="xsd:string" />
+			<element name="Amount" type="xsd:double" />
+			<element name="Description" type="xsd:string" minOccurs="0" />
+		</sequence>
+	</complexType>
+</schema>
