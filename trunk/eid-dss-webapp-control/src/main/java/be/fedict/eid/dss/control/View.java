@@ -62,6 +62,8 @@ public interface View {
 	void setEmail(String email);
 
 	boolean getDisplayMailSignedDocument();
+	
+	boolean isDisableButtons();
 
 	/*
 	 * Lifecycle.

@@ -16,9 +16,10 @@
 		<ui:define name="body_content">
 
 			<h:form>
-				<h:commandButton value="#{messages.sign}" action="#{dssView.sign}" />
+				<h:commandButton value="#{messages.sign}" action="#{dssView.sign}"
+					disabled="#{dssView.disableButtons}" />
 				<h:commandButton value="#{messages.cancel}"
-					action="#{dssView.cancel}" />
+					action="#{dssView.cancel}" disabled="#{dssView.disableButtons}" />
 				<rich:spacer height="5" />
 				<rich:simpleTogglePanel switchType="client"
 					label="#{messages.options}" opened="false">
