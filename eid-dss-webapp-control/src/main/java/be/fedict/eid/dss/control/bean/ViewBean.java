@@ -194,4 +194,13 @@ public class ViewBean implements View {
 	public boolean getDisplayMailSignedDocument() {
 		return this.mailManager.sendSignedDocumentEnabled();
 	}
+
+	@Override
+	public boolean isDisableButtons() {
+		HttpSession httpSession = HttpSessionTemporaryDataStorage
+				.getHttpSession();
+		DocumentRepository documentRepository = new DocumentRepository(
+				httpSession);
+		return null == documentRepository.getDocument();
+	}
 }

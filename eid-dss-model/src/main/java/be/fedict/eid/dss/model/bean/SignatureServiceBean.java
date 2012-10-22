@@ -141,6 +141,9 @@ public class SignatureServiceBean implements SignatureServiceEx {
 		DocumentRepository documentRepository = new DocumentRepository(
 				httpSession);
 		byte[] document = documentRepository.getDocument();
+		if (null == document) {
+			throw new RuntimeException("no document to be signed");
+		}
 		ByteArrayInputStream documentInputStream = new ByteArrayInputStream(
 				document);
 		String role = documentRepository.getRole();
