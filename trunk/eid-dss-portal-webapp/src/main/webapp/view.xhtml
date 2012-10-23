@@ -87,7 +87,7 @@
             </p>
 
             <h:form styleClass="signatureForm">
-                <rich:dataGrid var="row" value="#{signatureInfos}" elements="5"
+                <rich:dataGrid var="row" value="#{signatureInfos}"
                                rendered="#{signatureInfos.rowCount > 0}" columns="1">
                     <f:facet name="header">
                         <h:outputText value="#{messages.signatures}" />
@@ -139,7 +139,7 @@
                         </table>
                     </rich:panel>
                     <f:facet name="footer">
-                        <rich:datascroller rendered="#{signatureInfos.rowCount > 5}"/>
+                        <rich:datascroller rendered="false"/>
                     </f:facet>
                 </rich:dataGrid>
             </h:form>
