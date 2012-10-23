@@ -80,6 +80,13 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-model</artifactId>
+			<version>${project.version}</version>
+			<type>ejb-client</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>be.fedict.eid-applet</groupId>
 			<artifactId>eid-applet-package</artifactId>
 			<scope>provided</scope>
