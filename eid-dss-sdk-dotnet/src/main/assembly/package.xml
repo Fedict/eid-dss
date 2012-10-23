@@ -7,7 +7,7 @@
     <formats>
         <format>zip</format>
     </formats>
-    <baseDirectory>eid-dss-sdk-dotnet</baseDirectory>
+    <baseDirectory>eid-dss-sdk-dotnet-${project.version}</baseDirectory>
     <files>
         <file>
             <source>src/main/assembly/README.txt</source>
@@ -18,7 +18,7 @@
             <fileMode>0644</fileMode>
         </file>
         <file>
-            <source>target/dev-guide/eid-dss-dev-guide.pdf</source>
+            <source>target/dev-guide/eid-dss-dev-guide-${project.version}.pdf</source>
             <fileMode>0644</fileMode>
         </file>
     </files>

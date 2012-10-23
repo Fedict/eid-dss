@@ -10,7 +10,7 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<files>
 		<file>
-			<source>target/docbook/publish/en-US/pdf/eid-dss-dev-guide.pdf</source>
+			<source>target/docbook/publish/en-US/pdf/eid-dss-dev-guide-${project.version}.pdf</source>
 		</file>
 	</files>
 </assembly>
