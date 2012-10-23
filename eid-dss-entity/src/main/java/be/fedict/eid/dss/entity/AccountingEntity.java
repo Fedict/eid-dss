@@ -36,7 +36,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = Constants.DATABASE_TABLE_PREFIX + "accounting")
 @NamedQueries({
-		@NamedQuery(name = AccountingEntity.LIST_ALL, query = "FROM AccountingEntity"),
+		@NamedQuery(name = AccountingEntity.LIST_ALL, query = "FROM AccountingEntity AS accounting "
+				+ "ORDER BY accounting.requests DESC"),
 		@NamedQuery(name = AccountingEntity.RESET_ALL, query = "DELETE FROM AccountingEntity") })
 public class AccountingEntity implements Serializable {
 
