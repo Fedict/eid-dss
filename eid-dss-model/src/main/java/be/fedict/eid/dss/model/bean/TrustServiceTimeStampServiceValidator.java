@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.model.bean;
 
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
@@ -26,7 +27,11 @@ import org.apache.commons.logging.LogFactory;
 
 import be.fedict.eid.applet.service.signer.facets.RevocationData;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
+import be.fedict.eid.dss.model.exception.TrustServiceClientException;
 import be.fedict.trust.client.XKMS2Client;
+import be.fedict.trust.client.exception.RevocationDataNotFoundException;
+import be.fedict.trust.client.exception.TrustDomainNotFoundException;
+import be.fedict.trust.client.exception.ValidationFailedException;
 import be.fedict.trust.client.jaxb.xades132.CRLValuesType;
 import be.fedict.trust.client.jaxb.xades132.EncapsulatedPKIDataType;
 import be.fedict.trust.client.jaxb.xades132.OCSPValuesType;
@@ -52,8 +57,23 @@ public class TrustServiceTimeStampServiceValidator implements
 			RevocationData revocationData) throws Exception {
 		LOG.debug("validating TSA certificate: "
 				+ certificateChain.get(0).getSubjectX500Principal());
-		this.xkms2Client.validate(this.trustDomain, certificateChain,
-				revocationData != null);
+		try {
+			this.xkms2Client.validate(this.trustDomain, certificateChain,
+					revocationData != null);
+		} catch (CertificateEncodingException e) {
+			throw new TrustServiceClientException("certificate encoding error",
+					e);
+		} catch (TrustDomainNotFoundException e) {
+			throw new TrustServiceClientException("trust domain not found", e);
+		} catch (RevocationDataNotFoundException e) {
+			throw new TrustServiceClientException("revocation data not found",
+					e);
+		} catch (ValidationFailedException e) {
+			throw new TrustServiceClientException("validation failed", e);
+		} catch (Exception e) {
+			throw new TrustServiceClientException(
+					"unknown trust service error", e);
+		}
 		if (null == revocationData) {
 			return;
 		}
