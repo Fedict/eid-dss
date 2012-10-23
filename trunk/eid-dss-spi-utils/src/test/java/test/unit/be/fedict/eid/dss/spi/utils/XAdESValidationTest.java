@@ -132,8 +132,9 @@ public class XAdESValidationTest {
 				(Date) EasyMock.anyObject(),
 				(List<OCSPResp>) EasyMock.anyObject(),
 				(List<X509CRL>) EasyMock.anyObject());
+		// XXX: slow running unit tests might fail here
 		expect(mockDSSDocumentContext.getTimestampMaxOffset()).andReturn(
-				2 * 1000L);
+				20 * 1000L);
 		expect(mockDSSDocumentContext.getMaxGracePeriod()).andReturn(
 				1000L * 60 * 60 * 24 * 7);
 
