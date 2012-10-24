@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Transaction xmlns="urn:be:fedict:eid:dss:example">
+<From>Tom</From>
+<To>Jerry</To>
+<Amount>10.5</Amount>
+<Description>Example transaction</Description>
+</Transaction>

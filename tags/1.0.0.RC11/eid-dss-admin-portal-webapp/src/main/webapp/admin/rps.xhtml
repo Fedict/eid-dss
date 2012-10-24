@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:s="http://jboss.com/products/seam/taglib">
+    <body>
+        <ui:composition template="/WEB-INF/template.xhtml">
+            <ui:define name="body">
+                <h2>Relying Parties</h2>
+
+                <h:form>
+
+                    <h:outputLabel value="No relying parties configured."
+                                   rendered="#{dssRPList.rowCount == 0}"/>
+
+                    <rich:dataTable id="data" var="item"
+                                    value="#{dssRPList}"
+                                    rows="10"
+                                    rowClasses="listingTable_Row1,listingTable_Row2"
+                                    rendered="#{dssRPList.rowCount > 0}">
+
+                        <h:column>
+                            <f:facet name="header">Name</f:facet>
+                            <h:outputText value="#{item.name}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Domain</f:facet>
+                            <h:outputText value="#{item.domain}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Certificate Subject</f:facet>
+                            <h:outputText value="#{item.certificateSubject}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Modify</f:facet>
+                            <h:commandLink action="#{dssRP.modify}"
+                                           id="modify"
+                                           value="Modify"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Remove</f:facet>
+                            <h:commandLink value="Delete" action="#{dssRP.remove}"
+                                onclick="return askDeleteQuestion()" />
+                        </h:column>
+
+                        <f:facet name="footer">
+                            <rich:datascroller for="data"
+                                               pageIndexVar="pageIndex"
+                                               pagesVar="pages"
+                                               fastControls="hide">
+                            </rich:datascroller>
+                        </f:facet>
+
+                    </rich:dataTable>
+
+                    <script type="text/javascript">
+                        function askDeleteQuestion() {
+                            var agree = confirm("Sure you want to remove this Relying Party ?");
+                            if (agree) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                    </script>
+
+                    <p/>
+
+                    <h:commandButton action="#{dssRP.add}" id="add"
+                                     value="Add"/>
+
+                </h:form>
+
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
