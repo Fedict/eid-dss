@@ -167,7 +167,7 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 
         return new ZIPSignatureService(documentInputStream, signatureFacet,
                 documentOutputStream, revocationDataService, timeStampService,
-                role, identity, photo, signatureDigestAlgo);
+                role, identity, photo, signatureDigestAlgo, this.documentContext);
     }
 
     @Override

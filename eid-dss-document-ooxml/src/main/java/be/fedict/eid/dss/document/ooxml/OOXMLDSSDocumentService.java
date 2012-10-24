@@ -72,15 +72,15 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 		LOG.debug("checkIncomingDocument");
 	}
 
-    public DocumentVisualization findDocument(byte[] parentDocument, String resourceId)
-            throws Exception {
+	public DocumentVisualization findDocument(byte[] parentDocument,
+			String resourceId) throws Exception {
 
-        return null;
-    }
+		return null;
+	}
 
-    public DocumentVisualization visualizeDocument(byte[] document,
+	public DocumentVisualization visualizeDocument(byte[] document,
 			String language, List<MimeType> mimeTypes,
-            String documentViewerServlet) throws Exception {
+			String documentViewerServlet) throws Exception {
 
 		LOG.debug("visualizeDocument");
 		return null;
@@ -96,7 +96,8 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 
 		return new OOXMLSignatureService(documentInputStream,
 				documentOutputStream, signatureFacet, role, identity, photo,
-				revocationDataService, timeStampService, signatureDigestAlgo);
+				revocationDataService, timeStampService, signatureDigestAlgo,
+				this.documentContext);
 	}
 
 	@Override

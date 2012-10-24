@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2009-2011 FedICT.
+ * Copyright (C) 2009-2012 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -18,10 +18,18 @@
 
 package be.fedict.eid.dss.model.bean;
 
+import java.io.File;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import javax.security.jacc.PolicyContext;
+import javax.security.jacc.PolicyContextException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.bouncycastle.ocsp.OCSPResp;
 import org.bouncycastle.tsp.TimeStampToken;
@@ -41,6 +49,8 @@ import be.fedict.eid.dss.spi.DSSDocumentContext;
 public class ModelDSSDocumentContext implements DSSDocumentContext {
 
 	private static final long serialVersionUID = 1L;
+
+	public static final String TMP_FILE_SET_SESSION_ATTRIBUTE = "eid-dss-temp-file-set";
 
 	private final XmlSchemaManager xmlSchemaManager;
 
@@ -129,5 +139,24 @@ public class ModelDSSDocumentContext implements DSSDocumentContext {
 			return maxGracePeriod;
 		}
 		return (Long) ConfigProperty.MAX_GRACE_PERIOD.getDefaultValue();
+	}
+
+	public void deleteWhenSessionDestroyed(File tmpFile) {
+		HttpServletRequest httpServletRequest;
+		try {
+			httpServletRequest = (HttpServletRequest) PolicyContext
+					.getContext("javax.servlet.http.HttpServletRequest");
+		} catch (PolicyContextException e) {
+			throw new RuntimeException("JACC error: " + e.getMessage(), e);
+		}
+		HttpSession httpSession = httpServletRequest.getSession();
+		Set<String> tmpFileSet = (Set<String>) httpSession
+				.getAttribute(TMP_FILE_SET_SESSION_ATTRIBUTE);
+		if (null == tmpFileSet) {
+			tmpFileSet = new HashSet<String>();
+			httpSession
+					.setAttribute(TMP_FILE_SET_SESSION_ATTRIBUTE, tmpFileSet);
+		}
+		tmpFileSet.add(tmpFile.getAbsolutePath());
 	}
 }

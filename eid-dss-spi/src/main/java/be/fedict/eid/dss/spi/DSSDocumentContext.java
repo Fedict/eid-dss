@@ -1,6 +1,6 @@
 /*
  * eID Digital Signature Service Project.
- * Copyright (C) 2010 FedICT.
+ * Copyright (C) 2010-2012 FedICT.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License version
@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.spi;
 
+import java.io.File;
 import java.io.Serializable;
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
@@ -98,4 +99,16 @@ public interface DSSDocumentContext extends Serializable {
 	Long getTimestampMaxOffset();
 
 	Long getMaxGracePeriod();
+
+	/**
+	 * Via this method the {@link DSSDocumentService} can register files which
+	 * should be deleted when the corresponding HTTP session is being destroyed.
+	 * This ensures proper cleanup of all temporary files used by the eID DSS
+	 * even in the case of unexpected behavior. No error will occur when the
+	 * file already has been deleted.
+	 * 
+	 * @param tmpFile
+	 *            the file to be deleted when the session is being destroyed.
+	 */
+	void deleteWhenSessionDestroyed(File tmpFile);
 }
