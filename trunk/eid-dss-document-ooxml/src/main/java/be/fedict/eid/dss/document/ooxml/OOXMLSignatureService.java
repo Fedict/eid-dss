@@ -45,6 +45,7 @@ import be.fedict.eid.applet.service.spi.AddressDTO;
 import be.fedict.eid.applet.service.spi.DigestInfo;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureServiceEx;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
 
 public class OOXMLSignatureService extends AbstractOOXMLSignatureService
@@ -60,13 +61,14 @@ public class OOXMLSignatureService extends AbstractOOXMLSignatureService
 			OutputStream documentOutputStream, SignatureFacet signatureFacet,
 			String role, IdentityDTO identity, byte[] photo,
 			RevocationDataService revocationDataService,
-			TimeStampService timeStampService, DigestAlgo signatureDigestAlgo)
-			throws IOException {
+			TimeStampService timeStampService, DigestAlgo signatureDigestAlgo,
+			DSSDocumentContext documentContext) throws IOException {
 
 		super(signatureDigestAlgo);
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		this.documentOutputStream = documentOutputStream;
 		this.tmpFile = File.createTempFile("eid-dss-", ".ooxml");
+		documentContext.deleteWhenSessionDestroyed(this.tmpFile);
 		FileOutputStream fileOutputStream;
 		fileOutputStream = new FileOutputStream(this.tmpFile);
 		IOUtils.copy(documentInputStream, fileOutputStream);

@@ -34,6 +34,8 @@ import javax.xml.crypto.URIDereferencer;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.xml.security.utils.Constants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -55,6 +57,7 @@ import be.fedict.eid.applet.service.spi.AddressDTO;
 import be.fedict.eid.applet.service.spi.DigestInfo;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureServiceEx;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
 
 /**
@@ -66,6 +69,8 @@ import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
 public class ZIPSignatureService extends AbstractXmlSignatureService implements
 		SignatureServiceEx {
 
+	private static final Log LOG = LogFactory.getLog(ZIPSignatureService.class);
+
 	private final TemporaryDataStorage temporaryDataStorage;
 
 	private final OutputStream documentOutputStream;
@@ -76,14 +81,16 @@ public class ZIPSignatureService extends AbstractXmlSignatureService implements
 			SignatureFacet signatureFacet, OutputStream documentOutputStream,
 			RevocationDataService revocationDataService,
 			TimeStampService timeStampService, String role,
-			IdentityDTO identity, byte[] photo, DigestAlgo signatureDigestAlgo)
-			throws IOException {
+			IdentityDTO identity, byte[] photo, DigestAlgo signatureDigestAlgo,
+			DSSDocumentContext documentContext) throws IOException {
 
 		super(signatureDigestAlgo);
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		this.documentOutputStream = documentOutputStream;
 
 		this.tmpFile = File.createTempFile("eid-dss-", ".zip");
+		LOG.debug("create tmp file: " + this.tmpFile.getAbsolutePath());
+		documentContext.deleteWhenSessionDestroyed(this.tmpFile);
 		FileOutputStream fileOutputStream;
 		fileOutputStream = new FileOutputStream(this.tmpFile);
 		IOUtils.copy(documentInputStream, fileOutputStream);
@@ -124,6 +131,8 @@ public class ZIPSignatureService extends AbstractXmlSignatureService implements
 
 	private class CloseAction implements Runnable {
 		public void run() {
+			LOG.debug("remove temp file: "
+					+ ZIPSignatureService.this.tmpFile.getAbsolutePath());
 			ZIPSignatureService.this.tmpFile.delete();
 		}
 	}

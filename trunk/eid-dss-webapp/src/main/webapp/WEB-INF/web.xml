@@ -7,8 +7,11 @@
     <display-name>eID Digital Signature Service Web Application</display-name>
 
     <listener>
-        <listener-class>be.fedict.eid.dss.webapp.StartupServletContextListener
-        </listener-class>
+        <listener-class>be.fedict.eid.dss.webapp.StartupServletContextListener</listener-class>
+    </listener>
+    
+    <listener>
+    	<listener-class>be.fedict.eid.dss.webapp.TempFileCleanerHttpSessionListener</listener-class>
     </listener>
 
     <!-- JBoss Seam -->

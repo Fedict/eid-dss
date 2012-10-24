@@ -45,6 +45,7 @@ import be.fedict.eid.applet.service.spi.AddressDTO;
 import be.fedict.eid.applet.service.spi.DigestInfo;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureServiceEx;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
 
 public class ODFSignatureService extends AbstractODFSignatureService implements
@@ -62,13 +63,14 @@ public class ODFSignatureService extends AbstractODFSignatureService implements
 			SignatureFacet signatureFacet, InputStream documentInputStream,
 			OutputStream documentOutputStream,
 			TimeStampService timeStampService, String role,
-			IdentityDTO identity, byte[] photo, DigestAlgo digestAlgo)
-			throws Exception {
+			IdentityDTO identity, byte[] photo, DigestAlgo digestAlgo,
+			DSSDocumentContext documentContext) throws Exception {
 
 		super(digestAlgo);
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		this.documentOutputStream = documentOutputStream;
 		this.tmpFile = File.createTempFile("eid-dss-", ".odf");
+		documentContext.deleteWhenSessionDestroyed(this.tmpFile);
 		FileOutputStream fileOutputStream;
 		fileOutputStream = new FileOutputStream(this.tmpFile);
 		IOUtils.copy(documentInputStream, fileOutputStream);
