@@ -61,7 +61,7 @@ public class TempFileCleanerHttpSessionListener implements HttpSessionListener {
 			File tmpFile = new File(tmpFilename);
 			if (false == tmpFile.exists()) {
 				LOG.debug("tmp file already removed: " + tmpFilename);
-				return;
+				continue;
 			}
 			if (tmpFile.delete()) {
 				LOG.debug("tmp file successfully deleted: " + tmpFilename);
