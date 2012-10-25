@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core">
+<body>
+	<ui:composition template="/WEB-INF/template.xhtml">
+		<ui:define name="body">
+
+			<ui:insert name="body_title">
+				<p>Body Title + Info</p>
+			</ui:insert>
+
+			<p>
+				<div id="sp">
+					<a4j:mediaOutput element="img" mimeType="image/jpeg"
+						createContent="#{dssView.paint}" cacheable="false"
+						rendered="#{dssView.rpLogo}">
+						<f:param value="#{dssView.timeStamp}" name="time" />
+						<s:conversationId value="#{conversation.id}" />
+					</a4j:mediaOutput>
+					<h:outputLabel value="#{messages.serviceProvider}: #{dssView.rp}"
+						rendered="#{dssView.rp != null}" />
+				</div>
+			</p>
+
+			<ui:insert name="body_content">
+				<p>Body Content</p>
+			</ui:insert>
+
+
+		</ui:define>
+	</ui:composition>
+</body>
+</html>

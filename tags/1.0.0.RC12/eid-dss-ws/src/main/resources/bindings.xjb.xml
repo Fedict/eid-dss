@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jxb:bindings version="1.0" xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd">
+	<jxb:bindings schemaLocation="oasis-dssx-1.0-profiles-vr-cd1.xsd"
+		node="/xs:schema">
+		<jxb:schemaBindings>
+			<jxb:package name="be.fedict.eid.dss.ws.profile.vr.jaxb" />
+		</jxb:schemaBindings>
+
+		<jxb:bindings schemaLocation="eid-dss-artifact-binding-schema-v1.0.xsd"
+			node="/xs:schema">
+			<jxb:schemaBindings>
+				<jxb:package name="be.fedict.eid.dss.ws.profile.artifact.jaxb" />
+			</jxb:schemaBindings>
+		</jxb:bindings>
+
+		<jxb:bindings schemaLocation="eid-dss-original-document-v1.0.xsd" node="/xs:schema">
+			<jxb:schemaBindings>
+				<jxb:package name="be.fedict.eid.dss.ws.profile.originaldocument.jaxb" />
+			</jxb:schemaBindings>
+		</jxb:bindings>
+
+		<jxb:bindings
+			schemaLocation="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"
+			node="/xs:schema">
+			<jxb:schemaBindings>
+				<jxb:package name="be.fedict.eid.dss.ws.profile.vr.jaxb.xmldsig" />
+			</jxb:schemaBindings>
+		</jxb:bindings>
+
+		<jxb:bindings
+			schemaLocation="http://docs.oasis-open.org/dss/v1.0/oasis-dss-core-schema-v1.0-os.xsd"
+			node="/xs:schema">
+			<jxb:schemaBindings>
+				<jxb:package name="be.fedict.eid.dss.ws.profile.vr.jaxb.dss" />
+			</jxb:schemaBindings>
+		</jxb:bindings>
+
+		<jxb:bindings schemaLocation="http://uri.etsi.org/01903/v1.3.2/XAdES.xsd"
+			node="/xs:schema">
+			<jxb:schemaBindings>
+				<jxb:package name="be.fedict.eid.dss.ws.profile.vr.jaxb.xades" />
+			</jxb:schemaBindings>
+		</jxb:bindings>
+
+		<jxb:bindings
+			schemaLocation="http://www.oasis-open.org/committees/download.php/3408/oasis-sstc-saml-schema-protocol-1.1.xsd"
+			node="/xs:schema">
+			<jxb:schemaBindings>
+				<jxb:package name="be.fedict.eid.dss.ws.profile.vr.jaxb.saml1" />
+			</jxb:schemaBindings>
+		</jxb:bindings>
+
+		<jxb:bindings
+			schemaLocation="http://docs.oasis-open.org/security/saml/v2.0/saml-schema-assertion-2.0.xsd"
+			node="/xs:schema">
+			<jxb:schemaBindings>
+				<jxb:package name="be.fedict.eid.dss.ws.profile.vr.jaxb.saml2" />
+			</jxb:schemaBindings>
+		</jxb:bindings>
+
+		<jxb:bindings
+			schemaLocation="http://www.w3.org/TR/2002/REC-xmlenc-core-20021210/xenc-schema.xsd"
+			node="/xs:schema">
+			<jxb:schemaBindings>
+				<jxb:package name="be.fedict.eid.dss.ws.profile.vr.jaxb.xenc" />
+			</jxb:schemaBindings>
+		</jxb:bindings>
+
+		<jxb:bindings
+			schemaLocation="http://sdre.es/mirror/draft/ETSI/TS/102231/v2.1.1/schema.xsd"
+			node="/xs:schema">
+			<jxb:schemaBindings>
+				<jxb:package name="be.fedict.eid.dss.ws.profile.vr.jaxb.tsl" />
+			</jxb:schemaBindings>
+		</jxb:bindings>
+	</jxb:bindings>
+</jxb:bindings>

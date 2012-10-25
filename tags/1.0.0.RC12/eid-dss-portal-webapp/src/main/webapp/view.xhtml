@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:s="http://jboss.com/products/seam/taglib">
+<body>
+<ui:composition template="/WEB-INF/template.xhtml">
+    <ui:define name="body">
+
+        <script type="text/javascript">
+            window.onload = function () {
+                $('signingView').hide();
+                $('dssFrame').hide();
+            }
+        </script>
+
+        <div class="title">
+            <h1>#{messages.homeTitle}</h1>
+        </div>
+
+        <div id="signingView">
+
+            <h2>#{messages.signElectronically}</h2>
+
+            <div class="steps">
+                <table>
+                    <tr>
+                        <td class="step1">
+                            <img src="./images/stepdone.png" alt="1"/>
+                            #{messages.uploadDocument}
+                        </td>
+                        <td class="stepDivider">
+                            <img src="./images/right.png" alt=""/>
+                        </td>
+                        <td class="next step2">
+                            <img src="./images/stepdone.png" alt="2"/>
+                            #{messages.documentSummary}
+                        </td>
+                        <td class="stepDivider">
+                            <img src="./images/right.png" alt=""/>
+                        </td>
+                        <td class="next">
+                            <img src="./images/step3.png" alt="3"/>
+                            #{messages.signStep}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+
+        <div id="documentView">
+
+            <h2>#{messages.verificationSummary}</h2>
+
+            <div class="steps">
+                <table>
+                    <tr>
+                        <td class="step1">
+                            <img src="./images/stepdone.png" alt="1"/>
+                            #{messages.uploadDocument}
+                        </td>
+                        <td class="stepDivider">
+                            <img src="./images/right.png" alt=""/>
+                        </td>
+                        <td class="next step2">
+                            <img src="./images/step2.png" alt="2"/>
+                            #{messages.documentSummary}
+                        </td>
+                        <td class="stepDivider">
+                            <img src="./images/right.png" alt=""/>
+                        </td>
+                        <td class="next">
+                            <img src="./images/step3b.png" alt="3"/>
+                            #{messages.signStep}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <p>
+                #{messages.summaryDescription}
+            </p>
+
+            <h:form styleClass="signatureForm">
+                <rich:dataGrid var="row" value="#{signatureInfos}"
+                               rendered="#{signatureInfos.rowCount > 0}" columns="1">
+                    <f:facet name="header">
+                        <h:outputText value="#{messages.signatures}" />
+                    </f:facet>
+                    <rich:panel>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <!-- sign data -->
+                                        <h:panelGrid columns="2">
+                                            <h:outputText value="#{messages.signer}:"/>
+                                            <h:outputText value="#{row.signer.subjectX500Principal}"/>
+
+                                            <h:outputText value="#{messages.signingTime}:"/>
+                                            <h:outputText value="#{row.signingTime}">
+                                                <f:convertDateTime type="both" dateStyle="full"
+                                                                   timeStyle="long" timeZone="Europe/Brussels"
+                                                                   locale="#{dssLanguageSelector.locale}"/>
+                                            </h:outputText>
+
+                                            <h:outputText value="#{messages.role}:"
+                                                          rendered="#{not empty row.role}"/>
+                                            <h:outputText value="#{row.role}"
+                                                          rendered="#{not empty row.role}"/>
+
+                                            <h:outputText value="#{messages.name}:"
+                                                          rendered="#{not empty row.name}"/>
+                                            <s:div rendered="#{not empty row.name}">
+                                                <h:outputText value="#{row.firstName} "/>
+                                                <h:outputText value="#{row.name} "/>
+                                                <h:outputText value="#{row.middleName}"/>
+                                            </s:div>
+
+                                            <h:outputText value="#{messages.gender}:"
+                                                          rendered="#{not empty row.gender}"/>
+                                            <h:outputText value="#{row.gender}"
+                                                          rendered="#{not empty row.gender}"/>
+                                        </h:panelGrid>
+                                    </td>
+                                    <td>
+                                        <!-- photo -->
+                                        <s:graphicImage value="#{row.photo}"
+                                                        rendered="#{not empty row.photo}" styleClass="signaturePhoto"/>
+                                        <s:div rendered="#{empty row.photo}" style="width:140px;"></s:div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </rich:panel>
+                    <f:facet name="footer">
+                        <rich:datascroller rendered="false"/>
+                    </f:facet>
+                </rich:dataGrid>
+            </h:form>
+
+            <h2>
+                <h:outputText value="#{messages.noSignatures}"
+                              rendered="#{signatureInfos.rowCount == 0}"/>
+            </h2>
+
+            <div>
+                <form id="dss-request-form" method="post" target="dssFrame"
+                      action="#{facesContext.externalContext.requestContextPath}/../eid-dss/protocol/simple">
+
+                    <input type="hidden" name="SignatureRequestId" value="#{SignatureRequestId}"/>
+                    <input type="hidden" name="ContentType" value="#{ContentType}"/>
+                    <input type="hidden" name="RelayState" value="#{RelayState}"/>
+                    <input type="hidden" name="target" value="#{target}"/>
+                    <input type="hidden" name="language" value="#{language}"/>
+
+                    <p class="button">
+                        <input type="submit" value="#{messages.addSignature}" class="button"
+                               onclick="$('documentView').hide(); $('signingView').show(); $('dssFrame').show();"/>
+                    </p>
+
+                </form>
+            </div>
+
+            <div>
+                #{messages.downloadDocument}
+                <a href="#{facesContext.externalContext.requestContextPath}/download/#{filename}"
+                   target="_blank">
+                    #{filename} ( #{filesize} bytes )
+                </a>
+            </div>
+
+            <div>
+                <p class="button">
+                    <a href="#{facesContext.externalContext.requestContextPath}/upload">
+                        #{messages.uploadAnother}
+                    </a>
+                </p>
+            </div>
+
+        </div>
+
+        <iframe id="dssFrame" name="dssFrame" src="" width="730px" height="500px" class="dssFrame"></iframe>
+
+    </ui:define>
+</ui:composition>
+</body>
+</html>
