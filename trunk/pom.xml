@@ -245,7 +245,7 @@
 	<properties>
 		<eid-applet.version>1.0.5.GA</eid-applet.version>
 		<eid-applet.SkipSecureConnectionCheck>false</eid-applet.SkipSecureConnectionCheck>
-		<eid-trust-service.version>1.0.1.RC2</eid-trust-service.version>
+		<eid-trust-service.version>1.0.1-SNAPSHOT</eid-trust-service.version>
 		<jtrust.version>1.1.2</jtrust.version>
 		<hibernate.hbm2ddl.auto>create-drop</hibernate.hbm2ddl.auto>
 		<hibernate.jdbc.use_streams_for_binary>true</hibernate.jdbc.use_streams_for_binary>
