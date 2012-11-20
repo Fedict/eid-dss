@@ -7,10 +7,10 @@
 		<artifactId>eid-dss</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<name>FedICT eID DSS Integration Tests</name>
-	<description>Integration Tests for eID Digital Signature Service</description>
+	<name>FedICT eID DSS CXF Integration Tests</name>
+	<description>Apache CXF Integration Tests for eID Digital Signature Service</description>
 	<groupId>be.fedict.eid-dss</groupId>
-	<artifactId>eid-dss-tests</artifactId>
+	<artifactId>eid-dss-tests-cxf</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<build>
@@ -39,26 +39,12 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>be.fedict.eid-applet</groupId>
-			<artifactId>eid-applet-core</artifactId>
-			<scope>test</scope>
-			<version>${eid-applet.version}</version>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>be.fedict.eid-applet</groupId>
-			<artifactId>eid-applet-service-signer</artifactId>
-			<scope>test</scope>
-			<version>${eid-applet.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-trust-service</groupId>
-			<artifactId>eid-trust-service-client</artifactId>
-			<scope>test</scope>
-			<version>${eid-trust-service.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging-api</artifactId>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

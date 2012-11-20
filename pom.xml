@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<name>FedICT eID Digital Signature Service Project</name>
 	<parent>
@@ -41,6 +43,8 @@
 		<module>eid-dss-deploy</module>
 		<module>eid-dss-client</module>
 		<module>eid-dss-sp-webapp</module>
+		<module>eid-dss-tests</module>
+		<module>eid-dss-tests-cxf</module>
 	</modules>
 	<build>
 		<plugins>
@@ -215,6 +219,16 @@
 				<artifactId>jtrust</artifactId>
 				<version>${jtrust.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-frontend-jaxws</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-transports-http</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<repositories>
@@ -230,23 +244,24 @@
 			</snapshots>
 		</repository>
 	</repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>e-contract.be</id>
-            <url>http://www.e-contract.be/maven2/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>e-contract.be</id>
+			<url>http://www.e-contract.be/maven2/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 	<properties>
 		<eid-applet.version>1.0.5.GA</eid-applet.version>
 		<eid-applet.SkipSecureConnectionCheck>false</eid-applet.SkipSecureConnectionCheck>
 		<eid-trust-service.version>1.0.1-SNAPSHOT</eid-trust-service.version>
 		<jtrust.version>1.1.2</jtrust.version>
+		<cxf.version>2.4.8</cxf.version>
 		<hibernate.hbm2ddl.auto>create-drop</hibernate.hbm2ddl.auto>
 		<hibernate.jdbc.use_streams_for_binary>true</hibernate.jdbc.use_streams_for_binary>
 	</properties>

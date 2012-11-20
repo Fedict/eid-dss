@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>be.fedict</groupId>
@@ -32,7 +34,7 @@
 					<bindingFiles>
 						<bindingFile>bindings.xml</bindingFile>
 					</bindingFiles>
-					<sei/>
+					<sei />
 				</configuration>
 				<dependencies>
 					<dependency>
@@ -83,9 +85,16 @@
 		<resources>
 			<resource>
 				<directory>src/wsdl</directory>
+				<excludes>
+					<exclude>bindings.xml</exclude>
+				</excludes>
 			</resource>
 			<resource>
 				<directory>src/main/resources</directory>
+				<excludes>
+					<exclude>catalog.cat</exclude>
+					<exclude>bindings.xjb.xml</exclude>
+				</excludes>
 			</resource>
 		</resources>
 	</build>
