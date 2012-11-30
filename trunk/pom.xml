@@ -229,6 +229,26 @@
 				<artifactId>cxf-rt-transports-http</artifactId>
 				<version>${cxf.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.apache.ws.security</groupId>
+				<artifactId>wss4j</artifactId>
+				<version>1.6.7</version>
+				<exclusions>
+					<exclusion>
+						<groupId>xalan</groupId>
+						<artifactId>xalan</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>xerces</groupId>
+						<artifactId>xercesImpl</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.santuario</groupId>
+				<artifactId>xmlsec</artifactId>
+				<version>1.5.2</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<repositories>
@@ -257,7 +277,7 @@
 		</pluginRepository>
 	</pluginRepositories>
 	<properties>
-		<eid-applet.version>1.0.5.GA</eid-applet.version>
+		<eid-applet.version>1.0.6-SNAPSHOT</eid-applet.version>
 		<eid-applet.SkipSecureConnectionCheck>false</eid-applet.SkipSecureConnectionCheck>
 		<eid-trust-service.version>1.0.1-SNAPSHOT</eid-trust-service.version>
 		<jtrust.version>1.1.2</jtrust.version>

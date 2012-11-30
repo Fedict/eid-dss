@@ -36,6 +36,7 @@ import org.bouncycastle.tsp.TimeStampToken;
 import org.joda.time.DateTime;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import be.fedict.eid.applet.service.signer.facets.IdentitySignatureFacet;
 import be.fedict.eid.applet.service.signer.jaxb.identity.IdentityType;
@@ -69,6 +70,13 @@ public class XAdESValidation {
 
 	public XAdESValidation(DSSDocumentContext documentContext) {
 		this.documentContext = documentContext;
+	}
+
+	public void prepareDocument(Element signatureElement) {
+		NodeList nodeList = signatureElement.getElementsByTagNameNS(
+				"http://uri.etsi.org/01903/v1.3.2#", "SignedProperties");
+		Element signedPropertiesElement = (Element) nodeList.item(0);
+		signedPropertiesElement.setIdAttribute("Id", true);
 	}
 
 	public SignatureInfo validate(Document document, XMLSignature xmlSignature,

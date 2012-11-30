@@ -218,6 +218,8 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 			 */
 			Element signatureElement = (Element) signatureNodeList
 					.item(signatureNodeIdx);
+			xadesValidation.prepareDocument(signatureElement);
+			
 			KeyInfoKeySelector keyInfoKeySelector = new KeyInfoKeySelector();
 			DOMValidateContext domValidateContext = new DOMValidateContext(
 					keyInfoKeySelector, signatureElement);
@@ -282,8 +284,9 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 			LOG.debug("ds:Reference digest algo: " + digestAlgo);
 			byte[] digestValue = reference.getDigestValue();
 
+			// xmlsec 1.5 changed the constructor
 			org.apache.xml.security.signature.XMLSignature xmldsig = new org.apache.xml.security.signature.XMLSignature(
-					originalDomDocument,
+					originalDomDocument, "",
 					org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA512,
 					Canonicalizer.ALGO_ID_C14N_EXCL_WITH_COMMENTS);
 

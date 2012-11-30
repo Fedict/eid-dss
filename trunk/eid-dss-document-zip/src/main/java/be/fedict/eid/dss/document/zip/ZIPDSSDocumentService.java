@@ -193,6 +193,8 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
                 .getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
         for (int idx = 0; idx < signatureNodeList.getLength(); idx++) {
             Element signatureElement = (Element) signatureNodeList.item(idx);
+            xadesValidation.prepareDocument(signatureElement);
+            
             KeyInfoKeySelector keySelector = new KeyInfoKeySelector();
             DOMValidateContext domValidateContext = new DOMValidateContext(
                     keySelector, signatureElement);
@@ -247,7 +249,7 @@ public class ZIPDSSDocumentService implements DSSDocumentService {
 
                     org.apache.xml.security.signature.XMLSignature xmldsig =
                             new org.apache.xml.security.signature.XMLSignature(
-                                    documentSignaturesDocument,
+                                    documentSignaturesDocument, "",
                                     org.apache.xml.security.signature.XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA512,
                                     Canonicalizer.ALGO_ID_C14N_EXCL_WITH_COMMENTS);
                     xmldsig.addDocument(referenceUri, null, digestAlgo);
