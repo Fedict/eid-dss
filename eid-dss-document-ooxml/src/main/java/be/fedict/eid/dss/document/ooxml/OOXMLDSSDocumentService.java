@@ -127,6 +127,7 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 				continue;
 			}
 			Element signatureElement = (Element) signatureNodeList.item(0);
+			xadesValidation.prepareDocument(signatureElement);
 			KeyInfoKeySelector keySelector = new KeyInfoKeySelector();
 			DOMValidateContext domValidateContext = new DOMValidateContext(
 					keySelector, signatureElement);

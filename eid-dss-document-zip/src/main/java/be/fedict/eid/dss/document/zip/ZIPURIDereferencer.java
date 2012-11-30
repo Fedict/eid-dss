@@ -65,6 +65,8 @@ public class ZIPURIDereferencer implements URIDereferencer {
 		XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory
 				.getInstance();
 		this.baseUriDereferener = xmlSignatureFactory.getURIDereferencer();
+		LOG.debug("base URI dereferences class: "
+				+ this.baseUriDereferener.getClass().getName());
 	}
 
 	public Data dereference(URIReference uriReference, XMLCryptoContext context)

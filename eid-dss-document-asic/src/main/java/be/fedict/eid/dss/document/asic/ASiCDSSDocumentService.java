@@ -175,6 +175,7 @@ public class ASiCDSSDocumentService implements DSSDocumentService {
 				.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
 		for (int idx = 0; idx < signatureNodeList.getLength(); idx++) {
 			Element signatureElement = (Element) signatureNodeList.item(idx);
+			xadesValidation.prepareDocument(signatureElement);
 			KeyInfoKeySelector keySelector = new KeyInfoKeySelector();
 			DOMValidateContext domValidateContext = new DOMValidateContext(
 					keySelector, signatureElement);

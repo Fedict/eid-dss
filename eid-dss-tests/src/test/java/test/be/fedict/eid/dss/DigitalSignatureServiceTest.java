@@ -228,15 +228,92 @@ public class DigitalSignatureServiceTest {
 				.getResourceAsStream("/test.zip");
 		assertNotNull(documentInputStream);
 		byte[] document = IOUtils.toByteArray(documentInputStream);
-		String dssUrl = "https://www.e-contract.be/eid-dss-ws/dss";
+		String dssUrl = "http://localhost/eid-dss-ws/dss";
+		// String dssUrl = "https://www.e-contract.be/eid-dss-ws/dss";
 		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
 				dssUrl);
-		client.setProxy("proxy.yourict.net", 8080);
+		// client.setProxy("proxy.yourict.net", 8080);
 		client.setLogging(true, true);
 
 		// operate
 		List<SignatureInfo> signers = client.verifyWithSigners(document,
 				"application/zip");
+
+		// verify
+		for (SignatureInfo signer : signers) {
+			LOG.debug("signer: " + signer.getSigner().getSubjectX500Principal());
+			LOG.debug("signing time: " + signer.getSigningTime());
+		}
+	}
+
+	@Test
+	public void testVerifyOOXMLDocument() throws Exception {
+		// setup
+		InputStream documentInputStream = DigitalSignatureServiceTest.class
+				.getResourceAsStream("/hello-world-signed.docx");
+		assertNotNull(documentInputStream);
+		byte[] document = IOUtils.toByteArray(documentInputStream);
+		String dssUrl = "http://localhost/eid-dss-ws/dss";
+		// String dssUrl = "https://www.e-contract.be/eid-dss-ws/dss";
+		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
+				dssUrl);
+		// client.setProxy("proxy.yourict.net", 8080);
+		client.setLogging(true, true);
+
+		// operate
+		List<SignatureInfo> signers = client
+				.verifyWithSigners(document,
+						"application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+
+		// verify
+		for (SignatureInfo signer : signers) {
+			LOG.debug("signer: " + signer.getSigner().getSubjectX500Principal());
+			LOG.debug("signing time: " + signer.getSigningTime());
+		}
+	}
+
+	@Test
+	public void testVerifyODFDocument() throws Exception {
+		// setup
+		InputStream documentInputStream = DigitalSignatureServiceTest.class
+				.getResourceAsStream("/signed.odt");
+		assertNotNull(documentInputStream);
+		byte[] document = IOUtils.toByteArray(documentInputStream);
+		String dssUrl = "http://localhost/eid-dss-ws/dss";
+		// String dssUrl = "https://www.e-contract.be/eid-dss-ws/dss";
+		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
+				dssUrl);
+		// client.setProxy("proxy.yourict.net", 8080);
+		client.setLogging(true, true);
+
+		// operate
+		List<SignatureInfo> signers = client.verifyWithSigners(document,
+				"application/vnd.oasis.opendocument.text");
+
+		// verify
+		for (SignatureInfo signer : signers) {
+			LOG.debug("signer: " + signer.getSigner().getSubjectX500Principal());
+			LOG.debug("signing time: " + signer.getSigningTime());
+		}
+	}
+
+	@Test
+	public void testVerifyASiCDocument() throws Exception {
+		// setup
+		InputStream documentInputStream = DigitalSignatureServiceTest.class
+				.getResourceAsStream("/signed.asice");
+		assertNotNull(documentInputStream);
+		byte[] document = IOUtils.toByteArray(documentInputStream);
+		String dssUrl = "http://localhost/eid-dss-ws/dss";
+		// String dssUrl = "https://www.e-contract.be/eid-dss-ws/dss";
+		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
+				dssUrl);
+		// client.setProxy("proxy.yourict.net", 8080);
+		client.setLogging(true, true);
+
+		// operate
+		List<SignatureInfo> signers = client.verifyWithSigners(document,
+				"application/vnd.etsi.asic-e+zip");
 
 		// verify
 		for (SignatureInfo signer : signers) {
@@ -281,10 +358,12 @@ public class DigitalSignatureServiceTest {
 				.getResourceAsStream("/example-xades-claimed-role.xml");
 		String signedDocument = IOUtils.toString(signedDocumentInputStream);
 
+		// String dssUrl = "https://www.e-contract.be/eid-dss-ws/dss";
+		String dssUrl = "http://localhost/eid-dss-ws/dss";
 		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
-				"https://www.e-contract.be/eid-dss-ws/dss");
+				dssUrl);
 		client.setLogging(true, false);
-		client.setProxy("proxy.yourict.net", 8080);
+		// client.setProxy("proxy.yourict.net", 8080);
 
 		// operate
 		List<SignatureInfo> signers = client.verifyWithSigners(
@@ -305,9 +384,11 @@ public class DigitalSignatureServiceTest {
 
 	@Test
 	public void testArtifactBindingWebService() throws Exception {
+		// String dssUrl = "https://www.e-contract.be/eid-dss-ws/dss";
+		String dssUrl = "http://localhost/eid-dss-ws/dss";
 		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
-				"https://www.e-contract.be/eid-dss-ws/dss");
-		client.setProxy("proxy.yourict.net", 8080);
+				dssUrl);
+		// client.setProxy("proxy.yourict.net", 8080);
 		client.setLogging(true, false);
 
 		String documentContent = "Hello World";
@@ -345,8 +426,8 @@ public class DigitalSignatureServiceTest {
 		PrivateKeyEntry privateKeyEntry = null;
 		// TODO: refactor once Commons eID has been released.
 
-		XMLSignatureFactory signatureFactory = XMLSignatureFactory.getInstance(
-				"DOM", new org.jcp.xml.dsig.internal.dom.XMLDSigRI());
+		XMLSignatureFactory signatureFactory = XMLSignatureFactory
+				.getInstance("DOM");
 		XMLSignContext signContext = new DOMSignContext(
 				privateKeyEntry.getPrivateKey(), document.getDocumentElement());
 		signContext.putNamespacePrefix(

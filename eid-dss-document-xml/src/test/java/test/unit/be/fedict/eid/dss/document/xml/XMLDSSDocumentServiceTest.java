@@ -34,6 +34,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xml.security.Init;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.ocsp.OCSPResp;
 import org.bouncycastle.tsp.TimeStampToken;
@@ -56,6 +57,7 @@ public class XMLDSSDocumentServiceTest {
 		if (null == Security.getProvider(BouncyCastleProvider.PROVIDER_NAME)) {
 			Security.addProvider(new BouncyCastleProvider());
 		}
+		//Init.init();
 	}
 
 	@Test
