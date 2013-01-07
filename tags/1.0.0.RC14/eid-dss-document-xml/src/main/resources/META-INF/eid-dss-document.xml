@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DigitalSignatureServiceDocument xmlns="urn:be:fedict:eid:dss:spi:document">
+	<Name>XML Document</Name>
+	<Description>XML Documents that will be co-signed using XAdES-X-L v1.4.1</Description>
+	<DocumentServiceClass>be.fedict.eid.dss.document.xml.XMLDSSDocumentService</DocumentServiceClass>
+	<ContentType>text/xml</ContentType>
+</DigitalSignatureServiceDocument>
