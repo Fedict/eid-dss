@@ -9,7 +9,7 @@
 			anyway. -->
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-applet</artifactId>
-		<version>1.0.5.GA</version>
+		<version>1.1.0.Beta2</version>
 	</parent>
 	<groupId>be.fedict</groupId>
 	<artifactId>eid-dss</artifactId>
@@ -277,9 +277,9 @@
 		</pluginRepository>
 	</pluginRepositories>
 	<properties>
-		<eid-applet.version>1.1.0.Beta1</eid-applet.version>
+		<eid-applet.version>1.1.0.Beta2</eid-applet.version>
 		<eid-applet.SkipSecureConnectionCheck>false</eid-applet.SkipSecureConnectionCheck>
-		<eid-trust-service.version>1.0.1.RC3</eid-trust-service.version>
+		<eid-trust-service.version>1.0.1.RC4</eid-trust-service.version>
 		<jtrust.version>1.1.2</jtrust.version>
 		<cxf.version>2.4.8</cxf.version>
 		<hibernate.hbm2ddl.auto>create-drop</hibernate.hbm2ddl.auto>
