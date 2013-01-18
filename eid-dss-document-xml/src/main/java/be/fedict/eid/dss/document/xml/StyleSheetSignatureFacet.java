@@ -111,6 +111,10 @@ public class StyleSheetSignatureFacet implements SignatureFacet {
 			throw new RuntimeException("JAXB error: " + e.getMessage(), e);
 		}
 		Node styleSheetNode = marshallNode.getFirstChild();
+		
+		// fix for xmlsec
+		Element styleSheetElement = (Element) styleSheetNode;
+		styleSheetElement.setIdAttribute("Id", true);
 
 		// ds:Object
 		List<XMLStructure> styleSheetObjectContent = new LinkedList<XMLStructure>();

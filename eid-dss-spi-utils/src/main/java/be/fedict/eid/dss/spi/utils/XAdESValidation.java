@@ -73,10 +73,24 @@ public class XAdESValidation {
 	}
 
 	public void prepareDocument(Element signatureElement) {
+		prepareDocumentXades(signatureElement);
+		prepareDocumentIdentity(signatureElement);
+	}
+
+	private void prepareDocumentXades(Element signatureElement) {
 		NodeList nodeList = signatureElement.getElementsByTagNameNS(
 				"http://uri.etsi.org/01903/v1.3.2#", "SignedProperties");
 		Element signedPropertiesElement = (Element) nodeList.item(0);
 		signedPropertiesElement.setIdAttribute("Id", true);
+	}
+
+	private void prepareDocumentIdentity(Element signatureElement) {
+		NodeList nodeList = signatureElement.getElementsByTagNameNS(
+				"be:fedict:eid:dss:stylesheet:1.0", "StyleSheet");
+		if (1 == nodeList.getLength()) {
+			Element styleSheetElement = (Element) nodeList.item(0);
+			styleSheetElement.setIdAttribute("Id", true);
+		}
 	}
 
 	public SignatureInfo validate(Document document, XMLSignature xmlSignature,
