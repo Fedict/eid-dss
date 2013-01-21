@@ -18,18 +18,16 @@
 
 package be.fedict.eid.dss.portal.control.bean;
 
-import java.util.List;
-import java.util.Locale;
-
-import javax.ejb.Stateless;
-import javax.faces.model.SelectItem;
-
+import be.fedict.eid.dss.portal.control.LanguageSelector;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.international.LocaleSelector;
 
-import be.fedict.eid.dss.portal.control.LanguageSelector;
+import javax.ejb.Stateless;
+import javax.faces.model.SelectItem;
+import java.util.List;
+import java.util.Locale;
 
 @Stateless
 @Name("dssLanguageSelector")
@@ -59,4 +57,36 @@ public class LanguageSelectorBean implements LanguageSelector {
 	public Locale getLocale() {
 		return this.localeSelector.getLocale();
 	}
+
+    @Override
+    public String french() {
+
+        this.localeSelector.setLocaleString("fr");
+        this.localeSelector.select();
+        return null;
+    }
+
+    @Override
+    public String dutch() {
+
+        this.localeSelector.setLocaleString("nl");
+        this.localeSelector.select();
+        return null;
+    }
+
+    @Override
+    public String english() {
+
+        this.localeSelector.setLocaleString("en");
+        this.localeSelector.select();
+        return null;
+    }
+
+    @Override
+    public String german() {
+
+        this.localeSelector.setLocaleString("de");
+        this.localeSelector.select();
+        return null;
+    }
 }

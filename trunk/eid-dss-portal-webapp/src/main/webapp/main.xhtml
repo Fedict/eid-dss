@@ -7,81 +7,36 @@
 <ui:composition template="/WEB-INF/template.xhtml">
     <ui:define name="body">
 
-        <div class="title">
-            <h1>#{messages.homeTitle}</h1>
+        <h2>#{messages.mainTitle}</h2>
+
+        <div class="two_of_three">
+            <p> #{messages.mainInfo} </p>
         </div>
-
-        <table>
-            <tr>
-                <td class="requirements">
-                    <h2>#{messages.requirements}</h2>
-
-                    <table>
-                        <tr>
-                            <td >
-                                <a href="http://eid.belgium.be/" target="_blank">
-                                    <img src="./images/eid.png" alt="#{messages.eidCardReader}" />
-                                </a>
-                                <br/>
-                                #{messages.eidCard}
-                                <br/>
-                                #{messages.eidCardReader}
-                                <br/>
-                                <a href="http://eid.belgium.be/" target="_blank">
-                                    #{messages.eidInstall}
-                                </a>
-                            </td>
-                            <td>
-                                <a href="#" onclick="return popitup('./compatibility.seam')">
-                                    <img src="./images/browser.png" alt="#{messages.browserMoreInfo}" />
-                                </a>
-                                <br/>
-                                #{messages.correctBrowser}
-                                <br/>
-                                &nbsp;
-                                <br/>
-                                <a href="#" onclick="return popitup('./compatibility')">
-                                    #{messages.browserMoreInfo}
-                                </a>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-                <td class="startSign">
-                    <h2>
-                        #{messages.startProcessTitle}
-                    </h2>
-                    <p>
-                        #{messages.startProcess}
-                    </p>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-                    <br/>
-
-                    <p class="button">
-                        <a href="#{facesContext.externalContext.requestContextPath}/upload">
-                            #{messages.start}
-                        </a>
-                    </p>
-                </td>
-            </tr>
-            <tr>
-                <td valign="top" colspan="2" class="requirements">
-                    <h2 class="overline" />
-
-                    <div class="center">
-                        <p>
-                            #{messages.descriptionMain}
-                        </p>
+        <div class="start actions one_of_three">
+            <a class="call" href="#{facesContext.externalContext.requestContextPath}/upload">
+                <span class="callWrap1">
+                    <span class="callWrap2">
+                        <div class="callWrap3 btn sign_btn float_right">#{messages.mainUpload}</div>
+                    </span>
+                </span>
+            </a>
+        </div>
+        <div class="clear"> </div>
+        <div class="notify info">
+            <div class="notifyWrap1">
+                <div class="notifyWrap2"><div class="notifyWrap3">
+                    <div class="notifyWrap4">
+                        <div class="message">
+                            <p>
+                                #{messages.mainExtraInfo}<a href="http://eid.belgium.be/" target="_blank">
+                                eid.belgium.be</a>
+                            </p>
+                        </div>
                     </div>
-
-                </td>
-            </tr>
-        </table>
+                </div>
+                </div>
+            </div>
+        </div>
 
     </ui:define>
 </ui:composition>
