@@ -18,11 +18,10 @@
 
 package be.fedict.eid.dss.portal.control;
 
-import java.util.List;
-import java.util.Locale;
-
 import javax.ejb.Local;
 import javax.faces.model.SelectItem;
+import java.util.List;
+import java.util.Locale;
 
 @Local
 public interface LanguageSelector {
@@ -34,4 +33,9 @@ public interface LanguageSelector {
 	List<SelectItem> getSupportedLocales();
 
 	Locale getLocale();
+
+    String french();
+    String dutch();
+    String english();
+    String german();
 }
