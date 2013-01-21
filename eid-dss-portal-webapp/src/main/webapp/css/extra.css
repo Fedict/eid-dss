@@ -2,6 +2,13 @@
     margin-top:         20px;
 }
 
+.button {
+    border: none;
+    font-weight: bold;
+    font-size: 14px;
+    background-color: transparent;
+}
+
 /*
  * RichFaces
  */
