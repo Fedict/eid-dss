@@ -1,0 +1,19 @@
+/*
+ * IE fixes :]
+ */
+#content #contentWrap {
+    margin: 0 !important;
+    padding: 35px !important;
+}
+
+#content .steps .step { width: 29%; !important }
+
+.call div.btn {
+    max-width: 190px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.button input{
+    /* margin-left: -35px; */
+}

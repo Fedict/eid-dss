@@ -3,8 +3,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:a4j="http://richfaces.org/a4j"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:s="http://jboss.com/products/seam/taglib">
 <body>
@@ -171,29 +169,31 @@
                         </span>
                     </span>
                 </a>
-                <a class="call">
-                    <span class="callWrap1">
-                        <span class="callWrap2">
-                            <div class="callWrap3 btn float_right">
-                                <form id="dss-request-form" method="post" target="dssFrame"
-                                      action="#{facesContext.externalContext.requestContextPath}/../eid-dss/protocol/simple">
+                <form id="dss-request-form" method="post" target="dssFrame"
+                      action="#{facesContext.externalContext.requestContextPath}/../eid-dss/protocol/simple">
 
-                                    <input type="hidden" name="SignatureRequestId" value="#{SignatureRequestId}"/>
-                                    <input type="hidden" name="ContentType" value="#{ContentType}"/>
-                                    <input type="hidden" name="RelayState" value="#{RelayState}"/>
-                                    <input type="hidden" name="target" value="#{target}"/>
-                                    <input type="hidden" name="language" value="#{language}"/>
+                    <input type="hidden" name="SignatureRequestId" value="#{SignatureRequestId}"/>
+                    <input type="hidden" name="ContentType" value="#{ContentType}"/>
+                    <input type="hidden" name="RelayState" value="#{RelayState}"/>
+                    <input type="hidden" name="target" value="#{target}"/>
+                    <input type="hidden" name="language" value="#{language}"/>
 
-                                    <p class="button">
-                                        <input type="submit" value="#{messages.viewAddSignature}" class="button"
-                                               onclick="document.getElementById('documentView').style.display = 'none'; document.getElementById('signingView').style.display = 'block'; document.getElementById('dssFrame').style.display = 'block';"/>
-                                    </p>
+                    <a class="call">
+                        <span class="callWrap1">
+                            <span class="callWrap2">
+                                <div class="callWrap3 btn float_right">
 
-                                </form>
-                            </div>
+                                        <!--<p class="button">-->
+                                            &nbsp;
+                                            <input type="submit" value="#{messages.viewAddSignature}" class="button"
+                                                   onclick="document.getElementById('documentView').style.display = 'none'; document.getElementById('signingView').style.display = 'block'; document.getElementById('dssFrame').style.display = 'block';"/>
+                                        <!--</p>-->
+
+                                </div>
+                            </span>
                         </span>
-                    </span>
-                </a>
+                    </a>
+                </form>
                 <a class="call" href="#{facesContext.externalContext.requestContextPath}/upload">
                     <span class="callWrap1">
                         <span class="callWrap2">
