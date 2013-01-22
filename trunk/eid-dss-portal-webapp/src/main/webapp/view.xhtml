@@ -165,35 +165,33 @@
                    target="_blank">
                     <span class="callWrap1">
                         <span class="callWrap2">
-                            <div class="callWrap3 btn float">#{messages.viewDownload}</div>
+                            <div class="callWrap3 btn float btn-left">#{messages.viewDownload}</div>
                         </span>
                     </span>
                 </a>
-                <form id="dss-request-form" method="post" target="dssFrame"
-                      action="#{facesContext.externalContext.requestContextPath}/../eid-dss/protocol/simple">
+                <a class="call">
+                    <span class="callWrap1">
+                        <span class="callWrap2">
+                            <div class="callWrap3 btn float_right">
+                                <form id="dss-request-form" method="post" target="dssFrame"
+                                      action="#{facesContext.externalContext.requestContextPath}/../eid-dss/protocol/simple">
 
-                    <input type="hidden" name="SignatureRequestId" value="#{SignatureRequestId}"/>
-                    <input type="hidden" name="ContentType" value="#{ContentType}"/>
-                    <input type="hidden" name="RelayState" value="#{RelayState}"/>
-                    <input type="hidden" name="target" value="#{target}"/>
-                    <input type="hidden" name="language" value="#{language}"/>
+                                    <input type="hidden" name="SignatureRequestId" value="#{SignatureRequestId}"/>
+                                    <input type="hidden" name="ContentType" value="#{ContentType}"/>
+                                    <input type="hidden" name="RelayState" value="#{RelayState}"/>
+                                    <input type="hidden" name="target" value="#{target}"/>
+                                    <input type="hidden" name="language" value="#{language}"/>
 
-                    <a class="call">
-                        <span class="callWrap1">
-                            <span class="callWrap2">
-                                <div class="callWrap3 btn float_right">
+                                    <!--<p class="button">-->
+                                        <input type="submit" value="#{messages.viewAddSignature}" class="button"
+                                               onclick="document.getElementById('documentView').style.display = 'none'; document.getElementById('signingView').style.display = 'block'; document.getElementById('dssFrame').style.display = 'block';"/>
+                                    <!--</p>-->
 
-                                        <!--<p class="button">-->
-                                            &nbsp;
-                                            <input type="submit" value="#{messages.viewAddSignature}" class="button"
-                                                   onclick="document.getElementById('documentView').style.display = 'none'; document.getElementById('signingView').style.display = 'block'; document.getElementById('dssFrame').style.display = 'block';"/>
-                                        <!--</p>-->
-
-                                </div>
-                            </span>
+                                </form>
+                            </div>
                         </span>
-                    </a>
-                </form>
+                    </span>
+                </a>
                 <a class="call" href="#{facesContext.externalContext.requestContextPath}/upload">
                     <span class="callWrap1">
                         <span class="callWrap2">
@@ -204,7 +202,7 @@
             </div>
         </div>
 
-        <iframe id="dssFrame" name="dssFrame" src="" width="600px" height="400px" class="dssFrame"></iframe>
+        <iframe id="dssFrame" name="dssFrame" src="" width="600px" height="400px" class="dssFrame" frameborder="0"></iframe>
 
     </ui:define>
 </ui:composition>
