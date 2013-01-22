@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:c="http://java.sun.com/jstl/core"
@@ -8,7 +7,9 @@
       xmlns:s="http://jboss.com/products/seam/taglib">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <!-- This breaks richfaces ajax stuff, dont enable! -->
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=edge"/>-->
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
     <meta http-equiv="Content-Script-Type" content="text/javascript"/>
     <meta http-equiv="Content-Style-Type" content="text/css"/>
     <meta http-equiv="expires" content="0"/>
@@ -26,25 +27,32 @@
           href="#{facesContext.externalContext.requestContextPath}/css/extra.css"/>
     <link rel="stylesheet" type="text/css" media="print"
           href="#{facesContext.externalContext.requestContextPath}/css/my-belgium-print.css"/>
+
+    <!--[if lt IE 9]>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="#{facesContext.externalContext.requestContextPath}/css/ie.css"/>
+    <![endif]-->
+
+
 </head>
 
 <body id="home">
 
 <div id="allContainer">
-    <div id="allWrap">
+<div id="allWrap">
 
-        <div id="header">
-            <div id="headerWrap">
-                <div id="blgm_belgiumHeader">
-                    <div class="blgm_wrapper">
-                        <div id="blgm_beLogo">
-                            <img alt="Logo van de Belgische overheid" src="img/blgm_beLogo.gif" />
-                        </div>
+<div id="header">
+    <div id="headerWrap">
+        <div id="blgm_belgiumHeader">
+            <div class="blgm_wrapper">
+                <div id="blgm_beLogo">
+                    <img alt="Logo van de Belgische overheid" src="img/blgm_beLogo.gif" />
+                </div>
 
-                        <ul id="blgm_languageSwitch">
-                            <h:form>
+                <ul id="blgm_languageSwitch">
+                    <h:form>
 
-                                <!-- Dutch -->
+                        <!-- Dutch -->
                                 <s:span rendered="#{not dssLanguageSelector.dutchActive}">
                                 <li>
                                     <h:commandLink value="nl" action="#{dssLanguageSelector.dutch}" lang="nl" class="blgm_lSwitch" />
