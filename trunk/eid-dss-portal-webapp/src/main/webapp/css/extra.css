@@ -9,6 +9,9 @@
     background-color: transparent;
     cursor: pointer;
 }
+.btn-middle {
+    margin-left: 20px;
+}
 
 /*
  * RichFaces
