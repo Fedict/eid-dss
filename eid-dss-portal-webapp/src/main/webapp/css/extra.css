@@ -13,6 +13,11 @@
     margin-left: 20px;
 }
 
+iframe {
+    width: 830px;
+    min-height: 500px;
+}
+
 /*
  * RichFaces
  */
