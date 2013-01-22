@@ -14,10 +14,14 @@
 .btn-middle {
     margin-left: 20px;
 }
+.btn-left {
+    margin-right: 20px;
+}
 
 iframe {
     width: 830px;
     min-height: 500px;
+    border: none !important
 }
 
 /*
