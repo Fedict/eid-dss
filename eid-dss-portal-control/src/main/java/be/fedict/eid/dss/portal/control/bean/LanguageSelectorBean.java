@@ -34,29 +34,29 @@ import java.util.Locale;
 @LocalBinding(jndiBinding = "fedict/eid/dss/portal/LanguageSelectorBean")
 public class LanguageSelectorBean implements LanguageSelector {
 
-	@In
-	private LocaleSelector localeSelector;
+    @In
+    private LocaleSelector localeSelector;
 
-	@Override
-	public String getLocaleString() {
-		return this.localeSelector.getLocaleString();
-	}
+    @Override
+    public String getLocaleString() {
+        return this.localeSelector.getLocaleString();
+    }
 
-	@Override
-	public void setLocaleString(String localeString) {
-		this.localeSelector.setLocaleString(localeString);
-		this.localeSelector.select();
-	}
+    @Override
+    public void setLocaleString(String localeString) {
+        this.localeSelector.setLocaleString(localeString);
+        this.localeSelector.select();
+    }
 
-	@Override
-	public List<SelectItem> getSupportedLocales() {
-		return this.localeSelector.getSupportedLocales();
-	}
+    @Override
+    public List<SelectItem> getSupportedLocales() {
+        return this.localeSelector.getSupportedLocales();
+    }
 
-	@Override
-	public Locale getLocale() {
-		return this.localeSelector.getLocale();
-	}
+    @Override
+    public Locale getLocale() {
+        return this.localeSelector.getLocale();
+    }
 
     @Override
     public String french() {
@@ -88,5 +88,26 @@ public class LanguageSelectorBean implements LanguageSelector {
         this.localeSelector.setLocaleString("de");
         this.localeSelector.select();
         return null;
+    }
+
+    @Override
+    public boolean isDutchActive() {
+
+        return this.localeSelector.getLocale().getLanguage().equals("nl");
+    }
+
+    @Override
+    public boolean isFrenchActive() {
+        return this.localeSelector.getLocale().getLanguage().equals("fr");
+    }
+
+    @Override
+    public boolean isEnglishActive() {
+        return this.localeSelector.getLocale().getLanguage().equals("en");
+    }
+
+    @Override
+    public boolean isGermanActive() {
+        return this.localeSelector.getLocale().getLanguage().equals("de");
     }
 }

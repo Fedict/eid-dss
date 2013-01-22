@@ -4,7 +4,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:c="http://java.sun.com/jstl/core"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:s="http://jboss.com/products/seam/taglib">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -42,18 +43,54 @@
 
                         <ul id="blgm_languageSwitch">
                             <h:form>
+
+                                <!-- Dutch -->
+                                <s:span rendered="#{not dssLanguageSelector.dutchActive}">
                                 <li>
                                     <h:commandLink value="nl" action="#{dssLanguageSelector.dutch}" lang="nl" class="blgm_lSwitch" />
                                 </li>
-                                <li>
-                                    <h:commandLink value="fr" action="#{dssLanguageSelector.french}" lang="fr" class="blgm_lSwitch" />
+                                </s:span>
+                                <s:span rendered="#{dssLanguageSelector.dutchActive}">
+                                <li class="blgm_active">
+                                    <h:commandLink value="nl" action="#{dssLanguageSelector.dutch}" lang="nl" class="blgm_lSwitch" />
                                 </li>
-                                <li>
-                                    <h:commandLink value="en" action="#{dssLanguageSelector.english}" lang="en" class="blgm_lSwitch" />
-                                </li>
-                                <li>
-                                    <h:commandLink value="de" action="#{dssLanguageSelector.german}" lang="de" class="blgm_lSwitch" />
-                                </li>
+                                </s:span>
+
+                                <!-- French -->
+                                <s:span rendered="#{not dssLanguageSelector.frenchActive}">
+                                    <li>
+                                        <h:commandLink value="fr" action="#{dssLanguageSelector.french}" lang="fr" class="blgm_lSwitch" />
+                                    </li>
+                                </s:span>
+                                <s:span rendered="#{dssLanguageSelector.frenchActive}">
+                                    <li class="blgm_active">
+                                        <h:commandLink value="fr" action="#{dssLanguageSelector.french}" lang="fr" class="blgm_lSwitch" />
+                                    </li>
+                                </s:span>
+
+                                <!-- English -->
+                                <s:span rendered="#{not dssLanguageSelector.englishActive}">
+                                    <li>
+                                        <h:commandLink value="en" action="#{dssLanguageSelector.english}" lang="en" class="blgm_lSwitch" />
+                                    </li>
+                                </s:span>
+                                <s:span rendered="#{dssLanguageSelector.englishActive}">
+                                    <li class="blgm_active">
+                                        <h:commandLink value="en" action="#{dssLanguageSelector.english}" lang="en" class="blgm_lSwitch" />
+                                    </li>
+                                </s:span>
+
+                                <!-- German -->
+                                <s:span rendered="#{not dssLanguageSelector.germanActive}">
+                                    <li>
+                                        <h:commandLink value="de" action="#{dssLanguageSelector.german}" lang="de" class="blgm_lSwitch" />
+                                    </li>
+                                </s:span>
+                                <s:span rendered="#{dssLanguageSelector.germanActive}">
+                                    <li class="blgm_active">
+                                        <h:commandLink value="de" action="#{dssLanguageSelector.german}" lang="de" class="blgm_lSwitch" />
+                                    </li>
+                                </s:span>
                             </h:form>
                         </ul>
                         <div id="blgm_beLink">
