@@ -26,16 +26,28 @@ import java.util.Locale;
 @Local
 public interface LanguageSelector {
 
-	String getLocaleString();
+    String getLocaleString();
 
-	void setLocaleString(java.lang.String localeString);
+    void setLocaleString(java.lang.String localeString);
 
-	List<SelectItem> getSupportedLocales();
+    List<SelectItem> getSupportedLocales();
 
-	Locale getLocale();
+    Locale getLocale();
+
+    String dutch();
 
     String french();
-    String dutch();
+
     String english();
+
     String german();
+
+    boolean isDutchActive();
+
+    boolean isFrenchActive();
+
+    boolean isEnglishActive();
+
+    boolean isGermanActive();
+
 }

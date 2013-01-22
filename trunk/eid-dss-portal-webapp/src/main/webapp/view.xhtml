@@ -77,7 +77,7 @@
 
             <h2>#{messages.viewDetail}</h2>
 
-            <h:panelGroup rendered="#{signatureInfos.rowCount == 0}">
+            <s:span rendered="#{signatureInfos.rowCount == 0}">
             <div class="notify normal">
                 <div class="notifyWrap1">
                     <div class="notifyWrap2">
@@ -93,7 +93,7 @@
                     </div>
                 </div>
             </div>
-            </h:panelGroup>
+            </s:span>
 
             <h:form rendered="#{signatureInfos.rowCount > 0}">
 
@@ -106,7 +106,7 @@
                 </p>
 
                 <div class="signatures">
-                    <div class="signature_header"> <p>Signed by</p></div>
+                    <div class="signature_header"> <p>#{messages.viewSignedBy}</p></div>
 
                     <ui:repeat value="#{signatureInfos}" var="signatureInfo">
                         <div class="signature_item">
@@ -125,7 +125,7 @@
 
                             <s:span rendered="#{not empty signatureInfo.role}">
                             <p>
-                                <strong><h:outputText value="#{messages.role}:"
+                                <strong><h:outputText value="#{messages.role}"
                                               rendered="#{not empty signatureInfo.role}"/></strong>
                                 <h:outputText value="#{signatureInfo.role}"
                                               rendered="#{not empty signatureInfo.role}"/>
@@ -134,7 +134,7 @@
 
                             <s:span rendered="#{not empty signatureInfo.name}">
                             <p>
-                                <strong><h:outputText value="#{messages.name}:"
+                                <strong><h:outputText value="#{messages.name}"
                                               rendered="#{not empty signatureInfo.name}"/></strong>
                                 <h:outputText value="#{signatureInfo.firstName} "/>
                                 <h:outputText value="#{signatureInfo.name} "/>
@@ -144,7 +144,7 @@
 
                             <s:span rendered="#{not empty signatureInfo.gender}">
                             <p>
-                                <strong><h:outputText value="#{messages.gender}:"
+                                <strong><h:outputText value="#{messages.gender}"
                                               rendered="#{not empty signatureInfo.gender}"/></strong>
                                 <h:outputText value="#{signatureInfo.gender}"
                                               rendered="#{not empty signatureInfo.gender}"/>
