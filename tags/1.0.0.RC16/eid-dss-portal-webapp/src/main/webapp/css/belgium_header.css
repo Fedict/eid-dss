@@ -1,0 +1,30 @@
+/* ############## .be header ############### */
+
+/* clearfix hack */
+#blgm_belgiumHeader:after {content:"."; display: block; height:0; clear:both; visibility:hidden;}
+#blgm_belgiumHeader {display: inline-block;}
+/* Hides from IE-mac \*/
+*html #blgm_belgiumHeader {height:1%;}
+#blgm_belgiumHeader {display:block;}
+/* End hide from IE-mac */
+
+/* header */
+#blgm_belgiumHeader {padding: 0 0.5em 0.25em 0; border-bottom : 1px solid #cccccc; background:#ffffff;}
+#blgm_belgiumHeader.blgm_stretch {padding-left:0;}
+#blgm_belgiumHeader div.blgm_wrapper {background:transparent url("../img/blgm_line.gif") bottom right repeat-x; position:relative; padding:0 32px 4px 0; zoom:1;}
+* html #blgm_belgiumHeader div.blgm_wrapper {overflow : visible;}
+/* language switch */
+#blgm_belgiumHeader ul#blgm_languageSwitch {margin:0.5em 0.5em 0em 0.5em; float:left; display:inline; padding : 0;}
+#blgm_belgiumHeader.blgm_stretch ul#blgm_languageSwitch {margin-left : 0em;}
+#blgm_belgiumHeader ul#blgm_languageSwitch li {line-height:1em; margin-right:0.25em; text-align:center; float:left; display:inline; padding : 0;}
+#blgm_belgiumHeader ul#blgm_languageSwitch li .blgm_lSwitch {padding:0.1em; width : 1.5em; display:block; text-decoration : none; border:1px solid #999999; background-color:#cccccc; color:#666666; font-size : 0.95em; font-weight:300; font-family:arial,verdana,sans-serif;}
+#blgm_belgiumHeader ul#blgm_languageSwitch li.blgm_active .blgm_lSwitch {border:1px solid #333333; background-color:#666666; color:#ffffff;}
+#blgm_belgiumHeader ul#blgm_languageSwitch li a {text-decoration : none;}
+#blgm_belgiumHeader ul#blgm_languageSwitch li a.blgm_lSwitch:hover  {border:1px solid #333333; background-color:#666666; color:#ffffff; text-decoration : none;}
+/* .be link and logo */
+#blgm_beLink {color : #333333; margin-left:10em; padding:0.9em 1em 0.5em 0em; font-size:0.95em;  font-family:arial,verdana,sans-serif; text-align:right;}
+#blgm_beLink a {color : #333333; text-decoration : underline; font-weight : 300; font-family:arial,verdana,sans-serif;border : none;}
+#blgm_beLink a:hover {color : #000000; text-decoration : underline; font-weight : 300; font-family:arial,verdana,sans-serif;border : none;}
+#blgm_beLogo {position: absolute; width : 32px; bottom : 0em; right : 0px;}
+* html #blgm_beLogo {bottom : -0.05em;}
+#blgm_beLogo a, #blgm_beLogo a:hover, #blgm_beLogo:visited {border : none;}

@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:html="http://www.w3.org/1999/xhtml">
+<body>
+<ui:composition template="/WEB-INF/template.xhtml">
+	<ui:define name="body">
+		<h2>Administrators</h2>
+		<h:form>
+			<rich:dataTable var="row" value="#{dssAdminList}" rows="10"
+				rendered="#{dssAdminList.rowCount > 0}">
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Name" />
+					</f:facet>
+					<h:outputText value="#{row.name}" />
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="Pending" />
+					</f:facet>
+					<h:outputText value="#{row.pending}" />
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						<h:outputText value="actions" />
+					</f:facet>
+					<h:commandLink value="Delete" action="#{dssAdmins.delete}"
+						onclick="return askDeleteQuestion()" />
+					<h:outputText value=" " />
+					<h:commandLink value="Approve" action="#{dssAdmins.approve}"
+						rendered="#{row.pending}" />
+				</rich:column>
+				<f:facet name="footer">
+					<rich:datascroller />
+				</f:facet>
+			</rich:dataTable>
+			<h:outputText value="No administrators registered."
+				rendered="#{dssAdminList.rowCount == 0}" />
+			<script type="text/javascript">
+				function askDeleteQuestion() {
+					var agree = confirm("Remove Admin?");
+					if (agree) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+        	</script>
+		</h:form>
+		<h:messages globalOnly="true" styleClass="error" />
+	</ui:define>
+</ui:composition>
+</body>
+</html>

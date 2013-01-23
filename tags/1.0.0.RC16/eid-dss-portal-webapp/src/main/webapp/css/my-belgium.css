@@ -1,0 +1,439 @@
+/* my.belgium css - written and maintained by Niels Matthijs                  */
+/* Yahoo fonts.css integrated. (c) 2007, Yahoo! Inc. All rights reserved.     */
+
+/* ========================================================================== */
+/* 00. base styles                                                            */
+
+/* set base body ............................................................ */
+body {font:13px/1 arial,trebuchet MS,tahoma,helvetica,clean,sans-serif; background:#a9aeb1; color:#000;}
+
+/* general reset ............................................................ */
+* {margin:0; padding:0;}
+html, body, form, img, fieldset, legend, table, tbody, thead, tfoot, tr, th, td {border:none;}
+li {list-style:none;}
+
+/* basic line-height ........................................................ */
+p, div, a, span, label, li {line-height:1.25em;}
+
+/* hide elements from screen but not from source ............................ */
+.hidden {position:absolute !important; top:-999em; left:-999em;}
+
+/* clearfix class ........................................................... */
+.clearfix:after {content:"."; display:block; height:0; clear:both; visibility:hidden;}
+.clearfix {display:inline-block; display:block;}
+
+/* ========================================================================== */
+/* 01. page frame                                                             */
+
+/* site frame ............................................................... */
+#allContainer {width:73.85em; margin:1em auto; background:#fff url("../img/glow-left.gif") left top repeat-y; color:#000;}
+#allContainer #allWrap {background:url("../img/glow-right.gif") right top repeat-y;}
+
+/* site header .............................................................. */
+#header {background:url("../img/glow-lt.gif") left top repeat-x;}
+#header #headerWrap {background:url("../img/glow-rt.gif") right top no-repeat; padding:8px; padding-bottom:0;}
+#header #headerWrap #headerWrap2 {background:#fff; overflow:hidden;}
+#header .siteLabel .siteLogo a {text-decoration:none; overflow:hidden;}
+
+#header .siteLabel .siteLogo a img {float:left;}
+#header .siteLabel .siteLogo .siteName {display:block; font-weight:700; font-size:282%; color:#000; margin:20px 0em 0em 100px;}
+#header .siteLabel .siteLogo .siteName span {color:#006699;}
+#header .siteLabel .siteLogo .siteTag {color:#000; font-weight:700; display:block; margin-left:100px;}
+#header .siteLabel .siteLogo .siteTag span {color:#006699;}
+
+/* site content ............................................................. */
+#content {margin:0.75em 8px; background:#fff url("../img/content-top.gif") left top repeat-x; padding-top:6px;}
+#content #contentWrap {overflow:hidden; padding-bottom:2em;}
+
+/* site footer .............................................................. */
+#footer {background:url("../img/glow-lb.gif") left bottom repeat-x;}
+#footer #footerWrap {background:url("../img/glow-rb.gif") right bottom no-repeat; padding:8px; padding-top:0;}
+#footer #footerWrap #footerWrap2 {background:#f2f7fa url("../img/footer-top.gif") left top repeat-x; overflow:hidden;}
+
+/* .be header ............................................................... */
+#blgm_belgiumHeader {border:none;}
+
+/* grid two right ........................................................... */
+.gridTwoRight {padding-right:29em;}
+.gridTwoRight .wrapper #actContent {float:left; width:100%;}
+.gridTwoRight .wrapper #identity {float:right; width:29em; margin-right:-29em;}
+
+/* ========================================================================== */
+/* 02. headings                                                               */
+
+/* general heading declaration .............................................. */
+.heading {font-size:100%; color:#000; font-weight:700;}
+/* hX specifications */
+h1.heading span {font-size:146.5%;}
+h2.heading span {font-size:131%;}
+h3.heading span {font-size:116%;}
+/* in actContent */
+#actContent h1 {margin:1em; margin-left:2em;}
+/* in gridOne */
+.gridOne h1 {margin:1em; margin-top:2em;}
+.gridOne h1 a {font-size:70%; font-weight:300; margin-left:0.5em;}
+
+/* ========================================================================== */
+/* 03. links & buttons                                                        */
+
+/* basic link ............................................................... */
+a {color:#036;}
+a:hover {color:#000;}
+
+/* alert link ............................................................... */
+a.alertLink {background:url("../img/alert.gif") top left no-repeat; padding-left:26px; padding-top:5px; margin-top:-5px;}
+
+/* more link ................................................................ */
+a.more {background:url("../img/more.gif") right 0.5em no-repeat; padding-right:11px;}
+a.more:hover {background-image:url("../img/more-hover.gif");}
+
+/* call to action link ...................................................... */
+a.call {background:url("../img/call-lt.gif") left top no-repeat; display:block; text-decoration:none; font-weight:700; color:#fff; font-size:131%;}
+a.call .callWrap1 {display:block; background:url("../img/call-rt.gif") right top no-repeat;}
+a.call .callWrap2 {display:block; background:url("../img/call-rb.gif") right bottom no-repeat;}
+a.call .callWrap3 {background:url("../img/call-lb.gif") left bottom no-repeat; overflow:hidden;  padding:0.5em 2em; display:block;}
+
+/* ========================================================================== */
+/* 04. navigation                                                             */
+
+/* slip links ............................................................... */
+.skipLinks {margin-left:7px; height:0px;}
+.skipLinks a {text-decoration:none; background:#000; color:#fff; top:-700em; overflow:hidden; position:absolute; z-index:100; font-weight:700; font-size:13px;}
+.skipLinks a:focus, .skipLinks a:active {padding:0.1em 0.5em 0.1em 0.5em;height:auto;width:auto;top:0;overflow:visible;}
+.skipLinks a:hover {cursor:pointer; color:#ccc;}
+
+/* service navigation ....................................................... */
+.secondNav ul {display:inline;}
+.secondNav ul li {display:inline; background:url("../img/footer-sep.gif") right 0.2em no-repeat; padding-right:1px;}
+.secondNav ul li .page {margin-left:0.25em; margin-right:0.5em; font-size:93%;}
+.secondNav ul li.last {background:none;}
+/* footer */
+#footer .secondNav {text-align:center; margin-top:1.25em; margin-bottom:1em;}
+
+/* tabs ..................................................................... */
+.tabpane {margin:1em;}
+.tabpane .tabHead {margin:0em 0.5em;}
+.tabpane .tabHead ul li {float:left; background:#e5e5e5; color:#036; border:1px solid #7F6B29; border-bottom:none; margin-right:1px;}
+.tabpane .tabHead ul li .tabHandler {float:left; margin:-1px; margin-bottom:0em; background:url("../img/tab-inactive-lt.gif") left top no-repeat; text-decoration:none;  font-weight:700; outline:none;}
+.tabpane .tabHead ul li .tabHandler span {float:left; background:url("../img/tab-inactive-rt.gif") right top no-repeat; padding:0.5em 0.75em;}
+.tabpane .tabHead ul li.active {background:#fffaea; position:relative; top:1px; z-index:10; border-color:#000; margin-top:-1px; padding-bottom:1px;}
+.tabpane .tabHead ul li.active .tabHandler {background-image:url("../img/tab-lt.gif"); color:#000;}
+.tabpane .tabHead ul li.active .tabHandler span {background-image:url("../img/tab-rt.gif");}
+.tabpane .tabMain {border:1px solid #000; background:#fffaea; min-height:10em;}
+.tabpane .tabMain p {margin:0.5em 1.25em;}
+.tabpane .tabMain ul li {margin:0.25em 1.25em; background:url("../img/link-bullet.gif") left 0.5em no-repeat; padding-left:10px;}
+
+/* doormat .................................................................. */
+.doormat {margin:1em; margin-right:0;}
+.doormat li {background:url("../img/iconDoormat-family.gif") right 75px no-repeat;}
+.doormat p {margin:0.75em 1.5em;}
+/* backgrounds */
+.doormat .row {border:1px solid #d9d9bf; margin-bottom:0.5em;}
+.doormat .rowWrap1 {margin:-1px; background:url("../img/doormat-border-between.gif") 13.75em top repeat-y; padding:0em 13.75em;}
+.doormat .rowWrap1 ul {background:url("../img/doormat-border-between.gif") right top repeat-y; }
+.doormat .row1 {background:#f7f7f2 url("../img/doormat-bg-1.gif") left bottom repeat-x;}
+.doormat .row2 {background:#f2f2e9 url("../img/doormat-bg-2.gif") left bottom repeat-x;}
+.doormat .row3 {background:#e9e9db url("../img/doormat-bg-3.gif") left bottom repeat-x;}
+.doormat .row4 {background:#e2e2ce url("../img/doormat-bg-4.gif") left bottom repeat-x;}
+.doormat .row4 .rowWrap1 {padding-right:0;}
+.doormat .row4 .rowWrap1 ul {background:none;}
+/* positioning */
+.doormat li.familie, .doormat li.gezondheid, .doormat li.mobiliteit, .doormat li.huisvesting {width:13.75em; float:left; margin-left:-13.75em;}
+.doormat li.belastingen, .doormat li.justitie, .doormat li.leren, .doormat li.overbelgie {float:left;}
+.doormat li.belastingen .appList, .doormat li.justitie .appList, .doormat li.leren .appList, .doormat li.overbelgie .appList {margin:0px 7px;}
+.doormat li.overbelgie {width:100%;}
+.doormat li.overbelgie .appList {margin-right:0;}
+.doormat li.economie, .doormat li.leefmilieu, .doormat li.werk  {margin-right:-13.75em; width:13.75em; float:right;}
+/* application list */
+.doormat .appList .heading {text-align:right; margin:0.5em 0.75em; margin-bottom:0;}
+.doormat .appList .heading span {font-size:108%;}
+.doormat .appList {overflow:hidden; min-height:14.25em; padding:1px; }
+.doormat .appList ul {margin:0.5em; margin-left:0.75em; background:none;}
+.doormat .appList li {margin:0.75em 0em; font-size:85%; background:url("../img/link-bullet.gif") left 0.4em no-repeat; padding-left:10px;}
+.doormat .appList li a {font-weight:700; text-decoration:none; font-size:108%; color:#036; display:block; overflow:hidden;}
+.doormat .appList li a span {float:left;}
+.doormat .appList li a .eidIcon {display:inline; width:23px; margin-left:0.25em; background:url("../img/eid-icon.gif") left top no-repeat; float:left; height:13px;}
+.doormat .appList li a .eidIcon span {display:inline; position:absolute; left:-999em; top:-999em;}
+.doormat .appList li span {display:block;}
+.doormat .appList .more {clear:both; margin:0em 0.5em; font-weight:700; text-decoration:none; margin-left:0.75em; margin-bottom:0.5em; float:left; background:url("../img/link-bullet.gif") left 0.5em no-repeat; padding-left:10px;}
+/* block specific */
+.doormat li.familie .appList {background:url("../img/doormat-bg-lt.gif") left top no-repeat;}
+.doormat li.familie {background-image:url("../img/iconDoormat-family.gif");}
+.doormat li.belastingen {background-image:url("../img/iconDoormat-taxes.gif");}
+.doormat li.economie .appList {background:url("../img/doormat-bg-rt.gif") right top no-repeat;}
+.doormat li.economie {background-image:url("../img/iconDoormat-economy.gif");}
+.doormat li.gezondheid {background-image:url("../img/iconDoormat-health.gif");}
+.doormat li.justitie {background-image:url("../img/iconDoormat-justice.gif");}
+.doormat li.leefmilieu {background-image:url("../img/iconDoormat-environment.gif");}
+.doormat li.mobiliteit {background-image:url("../img/iconDoormat-mobility.gif");}
+.doormat li.leren {background-image:url("../img/iconDoormat-learning.gif");}
+.doormat li.werk {background-image:url("../img/iconDoormat-work.gif");}
+.doormat li.huisvesting .appList {background:url("../img/doormat-bg-lb.gif") left bottom no-repeat;}
+.doormat li.huisvesting {background-image:url("../img/iconDoormat-housing.gif");}
+.doormat li.overbelgie.appList {background:url("../img/doormat-bg-rb.gif") right bottom no-repeat;}
+.doormat li.overbelgie {background-image:url("../img/iconDoormat-federal.gif");}
+/* cols */
+.doormat li .col1 {float:left; width:48%;}
+.doormat li .col2 {float:right; width:48%;}
+
+/* language select .......................................................... */
+#languageSelect {width:960px; margin:25px auto 0;background:#FFFFFF url("../img/bg_ln.gif") no-repeat left top}
+#languageSelect .wrapper {background:transparent url("../img/bg_ln.gif") no-repeat right bottom;}
+#languageSelect .w1 {background:transparent url("../img/bg_ln-bl.gif") no-repeat left bottom;}
+#languageSelect .w2 {padding:25px 25px;background:transparent url("../img/bg_ln-tr.gif") no-repeat right top;}
+#languageSelect .w3 {background:url("../img/languagechoice.gif") no-repeat right bottom; min-width:910px; min-height:526px;}
+
+#languageSelect ul {padding:15em 2em 0em 3em;width:25em;}
+#languageSelect ul li a {padding-left:25px; background:url("../img/arrow_black_lc.gif") no-repeat left 0.1em; color:#000; text-decoration:none; font-size:138.5%;display:block;}
+#languageSelect ul li a:hover {color:#036; background-image:url("../img/arrow_blue_lc.gif");}
+#languageSelect ul li {padding-left:0em; margin-bottom:1.5em;}
+#languageSelect .siteTitle {font-size:225%; margin-bottom:0.1em;}
+#languageSelect .siteTitle .portal {font-weight:700;}
+#languageSelect .belgiumLink {text-align:center;}
+
+/* breadcrumb ............................................................... */
+.breadcrumb {margin:1em 1em; margin-left:2em; margin-bottom:1.5em; }
+.breadcrumb li {float:left; margin-right:0.5em; padding-left:11px; color:#000; background:url("../img/arrow_black.gif") left 0.5em no-repeat; white-space:nowrap;}
+.breadcrumb li.first {background:none; padding-left:0;}
+.breadcrumb li.first .page {margin-left:0;}
+
+/* paging ................................................................... */
+.paging {margin:1.5em 1em; margin-left:2em; background:#FAFAFA; position:relative; border:1px solid #b6b6b6; padding-top:5px;}
+.paging span.result {text-align:center;display:block;padding:0em 6em 5px 6em;font-weight:700;}
+.paging a.prev {position:absolute;left:0.75em;top:5px;background:url("../img/arrow_blue_rev.gif") left center no-repeat;padding-left:10px;}
+.paging a.next {position:absolute;right:0.75em;top:5px;background:url("../img/arrow_blue.gif") right center no-repeat;padding-right:10px;}
+
+.paging.bottom {position:relative; border:1px solid #b6b6b6; padding-top:0px; padding-bottom:5px;}
+.paging.bottom span.result {padding:5px 6em 0em 6em;}
+.paging.bottom a.prev {top:0.4em;}
+.paging.bottom a.next {top:0.4em;}
+
+
+
+/* ========================================================================== */
+/* 05. basic content                                                          */
+
+/* textblock ................................................................ */
+.textblock {margin:1em;}
+.textblock p {margin:1em 0em;}
+/* intro */
+.textblock.intro p {font-weight:700;}
+/* in content */
+#actContent .textblock {margin-left:2em;}
+#actContent .notify.confirm .textblock {margin-left:0em;}
+
+/* image .................................................................... */
+.image.left {float:left; margin-right:0.5em;}
+
+/* ========================================================================== */
+/* 07. specific components                                                    */
+
+/* site label ............................................................... */
+.siteLabel {background:url("../img/header-bottom-left.gif") left bottom no-repeat; font-size:100%;}
+.siteLabel .siteLogo {display:block; background:url("../img/header-bottom-right.gif") right bottom no-repeat; padding-bottom:23px;}
+.siteLabel .siteLogo a {display:block; width:502px; height:90px; margin-left:1.5em; margin-top:1em;}
+
+/* copyright ................................................................ */
+.copyright {text-align:center; font-weight:700; margin-bottom:2.5em; font-size:93%;}
+
+/* promo block .............................................................. */
+.promo {background:#c0d9e6 url("../img/promo-background.gif") left top repeat-x; border:1px solid #BFD9E5; margin:1em; overflow:hidden;}
+.promo .textblock {margin:0;}
+.promo .textblock .textblock .textblock {margin:1em;}
+.promo ul {margin:1em;}
+.promo ul li {padding-left:65px; margin:1em 0em;}
+.promo ul li .heading {margin:0.1em 0em;}
+.promo ul li .heading span {font-size:108%;}
+.promo ul li p {margin:0;}
+.promo ul li.personal {background:url("../img/promo-personal.gif") left 0.5em no-repeat;}
+.promo ul li.secure {background:url("../img/promo-secure.gif") left 0.75em  no-repeat;}
+.promo ul li.easy {background:url("../img/promo-handy.gif") left 0.75em  no-repeat;}
+
+/* feedback block ........................................................... */
+.feedback {background:#fafafa; margin:1em; border:1px solid #EAEAE5;}
+.feedback .textblock {margin:0;}
+.feedback .textblock .textblock .textblock {margin:1em;}
+.feedback .heading {margin:1em}
+.feedback .heading span {font-size:100%;}
+.feedback .continue {margin:1em; margin-top:-0.5em;text-align:right;}
+.feedback .continue a {font-size:93%;}
+
+/* link block ............................................................... */
+/* in login */
+.login .links {margin:2em 1em; border:1px solid #000; background:#fffaea;}
+.login .links ul {margin:0.5em;}
+.login .links ul li {margin:0.25em 1em; background:url("../img/link-bullet.gif") left 0.5em no-repeat; padding-left:10px;}
+
+/* login block .............................................................. */
+.login {margin:1em;}
+.login .textblock {margin:0;}
+.login .textblock .textblock .textblock {margin:1em;}
+.login .toggle a {position:absolute; right:1em; top:0.75em; outline:none; padding-right:16px; background:url("../img/login-toggle-close.gif") right 0.25em no-repeat;}
+/* loggin in */
+.login.in {background:#FFCC33 url("../img/login-background.gif") left top repeat-x; min-height:645px; border:1px solid #bfbfbf;}
+.login.in .profile {margin:1em; position:relative; min-height:97px; overflow:hidden; background:url("../img/profile.gif") right top no-repeat;}
+.login.in .profile .loginStatus .caption {font-size:108%; display:block; margin-top:1em;}
+.login.in .profile .loginStatus .detail {font-size:138.5%; display:block; margin-top:0.25em; margin-bottom:0.5em; font-weight:700;}
+.login.in .profile .image {position:absolute; right:0; top:0; border:1px solid #000;}
+
+/* logged out */
+.login.out {background:#FFCC34 url("../img/logout-background.gif") left top repeat-x; border:1px solid #bfbfbf;}
+.login.out .heading {margin:1em;}
+.login.out .textblock {overflow:hidden;}
+.login.out .textblock p {margin:0; margin-bottom:0.5em;}
+/* logged out  - action block */
+.login.out .loginAction {margin:1em; border-top:1px solid #7f7f7f; overflow:hidden;}
+.login.out .loginAction .start {float:right; margin-top:1em;}
+.login.out .loginAction .start .call {display:block;}
+.login.out .loginAction .help {float:left; margin-top:1em;}
+.login.out .loginAction .help a {font-size:93%;}
+.login.out .loginAction .notify {margin:0; margin-top:1em;}
+/* in gridOne */
+.gridOne {position:relative; min-height:650px; overflow:hidden;}
+.gridOne .login {width:27em; position:absolute; right:0.5em; top:0;}
+
+/* expandable */
+.login.expandable {min-height:0; background:#FFD118 url("../img/login-ex-bg.gif") top left repeat-x; border:1px solid #bfbfbf; height:2.5em; overflow:hidden;}
+
+.login.expandable .profile {margin-top:0.6em; background:none;}
+.login.expandable .profile .loginStatus .caption, .login.expandable .profile .loginStatus .detail {display:inline; font-size:93%;}
+.login.expandable .profile .loginStatus .detail {font-size:116%;}
+.login.expandable .profile .secondNav {margin-top:2em;}
+.login.expandable .toggle a {padding-right:0; width:16px; height:16px; background:url("../img/login-toggle-open.gif") left top no-repeat;}
+.login.expandable .toggle a span {position:absolute; left:-999em; top:-999em;}
+
+/* caption detail ........................................................... */
+.spec {margin:0.5em 1em;}
+.spec .caption {float:left; width:10.5em; text-align:right;}
+.spec .detail {margin-left:12em;}
+
+/* fiche .................................................................... */
+.fiche {margin:1em; margin-left:2em; background:#f2f2f2; border:1px solid #e5e5e5;}
+.fiche .heading {margin:1em;}
+.fiche .specs {margin-top:1em; margin-bottom:2em;}
+
+/* confirmation ............................................................. */
+.notify.confirm {margin:1em; border:2px solid #360; background:#e1e8d9 url("../img/confirm.gif") 10px 10px no-repeat;}
+.notify.confirm .heading {margin:0.75em; margin-left:40px;}
+.notify.confirm .heading span {font-size:100%;}
+.notify.confirm .message {margin:0.75em; margin-top:-0.25em; margin-left:40px;}
+.notify.confirm .textblock {margin:0;}
+/* in content column */
+#actContent .notify.confirm {margin-left:2em;}
+
+/* status message ........................................................... */
+.notify.status {margin:1em; border:2px solid #c30; background:#f7e1d9 url("../img/status.gif") 10px 10px no-repeat;}
+.notify.status .heading {margin:0.75em; margin-left:40px;}
+.notify.status .heading span {font-size:100%;}
+.notify.status .message {margin:0.75em; margin-top:-0.25em; margin-left:40px;}
+
+/* info message ............................................................. */
+.notify.info {margin:1em; border:2px solid #069; background:#d9e8f0 url("../img/info.gif") 10px 10px no-repeat; position:relative;}
+.notify.info .heading {margin:0.75em; margin-left:40px;}
+.notify.info .message {margin:0.75em; margin-left:40px; margin-right:1.75em;}
+/* in actContent */
+#actContent .notify.info {margin-left:2em;}
+
+/* tip ...................................................................... */
+.notify.tip {margin:1em 0em; margin-top:0.75em; border:2px solid #c90; background:#faf5e5; clear:both;}
+.notify.tip .notifyWrap1 {margin:-2px; background:url("../img/tip-rb.gif") right bottom no-repeat;}
+.notify.tip .notifyWrap2 {background:url("../img/tip-rt.gif") right top no-repeat;}
+.notify.tip .notifyWrap3 {background:url("../img/tip-lb.gif") left bottom no-repeat;}
+.notify.tip .notifyWrap4 {background:url("../img/tip-lt.gif") left top no-repeat; padding:2px;}
+.notify.tip .message {padding:0em 1em; padding-left:44px; background:url("../img/tip-bg.gif") 10px 10px no-repeat; overflow:hidden; font-weight:700;}
+.notify.tip .message p {font-size:93%; margin:1em 0em; line-height:1.5em;}
+
+/* release message .......................................................... */
+.notify.release {margin:1em; border:2px solid #069; background:#d9e8f0 url("../img/info.gif") 10px 10px no-repeat; position:relative;}
+.notify.release .heading {margin:0.75em; margin-left:40px;}
+.notify.release .message {margin:0.75em; margin-left:40px; margin-right:1.75em; font-weight:700;}
+.notify.release .footer a.close {background:url("../img/close.gif") left top no-repeat; text-indent:-999em; width:12px; height:12px; position:absolute; right:0.5em; top:0.5em; outline:none;}
+
+/* alert message ............................................................ */
+.notify.alert {margin:1em; border:2px solid #fc0; background:#fff2bf url("../img/alert.gif") 10px 10px no-repeat; position:relative; margin-left:2em;}
+.notify.alert .heading {margin:0.75em; margin-left:40px;}
+.notify.alert .message {margin:0.75em; margin-left:40px; margin-right:1.75em;}
+
+/* frame .................................................................... */
+iframe {border:1px solid #000; margin:0em 1em; width:70em; min-height:645px;}
+
+/* appContainer ............................................................. */
+.appContainer {border:1px solid #000; margin:0em 1em; width:70em; min-height:645px;}
+
+.appContainer .intro {overflow:hidden;border:1px solid #069;padding:1em;background:#e5eff5;}
+.appContainer .intro p {margin-top:0;}
+.appContainer .resultList .heading {background:url("../img/arrow_blue-attests.gif") no-repeat left center;padding-left:1em;}
+.appContainer .results {margin-left:2em;}
+.appContainer .feedback {padding:0.5em 1em;}
+
+/* overlay .................................................................. */
+#overlay {display:none; position:fixed; right:0; left:0; top:0; bottom:0; background:#000; opacity:0.7; z-index:50; filter:alpha(opacity=70);}
+.popBox {display:none; position:fixed; top:50%; left:50%; margin-left:-17em; width:34em; min-height:18em; margin-top:-9em; z-index:60;}
+.popBox a {text-decoration:underline; font-weight:300;}
+.popBox {border:2px solid #069; background:#fff url("../img/info.gif") 10px 8px no-repeat;}
+.popBox .heading {text-align:left; margin:0.5em; margin-left:35px;}
+.popBox .heading span {font-size:123.1%;}
+.popBox p, .popBox ul, .popBox .footer {margin:1em 0.5em; margin-left:10px; color:#000;}
+.popBox ul li {margin:0; margin-bottom:1.5em; background:url("../img/link-bullet.gif") left 0.4em no-repeat; padding-left:10px;}
+.popBox ul li	p {color:#666; margin:0;}
+.popBox ul li a {font-size:108%;}
+.popBox ul li a span {display:inline; font-weight:700;}
+.popBox .toggle {position:absolute; right:0.75em; top:0.5em; outline:none; width:16px; height:16px; background:url("../img/login-toggle-close.gif") right 0.25em no-repeat;}
+.popBox .toggle span {position:absolute; left:-999em; top:-999em;}
+
+/* result list .............................................................. */
+.results {margin:1em 3em; margin-left:4em;}
+.resultList li {margin-bottom:1.5em;}
+  
+/* ========================================================================== */
+/* 08. forms                                                                  */
+
+/* formbox .................................................................. */
+.formBox.inline {overflow:hidden;}
+.formBox.inline .formContent {float:left;}
+.formBox.inline .formContent .formRow {float:left;}
+.formBox.inline .formFooter {float:left;}
+.formBox.inline .formFooter .buttonGroup {margin:0.25em;}
+.formBox.inline .formFooter .buttonGroup input {vertical-align:bottom;}
+
+/* formrow .................................................................. */
+.formRow {margin:0.5em 1em; overflow:hidden;}
+
+/* input element ............................................................ */
+.inputElement {float:left;}
+.inputElement .inputCaption {float:left; width:10.5em;}
+.inputElement .inputCaption .label {display:block; text-align:right;}
+.inputElement .inputControl {margin-left:12em;}
+
+/* fieldset ................................................................. */
+.textfield {border:1px solid #3d3d3d;}
+
+
+/* tridion webforms ......................................................... */
+#contact form {margin:1em; margin-left:2em; background:#f2f2f2; border:1px solid #e5e5e5; padding:1em 0em;}
+form table.Form_standard {font-size:100%;}
+form table.Form_standard tr {background:none;}
+form table.Form_standard td {border:none; width:auto; padding:0.5em; vertical-align:top;}
+
+form table.Form_standard td.Label_standard {width:12em;}
+form table.Form_standard td.Label_standard label {display:block;text-align:right;position:relative;padding-right:1em;color:#000;}
+form table.Form_standard td.Label_standard label .MandatoryMarker {position:absolute;right:0.25em;top:0;}
+
+form table.Form_standard td.WebFormData input {border:1px solid #000; width:15em; padding:0.2em;}
+form table.Form_standard td.WebFormData textarea {border:1px solid #000; width:20.5em;}
+
+form table.Form_embedded {margin:0;}
+form table.Form_embedded td.Label_standard {width:11.5em;}
+form table.Form_embedded td.Label_standard label {display:block;text-align:right;margin-top:0.25em;}
+
+form table.Form_standard table.Form_embedded_basic {margin:0;float:left;width:auto;}
+form table.Form_standard table.Form_embedded_basic td {padding:0;padding-right:0.5em;}
+form table.Form_standard table.Form_embedded_basic td label {padding-top:0.25em;display:block;}
+
+form #buttons {padding:0.5em;text-align:left; padding-left:13.5em;}
+
+form table.Form_standard .Error_standard {color:#c00;}
+form table.Form_standard .Error_standard td {padding-left:14.75em;background:url("../img/error_small.gif") 13.5em 0.4em no-repeat;}
+
+.WebFormData_PrintOnly {display:none;padding:0 !important;margin:0 !important;}
+.notify h2 {font-size: 10px}

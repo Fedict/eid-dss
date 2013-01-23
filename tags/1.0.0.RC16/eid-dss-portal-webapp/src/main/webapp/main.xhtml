@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
+<body>
+<ui:composition template="/WEB-INF/template.xhtml">
+    <ui:define name="body">
+
+        <h2>#{messages.mainTitle}</h2>
+
+        <div class="two_of_three">
+            <p> #{messages.mainInfo} </p>
+        </div>
+        <div class="start actions one_of_three">
+            <a class="call" href="#{facesContext.externalContext.requestContextPath}/upload">
+                <span class="callWrap1">
+                    <span class="callWrap2">
+                        <div class="callWrap3 btn sign_btn float_right">#{messages.mainUpload}</div>
+                    </span>
+                </span>
+            </a>
+        </div>
+        <div class="clear"> </div>
+        <div class="notify info">
+            <div class="notifyWrap1">
+                <div class="notifyWrap2"><div class="notifyWrap3">
+                    <div class="notifyWrap4">
+                        <div class="message">
+                            <p>
+                                #{messages.mainExtraInfo}<a href="http://eid.belgium.be/" target="_blank">eid.belgium.be</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+</ui:composition>
+</body>
+</html>

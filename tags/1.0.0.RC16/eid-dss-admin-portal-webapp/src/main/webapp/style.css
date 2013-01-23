@@ -1,0 +1,89 @@
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: small;
+}
+
+h1 {
+	color: gray;
+}
+
+h2 {
+	color: #FF9000;
+	font-size: large;
+	font-family: Arial;
+}
+
+h3 {
+	color: #FF9000;
+	font-size: medium;
+	font-family: Arial;
+	font-style: italic;
+}
+
+#logo {
+	float: left;
+	margin-right: 10px;
+}
+
+#header {
+	width: 700px;
+	margin: 0 auto;
+}
+
+#menu {
+	float: left;
+	width: 25%;
+}
+
+#menuPanel {
+	margin-right: 10px;
+}
+
+.rich-pmenu-selected-element {
+	color: #FF9000;
+}
+
+#login {
+	float: right;
+	width: 25%;
+}
+
+#loginPanel {
+	background-color: #d0d0d0;
+	border-style: solid;
+	border-color: black;
+	border-width: 1px;
+	padding: 10px;
+	margin-left: 10px;
+}
+
+.selected {
+	background: #FF9000;
+}
+
+.text {
+	overflow: auto;
+	width: 700px;
+	font-family: monospace;
+	white-space: pre-wrap; /* css-3 */
+	white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
+	white-space: -pre-wrap; /* Opera 4-6 */
+	white-space: -o-pre-wrap; /* Opera 7 */
+	word-wrap: break-word;
+}
+
+.text.block {
+	display: block;
+}
+
+#content {
+	width: 700px;
+	margin: 0 auto;
+	color: #303030;
+}
+
+.error {
+	border: 1px solid red;
+	background: pink;
+	text-align: center;
+}
