@@ -4,13 +4,13 @@
     <parent>
         <groupId>be.fedict</groupId>
         <artifactId>eid-dss</artifactId>
-        <version>1.0.0.RC16</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <name>FedICT eID DSS .NET SDK</name>
     <groupId>be.fedict.eid-dss</groupId>
     <artifactId>eid-dss-sdk-dotnet</artifactId>
-    <version>1.0.0.RC16</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <build>
