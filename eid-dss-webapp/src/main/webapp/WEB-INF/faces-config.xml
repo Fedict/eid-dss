@@ -12,6 +12,7 @@
 			<supported-locale>en</supported-locale>
 			<supported-locale>nl</supported-locale>
 			<supported-locale>fr</supported-locale>
+			<supported-locale>de</supported-locale>
 		</locale-config>
 		<resource-bundle>
 			<base-name>be.fedict.eid.dss.Messages</base-name>
