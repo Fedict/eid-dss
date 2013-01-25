@@ -17,7 +17,7 @@
 		</core:bundle-names>
 	</core:resource-loader>
 	<international:locale-config
-		default-locale="en" supported-locales="en nl fr" />
+		default-locale="en" supported-locales="en nl fr de" />
 	<international:locale-selector
 		cookie-enabled="true" />
 
