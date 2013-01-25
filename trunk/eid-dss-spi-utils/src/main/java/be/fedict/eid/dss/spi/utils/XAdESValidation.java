@@ -80,8 +80,10 @@ public class XAdESValidation {
 	private void prepareDocumentXades(Element signatureElement) {
 		NodeList nodeList = signatureElement.getElementsByTagNameNS(
 				"http://uri.etsi.org/01903/v1.3.2#", "SignedProperties");
-		Element signedPropertiesElement = (Element) nodeList.item(0);
-		signedPropertiesElement.setIdAttribute("Id", true);
+		if (1 == nodeList.getLength()) {
+			Element signedPropertiesElement = (Element) nodeList.item(0);
+			signedPropertiesElement.setIdAttribute("Id", true);
+		}
 	}
 
 	private void prepareDocumentIdentity(Element signatureElement) {
