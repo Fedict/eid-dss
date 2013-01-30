@@ -66,7 +66,12 @@ public class ODFSignatureService extends AbstractODFSignatureService implements
 			IdentityDTO identity, byte[] photo, DigestAlgo digestAlgo,
 			DSSDocumentContext documentContext) throws Exception {
 
-		super(digestAlgo);
+		/*
+		 * Because OpenOffice/LibreOffice do not support SHA2 based signatures,
+		 * we have to default to SHA1 for the moment.
+		 */
+		super(DigestAlgo.SHA1);
+
 		this.temporaryDataStorage = new HttpSessionTemporaryDataStorage();
 		this.documentOutputStream = documentOutputStream;
 		this.tmpFile = File.createTempFile("eid-dss-", ".odf");
