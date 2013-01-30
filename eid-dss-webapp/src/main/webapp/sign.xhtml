@@ -24,7 +24,7 @@
 				};
 				var parameters = {
 					TargetPage : 'protocol-exit',
-					AppletService : 'applet-service',
+					AppletService : 'applet-service;jsessionid=#{facesContext.externalContext.getSession(false).id}',
 					Language : '#{localeSelector.language}'
 				};
 				deployJavaEIDApplet.runApplet(attributes, parameters);
