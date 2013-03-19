@@ -13,7 +13,7 @@
 	</parent>
 	<groupId>be.fedict</groupId>
 	<artifactId>eid-dss</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0.RC17</version>
 	<packaging>pom</packaging>
 	<inceptionYear>2009</inceptionYear>
 	<scm>
@@ -279,7 +279,7 @@
 	<properties>
 		<eid-applet.version>1.1.0.RC2</eid-applet.version>
 		<eid-applet.SkipSecureConnectionCheck>false</eid-applet.SkipSecureConnectionCheck>
-		<eid-trust-service.version>1.0.1.RC4</eid-trust-service.version>
+		<eid-trust-service.version>1.0.1.RC5</eid-trust-service.version>
 		<jtrust.version>1.1.2</jtrust.version>
 		<cxf.version>2.4.8</cxf.version>
 		<hibernate.hbm2ddl.auto>create-drop</hibernate.hbm2ddl.auto>
