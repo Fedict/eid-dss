@@ -1,0 +1,53 @@
+.uploadForm {
+    margin-top:         20px;
+}
+
+.button {
+    text-align: left !important;
+    margin: 0 !important;
+    border: none;
+    font-weight: bold;
+    font-size: 14px;
+    background-color: transparent;
+    cursor: pointer;
+}
+.btn-middle {
+    margin-left: 20px;
+}
+.btn-left {
+    margin-right: 20px;
+}
+
+iframe {
+    width: 830px;
+    min-height: 500px;
+    border: none !important
+}
+
+#content .signatures .signature_item { border-top: 1px solid #aaa; }
+
+/*
+ * RichFaces
+ */
+.rich-fileupload-toolbar-decor {
+    width:              400px   !important;
+    background-color:   #ddd;
+    border:             1px solid #aaa;
+}
+.rich-fileupload-button-border {
+    border: none;
+}
+.rich-fileupload-button {
+    background-image: none;
+}
+.rich-fileupload-ico-add, .rich-fileupload-ico-add-dis {
+    background-image: none;
+}
+.rich-fileupload-list-overflow  {
+    height:             60px    !important;
+}
+.rich-fileupload-font {
+    font-family:        Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 14px;
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:be:fedict:eid:dss:spi:protocol"
+	xmlns:tns="urn:be:fedict:eid:dss:spi:protocol" elementFormDefault="qualified"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<element name="DigitalSignatureServiceProtocol" type="tns:DigitalSignatureServiceProtocolType" />
+	<complexType name="DigitalSignatureServiceProtocolType">
+		<sequence>
+			<element name="Name" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						The human readable name for this protocol
+						handler.
+					</xsd:documentation>
+				</xsd:annotation>
+			</element>
+			<element name="Description" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>
+						The optional protocol description.
+					</xsd:documentation>
+				</xsd:annotation>
+			</element>
+			<element name="ProtocolServiceClass" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						A pointer to a class implementing the
+						DSSProtocolService interface.
+					</xsd:documentation>
+				</xsd:annotation>
+			</element>
+			<element name="ContextPath" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						The unique context path where the protocol
+						service will be listening to.
+					</xsd:documentation>
+				</xsd:annotation>
+			</element>
+		</sequence>
+	</complexType>
+</schema>

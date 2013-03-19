@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<assembly
+        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+    <id>zip</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <baseDirectory>eid-dss-sdk-dotnet-${project.version}</baseDirectory>
+    <files>
+        <file>
+            <source>src/main/assembly/README.txt</source>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>../LICENSE.txt</source>
+            <fileMode>0644</fileMode>
+        </file>
+        <file>
+            <source>target/dev-guide/eid-dss-dev-guide-${project.version}.pdf</source>
+            <fileMode>0644</fileMode>
+        </file>
+    </files>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/eid-dss-sdk-dotnet</directory>
+            <outputDirectory>/eid-dss-sdk-dotnet</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/DSSTestSP</directory>
+            <outputDirectory>/DSSTestSP</outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>
+

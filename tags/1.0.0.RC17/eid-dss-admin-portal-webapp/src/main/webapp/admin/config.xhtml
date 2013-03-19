@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:s="http://jboss.com/products/seam/taglib">
+<body>
+	<ui:composition template="/WEB-INF/template.xhtml">
+		<ui:define name="body">
+			<h2>Configuration</h2>
+			<h:form>
+
+				<rich:tabPanel switchType="client">
+					<rich:tab label="PKI validation">
+						<h:panelGrid columns="2">
+							<h:outputText value="eID Trust Service XKMS2 URL:" />
+							<h:inputText value="#{dssConfig.xkmsUrl}" size="50" />
+
+							<h:outputText value="Signature creation trust domain:" />
+							<h:inputText value="#{dssConfig.signTrustDomain}" size="20" />
+
+							<h:outputText value="Signature verification trust domain:" />
+							<h:inputText value="#{dssConfig.verifyTrustDomain}" size="20" />
+
+							<h:outputText value="Signature identity trust domain:" />
+							<h:inputText value="#{dssConfig.identityTrustDomain}" size="20" />
+
+							<h:outputText value="TSA trust domain:" />
+							<h:inputText value="#{dssConfig.tsaTrustDomain}" size="20" />
+						</h:panelGrid>
+						<h:commandButton value="Save" action="#{dssConfig.save}" />
+					</rich:tab>
+
+					<rich:tab label="Signature">
+						<h:panelGrid columns="2">
+							<h:outputText value="Digest algorithm: " />
+							<h:selectOneMenu value="#{dssConfig.signatureDigestAlgo}">
+								<s:selectItems value="#{dssConfig.signatureDigestAlgoArray}"
+									var="signatureDigestAlgo" label="#{signatureDigestAlgo.algoId}" />
+								<s:convertEnum />
+							</h:selectOneMenu>
+
+							<h:outputText value="Timestamp Max Offset (ms): " />
+							<h:inputText value="#{dssConfig.timestampMaxOffset}" size="10" />
+
+							<h:outputText value="Max grace period (hours):" />
+							<h:inputText value="#{dssConfig.maxGracePeriod}" size="10" />
+						</h:panelGrid>
+						<h:commandButton value="Save" action="#{dssConfig.save}" />
+					</rich:tab>
+
+					<rich:tab label="Artifacts">
+						<h:panelGrid columns="2">
+
+							<h:outputText value="Document Storage Expiration (minutes)" />
+							<h:inputText value="#{dssConfig.documentStorageExpiration}"
+								size="10" />
+
+							<h:outputText value="Document Cleanup Task Cron Schedule" />
+							<h:inputText id="documentCleanupTaskCronSchedule"
+								value="#{dssConfig.documentCleanupTaskCronSchedule}" size="10" />
+
+							<h:outputText value="Local DSS Web Service URL:" />
+							<h:inputText value="#{dssConfig.dssWSUrl}" size="50" />
+
+						</h:panelGrid>
+						<h:commandButton value="Save" action="#{dssConfig.save}" />
+					</rich:tab>
+
+					<rich:tab label="TSP">
+						<h:panelGrid columns="2">
+							<h:outputText value="TSP server URL:" />
+							<h:inputText value="#{dssConfig.tspUrl}" size="50" />
+
+							<h:outputText value="TSP Policy OID: " />
+							<h:inputText value="#{dssConfig.tspPolicyOid}" size="10" />
+
+							<h:outputText value="Digest algorithm: " />
+							<h:selectOneMenu value="#{dssConfig.tspDigestAlgo}">
+								<s:selectItems value="#{dssConfig.tspDigestAlgoArray}"
+									var="tspDigestAlgo" label="#{tspDigestAlgo.algoId}" />
+								<s:convertEnum />
+							</h:selectOneMenu>
+						</h:panelGrid>
+						<h:commandButton value="Save" action="#{dssConfig.save}" />
+					</rich:tab>
+
+					<rich:tab label="Network">
+						<h:panelGrid columns="2">
+							<h:outputText value="HTTP Proxy" />
+							<h:selectBooleanCheckbox value="#{dssConfig.httpProxy}" />
+
+							<h:outputText value="HTTP Proxy Host: " />
+							<h:inputText value="#{dssConfig.httpProxyHost}" size="30" />
+
+							<h:outputText value="HTTP Proxy Port: " />
+							<h:inputText value="#{dssConfig.httpProxyPort}" size="10" />
+						</h:panelGrid>
+						<h:commandButton value="Save" action="#{dssConfig.save}" />
+					</rich:tab>
+
+					<rich:tab label="Mail">
+						<h:panelGrid columns="2">
+							<h:outputText value="Mail signed document" />
+							<h:selectBooleanCheckbox value="#{dssConfig.mailSignedDocument}" />
+
+							<h:outputText value="SMTP server: " />
+							<h:inputText value="#{dssConfig.smtpServer}" size="30" />
+
+							<h:outputText value="Mail from: " />
+							<h:inputText value="#{dssConfig.mailFrom}" size="30" />
+
+							<h:outputText value="Mail prefix: " />
+							<h:inputText value="#{dssConfig.mailPrefix}" size="20" />
+						</h:panelGrid>
+						<h:commandButton value="Save" action="#{dssConfig.save}" />
+					</rich:tab>
+
+					<rich:tab label="Security">
+						<h:panelGrid columns="2">
+							<h:outputText value="Remove eID Card" />
+							<h:selectBooleanCheckbox value="#{dssConfig.removeCard}" />
+
+							<h:outputText value="HTTP Strict Transport Security" />
+							<h:selectBooleanCheckbox value="#{dssConfig.hsts}" />
+						</h:panelGrid>
+						<h:commandButton value="Save" action="#{dssConfig.save}" />
+					</rich:tab>
+
+				</rich:tabPanel>
+
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</body>
+</html>
