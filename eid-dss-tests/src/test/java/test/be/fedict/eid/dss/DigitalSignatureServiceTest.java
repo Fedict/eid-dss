@@ -26,6 +26,8 @@ import static org.junit.Assert.fail;
 
 import java.awt.Component;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -198,11 +200,11 @@ public class DigitalSignatureServiceTest {
 				.getResourceAsStream("/signed-document.xml");
 		String signedDocument = IOUtils.toString(signedDocumentInputStream);
 
-		// String dssUrl = "https://www.e-contract.be/eid-dss-ws/dss";
-		String dssUrl = "http://localhost/eid-dss-ws/dss";
+		String dssUrl = "https://www.e-contract.be/eid-dss-ws/dss";
+		// String dssUrl = "http://localhost/eid-dss-ws/dss";
 		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
 				dssUrl);
-		// client.setProxy("proxy.yourict.net", 8080);
+		client.setProxy("proxy.yourict.net", 8080);
 		client.setLogging(true, true);
 
 		// operate
@@ -234,6 +236,33 @@ public class DigitalSignatureServiceTest {
 				dssUrl);
 		// client.setProxy("proxy.yourict.net", 8080);
 		client.setLogging(true, true);
+
+		// operate
+		List<SignatureInfo> signers = client.verifyWithSigners(document,
+				"application/zip");
+
+		// verify
+		for (SignatureInfo signer : signers) {
+			LOG.debug("signer: " + signer.getSigner().getSubjectX500Principal());
+			LOG.debug("signing time: " + signer.getSigningTime());
+		}
+	}
+
+	@Test
+	public void testVerifyBigFile() throws Exception {
+		// setup
+		File file = new File(
+				"/home/fcorneli/Downloads/glassfish-3.1.2.2.zip");
+		InputStream documentInputStream = new FileInputStream(file);
+		assertNotNull(documentInputStream);
+		byte[] document = IOUtils.toByteArray(documentInputStream);
+		String dssUrl = "https://dss-ws.services.belgium.be/eid-dss-ws/dss";
+		//String dssUrl = "http://localhost/eid-dss-ws/dss";
+		// String dssUrl = "https://www.e-contract.be/eid-dss-ws/dss";
+		DigitalSignatureServiceClient client = new DigitalSignatureServiceClient(
+				dssUrl);
+		client.setProxy("proxy.yourict.net", 8080);
+		//client.setLogging(true, true);
 
 		// operate
 		List<SignatureInfo> signers = client.verifyWithSigners(document,
