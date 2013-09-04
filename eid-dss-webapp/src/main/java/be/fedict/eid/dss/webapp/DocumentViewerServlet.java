@@ -65,6 +65,13 @@ public class DocumentViewerServlet extends AbstractProtocolServiceServlet {
 		DocumentRepository documentRepository = new DocumentRepository(
 				httpSession);
 		String contentType = documentRepository.getDocumentContentType();
+		if (null == contentType) {
+			response.setContentType("text/plain");
+			PrintWriter printWriter = response.getWriter();
+			printWriter.println("No document to be signed.");
+			return;
+		}
+		
 		byte[] documentData = documentRepository.getDocument();
 
 		DSSDocumentService documentService = super
