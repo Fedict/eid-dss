@@ -1,0 +1,161 @@
+/* general */
+h2 { margin: 10px 0px; }
+h3 { margin: 5px 0; }
+p { line-height: 1.35em; font-size: 1.2em; }
+strong { font-weight: bold; }
+
+/* header */
+#header .siteLabel .siteLogo .siteName span { color: #F6994C; }
+
+
+/* content */
+#content #contentWrap {
+    margin: 35px 40px;
+    padding: 0 !important;
+    min-height: 250px;
+}
+
+.one_of_three, .two_of_three, .steps .step {
+    float: left;
+    box-sizing: border-box;
+    ms-box-sizing: border-box; /* IE8+ */
+    webkit-box-sizing: border-box;
+    moz-box-sizing: border-box;
+    o-box-sizing: border-box; /*Opera 8.5+ */
+}
+
+.one_of_three { width: 33%; }
+.two_of_three { width: 66%; }
+
+.float { float: left; }
+.float_right { float: right; }
+.clear { clear: both; }
+.hidden { display: none; }
+
+
+.call div.btn { 
+    font-size: 14px;
+    background-color: #ddd;
+    min-width: 100px;
+    color: black;
+    border: 1px solid #aaa;
+    display: inline-block;
+    text-align: center;
+}
+
+.call div.cancel {
+    color: #444;
+    font-weight: normal;
+    float: right;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
+
+#content .note p { color: #666; margin-bottom: 20px; }
+#content .settings { background-color: #eee; padding: 5px; }
+#content .actions { margin-top: 10px; height: 50px; margin-bottom: 25px;}
+#content .notify.normal {
+    margin: 1em; 
+    border: 2px solid #aaa; 
+    background: #eee; 
+    padding: 10px; 
+}
+
+
+#content .steps { 
+    height: 62px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid #CCC;
+}
+#content .steps .step { width: 30%; }
+#content .steps .step p { margin: 10px; padding: 5px; }
+#content .steps .step p span { 
+    display: inline-block; 
+    background-color: #666;
+    border-radius: 15px;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    width: 30px;
+    height: 30px;
+    color: white;
+    line-height: 30px;
+}
+#content .steps .step p span.active { background-color: #F6994C; }
+#content .steps div.arrow { width: 5%; float: left;}
+#content .steps div.arrow p { 
+    display: inline-block;
+    color: #ccc;
+    font-size: 30px;
+    line-height: 60px;
+} 
+
+#content .preview, #content .signatures {
+    margin: 20px auto;
+    background-color: #eee;
+    border: 2px solid #aaa;
+}
+
+#content .signatures .signature_item p { font-size: 12px; padding: 5px;}
+#content .signatures .signature_item:nth-child(1n + 1) { border-top: 1px solid #aaa; }
+#content .signatures .signature_header p { text-align: center; font-weight: bold; line-height: 40px;}
+
+
+#content .preview { height: 500px; }
+#content .preview > div, #content .signatures .signature_header {
+    background-color: #bbb;
+    width: 100%;
+    height: 40px;
+    border-bottom: 1px solid #aaa;
+}
+#content .preview > div div { float: left; text-align: center; }
+#content .preview > div div { padding: 10px 0;}
+#content .preview > div div:nth-child(1) { width: 75%; }
+#content .preview > div div:nth-child(2) { 
+    width: 25%; 
+    border-left: 2px solid #aaa;
+    box-sizing: border-box;
+    ms-box-sizing: border-box; /* IE8+ */
+    webkit-box-sizing: border-box;
+    moz-box-sizing: border-box;
+    o-box-sizing: border-box; /*Opera 8.5+ */
+}
+
+#content form li { line-height: 24px;}
+#content form li { line-height: 24px;}
+#content form li label { width: 150px; display: inline-block; }
+#content form li input { width: 200px; padding: 3px; }
+#content form li input[type="checkbox"] { width: 25px; margin-bottom: 20px; }
+
+#content .toggle div.options { display:none; margin: 25px;}
+#content .toggle h3 { cursor: pointer; }
+#content .toggle h3 em { margin: 0 5px; font-style: normal; }
+#content .toggle h3 span { color: #666; font-style: italic; font-weight: 400; }
+
+
+/*
+#content form li {
+    height: 40px;
+    line-height: 30px;
+}
+form li label { display: block;
+    float: left;
+    width: 150px;
+    line-height: 30px;
+}
+form li input {
+    padding: 5px;
+    width 200px;
+}
+*/
+
+/* footer */
+#footer #footerWrap #footerWrap2 .copyright {
+    font-size: 12px;
+    margin: 15px;
+    font-weight: normal;
+}
+
+

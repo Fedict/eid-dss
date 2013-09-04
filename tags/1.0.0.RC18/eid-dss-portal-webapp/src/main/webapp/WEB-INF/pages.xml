@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pages xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.com/products/seam/pages http://www.jboss.com/products/seam/pages-2.2.xsd">
+
+	<page view-id="/view.xhtml">
+		<action execute="#{dssPortalView.verifySignatures}" />
+        <action execute="#{dssPortalView.prepareForSigning}" />
+	</page>
+
+    <page view-id="/main.seam">
+        <rewrite pattern="/main" />
+    </page>
+
+    <page view-id="/compatibility.xhtml">
+        <rewrite pattern="/compatibility" />
+    </page>
+
+    <page view-id="/main.seam">
+        <rewrite pattern="/main" />
+    </page>
+
+    <page view-id="/sign-error.seam">
+        <rewrite pattern="/sign-error" />
+    </page>
+
+    <page view-id="/upload.seam">
+        <rewrite pattern="/upload" />
+    </page>
+
+    <page view-id="/view.seam">
+        <rewrite pattern="/view" />
+    </page>
+
+</pages>

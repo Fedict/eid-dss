@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:s="http://jboss.com/products/seam/taglib">
+<body>
+	<ui:composition template="/WEB-INF/template.xhtml">
+		<ui:define name="body">
+			<h2>Accounting</h2>
+
+			<h:form>
+
+				<h:panelGrid columns="1">
+					<h:outputLabel value="No accounting info yet."
+						rendered="#{dssAccountingList.rowCount == 0}" />
+					<a
+						href="#{facesContext.externalContext.requestContextPath}/accounting.csv">Export
+						as CSV file</a>
+				</h:panelGrid>
+
+				<rich:dataTable id="data" var="item" value="#{dssAccountingList}"
+					rows="10" rendered="#{dssAccountingList.rowCount > 0}">
+
+					<rich:column sortBy="#{item.domain}">
+						<f:facet name="header">Domain</f:facet>
+						<h:outputText value="#{item.domain}" />
+					</rich:column>
+					<rich:column sortBy="#{item.requests}">
+						<f:facet name="header">Requests</f:facet>
+						<h:outputText value="#{item.requests}" />
+					</rich:column>
+
+					<f:facet name="footer">
+						<rich:datascroller for="data" pageIndexVar="pageIndex"
+							pagesVar="pages" fastControls="hide">
+						</rich:datascroller>
+					</f:facet>
+
+				</rich:dataTable>
+
+				<h:column>
+					<f:facet name="header">Reset</f:facet>
+					<a4j:commandLink immediate="true" id="remove" value="Reset..."
+						rendered="#{dssAccountingList.rowCount > 0}"
+						onclick="Richfaces.showModalPanel('resetConfirm',{width:400, top:200})" />
+				</h:column>
+				<rich:modalPanel id="resetConfirm">
+					<div class="center">
+						<h:outputText value="Sure you want to reset all accounting info?" />
+						<p>
+							<h:panelGrid id="confirmPanel" columns="2" border="0"
+								styleClass="center">
+								<a4j:commandButton id="reset2" value="Reset"
+									action="#{dssAccounting.reset}" immediate="true"
+									oncomplete="#{facesContext.maximumSeverity == null ?
+                                    'Richfaces.hideModalPanel(\'resetConfirm\');' :
+                                    'Richfaces.showModalPanel(\'resetConfirm\');'}" />
+								<a4j:commandButton id="cancel" value="Cancel"
+									onclick="Richfaces.hideModalPanel('resetConfirm');" />
+							</h:panelGrid>
+						</p>
+						<rich:messages styleClass="error" />
+					</div>
+				</rich:modalPanel>
+
+			</h:form>
+
+		</ui:define>
+	</ui:composition>
+</body>
+</html>

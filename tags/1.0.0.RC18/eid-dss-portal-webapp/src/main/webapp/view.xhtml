@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:s="http://jboss.com/products/seam/taglib">
+<body>
+<ui:composition template="/WEB-INF/template.xhtml">
+    <ui:define name="body">
+
+        <script type="text/javascript" defer="defer">
+            window.onload = function () {
+                document.getElementById('signingView').style.display = 'none';
+                document.getElementById('dssFrame').style.display = 'none';
+            }
+        </script>
+
+        <div id="signingView">
+
+            <div class="steps">
+                <div class="step">
+                    <p>
+                        <span>✓</span> #{messages.stepUpload}
+                    </p>
+                </div>
+                <div class="arrow">
+                    <p>
+                        ›
+                    </p>
+                </div>
+                <div class="step">
+                    <p>
+                        <span>✓</span> #{messages.stepDetail}
+                    </p>
+                </div>
+                <div class="arrow">
+                    <p> ‹ › </p>
+                </div>
+                <div class="step">
+                    <p>
+                        <span class="active">3</span> #{messages.stepSign}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="documentView">
+
+            <div class="steps">
+                <div class="step">
+                    <p>
+                        <span>✓</span> #{messages.stepUpload}
+                    </p>
+                </div>
+                <div class="arrow">
+                    <p>
+                        ›
+                    </p>
+                </div>
+                <div class="step">
+                    <p>
+                        <span class="active">2</span> #{messages.stepDetail}
+                    </p>
+                </div>
+                <div class="arrow">
+                    <p> ‹ › </p>
+                </div>
+                <div class="step">
+                    <p>
+                        <span>3</span> #{messages.stepSign}
+                    </p>
+                </div>
+            </div>
+
+            <h2>#{messages.viewDetail}</h2>
+
+            <s:span rendered="#{signatureInfos.rowCount == 0}">
+            <div class="notify normal">
+                <div class="notifyWrap1">
+                    <div class="notifyWrap2">
+                        <div class="notifyWrap3">
+                            <div class="notifyWrap4">
+                                <div class="message">
+                                    <p>
+                                        <strong>#{messages.viewNoSignatures}</strong>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </s:span>
+
+            <h:form rendered="#{signatureInfos.rowCount > 0}">
+
+                <p>
+                    <h:outputText value="#{messages.viewSignaturesInfo1}" />
+                    <strong>
+                        <h:outputText value="#{signatureInfos.rowCount}" />
+                    </strong>
+                    <h:outputText value="#{messages.viewSignaturesInfo2}" />
+                </p>
+
+                <div class="signatures">
+                    <div class="signature_header"> <p>#{messages.viewSignedBy}</p></div>
+
+                    <ui:repeat value="#{signatureInfos}" var="signatureInfo">
+                        <div class="signature_item">
+                            <p>
+                                <strong>#{messages.viewSignatureSigner}</strong>
+                                <h:outputText value="#{signatureInfo.signer.subjectX500Principal}"/>
+                            </p>
+                            <p>
+                                <strong>#{messages.viewSignatureSigningTime}</strong>
+                                <h:outputText value="#{signatureInfo.signingTime}">
+                                    <f:convertDateTime type="both" dateStyle="full"
+                                                       timeStyle="long" timeZone="Europe/Brussels"
+                                                       locale="#{dssLanguageSelector.locale}"/>
+                                </h:outputText>
+                            </p>
+
+                            <s:span rendered="#{not empty signatureInfo.role}">
+                            <p>
+                                <strong><h:outputText value="#{messages.role}"
+                                              rendered="#{not empty signatureInfo.role}"/></strong>
+                                <h:outputText value="#{signatureInfo.role}"
+                                              rendered="#{not empty signatureInfo.role}"/>
+                            </p>
+                            </s:span>
+
+                            <s:span rendered="#{not empty signatureInfo.name}">
+                            <p>
+                                <strong><h:outputText value="#{messages.name}"
+                                              rendered="#{not empty signatureInfo.name}"/></strong>
+                                <h:outputText value="#{signatureInfo.firstName} "/>
+                                <h:outputText value="#{signatureInfo.name} "/>
+                                <h:outputText value="#{signatureInfo.middleName}"/>
+                            </p>
+                            </s:span>
+
+                            <s:span rendered="#{not empty signatureInfo.gender}">
+                            <p>
+                                <strong><h:outputText value="#{messages.gender}"
+                                              rendered="#{not empty signatureInfo.gender}"/></strong>
+                                <h:outputText value="#{signatureInfo.gender}"
+                                              rendered="#{not empty signatureInfo.gender}"/>
+                            </p>
+
+                            <p>
+                                <s:graphicImage value="#{signatureInfo.photo}"
+                                                rendered="#{not empty signatureInfo.photo}" styleClass="signaturePhoto"/>
+                                <s:div rendered="#{empty signatureInfo.photo}" style="width:140px;"></s:div>
+                            </p>
+                            </s:span>
+
+                        </div>
+                    </ui:repeat>
+                </div>
+            </h:form>
+
+            <div class="start">
+                <a class="call" href="#{facesContext.externalContext.requestContextPath}/download/#{filename}"
+                   target="_blank">
+                    <span class="callWrap1">
+                        <span class="callWrap2">
+                            <div class="callWrap3 btn float btn-left">#{messages.viewDownload}</div>
+                        </span>
+                    </span>
+                </a>
+                <a class="call">
+                    <span class="callWrap1">
+                        <span class="callWrap2">
+                            <div class="callWrap3 btn float_right">
+                                <form id="dss-request-form" method="post" target="dssFrame"
+                                      action="#{facesContext.externalContext.requestContextPath}/../eid-dss/protocol/simple">
+
+                                    <input type="hidden" name="SignatureRequestId" value="#{SignatureRequestId}"/>
+                                    <input type="hidden" name="ContentType" value="#{ContentType}"/>
+                                    <input type="hidden" name="RelayState" value="#{RelayState}"/>
+                                    <input type="hidden" name="target" value="#{target}"/>
+                                    <input type="hidden" name="language" value="#{language}"/>
+
+                                    <!--<p class="button">-->
+                                        <input type="submit" value="#{messages.viewAddSignature}" class="button"
+                                               onclick="document.getElementById('documentView').style.display = 'none'; document.getElementById('signingView').style.display = 'block'; document.getElementById('dssFrame').style.display = 'block';"/>
+                                    <!--</p>-->
+
+                                </form>
+                            </div>
+                        </span>
+                    </span>
+                </a>
+                <a class="call" href="#{facesContext.externalContext.requestContextPath}/upload">
+                    <span class="callWrap1">
+                        <span class="callWrap2">
+                            <div class="callWrap3 btn btn-middle">#{messages.viewUpload}</div>
+                        </span>
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        <iframe id="dssFrame" name="dssFrame" src="" width="600px" height="400px" class="dssFrame" frameborder="0"></iframe>
+
+    </ui:define>
+</ui:composition>
+</body>
+</html>
