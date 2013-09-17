@@ -4,7 +4,7 @@
 	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <article lang="en">
 	<articleinfo>
-		<title>FedICT eID Digital Signature Service Developer's Guide</title>
+		<title>eID Digital Signature Service Developer's Guide</title>
 		<subtitle>
 			Integrating the eID Digital Signature Service within your
 			web applications.
@@ -13,10 +13,10 @@
 			Version &project.version;
 		</subtitle>
 		<copyright>
-			<year>2009-2012</year>
+			<year>2009-2013</year>
 			<holder>FedICT</holder>
 		</copyright>
-		<releaseinfo>1 October 2012</releaseinfo>
+		<releaseinfo>17 September 2013</releaseinfo>
 		<authorgroup>
 			<author>
 				<firstname>Frank</firstname>
@@ -35,7 +35,7 @@
 	<section>
 		<title>Introduction</title>
 		<para>
-			The FedICT eID Digital Signature Service (eID DSS) is a web service
+			The eID Digital Signature Service (eID DSS) is a web service
 			that can be used by web applications to integrate the creation of eID
 			based qualified signatures in business work-flows. The eID
 			Digital
@@ -453,7 +453,7 @@
 								SP destination
 								and optional language used
 								in
-								the FedICT eID DSS pages.
+								the eID DSS pages.
 							</para>
 						</listitem>
 					</itemizedlist>
@@ -462,7 +462,7 @@
 						<listitem>
 							<para>
 								<code>Target</code>
-								The location of the FedICT eID DSS landing servlet.
+								The location of the eID DSS landing servlet.
 								This is for
 								example: https://www.e-contract.be/eid-dss/protocol/simple
 							</para>
@@ -491,7 +491,7 @@
 						<listitem>
 							<para>
 								<code>Language</code>
-								Optional language to display the FedICT eID DSS
+								Optional language to display the eID DSS
 								webapp in.
 								Available locales are
 								<code>nl, fr,
@@ -1840,6 +1840,11 @@
 						<entry>1 October 2012</entry>
 						<entry>Frank Cornelis</entry>
 						<entry>Reworked the introduction.</entry>
+					</row>
+					<row>
+						<entry>17 September 2013</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>Removed FedICT branding.</entry>
 					</row>
 				</tbody>
 			</tgroup>
