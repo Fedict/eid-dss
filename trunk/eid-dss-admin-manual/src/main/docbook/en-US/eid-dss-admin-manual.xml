@@ -5,16 +5,16 @@
 <article lang="en">
 	<articleinfo>
 		<title>
-			Fedict eID Digital Signature Service Administrator Manual
+			eID Digital Signature Service Administrator Manual
 		</title>
 		<subtitle>
 			Version &project.version;
 		</subtitle>
 		<copyright>
-			<year>2010-2012</year>
+			<year>2010-2013</year>
 			<holder>Fedict</holder>
 		</copyright>
-		<releaseinfo>29 Jun 2012</releaseinfo>
+		<releaseinfo>17 Sep 2013</releaseinfo>
 		<authorgroup>
 			<author>
 				<firstname>Frank</firstname>
@@ -85,10 +85,10 @@
 			deployed.
 		</para>
 		<para>
-			The source code of the Fedict eID Digital Signature Service is
+			The source code of the eID Digital Signature Service is
 			publicly available and can be found at
 			<ulink url="http://code.google.com/p/eid-dss/source/checkout">eID Digital Signature Service Source Code</ulink>
-			. Please note that the Fedict eID DSS has dependencies on the eID
+			. Please note that the eID DSS has dependencies on the eID
 			Trust Service product, which can be found at
 			<ulink url="http://code.google.com/p/eid-trust-service/source/checkout">eID Trust Service source code</ulink>
 			.
@@ -472,6 +472,11 @@ maxPostSize="20971520"/>]]></programlisting>
 						<entry>29 Jun 2012</entry>
 						<entry>Frank Cornelis</entry>
 						<entry>Uploading large files.</entry>
+					</row>
+					<row>
+						<entry>17 Sep 2013</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>Removed FedICT branding.</entry>
 					</row>
 				</tbody>
 			</tgroup>
