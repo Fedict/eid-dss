@@ -1,9 +1,9 @@
-README for FedICT eID Digital Signature Service Project
-=======================================================
+README for eID Digital Signature Service Project
+================================================
 
 === 1. Introduction
 
-This project contains the source code tree of the FedICT eID Digital Signature
+This project contains the source code tree of the eID Digital Signature
 Service. The source code is hosted at: http://code.google.com/p/eid-dss/
 
 

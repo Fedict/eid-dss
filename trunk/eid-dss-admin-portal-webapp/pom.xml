@@ -7,7 +7,7 @@
 		<artifactId>eid-dss</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<name>FedICT eID DSS Admin Portal Webapp</name>
+	<name>eID DSS Admin Portal Webapp</name>
 	<description>Web Application for eID DSS Admin Portal</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-admin-portal-webapp</artifactId>

@@ -7,7 +7,7 @@
 		<artifactId>eid-dss</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<name>FedICT eID DSS ZIP Document</name>
+	<name>eID DSS ZIP Document</name>
 	<description>eID DSS Document Service for ZIP documents</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-document-zip</artifactId>
