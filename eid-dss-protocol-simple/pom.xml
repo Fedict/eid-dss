@@ -7,7 +7,7 @@
 		<artifactId>eid-dss</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<name>FedICT eID DSS Simple Protocol</name>
+	<name>eID DSS Simple Protocol</name>
 	<description>DSS Protocol Service implementing a simple DSS protocol</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-protocol-simple</artifactId>
