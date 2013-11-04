@@ -41,7 +41,7 @@ import org.apache.xml.security.signature.ReferenceNotInitializedException;
 import org.apache.xml.security.signature.XMLSignatureException;
 import org.apache.xml.security.transforms.TransformationException;
 import org.apache.xml.security.transforms.Transforms;
-import org.apache.xml.security.transforms.params.XPathContainer;
+import org.apache.xml.security.transforms.params.XPath2FilterContainer;
 import org.apache.xml.security.utils.Constants;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -219,12 +219,12 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 			Element signatureElement = (Element) signatureNodeList
 					.item(signatureNodeIdx);
 			xadesValidation.prepareDocument(signatureElement);
-			
+
 			KeyInfoKeySelector keyInfoKeySelector = new KeyInfoKeySelector();
 			DOMValidateContext domValidateContext = new DOMValidateContext(
 					keyInfoKeySelector, signatureElement);
 			XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory
-					.getInstance();
+					.getInstance("DOM", new org.apache.jcp.xml.dsig.internal.dom.XMLDSigRI());
 			XMLSignature xmlSignature;
 			try {
 				xmlSignature = xmlSignatureFactory
@@ -291,11 +291,21 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 					Canonicalizer.ALGO_ID_C14N_EXCL_WITH_COMMENTS);
 
 			Transforms transforms = new Transforms(originalDomDocument);
-			XPathContainer xpath = new XPathContainer(originalDomDocument);
+
+            // XPath v1 - slow
+//            XPathContainer xpath = new XPathContainer(originalDomDocument);
+//			xpath.setXPathNamespaceContext("ds", Constants.SignatureSpecNS);
+//			xpath.setXPath("not(ancestor-or-self::ds:Signature)");
+//			transforms.addTransform(Transforms.TRANSFORM_XPATH,
+//					xpath.getElementPlusReturns());
+
+            // XPath v2 - fast
+            XPath2FilterContainer xpath = XPath2FilterContainer.newInstanceSubtract(originalDomDocument,
+                    "/descendant::*[name()='ds:Signature']");
 			xpath.setXPathNamespaceContext("ds", Constants.SignatureSpecNS);
-			xpath.setXPath("not(ancestor-or-self::ds:Signature)");
-			transforms.addTransform(Transforms.TRANSFORM_XPATH,
+			transforms.addTransform(Transforms.TRANSFORM_XPATH2FILTER,
 					xpath.getElementPlusReturns());
+
 			transforms
 					.addTransform(Transforms.TRANSFORM_C14N_EXCL_OMIT_COMMENTS);
 			xmldsig.addDocument("", transforms, digestAlgo);
