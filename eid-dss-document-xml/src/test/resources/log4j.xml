@@ -4,14 +4,17 @@
 	debug="false">
 	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
 		<param name="Target" value="System.out" />
-		<param name="Threshold" value="DEBUG" />
+		<param name="Threshold" value="FINEST" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%-5p [%c{1}] %m%n" />
+			<param name="ConversionPattern" value="%r [%t] %-5p [%c{1}] %m%n" />
 		</layout>
 	</appender>
-	<category name="test">
-		<priority value="DEBUG" />
-	</category>
+	<!--<category name="test">-->
+		<!--<priority value="INFO" />-->
+	<!--</category>-->
+    <!--<category name="org.apache.jcp">-->
+        <!--<priority value="DEBUG" />-->
+    <!--</category>-->
 	<root>
 		<appender-ref ref="CONSOLE" />
 	</root>

@@ -115,6 +115,7 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 		XAdESValidation xadesValidation = new XAdESValidation(
 				this.documentContext);
 		for (String signatureResourceName : signatureResourceNames) {
+            LOG.debug("signatureResourceName: " + signatureResourceName);
 			Document signatureDocument = ooxmlSignatureVerifier
 					.getSignatureDocument(new ByteArrayInputStream(document),
 							signatureResourceName);
@@ -141,7 +142,9 @@ public class OOXMLDSSDocumentService implements DSSDocumentService {
 					.getInstance();
 			XMLSignature xmlSignature = xmlSignatureFactory
 					.unmarshalXMLSignature(domValidateContext);
+            LOG.debug("validating signature: " + xmlSignature.getId());
 			boolean valid = xmlSignature.validate(domValidateContext);
+            LOG.debug("signature valid: " + valid);
 			if (!valid) {
 				LOG.error("signature invalid");
 				continue;
