@@ -3,13 +3,13 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.0.0.GA</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 	<name>eID DSS SQL DDL</name>
 	<description>SQL DDL eID Digital Signature Service</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-sql-ddl</artifactId>
-	<version>1.0.0.GA</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<build>
 		<plugins>

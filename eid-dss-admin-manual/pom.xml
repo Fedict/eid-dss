@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.0.0.GA</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 	<name>eID DSS Admin manual</name>
 	<description>Administrator Manual for the eID Digital Signature Service.</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-admin-manual</artifactId>
-	<version>1.0.0.GA</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<build>
 		<plugins>
