@@ -1,0 +1,257 @@
+html, body, div, ul, li, form, span, p, img, fieldset, legend, label, h1, h2, h3, h4, h5, h6, table, tbody, thead, tfoot, tr, th, td, textarea {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+select, input, textarea {font:99% arial,helvetica,clean,sans-serif;}
+pre, code {font-size:100%;}
+body * {line-height:1.22em;}
+
+body {
+	font-family:        Arial, Helvetica, sans-serif;
+	font-size:          small;
+    background-color:   #A9AEB1;
+    margin:             0;
+}
+
+#wrapper {
+    width:              750px;
+    margin-left:        auto;
+    margin-right:       auto;
+    background-color:   white;
+    border-left:        1px solid #777;
+    border-right:       1px solid #777;
+}
+
+h1 {
+    font-size:          120%;
+}
+
+h2 {
+	font-size:          large;
+}
+
+h3 {
+	color:              #369;
+	font-size:          medium;
+	font-style:         italic;
+}
+
+#logo {
+}
+
+#language {
+    float:              left;
+}
+
+#home {
+    float:              right;
+    margin-right:       5px;
+    margin-top:         5px;
+}
+
+#home a {
+    color:              black;
+}
+
+#home a:link, #home a:visited {
+    text-decoration:    none;
+}
+
+#header {
+	margin:             0 auto;
+    background-color:   white;
+}
+
+#content {
+	margin:             20px auto;
+	color:              #303030;
+    background-color:   white;
+    padding-left:       1.0em;
+    padding-right:      1.0em;
+}
+
+#compatibility {
+    margin:             0 auto;
+    color:              #303030;
+    background-color:   white;
+}
+
+#documentView {
+}
+
+#footer {
+    padding:            20px;
+    background-color:   #999;
+    color:              white;
+    border-bottom:      1px solid #777;
+}
+
+.signatureForm table {
+    width:              545px !important;
+}
+
+.signatureForm h2 {
+    margin-top:         20px;
+}
+
+#content table, #compatibility table {
+    width:              730px;
+}
+
+.title {
+    border-bottom:      1px solid #B5C5CE;
+    color:              #369;
+    margin-bottom:      0.5em;
+    margin-top:         0.5em;
+    padding-bottom:     0.1em;
+}
+
+div.title {
+    color:              #369;
+}
+
+.dssFrame {
+    border:             0;
+}
+
+.requirements {
+    vertical-align:     top;
+    width:              410px;
+    white-space:        nowrap;
+}
+
+.requirements table {
+    width:              410px   !important;
+}
+
+.requirements table tr td {
+    width:              50%;
+    text-align:         center;
+}
+
+.requirements table tr td a {
+    text-decoration:    none;
+}
+
+.startSign {
+    width:              320px;
+    vertical-align:     top;
+    padding-left:       10px;
+    border-left:        1px solid #ccc;
+}
+
+.startSign p {
+    margin-bottom: 8px;
+}
+
+.startSign img {
+    margin-right: 5px;
+}
+
+.center {
+    text-align:         center;
+    margin:             0 auto;
+}
+
+.step1 {
+    width:              24%;
+}
+.step2 {
+    width:              27%;
+}
+.stepDivider {
+    width:              3%;
+}
+
+.uploadForm {
+    margin-top:         20px;
+}
+
+/*
+ * RichFaces
+ */
+.rich-fileupload-toolbar-decor {
+    width:              400px   !important;
+}
+.rich-fileupload-list-overflow  {
+    height:             60px    !important;
+}
+.rich-fileupload-font {
+    font-family:        Arial, Helvetica, sans-serif;
+    font-size:          small;
+}
+.rich-table {
+    width:              700px;
+    margin-top:         20px;
+    margin-bottom:      20px;
+}
+
+/*
+ * From seria
+ */
+
+h2.overline {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+}
+
+p.button {
+    margin: 10px 0 15px 0;
+    text-align: right;
+}
+p.button a, p.button input {
+    background-color: #369;
+    color: #fff;
+    padding: 4px 10px;
+    text-decoration: none;
+    font-weight: 700;
+    border: 0;
+}
+p.button a, p.button input {
+    border: 1px solid #369;
+}
+p.button a.stop {
+    color: #666;
+    background-color: #ccc;
+    border: 1px solid #ccc;
+}
+
+p.button a:hover {
+    background-color: #69c;
+}
+
+p.button input:hover {
+    background-color: #69c;
+}
+
+p.button a.stop:hover {
+    color: #444;
+    background-color: #ddd;
+    border: 1px solid #ddd;
+}
+
+div.steps {
+    border: 1px solid #d0d0d0;
+    height: 40px;
+    width:725px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+div.steps table {
+    height: 40px;
+}
+div.steps table td {
+    font-weight: bold;
+    color: #444;
+}
+div.steps table td.next {
+    font-weight: bold;
+    color: #777;
+}
+div.steps table  img {
+    margin: 0 6px 0 8px;
+    margin-bottom:.25em;
+    vertical-align:middle;
+}

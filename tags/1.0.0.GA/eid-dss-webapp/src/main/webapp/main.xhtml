@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:f="http://java.sun.com/jsf/core">
+<body>
+	<ui:composition template="/WEB-INF/template.xhtml">
+		<ui:define name="body">
+			<h2>#{messages.welcome}</h2>
+			<p>#{messages.welcomeInfo1}</p>
+			<p>#{messages.welcomeInfo2}</p>
+
+			<h3>#{messages.supportedDocumentFormats}</h3>
+			<h:form>
+				<rich:dataTable var="row" value="#{dssDocumentFormatList}" rows="10">
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="#{messages.mimeType}" />
+						</f:facet>
+						<h:outputText value="#{row}" />
+					</rich:column>
+					<f:facet name="footer">
+						<rich:datascroller />
+					</f:facet>
+				</rich:dataTable>
+			</h:form>
+
+			<h3>#{messages.supportedProtocols}</h3>
+			<rich:dataTable value="#{dssProtocolServices}" var="row">
+				<rich:column>
+					<h:outputLink value="#{row.path}">
+						<h:outputText value="#{row.name}" />
+					</h:outputLink>
+				</rich:column>
+			</rich:dataTable>
+
+			<h3>#{messages.supportedXmlSchemas}</h3>
+			<h:form>
+				<rich:dataTable var="row" value="#{dssXmlSchemaNamespaces}"
+					rows="10">
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="#{messages.xmlNamespace}" />
+						</f:facet>
+						<h:outputText value="#{row}" />
+					</rich:column>
+					<f:facet name="footer">
+						<rich:datascroller />
+					</f:facet>
+				</rich:dataTable>
+			</h:form>
+
+			<h3>#{messages.supportedXmlStyleSheets}</h3>
+			<h:form>
+				<rich:dataTable var="row" value="#{dssXmlStyleSheetNamespaces}"
+					rows="10">
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="#{messages.xmlNamespace}" />
+						</f:facet>
+						<h:outputText value="#{row}" />
+					</rich:column>
+					<f:facet name="footer">
+						<rich:datascroller />
+					</f:facet>
+				</rich:dataTable>
+			</h:form>
+
+			<h3>#{messages.serviceIdentity}</h3>
+			<h:panelGrid columns="2">
+				<h:outputText value="#{messages.identityThumbprint}:" />
+				<h:outputText value="#{dssServiceFingerprint}" />
+			</h:panelGrid>
+
+			<p>
+				<h:outputLink value="./identity.pem">
+					<h:outputText value="#{messages.identityCertificateChain}" />
+				</h:outputLink>
+			</p>
+
+			<h:panelGrid columns="1">
+				<rich:simpleTogglePanel switchType="client"
+					label="#{messages.identityCertificateChain}" opened="false">
+					<pre>
+						<h:outputText value="#{dssServiceInfo.identityCertificateChain}" />
+					</pre>
+				</rich:simpleTogglePanel>
+			</h:panelGrid>
+
+		</ui:define>
+	</ui:composition>
+</body>
+</html>

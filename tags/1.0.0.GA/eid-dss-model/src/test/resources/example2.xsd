@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:be:fedict:eid:dss:example2"
+	xmlns:tns="urn:be:fedict:eid:dss:example2" elementFormDefault="qualified"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:example="urn:be:fedict:eid:dss:example">
+	<xsd:import namespace="urn:be:fedict:eid:dss:example"
+		schemaLocation="some-schema-file.xsd" />
+	<element name="Example" type="tns:ExampleType" />
+	<complexType name="ExampleType">
+		<sequence>
+			<element ref="example:Transaction" />
+		</sequence>
+	</complexType>
+</schema>
