@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.0.1-SNAPSHOT</version>
+		<version>1.0.1-fedict</version>
 	</parent>
 	<name>eID DSS Developers' Guide</name>
 	<description>Developers' Guide for the eID DSS.</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-dev-guide</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.1-fedict</version>
 	<packaging>jar</packaging>
 	<build>
 		<plugins>
