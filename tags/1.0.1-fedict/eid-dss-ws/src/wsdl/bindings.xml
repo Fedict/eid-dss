@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<jxb:bindings version="2.1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd">
+
+	<jxb:bindings schemaLocation="oasis-dss-core-schema-v1.0-os.xsd"
+		node="/xs:schema">
+		<jxb:schemaBindings>
+			<jxb:package name="be.fedict.eid.dss.ws.jaxb.dss" />
+		</jxb:schemaBindings>
+		<jxb:bindings schemaLocation="xmldsig-core-schema.xsd"
+			node="/xs:schema">
+			<jxb:schemaBindings>
+				<jxb:package name="be.fedict.eid.dss.ws.jaxb.xmldsig" />
+			</jxb:schemaBindings>
+		</jxb:bindings>
+		<jxb:bindings schemaLocation="oasis-sstc-saml-schema-protocol-1.1.xsd"
+			node="/xs:schema">
+			<jxb:schemaBindings>
+				<jxb:package name="be.fedict.eid.dss.ws.jaxb.saml" />
+			</jxb:schemaBindings>
+		</jxb:bindings>
+	</jxb:bindings>
+
+</jxb:bindings>

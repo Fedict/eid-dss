@@ -1,0 +1,60 @@
+/* my.belgium print css - written and maintained by Niels Matthijs            */
+
+/* ========================================================================== */
+/* 00. base styles                                                            */
+
+
+/* ========================================================================== */
+/* 01. page frame                                                             */
+
+.gridTwoRight {padding:0;}
+.gridTwoRight .wrapper #identity {float:none; margin:0; width:auto;}
+
+#footer {border-top:1px solid #000; padding-top:10pt;}
+#content #contentWrap {overflow:visible;}
+
+/* ========================================================================== */
+/* 02. headings                                                               */
+
+
+
+/* ========================================================================== */
+/* 03. links & buttons                                                        */
+
+
+
+/* ========================================================================== */
+/* 04. navigation                                                             */
+.breadcrumb {display:none;}
+.doormat {margin-right:1em;}
+.doormat .appList .heading {text-align:left;}
+.doormat li li {border:none;}
+#footer .secondNav {display:none;}
+.doormat .rowWrap1 {padding:0em;}
+.doormat li {width:30%;}
+.doormat li.family, .doormat li.health, .doormat li.mobility, .doormat li.housing {width:30%; margin-left:0em;}
+.doormat li.economy, .doormat li.environment, .doormat li.work {margin-left:0em; float:left; margin-right:0em; width:30%;}
+.doormat li.federal {width:65%;}
+
+/* ========================================================================== */
+/* 05. basic content                                                          */
+
+
+
+/* ========================================================================== */
+/* 07. specific components                                                    */
+
+#blgm_belgiumHeader {display:none;}
+.promo {display:none;}
+.feedback {display:none;}
+.login.in {display:none;}
+.login.out {display:none;}
+.login.in .profile .loginStatus .caption, .login.in .profile .loginStatus .detail {display:inline;}
+.login.in .profile .secondNav,.login.in .notify, .login.in .links, .login.in .tabpane {display:none;}
+.login.in .loginWrap3, .login.in .profile {min-height:0; height:auto;}
+.login.in .profile {background:none;}
+
+
+
+/* ========================================================================== */
+/* 08. forms                                                                  */

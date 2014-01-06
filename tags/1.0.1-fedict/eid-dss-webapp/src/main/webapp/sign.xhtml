@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html">
+<body>
+	<ui:composition template="/WEB-INF/template-sp.xhtml">
+
+		<ui:define name="body_title">
+			<h2>#{messages.signDocument}</h2>
+		</ui:define>
+
+		<ui:define name="body_content">
+
+			<script language="javascript1.2" type="text/javascript"
+				src="./deployJava.js"></script>
+			<script type="text/javascript" src="./deploy-eid-applet.js"></script>
+			<script>
+				var attributes = {
+					code : 'be.fedict.eid.applet.Applet.class',
+					archive : 'eid-applet-package-${eid-applet.version}.jar',
+					width : 600,
+					height : 300
+				};
+				var parameters = {
+					TargetPage : 'protocol-exit',
+					AppletService : 'applet-service;jsessionid=#{facesContext.externalContext.getSession(false).id}',
+					Language : '#{localeSelector.language}'
+				};
+				deployJavaEIDApplet.runApplet(attributes, parameters);
+			</script>
+
+		</ui:define>
+
+	</ui:composition>
+</body>
+</html>
