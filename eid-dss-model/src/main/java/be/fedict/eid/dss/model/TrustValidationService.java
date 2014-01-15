@@ -18,6 +18,7 @@
 
 package be.fedict.eid.dss.model;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertStoreException;
@@ -72,10 +73,11 @@ public interface TrustValidationService {
 	 * @throws NoSuchProviderException
 	 * @throws NoSuchAlgorithmException
 	 * @throws CertStoreException
+	 * @throws IOException 
 	 */
 	void validate(TimeStampToken timeStampToken, List<OCSPResp> ocspResponses,
 			List<X509CRL> crls) throws CertificateEncodingException,
 			TrustDomainNotFoundException, RevocationDataNotFoundException,
 			ValidationFailedException, NoSuchAlgorithmException,
-			NoSuchProviderException, CMSException, CertStoreException;
+			NoSuchProviderException, CMSException, CertStoreException, IOException;
 }

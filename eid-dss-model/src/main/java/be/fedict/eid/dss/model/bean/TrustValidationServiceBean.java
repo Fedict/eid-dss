@@ -18,6 +18,9 @@
 
 package be.fedict.eid.dss.model.bean;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -30,18 +33,30 @@ import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.security.auth.x500.X500Principal;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier;
+import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
+import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.SignerId;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.ocsp.OCSPResp;
+import org.bouncycastle.tsp.TimeStampResponse;
 import org.bouncycastle.tsp.TimeStampToken;
 
 import be.fedict.eid.dss.model.ConfigProperty;
@@ -125,7 +140,7 @@ public class TrustValidationServiceBean implements TrustValidationService {
 			throws CertificateEncodingException, TrustDomainNotFoundException,
 			RevocationDataNotFoundException, ValidationFailedException,
 			NoSuchAlgorithmException, NoSuchProviderException, CMSException,
-			CertStoreException {
+			CertStoreException, IOException {
 		LOG.debug("performing historical TSA validation...");
 		String tsaTrustDomain = this.configuration.getValue(
 				ConfigProperty.TSA_TRUST_DOMAIN, String.class);
@@ -137,48 +152,94 @@ public class TrustValidationServiceBean implements TrustValidationService {
 		LOG.debug("# TSA CRLs: " + crls.size());
 
 		/*
-		 * Construct the TSA cert chain.
+		 *Building TSA chain. (Code from eID-applet)
+		 * 
 		 */
-		List<X509Certificate> certificateChain = new LinkedList<X509Certificate>();
-		CertStore certStore = timeStampToken.getCertificatesAndCRLs(
-				"Collection", "BC");
-		Collection<? extends Certificate> certificates = certStore
-				.getCertificates(null);
-		for (Certificate certificate : certificates) {
-			certificateChain.add((X509Certificate) certificate);
-		}
-		if (TrustValidator.isSelfSigned(certificateChain.get(0))) {
-			Collections.reverse(certificateChain);
-		}
 
-		/*
-		 * Check TSA signer.
-		 */
-		SignerId signerId = timeStampToken.getSID();
-		BigInteger signerCertSerialNumber = signerId.getSerialNumber();
-		X500Principal signerCertIssuer = signerId.getIssuer();
-		X509Certificate tsaCertificate = null;
-		for (Certificate certificate : certificates) {
-			X509Certificate x509Certificate = (X509Certificate) certificate;
-			if (signerCertIssuer.equals(x509Certificate
-					.getIssuerX500Principal())
-					&& signerCertSerialNumber.equals(x509Certificate
-							.getSerialNumber())) {
-				tsaCertificate = x509Certificate;
-				break;
-			}
-		}
-		if (null == tsaCertificate) {
-			throw new SecurityException("TSA cert not present in TST");
-		}
-		if (false == tsaCertificate.equals(certificateChain.get(0))) {
+        SignerId signerId = timeStampToken.getSID();
+        BigInteger signerCertSerialNumber = signerId.getSerialNumber();
+        X500Principal signerCertIssuer = signerId.getIssuer();
+        LOG.debug("signer cert serial number: " + signerCertSerialNumber);
+        LOG.debug("signer cert issuer: " + signerCertIssuer);
+
+        // TSP signer certificates retrieval
+        CertStore certStore = timeStampToken.getCertificatesAndCRLs(
+                        "Collection", BouncyCastleProvider.PROVIDER_NAME);
+        Collection<? extends Certificate> certificates = certStore
+                        .getCertificates(null);
+        X509Certificate signerCert = null;
+        Map<String, X509Certificate> certificateMap = new HashMap<String, X509Certificate>();
+        for (Certificate certificate : certificates) {
+                X509Certificate x509Certificate = (X509Certificate) certificate;
+                if (signerCertIssuer.equals(x509Certificate
+                                .getIssuerX500Principal())
+                                && signerCertSerialNumber.equals(x509Certificate
+                                                .getSerialNumber())) {
+                        signerCert = x509Certificate;
+                }
+                String ski = Hex.encodeHexString(getSubjectKeyId(x509Certificate));
+                certificateMap.put(ski, x509Certificate);
+                LOG.debug("embedded certificate: "
+                                + x509Certificate.getSubjectX500Principal() + "; SKI="
+                                + ski);
+        }
+
+        // TSP signer cert path building
+        if (null == signerCert) {
+                throw new RuntimeException(
+                                "TSP response token has no signer certificate");
+        }
+        List<X509Certificate> tspCertificateChain = new LinkedList<X509Certificate>();
+        X509Certificate certificate = signerCert;
+        do {
+                LOG.debug("adding to certificate chain: "
+                                + certificate.getSubjectX500Principal());
+                tspCertificateChain.add(certificate);
+                if (certificate.getSubjectX500Principal().equals(
+                                certificate.getIssuerX500Principal())) {
+                        break;
+                }
+                String aki = Hex.encodeHexString(getAuthorityKeyId(certificate));
+                certificate = certificateMap.get(aki);
+        } while (null != certificate);
+		     
+		if (false == signerCert.equals(tspCertificateChain.get(0))) {
 			throw new SecurityException("TST signing certificate mismatch");
 		}
 
 		/*
 		 * Perform PKI validation via eID Trust Service.
 		 */
-		getXkms2Client().validate(tsaTrustDomain, certificateChain,
+		getXkms2Client().validate(tsaTrustDomain, tspCertificateChain,
 				validationDate, ocspResponses, crls);
+	}
+        
+
+	private byte[] getSubjectKeyId(X509Certificate cert) throws IOException {
+        byte[] extvalue = cert
+                        .getExtensionValue(X509Extensions.SubjectKeyIdentifier.getId());
+        if (extvalue == null) {
+                return null;
+        }
+        ASN1OctetString str = ASN1OctetString.getInstance(new ASN1InputStream(
+                        new ByteArrayInputStream(extvalue)).readObject());
+        SubjectKeyIdentifier keyId = SubjectKeyIdentifier
+                        .getInstance(new ASN1InputStream(new ByteArrayInputStream(str
+                                        .getOctets())).readObject());
+        return keyId.getKeyIdentifier();
+	}
+	private byte[] getAuthorityKeyId(X509Certificate cert) throws IOException {
+        byte[] extvalue = cert
+                        .getExtensionValue(X509Extensions.AuthorityKeyIdentifier
+                                        .getId());
+        if (extvalue == null) {
+                return null;
+        }
+        DEROctetString oct = (DEROctetString) (new ASN1InputStream(
+                        new ByteArrayInputStream(extvalue)).readObject());
+        AuthorityKeyIdentifier keyId = new AuthorityKeyIdentifier(
+                        (ASN1Sequence) new ASN1InputStream(new ByteArrayInputStream(
+                                        oct.getOctets())).readObject());
+        return keyId.getKeyIdentifier();
 	}
 }
