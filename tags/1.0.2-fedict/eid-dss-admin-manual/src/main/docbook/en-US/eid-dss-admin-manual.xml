@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC
+	"-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<article lang="en">
+	<articleinfo>
+		<title>
+			eID Digital Signature Service Administrator Manual
+		</title>
+		<subtitle>
+			Version &project.version;
+		</subtitle>
+		<copyright>
+			<year>2010-2013</year>
+			<holder>Fedict</holder>
+		</copyright>
+		<releaseinfo>17 Sep 2013</releaseinfo>
+		<authorgroup>
+			<author>
+				<firstname>Frank</firstname>
+				<surname>Cornelis</surname>
+			</author>
+		</authorgroup>
+		<abstract>
+			<para>
+				This manual serves as an entry point for setting up the eID
+				Digital Signature Service. The target audience is system
+				administrators.
+			</para>
+		</abstract>
+	</articleinfo>
+	<section>
+		<title>Introduction</title>
+		<para>
+			The key words "MUST", "MUST NOT", "REQUIRED", "SHOULD", "SHOULD NOT",
+			"RECOMMENDED", "MAY", and "OPTIONAL" in this document (in uppercase,
+			as shown) are to be interpreted as described in
+			<ulink url="http://www.ietf.org/rfc/rfc2119.txt">[RFC2119]</ulink>
+			.
+		</para>
+		<para>
+			The eID Digital Signature Service provides three major service
+			artifacts:
+			<orderedlist>
+				<listitem>
+					<para>
+						eID Digital Signature Service portal
+					</para>
+					<para>
+						Via this web portal citizens can sign document and verify
+						signatures on documents.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						eID Digital Signature Service signature validation web
+						service.
+					</para>
+					<para>
+						Via this SOAP web service Relying Parties (aka Service
+						Providers) can verify signatures on documents. This web service is
+						constructed according to the OASIS DSS web service standard.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The eID DSS signature creation portal.
+					</para>
+					<para>
+						Via this portal Relying Party web applications can create
+						signatures on documents.
+					</para>
+				</listitem>
+			</orderedlist>
+		</para>
+		<para>
+			Besides these service artifacts, the eID DSS also comes with an
+			Admin portal that allows administrators to manage the eID DSS via an
+			easy to use web portal interface.
+		</para>
+		<para>
+			In the following sections we will use
+			<code>$EID_DSS_ADDRESS</code>
+			as the (internal) web address where the eID DSS product has been
+			deployed.
+		</para>
+		<para>
+			The source code of the eID Digital Signature Service is
+			publicly available and can be found at
+			<ulink url="http://code.google.com/p/eid-dss/source/checkout">eID Digital Signature Service Source Code</ulink>
+			. Please note that the eID DSS has dependencies on the eID
+			Trust Service product, which can be found at
+			<ulink url="http://code.google.com/p/eid-trust-service/source/checkout">eID Trust Service source code</ulink>
+			.
+		</para>
+	</section>
+	<section>
+		<title>Installation</title>
+		<para>
+			The eID Digital Signature Service JBoss distribution is based on
+			the eID Trust Service JBoss distribution. This means that all generic
+			eID Trust Service configuration is also applicable to the eID Digital
+			Signature Service. We refer to the eID Trust Service Administrator
+			Manual for all non eID DSS specific configuration aspects.
+		</para>
+		<para>
+			The eID Digital Signature Service distribution also bundles the
+			eID
+			Trust Service. If you do not want to deploy the eID Trust Service
+			along with the eID Digital Signature Service you can remove the
+			following files from the distribution:
+			<itemizedlist>
+				<listitem>
+					<para>
+						<code>jboss/server/default/deploy/eid-trust-service-deploy-1.0.0.GA.ear
+						</code>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<code>jboss/server/all/deploy/eid-trust-service-deploy-1.0.0.GA.ear
+						</code>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+		<section>
+			<title>Database</title>
+			<para>
+				The eID Digital Signature Service comes with distributions for the
+				following database products:
+				<itemizedlist>
+					<listitem>
+						<para>MySQL</para>
+					</listitem>
+					<listitem>
+						<para>PostgreSQL</para>
+					</listitem>
+					<listitem>
+						<para>Oracle</para>
+					</listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				The JBoss AS database configuration is exactly the same as for
+				eID Trust Service.
+			</para>
+			<section>
+				<title>MySQL</title>
+				<para>
+					The database initialization is similar to that of the eID Trust
+					Service product. The eID Digital Signature Service specific
+					database initialization script is called
+					<code>eid-dss-ddl-mysql.sql</code>
+					and is located under the
+					<code>sql</code>
+					directory.
+				</para>
+			</section>
+			<section>
+				<title>PostgreSQL</title>
+				<para>
+					The database initialization is similar to that of the eID Trust
+					Service product. The eID Digital Signature Service specific
+					database initialization script is called
+					<code>eid-dss-ddl-postgresql.sql</code>
+					and is located under the
+					<code>sql</code>
+					directory.
+				</para>
+			</section>
+			<section>
+				<title>Oracle</title>
+				<para>
+					The database initialization is similar to that of the eID Trust
+					Service product. The eID Digital Signature Service specific
+					database initialization script is called
+					<code>eid-dss-ddl-oracle.sql</code>
+					and is located under the
+					<code>sql</code>
+					directory.
+				</para>
+			</section>
+		</section>
+		<section>
+			<title>Uploading large files</title>
+			<para>
+				If the default POST size is not sufficient for the size of the
+				documents to be processed by the eID DSS you can increase this by
+				reconfiguring the Tomcat connector under
+				<code>jboss/server/default/deploy/jbossweb.sar/server.xml</code>
+				.
+				<programlisting><![CDATA[<Connector ...
+maxPostSize="20971520"/>]]></programlisting>
+				Where the
+				<code>maxPostSize</code>
+				is expressed in bytes. Keep in mind that the eID DSS Simple Browser
+				POST protocol (and the OASIS DSS verification web service) encodes
+				your files in base64. This means that the actual upload size is
+				smaller.
+			</para>
+		</section>
+	</section>
+	<section>
+		<title>Deployment</title>
+		<para>
+			Deploy the eID Digital Signature Service the same way as you
+			deploy the eID Trust Service.
+		</para>
+		<section>
+			<title>eID DSS Admin Portal</title>
+			<para>
+				The eID Digital Signature Service Administrator Portal is available
+				at
+				<code>$EID_DSS_ADDRESS/eid-dss-admin-portal/</code>
+				. After deployment of the eID Digital Signature Service you should
+				register an administrator by logging into the admin portal. In this
+				admin portal you should at least configure the following under
+				<emphasis>PKI Validation</emphasis>
+				:
+				<itemizedlist>
+					<listitem>
+						<para>
+							eID Trust Service XKMS2 URL. For example
+							<code>https://www.e-contract.be/eid-trust-service-ws/xkms2</code>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Signature creation trust domain:
+							<code>BE</code>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Signature verification trust domain:
+							<code>BE</code>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Signature identity trust domain:
+							<code>BE-NAT-REG</code>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							TSA trust domain:
+							<code>BE-TSA</code>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				Under
+				<emphasis>TSP</emphasis>
+				you should configure the time-stamp service used by the eID DSS to
+				create its XAdES-X-L signatures.
+				<itemizedlist>
+					<listitem>
+						<para>
+							TSP server URL:
+							<code>http://tsa.belgium.be/connect</code>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</para>
+			<para>
+				The eID DSS needs to be able to do outgoing HTTP calls to both eID
+				Trust Service (for certificate validation) and to the TSP service
+				(for time-stamp generation). If your eID DSS instance sits behind an
+				HTTP proxy, you can configure the HTTP proxy settings under
+				<emphasis>Network</emphasis>
+				.
+			</para>
+			<para>
+				Via the admin portal you can also configure the eID DSS identity
+				under
+				<emphasis>Identity</emphasis>
+				. Using this configured keystore the eID DSS will be able to sign
+				its response messages. The signature on the eID DSS protocol
+				response messages should be used by the Relying Party web
+				applications to verify the integrity of the transferred protocol
+				messages between the DSS and the RP.
+			</para>
+		</section>
+		<section>
+			<title>eID DSS Core</title>
+			<para>
+				The eID Digital Signature Service core is available at:
+				<code>$EID_DSS_ADDRESS/eid-dss/</code>
+				. Check this site to find out which document formats and signature
+				protocols are provided by the eID DSS runtime. This site also
+				displays the eID DSS digital service identity.
+			</para>
+		</section>
+		<section>
+			<title>eID DSS Validation Web Service</title>
+			<para>
+				The eID Digital Signature Service Validation Web Service is
+				available at:
+				<code>$EID_DSS_ADDRESS/eid-dss-ws/dss</code>
+				. Check this site to see whether the JAX-WS webservice stack is up
+				and running and accessible.
+			</para>
+		</section>
+		<section>
+			<title>eID DSS Portal</title>
+			<para>
+				The eID Digital Signature Service end-user portal is available at:
+				<code>$EID_DSS_ADDRESS/eid-dss-portal/</code>
+				. After configuring the eID DSS via the eID DSS admin portal, try to
+				sign a document using this portal.
+			</para>
+		</section>
+	</section>
+	<appendix id="links">
+		<title>Useful links</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<ulink
+							url="http://java.sun.com/javase/technologies/hotspot/gc/gc_tuning_6.html">JVM GC Tuning</ulink>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<ulink url="http://en.wikipedia.org/wiki/Revocation_list">Certificate Revocation Lists</ulink>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<ulink url="http://en.wikipedia.org/wiki/OCSP">Online Certificate Status Protocol</ulink>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<ulink url="http://en.wikipedia.org/wiki/Time_Stamp_Protocol">Timestamp Protocol</ulink>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<ulink url="http://en.wikipedia.org/wiki/Network_Time_Protocol">Network Time Protocol</ulink>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<ulink
+							url="http://www.jboss.org/file-access/default/members/jbossas/freezone/docs/Server_Configuration_Guide/beta500/html-single/index.html#cluster.chapt">JBoss Clustering</ulink>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<ulink url="http://www.jboss.org/mod_cluster.html">JBoss mod_cluster</ulink>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<ulink url="http://jcp.org/en/jsr/detail?id=318">EJB 3.1 specification</ulink>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</appendix>
+	<appendix>
+		<title>eID Digital Signature Service Admin Manual License</title>
+		<para>
+			<mediaobject>
+				<imageobject>
+					<imagedata format="PNG" fileref="cc.logo.large.png"
+						scale="100" />
+				</imageobject>
+			</mediaobject>
+			This document has been released under the Creative Commons license.
+			<mediaobject>
+				<imageobject>
+					<imagedata format="PNG" fileref="share.large.png" scale="20" />
+				</imageobject>
+			</mediaobject>
+			You are free to Share — to copy, distribute and transmit the work.
+			<mediaobject>
+				<imageobject>
+					<imagedata format="PNG" fileref="by.large.png" scale="20" />
+				</imageobject>
+			</mediaobject>
+			You must attribute the work in the manner specified by the author or
+			licensor (but not in any way that suggests that they endorse you or
+			your use of the work).
+			<mediaobject>
+				<imageobject>
+					<imagedata format="PNG" fileref="nc.large.png" scale="20" />
+				</imageobject>
+			</mediaobject>
+			You may not use this work for commercial purposes.
+			<mediaobject>
+				<imageobject>
+					<imagedata format="PNG" fileref="nd.large.png" scale="20" />
+				</imageobject>
+			</mediaobject>
+			You may not alter, transform, or build upon this work.
+		</para>
+		<para>
+			More information about the Creative Commons license conditions can be
+			found at
+			<ulink url="http://creativecommons.org/">Creative Commons organization</ulink>
+			.
+		</para>
+	</appendix>
+	<appendix>
+		<title>eID Digital Signature Service License</title>
+		<para>
+			The eID Digital Signature Service source code has been released
+			under the
+			GNU LGPL version 3.0.
+		</para>
+		<para>
+			<code>
+				This is free software; you can redistribute it and/or modify it
+				under the terms of the GNU Lesser General Public License version 3.0
+				as published by the Free Software Foundation.
+			</code>
+		</para>
+		<para>
+			<code>
+				This software is
+				distributed in the hope that it will be useful,
+				but WITHOUT ANY
+				WARRANTY; without even the implied warranty of
+				MERCHANTABILITY or
+				FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+				Lesser General Public
+				License for more details.
+			</code>
+		</para>
+		<para>
+			<code>
+				You should have received a copy of the GNU
+				Lesser General Public
+				License along with this software; if not, see
+				http://www.gnu.org/licenses/.
+			</code>
+		</para>
+	</appendix>
+	<appendix>
+		<title>Revision history</title>
+		<table>
+			<title>Revision history</title>
+			<tgroup cols="3">
+				<colspec colwidth="1*" />
+				<colspec colwidth="1*" />
+				<colspec colwidth="2*" />
+				<thead>
+					<row>
+						<entry>Date</entry>
+						<entry>Author</entry>
+						<entry>Description</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>21 Dec 2010</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>Initial Version.</entry>
+					</row>
+					<row>
+						<entry>31 Aug 2011</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>Updates.</entry>
+					</row>
+					<row>
+						<entry>29 Jun 2012</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>Uploading large files.</entry>
+					</row>
+					<row>
+						<entry>17 Sep 2013</entry>
+						<entry>Frank Cornelis</entry>
+						<entry>Removed FedICT branding.</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+	</appendix>
+</article>

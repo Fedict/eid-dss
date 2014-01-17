@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:s="http://jboss.com/products/seam/taglib">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+    <!-- This breaks richfaces ajax stuff, dont enable! -->
+    <!--<meta http-equiv="X-UA-Compatible" content="IE=edge"/>-->
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+    <meta http-equiv="Content-Script-Type" content="text/javascript"/>
+    <meta http-equiv="Content-Style-Type" content="text/css"/>
+    <meta http-equiv="expires" content="0"/>
+    <meta http-equiv="cache-control" content="no-cache, no-store"/>
+    <meta http-equiv="pragma" content="no-cache"/>
+    <title>#{messages.title}</title>
+
+    <link rel="stylesheet" type="text/css" media="all"
+          href="#{facesContext.externalContext.requestContextPath}/css/belgium_header.css"/>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="#{facesContext.externalContext.requestContextPath}/css/my-belgium.css"/>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="#{facesContext.externalContext.requestContextPath}/css/style.css"/>
+    <link rel="stylesheet" type="text/css" media="all"
+          href="#{facesContext.externalContext.requestContextPath}/css/extra.css"/>
+    <link rel="stylesheet" type="text/css" media="print"
+          href="#{facesContext.externalContext.requestContextPath}/css/my-belgium-print.css"/>
+
+    <!--&lt;!&ndash;[if lt IE 9]>-->
+    <link rel="stylesheet" type="text/css" media="all"
+          href="#{facesContext.externalContext.requestContextPath}/css/ie.css"/>
+    <!--<![endif]&ndash;&gt;-->
+
+
+</head>
+
+<body id="home">
+
+<div id="allContainer">
+<div id="allWrap">
+
+<div id="header">
+    <div id="headerWrap">
+        <div id="blgm_belgiumHeader">
+            <div class="blgm_wrapper">
+                <div id="blgm_beLogo">
+                    <img alt="Logo van de Belgische overheid" src="img/blgm_beLogo.gif" />
+                </div>
+
+                <ul id="blgm_languageSwitch">
+                    <h:form>
+
+                        <!-- Dutch -->
+                                <s:span rendered="#{not dssLanguageSelector.dutchActive}">
+                                <li>
+                                    <h:commandLink value="nl" action="#{dssLanguageSelector.dutch}" lang="nl" class="blgm_lSwitch" />
+                                </li>
+                                </s:span>
+                                <s:span rendered="#{dssLanguageSelector.dutchActive}">
+                                <li class="blgm_active">
+                                    <h:commandLink value="nl" action="#{dssLanguageSelector.dutch}" lang="nl" class="blgm_lSwitch" />
+                                </li>
+                                </s:span>
+
+                                <!-- French -->
+                                <s:span rendered="#{not dssLanguageSelector.frenchActive}">
+                                    <li>
+                                        <h:commandLink value="fr" action="#{dssLanguageSelector.french}" lang="fr" class="blgm_lSwitch" />
+                                    </li>
+                                </s:span>
+                                <s:span rendered="#{dssLanguageSelector.frenchActive}">
+                                    <li class="blgm_active">
+                                        <h:commandLink value="fr" action="#{dssLanguageSelector.french}" lang="fr" class="blgm_lSwitch" />
+                                    </li>
+                                </s:span>
+
+                                <!-- English -->
+                                <s:span rendered="#{not dssLanguageSelector.englishActive}">
+                                    <li>
+                                        <h:commandLink value="en" action="#{dssLanguageSelector.english}" lang="en" class="blgm_lSwitch" />
+                                    </li>
+                                </s:span>
+                                <s:span rendered="#{dssLanguageSelector.englishActive}">
+                                    <li class="blgm_active">
+                                        <h:commandLink value="en" action="#{dssLanguageSelector.english}" lang="en" class="blgm_lSwitch" />
+                                    </li>
+                                </s:span>
+
+                                <!-- German -->
+                                <s:span rendered="#{not dssLanguageSelector.germanActive}">
+                                    <li>
+                                        <h:commandLink value="de" action="#{dssLanguageSelector.german}" lang="de" class="blgm_lSwitch" />
+                                    </li>
+                                </s:span>
+                                <s:span rendered="#{dssLanguageSelector.germanActive}">
+                                    <li class="blgm_active">
+                                        <h:commandLink value="de" action="#{dssLanguageSelector.german}" lang="de" class="blgm_lSwitch" />
+                                    </li>
+                                </s:span>
+                            </h:form>
+                        </ul>
+                        <div id="blgm_beLink">
+                            #{messages.otherServices}<a title="http://www.belgium.be/nl/" class="blgm_loglink" href="http://www.belgium.be">www.belgium.be</a>
+                        </div>
+                    </div>
+                </div>
+
+                <h1 class="siteLabel">
+                        <span class="siteLogo">
+                            <a href="#{facesContext.externalContext.requestContextPath}/main">
+                                <img alt="my.belgium.be" src="img/logo_fedict_text.jpg"/>
+                                <span class="siteName"><span>#{messages.title}</span></span>
+                                <span class="siteTag">#{messages.sitetag}<span></span></span>
+                            </a>
+                        </span>
+                </h1>
+            </div>
+        </div>
+
+        <div id="content">
+            <div id="contentWrap">
+                <ui:insert name="body">
+                    <p>Default Body</p>
+                </ui:insert>
+            </div>
+        </div>
+
+        <div id="footer">
+            <div id="footerWrap">
+                <div id="footerWrap2">
+                    <div class="copyright"><p>#{messages.copyright}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript" src="./js/global.js"></script>
+
+</body>
+
+</html>

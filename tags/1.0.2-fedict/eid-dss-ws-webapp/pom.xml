@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>be.fedict</groupId>
+		<artifactId>eid-dss</artifactId>
+		<version>1.0.2-fedict</version>
+	</parent>
+	<name>eID DSS Web Service Webapp</name>
+	<description>Web Service Runtime Web Application for eID Digital Signature Service</description>
+	<groupId>be.fedict.eid-dss</groupId>
+	<artifactId>eid-dss-ws-webapp</artifactId>
+	<version>1.0.2-fedict</version>
+	<packaging>war</packaging>
+	<dependencies>
+		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-ws-impl</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.ws</groupId>
+			<artifactId>jaxws-rt</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.ejb</groupId>
+			<artifactId>ejb-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+</project>

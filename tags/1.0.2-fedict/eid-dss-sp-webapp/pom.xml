@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>be.fedict</groupId>
+		<artifactId>eid-dss</artifactId>
+		<version>1.0.2-fedict</version>
+	</parent>
+	<name>eID DSS Service Provider Test Webapp</name>
+	<description>Test Web Application for an eID DSS based Service Provider
+    </description>
+	<groupId>be.fedict.eid-dss</groupId>
+	<artifactId>eid-dss-sp-webapp</artifactId>
+	<version>1.0.2-fedict</version>
+	<packaging>war</packaging>
+
+	<build>
+
+		<plugins>
+
+			<!-- Generate SP identity. -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>keytool-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>clean</goal>
+							<goal>genkey</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<keystore>${project.build.directory}/classes/sp.jks
+					</keystore>
+					<dname>cn=SP, ou=eID Test SP,
+						L=Brussels, ST=Brussels, o=FedICT, c=BE
+					</dname>
+					<keypass>secret</keypass>
+					<keyalg>RSA</keyalg>
+					<storepass>secret</storepass>
+					<alias>sp</alias>
+					<verbose>true</verbose>
+				</configuration>
+			</plugin>
+		</plugins>
+
+
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-protocol-simple-client</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>be.fedict.eid-dss</groupId>
+			<artifactId>eid-dss-client</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.security</groupId>
+			<artifactId>jacc</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+</project>

@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:rich="http://richfaces.org/rich">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="expires" content="0" />
+<meta http-equiv="cache-control" content="no-cache, no-store" />
+<meta http-equiv="pragma" content="no-cache" />
+<title>eID Digital Signature Service Admin Portal</title>
+<link rel="stylesheet" type="text/css"
+	href="#{facesContext.externalContext.requestContextPath}/style.css" />
+</head>
+
+<body>
+
+	<div id="header">
+		<div id="logo">
+			<h:graphicImage id="logo" alt="Fedict Logo" height="45"
+				url="/images/fedict.png" />
+		</div>
+		<h1>eID Digital Signature Service Admin Portal</h1>
+	</div>
+
+	<f:view contentType="text/html">
+
+		<div id="menu">
+			<div id="menuPanel">
+				<h:form>
+					<rich:panelMenu value="#{dssMenuController.selectedChild}">
+						<rich:panelMenuItem label="Home" action="/main.xhtml"
+							rendered="#{!identity.isLoggedIn()}" />
+						<rich:panelMenuItem label="Login" action="/admin/main.xhtml"
+							rendered="#{!identity.isLoggedIn()}" />
+						<rich:panelMenuItem label="Home" action="/admin/main.xhtml"
+							rendered="#{identity.isLoggedIn()}" />
+						<rich:panelMenuItem label="Configuration"
+							action="/admin/config.xhtml" rendered="#{s:hasRole('admin')}" />
+						<rich:panelMenuItem label="Service Identity"
+							action="/admin/identity.xhtml" rendered="#{s:hasRole('admin')}" />
+						<rich:panelMenuItem label="Relying Parties"
+							action="/admin/rps.xhtml" rendered="#{s:hasRole('admin')}" />
+						<rich:panelMenuItem label="XML" action="/admin/xml.xhtml"
+							rendered="#{s:hasRole('admin')}" />
+						<rich:panelMenuItem label="Privileges"
+							action="/admin/admins.xhtml" rendered="#{s:hasRole('admin')}" />
+						<rich:panelMenuItem label="Accounting"
+							action="/admin/accounting.xhtml" rendered="#{s:hasRole('admin')}" />
+						<rich:panelMenuItem label="About" action="/admin/about.xhtml"
+							rendered="#{s:hasRole('admin')}" />
+					</rich:panelMenu>
+				</h:form>
+			</div>
+		</div>
+
+		<div id="login">
+			<s:div rendered="#{identity.isLoggedIn()}" id="loginPanel">
+				<h:panelGrid columns="2">
+					<s:graphicImage value="#{eid.photo}" />
+					<h:panelGroup>
+						<h:panelGrid columns="1">
+							<h:outputText
+								value="#{eid.identity.firstName} #{eid.identity.name}" />
+							<h:outputText value="#{eid.identity.dateOfBirth.time}">
+								<f:convertDateTime timeZone="Europe/Paris" dateStyle="default"
+									type="date" />
+							</h:outputText>
+						</h:panelGrid>
+					</h:panelGroup>
+				</h:panelGrid>
+				<h:form>
+					<h:commandButton value="Logout" action="#{identity.logout()}" />
+				</h:form>
+			</s:div>
+		</div>
+
+		<div id="content">
+			<ui:insert name="body">
+				<p>Default Body</p>
+			</ui:insert>
+		</div>
+	</f:view>
+
+</body>
+
+</html>

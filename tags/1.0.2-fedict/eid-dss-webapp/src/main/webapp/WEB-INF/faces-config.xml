@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd"
+	version="1.2">
+
+	<!-- Facelets -->
+	<application>
+		<view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
+		<locale-config>
+			<default-locale>en</default-locale>
+			<supported-locale>en</supported-locale>
+			<supported-locale>nl</supported-locale>
+			<supported-locale>fr</supported-locale>
+			<supported-locale>de</supported-locale>
+		</locale-config>
+		<resource-bundle>
+			<base-name>be.fedict.eid.dss.Messages</base-name>
+			<var>messages</var>
+		</resource-bundle>
+	</application>
+
+	<lifecycle>
+		<phase-listener>be.fedict.eid.dss.webapp.CacheControlPhaseListener</phase-listener>
+		<phase-listener>be.fedict.eid.dss.webapp.SessionCleanupPhaseListener</phase-listener>
+	</lifecycle>
+
+	<navigation-rule>
+		<from-view-id>/view.xhtml</from-view-id>
+		<navigation-case>
+			<from-outcome>sign</from-outcome>
+			<to-view-id>/sign.xhtml</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+
+</faces-config>

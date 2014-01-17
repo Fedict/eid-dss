@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html">
+<body>
+	<ui:composition template="/WEB-INF/template.xhtml">
+		<ui:define name="body">
+			<h2>Login</h2>
+			<p>Login using your eID card. If you are not yet known as
+				administrator, you will be registered for admin approval.</p>
+			<script type="text/javascript" src="./deployJava.js"></script>
+			<script type="text/javascript" src="./deploy-eid-applet.js"></script>
+			<script type="text/javascript">
+				var attributes = {
+					code : 'be.fedict.eid.applet.Applet.class',
+					archive : 'eid-applet-package-${eid-applet.version}.jar',
+					width : 600,
+					height : 300
+				};
+				var parameters = {
+					TargetPage : 'postLogin.seam?conversationId=#{conversation.id}',
+					AppletService : 'applet-service-authentication;jsessionid=#{facesContext.externalContext.getSession(false).id}'
+				};
+				deployJavaEIDApplet.runApplet(attributes, parameters);
+			</script>
+		</ui:define>
+	</ui:composition>
+</body>
+</html>

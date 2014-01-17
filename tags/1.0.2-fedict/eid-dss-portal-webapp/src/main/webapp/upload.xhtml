@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:f="http://java.sun.com/jsf/core">
+<body>
+<ui:composition template="/WEB-INF/template.xhtml">
+    <ui:define name="body">
+
+        <div class="steps">
+            <div class="step">
+                <p>
+                    <span class="active">1</span> #{messages.stepUpload}
+                </p>
+            </div>
+            <div class="arrow">
+                <p>
+                    ›
+                </p>
+            </div>
+            <div class="step">
+                <p>
+                    <span>2</span> #{messages.stepDetail}
+                </p>
+            </div>
+            <div class="arrow">
+                <p> ‹ › </p>
+            </div>
+            <div class="step">
+                <p>
+                    <span>3</span> #{messages.stepSign}
+                </p>
+            </div>
+        </div>
+
+        <h2>#{messages.uploadTitle}</h2>
+
+        <div class="two_of_three">
+            <p>#{messages.uploadChoose}</p>
+            <div class="start actions">
+
+                <a4j:form styleClass="uploadForm">
+                    <rich:fileUpload autoclear="true" maxFilesQuantity="1"
+                                     fileUploadListener="#{dssUpload.listener}"
+                                     addControlLabel="#{messages.uploadChooseLabel}" immediateUpload="true"
+                                     allowFlash="false">
+                        <a4j:support event="onuploadcomplete" action="#{dssUpload.done}"/>
+                        <f:facet name="label">
+                            <h:outputText value="{_KB}KB from {KB}KB uploaded --- {mm}:{ss}"/>
+                        </f:facet>
+                    </rich:fileUpload>
+                </a4j:form>
+
+            </div>
+        </div>
+
+        <div class="one_of_three note">
+            <div>
+                <p>#{messages.uploadExtraInfo1}</p>
+                <p>#{messages.uploadExtraInfo2}</p>
+            </div>
+        </div>
+
+    </ui:define>
+</ui:composition>
+</body>
+</html>

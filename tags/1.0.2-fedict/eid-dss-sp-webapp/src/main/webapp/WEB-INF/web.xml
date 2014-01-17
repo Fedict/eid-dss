@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
+
+    <display-name>eID DSS SP Test Web Application</display-name>
+
+    <listener>
+        <listener-class>be.fedict.eid.dss.sp.StartupServletContextListener
+        </listener-class>
+    </listener>
+
+    <!-- eID DSS Request Servlet for regular HTTP Post with SP Identification -->
+    <servlet>
+        <servlet-name>DSSRequestServlet</servlet-name>
+        <servlet-class>
+            be.fedict.eid.dss.protocol.simple.client.SignatureRequestServlet
+        </servlet-class>
+        <init-param>
+            <param-name>SignatureRequestService</param-name>
+            <param-value>
+                be/fedict/eid/dss/sp/bean/SignatureRequestServiceBean
+            </param-value>
+        </init-param>
+        <init-param>
+            <param-name>TargetSessionAttribute</param-name>
+            <param-value>target</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ContentTypeSessionAttribute</param-name>
+            <param-value>ContentType</param-value>
+        </init-param>
+        <init-param>
+            <param-name>RelayStateSessionAttribute</param-name>
+            <param-value>RelayState</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SignatureRequestSessionAttribute</param-name>
+            <param-value>SignatureRequest</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DSSRequestServlet</servlet-name>
+        <url-pattern>/dss-request</url-pattern>
+    </servlet-mapping>
+
+    <!-- eID DSS Response Servlet for regular HTTP Post -->
+    <servlet>
+        <servlet-name>DSSResponseProcessor</servlet-name>
+        <servlet-class>
+            be.fedict.eid.dss.protocol.simple.client.SignatureResponseProcessorServlet
+        </servlet-class>
+        <init-param>
+            <param-name>NextPage</param-name>
+            <param-value>/view.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>CancelPage</param-name>
+            <param-value>/index.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ErrorPage</param-name>
+            <param-value>/sign-error.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ErrorMessageSessionAttribute</param-name>
+            <param-value>SignatureErrorMessage</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SignedDocumentSessionAttribute</param-name>
+            <param-value>document</param-value>
+        </init-param>
+        <init-param>
+            <param-name>TargetSessionAttribute</param-name>
+            <param-value>target</param-value>
+        </init-param>
+        <init-param>
+            <param-name>RelayStateSessionAttribute</param-name>
+            <param-value>RelayState</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SignatureRequestSessionAttribute</param-name>
+            <param-value>SignatureRequest</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DSSResponseProcessor</servlet-name>
+        <url-pattern>/dss-response</url-pattern>
+    </servlet-mapping>
+
+    <!-- eID DSS Response Servlet for Artifact Binding -->
+    <servlet>
+        <servlet-name>DSSRArtifactesponseProcessor</servlet-name>
+        <servlet-class>
+            be.fedict.eid.dss.protocol.simple.client.SignatureResponseProcessorServlet
+        </servlet-class>
+        <init-param>
+            <param-name>NextPage</param-name>
+            <param-value>/view.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>CancelPage</param-name>
+            <param-value>/index.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ErrorPage</param-name>
+            <param-value>/sign-error.jsp</param-value>
+        </init-param>
+        <init-param>
+            <param-name>ErrorMessageSessionAttribute</param-name>
+            <param-value>SignatureErrorMessage</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SignedDocumentSessionAttribute</param-name>
+            <param-value>document</param-value>
+        </init-param>
+        <init-param>
+            <param-name>TargetSessionAttribute</param-name>
+            <param-value>target</param-value>
+        </init-param>
+        <init-param>
+            <param-name>RelayStateSessionAttribute</param-name>
+            <param-value>RelayState</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SignatureRequestIdSessionAttribute</param-name>
+            <param-value>SignatureRequestId</param-value>
+        </init-param>
+        <init-param>
+            <param-name>SignatureRequestIdSessionAttribute</param-name>
+            <param-value>SignatureRequestId</param-value>
+        </init-param>
+        <init-param>
+            <param-name>DssWSUrl</param-name>
+            <param-value>http://localhost:8080/eid-dss-ws/dss</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DSSRArtifactesponseProcessor</servlet-name>
+        <url-pattern>/dss-response-artifact</url-pattern>
+    </servlet-mapping>
+
+    <!-- Upload Servlet -->
+    <servlet>
+        <servlet-name>UploadServlet</servlet-name>
+        <servlet-class>be.fedict.eid.dss.sp.servlet.UploadServlet
+        </servlet-class>
+        <init-param>
+            <param-name>PostPage</param-name>
+            <param-value>/post-request.jsp</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadServlet</servlet-name>
+        <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+
+    <!-- Upload Artifact Servlet -->
+    <servlet>
+        <servlet-name>UploadArtifactServlet</servlet-name>
+        <servlet-class>be.fedict.eid.dss.sp.servlet.UploadServlet
+        </servlet-class>
+        <init-param>
+            <param-name>PostPage</param-name>
+            <param-value>/post-request-artifact.jsp</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadArtifactServlet</servlet-name>
+        <url-pattern>/upload-artifact</url-pattern>
+    </servlet-mapping>
+
+    <!-- Upload via SDK Servlet -->
+    <servlet>
+        <servlet-name>UploadSDKServlet</servlet-name>
+        <servlet-class>be.fedict.eid.dss.sp.servlet.UploadServlet
+        </servlet-class>
+        <init-param>
+            <param-name>PostPage</param-name>
+            <param-value>/dss-request</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadSDKServlet</servlet-name>
+        <url-pattern>/upload-sdk</url-pattern>
+    </servlet-mapping>
+
+    <!-- Upload Artifact Signed Servlet -->
+    <servlet>
+        <servlet-name>UploadArtifactSignedServlet</servlet-name>
+        <servlet-class>be.fedict.eid.dss.sp.servlet.UploadServlet
+        </servlet-class>
+        <init-param>
+            <param-name>PostPage</param-name>
+            <param-value>/post-request-artifact-signed.jsp</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadArtifactSignedServlet</servlet-name>
+        <url-pattern>/upload-artifact-signed</url-pattern>
+    </servlet-mapping>
+
+    <!-- Download Servlet -->
+    <servlet>
+        <servlet-name>DownloadServlet</servlet-name>
+        <servlet-class>be.fedict.eid.dss.sp.servlet.DownloadServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DownloadServlet</servlet-name>
+        <url-pattern>/download</url-pattern>
+    </servlet-mapping>
+
+    <!-- Pki Servlet -->
+    <servlet>
+        <servlet-name>PkiServlet</servlet-name>
+        <servlet-class>be.fedict.eid.dss.sp.servlet.PkiServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PkiServlet</servlet-name>
+        <url-pattern>/pki</url-pattern>
+    </servlet-mapping>
+
+</web-app>
