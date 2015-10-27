@@ -32,7 +32,7 @@
 	<distributionManagement>
 		<repository>
 			<id>maven.eid.belgium.be</id>
-			<url>sftp://maven.eid.belgium.be/home/maven</url>
+			<url>scpexe://maven.eid.belgium.be/home/maven</url>
 			<uniqueVersion>false</uniqueVersion>
 		</repository>
 		<site>
@@ -171,6 +171,29 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh-external</artifactId>
+				<version>2.10</version>
+			</extension>
+			<extension>
+				<groupId>org.apache.maven.scm</groupId>
+				<artifactId>maven-scm-provider-gitexe</artifactId>
+				<version>1.9.4</version>
+			</extension>
+			<extension>
+				<groupId>org.apache.maven.scm</groupId>
+				<artifactId>maven-scm-manager-plexus</artifactId>
+				<version>1.9.4</version>
+			</extension>
+			<extension>
+				<groupId>ar.com.synergian</groupId>
+				<artifactId>wagon-git</artifactId>
+				<version>0.2.5</version>
+			</extension>
+		</extensions>
 
 		<plugins>
 			<plugin>
