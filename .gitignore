@@ -7,3 +7,4 @@ target/
 *.iml
 build
 .DS_Store
+*.sh
