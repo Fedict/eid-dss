@@ -47,6 +47,9 @@ import javax.xml.crypto.dsig.XMLSignatureFactory;
 import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
@@ -309,7 +312,7 @@ public class XAdESValidationTest {
 		EasyMock.replay(mockRevocationDataService);
 
 		// operate
-		DigestInfo digestInfo = testedInstance.preSign(null, certificateChain);
+		DigestInfo digestInfo = testedInstance.preSign(null, certificateChain, null, null, null);
 
 		// verify
 		assertNotNull(digestInfo);
@@ -363,10 +366,18 @@ public class XAdESValidationTest {
 	}
 
 	private XMLSignature getXmlSignature(Node signatureNode) throws Exception {
-
 		DOMValidateContext domValidateContext = new DOMValidateContext(
 				KeySelector.singletonKeySelector(keyPair.getPublic()),
 				signatureNode);
+
+		XPathFactory xPathFactory = XPathFactory.newInstance();
+		XPathExpression xPathExpression = xPathFactory.newXPath().compile("descendant-or-self::*[@Id]");
+		NodeList nodes = (NodeList) xPathExpression.evaluate(signatureNode.getOwnerDocument(), XPathConstants.NODESET);
+		for(int i=0; i<nodes.getLength(); i++) {
+			Element element = (Element) nodes.item(i);
+			domValidateContext.setIdAttributeNS(element, null, "Id");
+		}
+
 		XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory
 				.getInstance();
 		XMLSignature xmlSignature = xmlSignatureFactory
