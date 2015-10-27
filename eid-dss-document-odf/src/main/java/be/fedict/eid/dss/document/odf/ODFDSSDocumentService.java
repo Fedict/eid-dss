@@ -51,7 +51,7 @@ import be.fedict.eid.applet.service.signer.odf.ODFUtil;
 import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
-import be.fedict.eid.applet.service.spi.SignatureServiceEx;
+import be.fedict.eid.applet.service.spi.SignatureService;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.DSSDocumentService;
 import be.fedict.eid.dss.spi.DocumentVisualization;
@@ -99,7 +99,7 @@ public class ODFDSSDocumentService implements DSSDocumentService {
 		return null;
 	}
 
-	public SignatureServiceEx getSignatureService(
+	public SignatureService getSignatureService(
 			InputStream documentInputStream, TimeStampService timeStampService,
 			TimeStampServiceValidator timeStampServiceValidator,
 			RevocationDataService revocationDataService,
@@ -185,11 +185,11 @@ public class ODFDSSDocumentService implements DSSDocumentService {
 				new ByteArrayInputStream(document));
 		ZipEntry zipEntry;
 		while (null != (zipEntry = odfZipInputStream.getNextEntry())) {
-			if (false == ODFUtil.isToBeSigned(zipEntry)) {
+			if (!ODFUtil.isToBeSigned(zipEntry)) {
 				continue;
 			}
 			String uri = zipEntry.getName().replaceAll(" ", "%20");
-			if (false == dsReferenceUris.contains(uri)) {
+			if (!dsReferenceUris.contains(uri)) {
 				LOG.warn("no ds:Reference for ODF entry: " + zipEntry.getName());
 				throw new RuntimeException("no ds:Reference for ODF entry: "
 						+ zipEntry.getName());

@@ -43,7 +43,6 @@ import be.fedict.eid.applet.service.spi.AddressDTO;
 import be.fedict.eid.applet.service.spi.DigestInfo;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
 import be.fedict.eid.applet.service.spi.SignatureService;
-import be.fedict.eid.applet.service.spi.SignatureServiceEx;
 import be.fedict.eid.dss.model.ConfigProperty;
 import be.fedict.eid.dss.model.Configuration;
 import be.fedict.eid.dss.model.Constants;
@@ -61,9 +60,9 @@ import be.fedict.trust.client.XKMS2Client;
  * @author Frank Cornelis
  */
 @Stateless
-@Local(SignatureServiceEx.class)
+@Local(SignatureService.class)
 @LocalBinding(jndiBinding = Constants.DSS_JNDI_CONTEXT + "SignatureServiceBean")
-public class SignatureServiceBean implements SignatureServiceEx {
+public class SignatureServiceBean implements SignatureService {
 
 	private static final Log LOG = LogFactory
 			.getLog(SignatureServiceBean.class);
@@ -81,12 +80,6 @@ public class SignatureServiceBean implements SignatureServiceEx {
 		return null;
 	}
 
-	public DigestInfo preSign(List<DigestInfo> digestInfos,
-			List<X509Certificate> signingCertificateChain)
-			throws NoSuchAlgorithmException {
-		throw new UnsupportedOperationException();
-	}
-
 	public void postSign(byte[] signatureValue,
 			List<X509Certificate> signingCertificateChain)
 			throws SecurityException {
@@ -95,7 +88,7 @@ public class SignatureServiceBean implements SignatureServiceEx {
 		signatureService.postSign(signatureValue, signingCertificateChain);
 	}
 
-	private SignatureServiceEx getSignatureService(IdentityDTO identity,
+	private SignatureService getSignatureService(IdentityDTO identity,
 			byte[] photo) {
 
 		XKMS2Client xkms2Client = this.trustValidationService.getXkms2Client();
@@ -152,7 +145,7 @@ public class SignatureServiceBean implements SignatureServiceEx {
 
 		DSSDocumentService documentService = this.servicesManager
 				.getDocumentService();
-		SignatureServiceEx signatureService;
+		SignatureService signatureService;
 		try {
 			signatureService = documentService.getSignatureService(
 					documentInputStream, timeStampService,
@@ -171,7 +164,7 @@ public class SignatureServiceBean implements SignatureServiceEx {
 			IdentityDTO identity, AddressDTO address, byte[] photo)
 			throws NoSuchAlgorithmException {
 
-		SignatureServiceEx signatureService = getSignatureService(identity,
+		SignatureService signatureService = getSignatureService(identity,
 				photo);
 		return signatureService.preSign(digestInfos, signingCertificateChain,
 				identity, address, photo);

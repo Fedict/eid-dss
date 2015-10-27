@@ -56,7 +56,7 @@ import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.spi.AddressDTO;
 import be.fedict.eid.applet.service.spi.DigestInfo;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
-import be.fedict.eid.applet.service.spi.SignatureServiceEx;
+import be.fedict.eid.applet.service.spi.SignatureService;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
 
@@ -66,8 +66,7 @@ import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
  * 
  * @author Frank Cornelis
  */
-public class ZIPSignatureService extends AbstractXmlSignatureService implements
-		SignatureServiceEx {
+public class ZIPSignatureService extends AbstractXmlSignatureService implements SignatureService {
 
 	private static final Log LOG = LogFactory.getLog(ZIPSignatureService.class);
 
@@ -150,9 +149,7 @@ public class ZIPSignatureService extends AbstractXmlSignatureService implements
 		ZipEntry zipEntry;
 		while (null != (zipEntry = zipInputStream.getNextEntry())) {
 			if (ODFUtil.isSignatureFile(zipEntry)) {
-				Document documentSignaturesDocument = ODFUtil
-						.loadDocument(zipInputStream);
-				return documentSignaturesDocument;
+				return ODFUtil.loadDocument(zipInputStream);
 			}
 		}
 		Document document = ODFUtil.getNewDocument();
@@ -173,6 +170,6 @@ public class ZIPSignatureService extends AbstractXmlSignatureService implements
 			List<X509Certificate> signingCertificateChain,
 			IdentityDTO identity, AddressDTO address, byte[] photo)
 			throws NoSuchAlgorithmException {
-		return super.preSign(digestInfos, signingCertificateChain);
+		return super.preSign(digestInfos, signingCertificateChain, identity, address, photo);
 	}
 }

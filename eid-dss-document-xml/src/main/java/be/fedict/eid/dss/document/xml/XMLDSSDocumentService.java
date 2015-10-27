@@ -19,33 +19,13 @@
 
 package be.fedict.eid.dss.document.xml;
 
-import be.fedict.eid.applet.service.signer.DigestAlgo;
-import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
-import be.fedict.eid.applet.service.signer.SignatureFacet;
-import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
-import be.fedict.eid.applet.service.signer.time.TimeStampService;
-import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
-import be.fedict.eid.applet.service.spi.IdentityDTO;
-import be.fedict.eid.applet.service.spi.SignatureServiceEx;
-import be.fedict.eid.dss.spi.*;
-import be.fedict.eid.dss.spi.utils.XAdESUtils;
-import be.fedict.eid.dss.spi.utils.XAdESValidation;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.xml.security.Init;
-import org.apache.xml.security.c14n.Canonicalizer;
-import org.apache.xml.security.exceptions.Base64DecodingException;
-import org.apache.xml.security.exceptions.XMLSecurityException;
-import org.apache.xml.security.signature.ReferenceNotInitializedException;
-import org.apache.xml.security.signature.XMLSignatureException;
-import org.apache.xml.security.transforms.TransformationException;
-import org.apache.xml.security.transforms.Transforms;
-import org.apache.xml.security.transforms.params.XPath2FilterContainer;
-import org.apache.xml.security.utils.Constants;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.Reference;
@@ -63,13 +43,35 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.xml.security.Init;
+import org.apache.xml.security.c14n.Canonicalizer;
+import org.apache.xml.security.exceptions.XMLSecurityException;
+import org.apache.xml.security.transforms.Transforms;
+import org.apache.xml.security.transforms.params.XPath2FilterContainer;
+import org.apache.xml.security.utils.Constants;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import be.fedict.eid.applet.service.signer.DigestAlgo;
+import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
+import be.fedict.eid.applet.service.signer.SignatureFacet;
+import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
+import be.fedict.eid.applet.service.signer.time.TimeStampService;
+import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
+import be.fedict.eid.applet.service.spi.IdentityDTO;
+import be.fedict.eid.applet.service.spi.SignatureService;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
+import be.fedict.eid.dss.spi.DSSDocumentService;
+import be.fedict.eid.dss.spi.DocumentVisualization;
+import be.fedict.eid.dss.spi.MimeType;
+import be.fedict.eid.dss.spi.SignatureInfo;
+import be.fedict.eid.dss.spi.utils.XAdESUtils;
+import be.fedict.eid.dss.spi.utils.XAdESValidation;
 
 /**
  * Document Service implementation for XML documents.
@@ -141,7 +143,7 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 		this.transformerFactory = TransformerFactory.newInstance();
 	}
 
-	public SignatureServiceEx getSignatureService(
+	public SignatureService getSignatureService(
 			InputStream documentInputStream, TimeStampService timeStampService,
 			TimeStampServiceValidator timeStampServiceValidator,
 			RevocationDataService revocationDataService,
@@ -265,10 +267,7 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 		return signatureInfos;
 	}
 
-	private void verifyCoSignatureReference(XMLSignature xmlSignature,
-			Document originalDomDocument) throws XMLSecurityException,
-			TransformationException, XMLSignatureException,
-			ReferenceNotInitializedException, Base64DecodingException {
+	private void verifyCoSignatureReference(XMLSignature xmlSignature, Document originalDomDocument) throws XMLSecurityException {
 		SignedInfo signedInfo = xmlSignature.getSignedInfo();
 		@SuppressWarnings("unchecked")
 		List<Reference> references = signedInfo.getReferences();
@@ -316,7 +315,7 @@ public class XMLDSSDocumentService implements DSSDocumentService {
 					.item(0);
 			apacheReference.generateDigestValue();
 			byte[] originalDigestValue = apacheReference.getDigestValue();
-			if (false == Arrays.equals(originalDigestValue, digestValue)) {
+			if (!Arrays.equals(originalDigestValue, digestValue)) {
 				throw new RuntimeException("not original document");
 			}
 			LOG.debug("co-signature ds:Reference checked");
