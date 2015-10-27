@@ -2,23 +2,61 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<name>eID Digital Signature Service Project</name>
-	<parent>
-		<!-- We want to limit duplicate work, so we reuse the eID Applet parent 
-			POM. The eID Applet project also holds our JBoss AS runtime configuration 
-			anyway. -->
-		<groupId>be.fedict</groupId>
-		<artifactId>eid-applet</artifactId>
-        <version>1.1.3</version>
-	</parent>
+
 	<groupId>be.fedict</groupId>
+	<name>eID Digital Signature Service Project</name>
 	<artifactId>eid-dss</artifactId>
-	<version>1.0.2-fedict</version>
+	<version>1.1.0.FEDICT-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<inceptionYear>2009</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>GNU LESSER GENERAL PUBLIC LICENSE, Version 3</name>
+			<url>LICENSE.txt</url>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>FedICT</name>
+		<url>http://www.fedict.belgium.be/</url>
+	</organization>
+
+	<url>https://github.com/Fedict/eid-dss</url>
+
 	<scm>
-		<developerConnection>scm:svn:https://eid-dss.googlecode.com/svn/trunk</developerConnection>
+		<connection>scm:git:ssh://git@github.com/Fedict/eid-dss.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/Fedict/eid-dss.git</developerConnection>
 	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>maven.eid.belgium.be</id>
+			<url>sftp://maven.eid.belgium.be/home/maven</url>
+			<uniqueVersion>false</uniqueVersion>
+		</repository>
+		<site>
+			<id>github-site</id>
+			<url>git:gh-pages://git@github.com:Fedict/eid-dss.git</url>
+		</site>
+	</distributionManagement>
+
+	<issueManagement>
+		<url>https://github.com/Fedict/eid-dss/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
+
+	<properties>
+		<eid-applet.version>2.0.0.FEDICT-SNAPSHOT</eid-applet.version>
+		<eid-applet.SkipSecureConnectionCheck>false</eid-applet.SkipSecureConnectionCheck>
+		<eid-trust-service.version>1.0.2-fedict</eid-trust-service.version>
+		<jtrust.version>1.1.2</jtrust.version>
+		<cxf.version>2.4.8</cxf.version>
+		<jaxb-impl.version>2.2.7</jaxb-impl.version>
+		<hibernate.hbm2ddl.auto>create-drop</hibernate.hbm2ddl.auto>
+		<hibernate.jdbc.use_streams_for_binary>true</hibernate.jdbc.use_streams_for_binary>
+	</properties>
+
 	<modules>
 		<module>eid-dss-spi</module>
 		<module>eid-dss-spi-utils</module>
@@ -46,7 +84,28 @@
 		<module>eid-dss-tests</module>
 		<module>eid-dss-tests-cxf</module>
 	</modules>
+
 	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.jvnet.jaxb2.maven2</groupId>
+					<artifactId>maven-jaxb2-plugin</artifactId>
+					<version>0.13</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-ejb-plugin</artifactId>
+					<version>2.5.1</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -55,11 +114,11 @@
 					<source>1.6</source>
 					<target>1.6</target>
 					<encoding>UTF-8</encoding>
-					<fork>true</fork>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+
 	<profiles>
 		<profile>
 			<id>tests</id>
@@ -141,6 +200,7 @@
 				<hibernate.hbm2ddl.auto>validate</hibernate.hbm2ddl.auto>
 			</properties>
 		</profile>
+
 		<profile>
 			<id>all</id>
 			<activation>
@@ -162,48 +222,17 @@
 			</modules>
 		</profile>
 	</profiles>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>be.fedict.eid-applet</groupId>
-				<artifactId>eid-applet-shared</artifactId>
-				<version>${eid-applet.version}</version>
+				<artifactId>eid-applet-bom</artifactId>
+				<version>2.0.0.FEDICT-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
-			<dependency>
-				<groupId>be.fedict.eid-applet</groupId>
-				<artifactId>eid-applet-package</artifactId>
-				<version>${eid-applet.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>be.fedict.eid-applet</groupId>
-				<artifactId>eid-applet-js</artifactId>
-				<version>${eid-applet.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>be.fedict.eid-applet</groupId>
-				<artifactId>eid-applet-service</artifactId>
-				<version>${eid-applet.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>be.fedict.eid-applet</groupId>
-				<artifactId>eid-applet-service-spi</artifactId>
-				<version>${eid-applet.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>be.fedict.eid-applet</groupId>
-				<artifactId>eid-applet-service-signer</artifactId>
-				<version>${eid-applet.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>be.fedict.eid-trust-service</groupId>
-				<artifactId>eid-trust-service-client</artifactId>
-				<version>${eid-trust-service.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>be.fedict.eid-trust-service</groupId>
-				<artifactId>eid-trust-service-xkms2-ws</artifactId>
-				<version>${eid-trust-service.version}</version>
-			</dependency>
+
 			<dependency>
 				<groupId>org.jboss.spec.javax.ejb</groupId>
 				<artifactId>jboss-ejb-api_3.1_spec</artifactId>
@@ -251,38 +280,4 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	<repositories>
-		<repository>
-			<!-- required for jTrust, eID Applet -->
-			<id>e-contract.be</id>
-			<url>http://www.e-contract.be/maven2/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>e-contract.be</id>
-			<url>http://www.e-contract.be/maven2/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
-	<properties>
-        <eid-applet.version>1.1.3</eid-applet.version>
-		<eid-applet.SkipSecureConnectionCheck>false</eid-applet.SkipSecureConnectionCheck>
-        <eid-trust-service.version>1.0.2-fedict</eid-trust-service.version>
-		<jtrust.version>1.1.2</jtrust.version>
-		<cxf.version>2.4.8</cxf.version>
-		<hibernate.hbm2ddl.auto>create-drop</hibernate.hbm2ddl.auto>
-		<hibernate.jdbc.use_streams_for_binary>true</hibernate.jdbc.use_streams_for_binary>
-	</properties>
 </project>
