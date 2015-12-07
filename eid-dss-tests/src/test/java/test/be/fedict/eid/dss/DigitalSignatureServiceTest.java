@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.awt.Component;
+import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.smartcardio.CardException;
+import javax.swing.*;
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import javax.xml.crypto.dsig.DigestMethod;
@@ -82,8 +83,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import sun.security.pkcs11.wrapper.PKCS11Exception;
-import be.fedict.eid.applet.DiagnosticTests;
 import be.fedict.eid.applet.Messages;
 import be.fedict.eid.applet.Messages.MESSAGE_ID;
 import be.fedict.eid.applet.Status;
@@ -93,6 +92,7 @@ import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
 import be.fedict.eid.dss.client.NotParseableXMLDocumentException;
 import be.fedict.eid.dss.client.SignatureInfo;
 import be.fedict.eid.dss.client.StorageInfoDO;
+import sun.security.pkcs11.wrapper.PKCS11Exception;
 
 public class DigitalSignatureServiceTest {
 
@@ -122,12 +122,16 @@ public class DigitalSignatureServiceTest {
 		}
 
 		@Override
-		public void addTestResult(DiagnosticTests diagnosticTest,
-				boolean success, String description) {
+		public void increaseProgress() {
 		}
 
 		@Override
-		public void increaseProgress() {
+		public void confirmAuthenticationSignature(String message) {
+		}
+
+		@Override
+		public int confirmSigning(String description, String digestAlgo) {
+			return JOptionPane.YES_OPTION;
 		}
 
 		@Override

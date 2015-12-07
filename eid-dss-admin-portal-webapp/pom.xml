@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.0.2-fedict</version>
+		<version>1.1.0.FEDICT-SNAPSHOT</version>
 	</parent>
 	<name>eID DSS Admin Portal Webapp</name>
 	<description>Web Application for eID DSS Admin Portal</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-admin-portal-webapp</artifactId>
-	<version>1.0.2-fedict</version>
+	<version>1.1.0.FEDICT-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<build>
 		<plugins>

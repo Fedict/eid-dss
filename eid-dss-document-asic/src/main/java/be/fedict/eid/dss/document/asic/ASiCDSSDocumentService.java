@@ -18,30 +18,6 @@
 
 package be.fedict.eid.dss.document.asic;
 
-import be.fedict.eid.applet.service.signer.DigestAlgo;
-import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
-import be.fedict.eid.applet.service.signer.SignatureFacet;
-import be.fedict.eid.applet.service.signer.asic.ASiCURIDereferencer;
-import be.fedict.eid.applet.service.signer.asic.ASiCUtil;
-import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
-import be.fedict.eid.applet.service.signer.odf.ODFUtil;
-import be.fedict.eid.applet.service.signer.time.TimeStampService;
-import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
-import be.fedict.eid.applet.service.spi.IdentityDTO;
-import be.fedict.eid.applet.service.spi.SignatureServiceEx;
-import be.fedict.eid.dss.spi.*;
-import be.fedict.eid.dss.spi.utils.XAdESValidation;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import javax.xml.crypto.dsig.Reference;
-import javax.xml.crypto.dsig.SignedInfo;
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -53,6 +29,36 @@ import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.SignedInfo;
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.dom.DOMValidateContext;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import be.fedict.eid.applet.service.signer.DigestAlgo;
+import be.fedict.eid.applet.service.signer.KeyInfoKeySelector;
+import be.fedict.eid.applet.service.signer.SignatureFacet;
+import be.fedict.eid.applet.service.signer.asic.ASiCURIDereferencer;
+import be.fedict.eid.applet.service.signer.asic.ASiCUtil;
+import be.fedict.eid.applet.service.signer.facets.RevocationDataService;
+import be.fedict.eid.applet.service.signer.odf.ODFUtil;
+import be.fedict.eid.applet.service.signer.time.TimeStampService;
+import be.fedict.eid.applet.service.signer.time.TimeStampServiceValidator;
+import be.fedict.eid.applet.service.spi.IdentityDTO;
+import be.fedict.eid.applet.service.spi.SignatureService;
+import be.fedict.eid.dss.spi.DSSDocumentContext;
+import be.fedict.eid.dss.spi.DSSDocumentService;
+import be.fedict.eid.dss.spi.DocumentVisualization;
+import be.fedict.eid.dss.spi.MimeType;
+import be.fedict.eid.dss.spi.SignatureInfo;
+import be.fedict.eid.dss.spi.utils.XAdESValidation;
 
 /**
  * Associated Signature Container document service implementation.
@@ -94,15 +100,15 @@ public class ASiCDSSDocumentService implements DSSDocumentService {
 		ZipInputStream zipInputStream = new ZipInputStream(
 				new ByteArrayInputStream(document));
 		ZipEntry zipEntry;
-		StringBuffer stringBuffer = new StringBuffer();
-		stringBuffer.append("<html>");
-		stringBuffer.append("<head>");
-		stringBuffer
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("<html>");
+		stringBuilder.append("<head>");
+		stringBuilder
 				.append("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">");
-		stringBuffer.append("<title>Associated Signature Container</title>");
-		stringBuffer.append("</head>");
-		stringBuffer.append("<body>");
-		stringBuffer.append("<h1>Associated Signature Container</h1>");
+		stringBuilder.append("<title>Associated Signature Container</title>");
+		stringBuilder.append("</head>");
+		stringBuilder.append("<body>");
+		stringBuilder.append("<h1>Associated Signature Container</h1>");
 		while (null != (zipEntry = zipInputStream.getNextEntry())) {
 			if (ASiCUtil.isSignatureZipEntry(zipEntry)) {
 				continue;
@@ -122,21 +128,21 @@ public class ASiCDSSDocumentService implements DSSDocumentService {
 			}
 			if (zipEntryName.startsWith("META-INF/")) {
 				if (zipEntryName.endsWith(".xml")) {
-					if (zipEntryName.indexOf("signatures") != -1) {
+					if (zipEntryName.contains("signatures")) {
 						continue;
 					}
 				}
 			}
-			stringBuffer.append("<p>" + zipEntryName + "</p>");
+			stringBuilder.append("<p>" + zipEntryName + "</p>");
 		}
-		stringBuffer.append("</body></html>");
+		stringBuilder.append("</body></html>");
 
 		return new DocumentVisualization("text/html;charset=utf-8",
-				stringBuffer.toString().getBytes());
+				stringBuilder.toString().getBytes());
 	}
 
 	@Override
-	public SignatureServiceEx getSignatureService(
+	public SignatureService getSignatureService(
 			InputStream documentInputStream, TimeStampService timeStampService,
 			TimeStampServiceValidator timeStampServiceValidator,
 			RevocationDataService revocationDataService,
@@ -206,7 +212,7 @@ public class ASiCDSSDocumentService implements DSSDocumentService {
 				if (ASiCUtil.isSignatureZipEntry(zipEntry)) {
 					continue;
 				}
-				if (false == referenceUris.contains(zipEntry.getName())) {
+				if (!referenceUris.contains(zipEntry.getName())) {
 					LOG.warn("no ds:Reference for ASiC entry: "
 							+ zipEntry.getName());
 					return signatureInfos;

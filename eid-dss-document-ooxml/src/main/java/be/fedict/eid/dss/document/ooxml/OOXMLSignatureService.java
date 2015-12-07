@@ -44,12 +44,11 @@ import be.fedict.eid.applet.service.signer.time.TimeStampService;
 import be.fedict.eid.applet.service.spi.AddressDTO;
 import be.fedict.eid.applet.service.spi.DigestInfo;
 import be.fedict.eid.applet.service.spi.IdentityDTO;
-import be.fedict.eid.applet.service.spi.SignatureServiceEx;
+import be.fedict.eid.applet.service.spi.SignatureService;
 import be.fedict.eid.dss.spi.DSSDocumentContext;
 import be.fedict.eid.dss.spi.utils.CloseActionOutputStream;
 
-public class OOXMLSignatureService extends AbstractOOXMLSignatureService
-		implements SignatureServiceEx {
+public class OOXMLSignatureService extends AbstractOOXMLSignatureService implements SignatureService {
 
 	private final TemporaryDataStorage temporaryDataStorage;
 
@@ -117,6 +116,6 @@ public class OOXMLSignatureService extends AbstractOOXMLSignatureService
 			List<X509Certificate> signingCertificateChain,
 			IdentityDTO identity, AddressDTO address, byte[] photo)
 			throws NoSuchAlgorithmException {
-		return super.preSign(digestInfos, signingCertificateChain);
+		return super.preSign(digestInfos, signingCertificateChain, identity, address, photo);
 	}
 }

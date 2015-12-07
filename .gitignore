@@ -1,0 +1,10 @@
+target/
+.project
+.settings/
+.classpath
+.tern-project
+.idea/
+*.iml
+build
+.DS_Store
+*.sh
