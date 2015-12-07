@@ -3,13 +3,13 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.1.0.FEDICT</version>
+		<version>1.1.1.FEDICT-SNAPSHOT</version>
 	</parent>
 	<name>eID DSS JPA Entities</name>
 	<description>JPA Entitites for eID Digital Signature Service</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-entity</artifactId>
-	<version>1.1.0.FEDICT</version>
+	<version>1.1.1.FEDICT-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<build>
 		<plugins>
