@@ -254,7 +254,7 @@
 			</modules>
 		</profile>
 		<profile>
-			<id>prod-mysql</id>
+			<id>mysql</id>
 			<activation>
 				<property>
 					<name>env</name>
@@ -272,7 +272,7 @@
 			</properties>
 		</profile>
 		<profile>
-			<id>prod-postgresql</id>
+			<id>postgresql</id>
 			<activation>
 				<property>
 					<name>env</name>
@@ -290,7 +290,7 @@
 			</properties>
 		</profile>
 		<profile>
-			<id>prod-oracle</id>
+			<id>oracle</id>
 			<activation>
 				<property>
 					<name>env</name>
