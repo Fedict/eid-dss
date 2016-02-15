@@ -3,13 +3,13 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.1.1.FEDICT</version>
+		<version>1.1.2.FEDICT-SNAPSHOT</version>
 	</parent>
 	<name>eID DSS XML Document</name>
 	<description>eID DSS Document Service for XML documents</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-document-xml</artifactId>
-	<version>1.1.1.FEDICT</version>
+	<version>1.1.2.FEDICT-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<build>
 		<plugins>
