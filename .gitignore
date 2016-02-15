@@ -8,3 +8,4 @@ target/
 build
 .DS_Store
 *.sh
+RELEASE.txt
