@@ -17,8 +17,6 @@
 			<plugin>
 				<groupId>org.jboss.maven.plugins</groupId>
 				<artifactId>maven-jdocbook-plugin</artifactId>
-				<version>2.2.3</version>
-				<!-- https://jira.jboss.org/jira/browse/MPJDOCBOOK-14 -->
 				<dependencies>
 					<dependency>
 						<groupId>org.jboss</groupId>

@@ -34,11 +34,11 @@
 									<groupId>be.fedict.eid-dss</groupId>
 									<artifactId>eid-dss-sql-ddl</artifactId>
 								</artifactItem>
-								<artifactItem>
-									<groupId>be.fedict.eid-dss</groupId>
-									<artifactId>eid-dss-admin-manual</artifactId>
-									<type>zip</type>
-								</artifactItem>
+								<!--<artifactItem>-->
+									<!--<groupId>be.fedict.eid-dss</groupId>-->
+									<!--<artifactId>eid-dss-admin-manual</artifactId>-->
+									<!--<type>zip</type>-->
+								<!--</artifactItem>-->
 							</artifactItems>
 							<outputDirectory>${project.build.directory}/files</outputDirectory>
 						</configuration>
@@ -102,12 +102,12 @@
 			<scope>provided</scope>
 			<type>jar</type>
 		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-admin-manual</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
-			<type>zip</type>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>be.fedict.eid-dss</groupId>-->
+			<!--<artifactId>eid-dss-admin-manual</artifactId>-->
+			<!--<version>${project.version}</version>-->
+			<!--<scope>provided</scope>-->
+			<!--<type>zip</type>-->
+		<!--</dependency>-->
 	</dependencies>
 </project>
