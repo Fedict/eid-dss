@@ -16,6 +16,20 @@
 	<build>
 
 		<plugins>
+			<!-- Precompile JSP -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jspc-maven-plugin</artifactId>
+				<version>1.4.6</version>
+				<executions>
+					<execution>
+						<id>jspc</id>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 			<!-- Generate SP identity. -->
 			<plugin>
@@ -49,6 +63,19 @@
 	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.el</groupId>
+			<artifactId>el-api</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-protocol-simple-client</artifactId>
