@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>be.fedict</groupId>
@@ -178,6 +179,16 @@
 							<artifactId>jboss-el</artifactId>
 							<includeInApplicationXml>true</includeInApplicationXml>
 							<bundleDir>lib</bundleDir>
+						</jarModule>
+						<jarModule>
+							<groupId>be.e_contract.dssp</groupId>
+							<artifactId>dssp-client</artifactId>
+							<includeInApplicationXml>true</includeInApplicationXml>
+						</jarModule>
+						<jarModule>
+							<groupId>be.e_contract.dssp</groupId>
+							<artifactId>dssp-ws</artifactId>
+							<includeInApplicationXml>true</includeInApplicationXml>
 						</jarModule>
 						<webModule>
 							<groupId>be.fedict.eid-dss</groupId>
@@ -554,6 +565,15 @@
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
 			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>be.e_contract.dssp</groupId>
+			<artifactId>dssp-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>be.e_contract.dssp</groupId>
+			<artifactId>dssp-ws</artifactId>
 		</dependency>
 
 	</dependencies>

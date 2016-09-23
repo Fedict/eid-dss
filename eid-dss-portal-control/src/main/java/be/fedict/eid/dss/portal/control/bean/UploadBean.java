@@ -20,8 +20,8 @@ package be.fedict.eid.dss.portal.control.bean;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -43,74 +43,76 @@ import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 
 import be.fedict.eid.dss.portal.control.Upload;
+import be.fedict.eid.dss.portal.control.state.SigningModel;
+import be.fedict.eid.dss.portal.control.state.SigningModelRepository;
 
 @Stateful
 @Name("dssUpload")
 @LocalBinding(jndiBinding = "fedict/eid/dss/portal/UploadBean")
 public class UploadBean implements Upload {
 
+	private static final Set<String> supportedFileExtensions;
+
+	static {
+		// TODO JanVdB still required?
+		supportedFileExtensions = new HashSet<>();
+
+		// XML document container.
+		supportedFileExtensions.add("text/xml");
+
+		// Open Document Format
+		supportedFileExtensions.add("application/vnd.oasis.opendocument.text");
+		supportedFileExtensions.add("application/vnd.oasis.opendocument.spreadsheet");
+		supportedFileExtensions.add("application/vnd.oasis.opendocument.presentation");
+		supportedFileExtensions.add("application/vnd.oasis.opendocument.graphics");
+		supportedFileExtensions.add("application/vnd.oasis.opendocument.chart");
+		supportedFileExtensions.add("application/vnd.oasis.opendocument.formula");
+		supportedFileExtensions.add("application/vnd.oasis.opendocument.image");
+
+		// Office OpenXML.
+		supportedFileExtensions.add("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+		supportedFileExtensions.add("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		supportedFileExtensions.add("application/vnd.openxmlformats-officedocument.presentationml.presentation");
+		supportedFileExtensions.add("application/vnd.openxmlformats-officedocument.presentationml.slideshow");
+
+		// PDF
+		supportedFileExtensions.add("application/pdf");
+
+		// ZIP containers.
+		supportedFileExtensions.add("application/zip");
+
+		// Associated Signature Container (ETSI TS 102 918 v1.1.1)
+		supportedFileExtensions.add("application/vnd.etsi.asic-s+zip");
+		supportedFileExtensions.add("application/vnd.etsi.asic-s+zip");
+
+		supportedFileExtensions.add("application/vnd.etsi.asic-e+zip");
+		supportedFileExtensions.add("application/vnd.etsi.asic-e+zip");
+	}
+
 	@Logger
 	private Log log;
 
-	@In(value = "filename", scope = ScopeType.SESSION, required = false)
-	@Out(value = "filename", scope = ScopeType.SESSION, required = false)
-	private String filename;
-
-	@In(value = "ContentType", scope = ScopeType.SESSION, required = false)
-	@Out(value = "ContentType", scope = ScopeType.SESSION, required = false)
-	private String contentType;
-
-	@In(value = "document", scope = ScopeType.SESSION, required = false)
-	@Out(value = "document", scope = ScopeType.SESSION, required = false)
-	private byte[] document;
-
-	private static final Map<String, String> supportedFileExtensions;
-
-	static {
-		supportedFileExtensions = new HashMap<>();
-
-		// XML document container.
-		supportedFileExtensions.put("xml", "text/xml");
-
-		// Open Document Format
-		supportedFileExtensions.put("odt", "application/vnd.oasis.opendocument.text");
-		supportedFileExtensions.put("ods", "application/vnd.oasis.opendocument.spreadsheet");
-		supportedFileExtensions.put("odp", "application/vnd.oasis.opendocument.presentation");
-		supportedFileExtensions.put("odg", "application/vnd.oasis.opendocument.graphics");
-		supportedFileExtensions.put("odc", "application/vnd.oasis.opendocument.chart");
-		supportedFileExtensions.put("odf", "application/vnd.oasis.opendocument.formula");
-		supportedFileExtensions.put("odi", "application/vnd.oasis.opendocument.image");
-
-		// Office OpenXML.
-		supportedFileExtensions.put("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-		supportedFileExtensions.put("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-		supportedFileExtensions.put("pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
-		supportedFileExtensions.put("ppsx", "application/vnd.openxmlformats-officedocument.presentationml.slideshow");
-
-		// ZIP containers.
-		supportedFileExtensions.put("zip", "application/zip");
-
-		// Associated Signature Container (ETSI TS 102 918 v1.1.1)
-		supportedFileExtensions.put("asics", "application/vnd.etsi.asic-s+zip");
-		supportedFileExtensions.put("scs", "application/vnd.etsi.asic-s+zip");
-
-		supportedFileExtensions.put("asice", "application/vnd.etsi.asic-e+zip");
-		supportedFileExtensions.put("sce", "application/vnd.etsi.asic-e+zip");
-	}
+	@In(value = SigningModelRepository.ATTRIBUTE_SIGNING_MODEL, scope = ScopeType.SESSION, required = false)
+	@Out(value = SigningModelRepository.ATTRIBUTE_SIGNING_MODEL, scope = ScopeType.SESSION, required = false)
+	private SigningModel signingModel;
 
 	@Override
-	public void listener(UploadEvent event) throws Exception {
+	public void listener(UploadEvent event) throws IOException {
 		UploadItem item = event.getUploadItem();
-		this.log.info("File upload of file {0} with content-type {1} and size {2}", item.getFileName(), item.getContentType(), item.getFileSize());
+		log.info("File upload of file {0} with content-type {1} and size {2}", item.getFileName(), item.getContentType(), item.getFileSize());
 
 		if (hasSupportedContentType(item)) {
-			this.filename = item.getFileName();
-			this.document = getData(item);
-			this.contentType = getContentType(item);
+			this.signingModel = new SigningModel(
+					item.getFileName(),
+					item.getContentType(),
+					getData(item)
+			);
 		} else {
-			this.document = storeDocumentInZipFile(item);
-			this.filename = FilenameUtils.getBaseName(this.filename) + ".zip";
-			this.contentType = "application/zip";
+			this.signingModel = new SigningModel(
+					FilenameUtils.getBaseName(item.getFileName()) + ".zip",
+					"application/zip",
+					storeDocumentInZipFile(item)
+			);
 		}
 	}
 
@@ -136,20 +138,17 @@ public class UploadBean implements Upload {
 
 	private byte[] storeDocumentInZipFile(UploadItem item) throws IOException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-		ZipEntry zipEntry = new ZipEntry(this.filename);
-		zipOutputStream.putNextEntry(zipEntry);
-		IOUtils.write(getData(item), zipOutputStream);
-		zipOutputStream.close();
+
+		try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
+			ZipEntry zipEntry = new ZipEntry(item.getFileName());
+			zipOutputStream.putNextEntry(zipEntry);
+			IOUtils.write(getData(item), zipOutputStream);
+		}
+
 		return outputStream.toByteArray();
 	}
 
-	private String getContentType(UploadItem item) {
-		String extension = FilenameUtils.getExtension(item.getFileName()).toLowerCase();
-		return supportedFileExtensions.get(extension);
-	}
-
 	private boolean hasSupportedContentType(UploadItem item) {
-		return getContentType(item) != null;
+		return supportedFileExtensions.contains(item.getContentType());
 	}
 }

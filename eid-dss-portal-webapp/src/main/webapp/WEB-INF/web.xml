@@ -97,85 +97,20 @@
         <url-pattern>*.seam</url-pattern>
     </servlet-mapping>
 
-    <!--<filter>-->
-        <!--<filter-name>ExtensionsFilter</filter-name>-->
-        <!--<filter-class>org.apache.myfaces.webapp.filter.ExtensionsFilter</filter-class>-->
-        <!--<init-param>-->
-            <!--<param-name>uploadMaxFileSize</param-name>-->
-            <!--<param-value>10m</param-value>-->
-        <!--</init-param>-->
-        <!--<init-param>-->
-            <!--<param-name>uploadThresholdSize</param-name>-->
-            <!--<param-value>100k</param-value>-->
-        <!--</init-param>-->
-    <!--</filter>-->
-
-    <!--<filter-mapping>-->
-        <!--<filter-name>ExtensionsFilter</filter-name>-->
-        <!--<servlet-name>FacesServlet</servlet-name>-->
-    <!--</filter-mapping>-->
-
     <!-- eID DSS Response Servlet -->
     <servlet>
-        <servlet-name>DSSResponseProcessor</servlet-name>
-        <servlet-class>
-            be.fedict.eid.dss.protocol.simple.client.SignatureResponseProcessorServlet
-        </servlet-class>
-        <init-param>
-            <param-name>IFrame</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>NextPage</param-name>
-            <param-value>/view</param-value>
-        </init-param>
-        <init-param>
-            <param-name>CancelPage</param-name>
-            <param-value>/view</param-value>
-        </init-param>
-        <init-param>
-            <param-name>ErrorPage</param-name>
-            <param-value>/sign-error</param-value>
-        </init-param>
-        <init-param>
-            <param-name>ErrorMessageSessionAttribute</param-name>
-            <param-value>SignatureErrorMessage</param-value>
-        </init-param>
-        <init-param>
-            <param-name>SignedDocumentSessionAttribute</param-name>
-            <param-value>document</param-value>
-        </init-param>
-        <init-param>
-            <param-name>TargetSessionAttribute</param-name>
-            <param-value>target</param-value>
-        </init-param>
-        <init-param>
-            <param-name>RelayStateSessionAttribute</param-name>
-            <param-value>RelayState</param-value>
-        </init-param>
-        <init-param>
-            <param-name>SignatureRequestSessionAttribute</param-name>
-            <param-value>SignatureRequest</param-value>
-        </init-param>
-        <!-- Artifact binding configuration -->
-        <init-param>
-        	<param-name>SignatureRequestIdSessionAttribute</param-name>
-        	<param-value>SignatureRequestId</param-value>
-        </init-param>
-        <init-param>
-        	<param-name>SignatureResponseService</param-name>
-        	<param-value>fedict/eid/dss/portal/SignatureResponseServiceBean</param-value>
-        </init-param>
+        <servlet-name>SignatureResponse</servlet-name>
+        <servlet-class>be.fedict.eid.dss.portal.servlet.SignatureResponseServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>DSSResponseProcessor</servlet-name>
+        <servlet-name>SignatureResponse</servlet-name>
         <url-pattern>/dss-response</url-pattern>
     </servlet-mapping>
 
     <!-- Generic document downloader -->
     <servlet>
         <servlet-name>Downloader</servlet-name>
-        <servlet-class>be.fedict.eid.dss.portal.DownloadServlet</servlet-class>
+        <servlet-class>be.fedict.eid.dss.portal.servlet.DownloadServlet</servlet-class>
         <init-param>
             <param-name>DocumentSessionAttribute</param-name>
             <param-value>document</param-value>
