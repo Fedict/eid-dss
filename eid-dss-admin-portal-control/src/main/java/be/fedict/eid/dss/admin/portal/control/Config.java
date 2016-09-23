@@ -149,6 +149,4 @@ public interface Config {
 	void destroy();
 
 	void postConstruct();
-
-
 }

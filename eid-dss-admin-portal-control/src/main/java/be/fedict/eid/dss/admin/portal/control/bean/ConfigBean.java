@@ -46,11 +46,11 @@ import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
 @LocalBinding(jndiBinding = AdminConstants.ADMIN_JNDI_CONTEXT + "ConfigBean")
 public class ConfigBean implements Config {
 
-	@In
-	FacesMessages facesMessages;
-
 	@Logger
 	private Log log;
+
+	@In
+	FacesMessages facesMessages;
 
 	@EJB
 	private Configuration configuration;
