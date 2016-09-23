@@ -26,7 +26,7 @@ import be.fedict.eid.dss.portal.control.state.SigningModel;
 public interface View {
 
 	void initialize();
-    void startSign();
+    String startSign();
 
 	void destroy();
 

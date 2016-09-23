@@ -120,28 +120,32 @@ public class ViewBean implements View {
 	}
 
 	@Override
-	public void startSign() {
+	public String startSign() {
 		try {
-			trySign();
+			return trySign();
 		} catch (UnsupportedDocumentTypeException e) {
 			try {
 				storeDocumentInZipFile();
-				trySign();
+				return trySign();
 			} catch (UnsupportedDocumentTypeException e2) {
 				signingModel.markSignError("Unsupported document type.");
 			}
 		}
+
+		return null;
 	}
 
-	private void trySign() throws UnsupportedDocumentTypeException {
+	private String trySign() throws UnsupportedDocumentTypeException {
 		DigitalSignatureServiceSession digitalSignatureServiceSession;
 		try {
 			digitalSignatureServiceSession = getDSSClient().uploadDocument(signingModel.getContentType(), signingModel.getDocument());
 			log.debug("DSS Artifact ID: " + digitalSignatureServiceSession.getResponseId());
 
 			signingModel.markSigning(digitalSignatureServiceSession);
+			return "sign";
 		} catch (ApplicationDocumentAuthorizedException | AuthenticationRequiredException | IncorrectSignatureTypeException | UnsupportedSignatureTypeException e) {
 			signingModel.markSignError(e.getClass().getSimpleName() + ": " + e.getMessage());
+			return null;
 		}
 	}
 

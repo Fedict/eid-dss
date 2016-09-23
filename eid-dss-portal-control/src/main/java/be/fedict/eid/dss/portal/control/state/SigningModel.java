@@ -75,7 +75,6 @@ public class SigningModel implements Serializable {
 		this.state = state;
 	}
 
-
 	public void markSignError(String signError) {
 		setState(State.SIGN_ERROR);
 
@@ -110,6 +109,7 @@ public class SigningModel implements Serializable {
 		setState(State.SIGNING);
 
 		this.digitalSignatureServiceSession = digitalSignatureServiceSession;
+		this.signError = null;
 	}
 
 	public void updateDocument(byte[] document) {

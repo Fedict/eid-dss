@@ -9,44 +9,7 @@
 <ui:composition template="/WEB-INF/template.xhtml">
 	<ui:define name="body">
 
-		<script type="text/javascript" defer="defer">
-			window.onload = function () {
-				document.getElementById('signingView').style.display = 'none';
-				document.getElementById('dssFrame').style.display = 'none';
-			}
-		</script>
-
-		<div id="signingView">
-
-			<div class="steps">
-				<div class="step">
-					<p>
-						<span>✓</span> #{messages.stepUpload}
-					</p>
-				</div>
-				<div class="arrow">
-					<p>
-						›
-					</p>
-				</div>
-				<div class="step">
-					<p>
-						<span>✓</span> #{messages.stepDetail}
-					</p>
-				</div>
-				<div class="arrow">
-					<p> ‹ › </p>
-				</div>
-				<div class="step">
-					<p>
-						<span class="active">3</span> #{messages.stepSign}
-					</p>
-				</div>
-			</div>
-		</div>
-
 		<div id="documentView">
-
 			<div class="steps">
 				<div class="step">
 					<p>
@@ -75,36 +38,40 @@
 
 			<h2>#{messages.viewDetail}</h2>
 
+			<s:span rendered="#{dssPortalView.signingModel.signError != null}">
+				<h:outputText value="#{dssPortalView.signingModel.signError}" styleClass="sign-error"/>
+			</s:span>
+
 			<s:span rendered="#{dssPortalView.signingModel.signatureInfos.size == 0}">
-			<div class="notify normal">
-				<div class="notifyWrap1">
-					<div class="notifyWrap2">
-						<div class="notifyWrap3">
-							<div class="notifyWrap4">
-								<div class="message">
-									<p>
-										<strong>#{messages.viewNoSignatures}</strong>
-									</p>
+				<div class="notify normal">
+					<div class="notifyWrap1">
+						<div class="notifyWrap2">
+							<div class="notifyWrap3">
+								<div class="notifyWrap4">
+									<div class="message">
+										<p>
+											<strong>#{messages.viewNoSignatures}</strong>
+										</p>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
 			</s:span>
 
 			<h:form rendered="#{dssPortalView.signingModel.signatureInfos.size > 0}">
 
 				<p>
-					<h:outputText value="#{messages.viewSignaturesInfo1}" />
+					<h:outputText value="#{messages.viewSignaturesInfo1}"/>
 					<strong>
-						<h:outputText value="#{dssPortalView.signingModel.signatureInfos.size}" />
+						<h:outputText value="#{dssPortalView.signingModel.signatureInfos.size}"/>
 					</strong>
-					<h:outputText value="#{messages.viewSignaturesInfo2}" />
+					<h:outputText value="#{messages.viewSignaturesInfo2}"/>
 				</p>
 
 				<div class="signatures">
-					<div class="signature_header"> <p>#{messages.viewSignedBy}</p></div>
+					<div class="signature_header"><p>#{messages.viewSignedBy}</p></div>
 
 					<ui:repeat value="#{dssPortalView.signingModel.signatureInfos}" var="signatureInfo">
 						<div class="signature_item">
@@ -122,12 +89,14 @@
 							</p>
 
 							<s:span rendered="#{not empty signatureInfo.role}">
-							<p>
-								<strong>
-									<h:outputText value="#{messages.role}" rendered="#{not empty signatureInfo.role}"/>
-								</strong>
-								<h:outputText value="#{signatureInfo.role}" rendered="#{not empty signatureInfo.role}"/>
-							</p>
+								<p>
+									<strong>
+										<h:outputText value="#{messages.role}"
+													  rendered="#{not empty signatureInfo.role}"/>
+									</strong>
+									<h:outputText value="#{signatureInfo.role}"
+												  rendered="#{not empty signatureInfo.role}"/>
+								</p>
 							</s:span>
 						</div>
 					</ui:repeat>
@@ -135,40 +104,26 @@
 			</h:form>
 
 			<div class="start">
-				<a class="call" href="download/#{filename}"
-				   target="_blank">
-					<span class="callWrap1">
-						<span class="callWrap2">
-							<div class="callWrap3 btn float btn-left">#{messages.viewDownload}</div>
-						</span>
-					</span>
-				</a>
-				<a class="call">
-					<span class="callWrap1">
-						<span class="callWrap2">
-							<div class="callWrap3 btn float_right">
-								 <a class="call" href="sign-start.seam">
-									<span class="callWrap1">
-										<span class="callWrap2">
-											<div class="callWrap3 btn sign_btn float_right">#{messages.viewAddSignature}</div>
-										</span>
-									</span>
-								</a>
-							</div>
-						</span>
-					</span>
-				</a>
-				<a class="call" href="upload.seam">
-					<span class="callWrap1">
-						<span class="callWrap2">
-							<div class="callWrap3 btn btn-middle">#{messages.viewUpload}</div>
-						</span>
-					</span>
-				</a>
+				<h:form>
+					<a class="call" href="download/#{filename}" target="_blank">
+						<div class="callWrap3 btn float btn-left">#{messages.viewDownload}</div>
+					</a>
+
+					<h:commandLink action="#{dssPortalView.startSign}" styleClass="call">
+						<div class="callWrap3 btn float_right">
+							<h:outputText value="#{messages.viewAddSignature}"/>
+						</div>
+					</h:commandLink>
+
+					<a class="call" href="upload.seam">
+						<div class="callWrap3 btn btn-middle">#{messages.viewUpload}</div>
+					</a>
+				</h:form>
 			</div>
 		</div>
 
-		<iframe id="dssFrame" name="dssFrame" src="" width="600px" height="400px" class="dssFrame" frameborder="0"></iframe>
+		<iframe id="dssFrame" name="dssFrame" src="" width="600px" height="400px" class="dssFrame"
+				frameborder="0"></iframe>
 	</ui:define>
 </ui:composition>
 </body>

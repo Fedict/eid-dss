@@ -13,12 +13,16 @@
 		</navigation>
 	</page>
 
-	<page view-id="/view.xhtml" action="#{dssPortalView.initialize}"/>
+	<page view-id="/view.xhtml" action="#{dssPortalView.initialize}">
+		<navigation>
+			<rule if-outcome="sign">
+				<redirect view-id="/sign-start.xhtml"/>
+			</rule>
+		</navigation>
+	</page>
 
 	<page view-id="/compatibility.xhtml"/>
 
-	<page view-id="/sign-start.xhtml" action="#{dssPortalView.startSign}"/>
-
-	<page view-id="/sign-error.xhtml"/>
+	<page view-id="/sign-start.xhtml"/>
 
 </pages>
