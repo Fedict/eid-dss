@@ -18,13 +18,18 @@
 
 package be.fedict.eid.dss.portal.control.bean;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.ejb.EJB;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
 
+import org.apache.commons.io.IOUtils;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
@@ -58,13 +63,10 @@ public class ViewBean implements View {
 
 	@Logger
 	private Log log;
-
 	@EJB
 	private Configuration configuration;
-
 	@In
 	private LocaleSelector localeSelector;
-
 	@In(value = SigningModelRepository.ATTRIBUTE_SIGNING_MODEL, scope = ScopeType.SESSION, required = false)
 	@Out(value = SigningModelRepository.ATTRIBUTE_SIGNING_MODEL, scope = ScopeType.SESSION, required = false)
 	private SigningModel signingModel;
@@ -119,13 +121,42 @@ public class ViewBean implements View {
 
 	@Override
 	public void startSign() {
+		try {
+			trySign();
+		} catch (UnsupportedDocumentTypeException e) {
+			try {
+				storeDocumentInZipFile();
+				trySign();
+			} catch (UnsupportedDocumentTypeException e2) {
+				signingModel.markSignError("Unsupported document type.");
+			}
+		}
+	}
+
+	private void trySign() throws UnsupportedDocumentTypeException {
 		DigitalSignatureServiceSession digitalSignatureServiceSession;
 		try {
 			digitalSignatureServiceSession = getDSSClient().uploadDocument(signingModel.getContentType(), signingModel.getDocument());
 			log.debug("DSS Artifact ID: " + digitalSignatureServiceSession.getResponseId());
 
 			signingModel.markSigning(digitalSignatureServiceSession);
-		} catch (ApplicationDocumentAuthorizedException | AuthenticationRequiredException | IncorrectSignatureTypeException | UnsupportedDocumentTypeException | UnsupportedSignatureTypeException e) {
+		} catch (ApplicationDocumentAuthorizedException | AuthenticationRequiredException | IncorrectSignatureTypeException | UnsupportedSignatureTypeException e) {
+			signingModel.markSignError(e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
+	}
+
+	private void storeDocumentInZipFile() {
+		try {
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+			try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
+				ZipEntry zipEntry = new ZipEntry(signingModel.getFileName());
+				zipOutputStream.putNextEntry(zipEntry);
+				IOUtils.write(signingModel.getDocument(), zipOutputStream);
+			}
+
+			signingModel.updateDocument(outputStream.toByteArray(), "application/zip", signingModel.getFileName() + ".zip");
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}

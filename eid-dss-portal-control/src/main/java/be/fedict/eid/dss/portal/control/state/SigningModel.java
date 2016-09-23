@@ -116,6 +116,12 @@ public class SigningModel implements Serializable {
 		this.document = document;
 	}
 
+	public void updateDocument(byte[] document, String contentType, String fileName) {
+		this.document = document;
+		this.contentType = contentType;
+		this.fileName = fileName;
+	}
+
 	public enum State {
 		UPLOADED,
 		UNSIGNED,
