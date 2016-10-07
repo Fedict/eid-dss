@@ -20,18 +20,17 @@ package be.fedict.eid.dss.portal.control;
 
 import javax.ejb.Local;
 
+import be.fedict.eid.dss.portal.control.state.SigningModel;
+
 @Local
 public interface View {
 
-	/*
-	 * Actions.
-	 */
-	void verifySignatures();
+	void initialize();
+    String startSign();
 
-    void prepareForSigning();
-
-	/*
-	 * lifecycle
-	 */
 	void destroy();
+
+	String getDssStartUrl();
+
+	SigningModel getSigningModel();
 }

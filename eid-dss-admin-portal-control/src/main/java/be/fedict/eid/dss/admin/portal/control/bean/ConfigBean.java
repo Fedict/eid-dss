@@ -104,64 +104,51 @@ public class ConfigBean implements Config {
 
 	private String dssWSUrl;
 
+	private String dssWSStart;
+
+	private String dssWSUsername;
+
+	private String dssWSPassword;
+
 	@Override
 	@PostConstruct
 	public void postConstruct() {
 		this.log.debug("postConstruct");
-		this.xkmsUrl = this.configuration.getValue(ConfigProperty.XKMS_URL,
-				String.class);
+		this.xkmsUrl = this.configuration.getValue(ConfigProperty.XKMS_URL, String.class);
 
-		this.tspUrl = this.configuration.getValue(ConfigProperty.TSP_URL,
-				String.class);
-		this.tspPolicyOid = this.configuration.getValue(
-				ConfigProperty.TSP_POLICY_OID, String.class);
-		this.tspDigestAlgo = this.configuration.getValue(
-				ConfigProperty.TSP_DIGEST_ALGO, TSPDigestAlgo.class);
+		this.tspUrl = this.configuration.getValue(ConfigProperty.TSP_URL, String.class);
+		this.tspPolicyOid = this.configuration.getValue(ConfigProperty.TSP_POLICY_OID, String.class);
+		this.tspDigestAlgo = this.configuration.getValue(ConfigProperty.TSP_DIGEST_ALGO, TSPDigestAlgo.class);
 
-		this.httpProxy = this.configuration.getValue(
-				ConfigProperty.HTTP_PROXY_ENABLED, Boolean.class);
-		this.httpProxyHost = this.configuration.getValue(
-				ConfigProperty.HTTP_PROXY_HOST, String.class);
-		this.httpProxyPort = this.configuration.getValue(
-				ConfigProperty.HTTP_PROXY_PORT, Integer.class);
+		this.httpProxy = this.configuration.getValue(ConfigProperty.HTTP_PROXY_ENABLED, Boolean.class);
+		this.httpProxyHost = this.configuration.getValue(ConfigProperty.HTTP_PROXY_HOST, String.class);
+		this.httpProxyPort = this.configuration.getValue(ConfigProperty.HTTP_PROXY_PORT, Integer.class);
 
-		this.signTrustDomain = this.configuration.getValue(
-				ConfigProperty.SIGN_TRUST_DOMAIN, String.class);
-		this.verifyTrustDomain = this.configuration.getValue(
-				ConfigProperty.VERIFY_TRUST_DOMAIN, String.class);
-		this.identityTrustDomain = this.configuration.getValue(
-				ConfigProperty.IDENTITY_TRUST_DOMAIN, String.class);
-		this.tsaTrustDomain = this.configuration.getValue(
-				ConfigProperty.TSA_TRUST_DOMAIN, String.class);
+		this.signTrustDomain = this.configuration.getValue(ConfigProperty.SIGN_TRUST_DOMAIN, String.class);
+		this.verifyTrustDomain = this.configuration.getValue(ConfigProperty.VERIFY_TRUST_DOMAIN, String.class);
+		this.identityTrustDomain = this.configuration.getValue(ConfigProperty.IDENTITY_TRUST_DOMAIN, String.class);
+		this.tsaTrustDomain = this.configuration.getValue(ConfigProperty.TSA_TRUST_DOMAIN, String.class);
 
-		this.signatureDigestAlgo = this.configuration.getValue(
-				ConfigProperty.SIGNATURE_DIGEST_ALGO, DigestAlgo.class);
+		this.signatureDigestAlgo = this.configuration.getValue(ConfigProperty.SIGNATURE_DIGEST_ALGO, DigestAlgo.class);
 
-		this.documentStorageExpiration = this.configuration.getValue(
-				ConfigProperty.DOCUMENT_STORAGE_EXPIRATION, Integer.class);
-		this.documentCleanupTaskCronSchedule = this.configuration.getValue(
-				ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE, String.class);
-		this.dssWSUrl = this.configuration.getValue(ConfigProperty.DSS_WS_URL,
-				String.class);
+		this.documentStorageExpiration = this.configuration.getValue(ConfigProperty.DOCUMENT_STORAGE_EXPIRATION, Integer.class);
+		this.documentCleanupTaskCronSchedule = this.configuration.getValue(ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE, String.class);
 
-		this.timestampMaxOffset = this.configuration.getValue(
-				ConfigProperty.TIMESTAMP_MAX_OFFSET, Long.class);
-		this.maxGracePeriod = this.configuration.getValue(
-				ConfigProperty.MAX_GRACE_PERIOD, Long.class);
+		this.dssWSUrl = this.configuration.getValue(ConfigProperty.DSS_WS_URL, String.class);
+		this.dssWSStart = this.configuration.getValue(ConfigProperty.DSS_WS_START, String.class);
+		this.dssWSUsername = this.configuration.getValue(ConfigProperty.DSS_WS_USERNAME, String.class);
+		this.dssWSPassword = this.configuration.getValue(ConfigProperty.DSS_WS_PASSWORD, String.class);
 
-		this.sendSignedMail = this.configuration.getValue(
-				ConfigProperty.MAIL_SIGNED_DOCUMENT, Boolean.class);
-		this.smtpServer = this.configuration.getValue(
-				ConfigProperty.SMTP_SERVER, String.class);
-		this.mailFrom = this.configuration.getValue(ConfigProperty.MAIL_FROM,
-				String.class);
-		this.mailPrefix = this.configuration.getValue(
-				ConfigProperty.MAIL_PREFIX, String.class);
+		this.timestampMaxOffset = this.configuration.getValue(ConfigProperty.TIMESTAMP_MAX_OFFSET, Long.class);
+		this.maxGracePeriod = this.configuration.getValue(ConfigProperty.MAX_GRACE_PERIOD, Long.class);
 
-		this.removeCard = this.configuration.getValue(
-				ConfigProperty.SECURITY_REMOVE_CARD, Boolean.class);
-		this.hsts = this.configuration.getValue(ConfigProperty.SECURITY_HSTS,
-				Boolean.class);
+		this.sendSignedMail = this.configuration.getValue(ConfigProperty.MAIL_SIGNED_DOCUMENT, Boolean.class);
+		this.smtpServer = this.configuration.getValue(ConfigProperty.SMTP_SERVER, String.class);
+		this.mailFrom = this.configuration.getValue(ConfigProperty.MAIL_FROM, String.class);
+		this.mailPrefix = this.configuration.getValue(ConfigProperty.MAIL_PREFIX, String.class);
+
+		this.removeCard = this.configuration.getValue(ConfigProperty.SECURITY_REMOVE_CARD, Boolean.class);
+		this.hsts = this.configuration.getValue(ConfigProperty.SECURITY_HSTS, Boolean.class);
 	}
 
 	@Remove
@@ -173,67 +160,49 @@ public class ConfigBean implements Config {
 
 	@Override
 	public String save() {
-
 		this.log.debug("save");
 		this.configuration.setValue(ConfigProperty.XKMS_URL, this.xkmsUrl);
 
 		this.configuration.setValue(ConfigProperty.TSP_URL, this.tspUrl);
-		this.configuration.setValue(ConfigProperty.TSP_POLICY_OID,
-				this.tspPolicyOid);
-		this.configuration.setValue(ConfigProperty.TSP_DIGEST_ALGO,
-				this.tspDigestAlgo);
+		this.configuration.setValue(ConfigProperty.TSP_POLICY_OID, this.tspPolicyOid);
+		this.configuration.setValue(ConfigProperty.TSP_DIGEST_ALGO, this.tspDigestAlgo);
 
-		this.configuration.setValue(ConfigProperty.HTTP_PROXY_ENABLED,
-				this.httpProxy);
-		this.configuration.setValue(ConfigProperty.HTTP_PROXY_HOST,
-				this.httpProxyHost);
-		this.configuration.setValue(ConfigProperty.HTTP_PROXY_PORT,
-				this.httpProxyPort);
+		this.configuration.setValue(ConfigProperty.HTTP_PROXY_ENABLED, this.httpProxy);
+		this.configuration.setValue(ConfigProperty.HTTP_PROXY_HOST, this.httpProxyHost);
+		this.configuration.setValue(ConfigProperty.HTTP_PROXY_PORT, this.httpProxyPort);
 
-		this.configuration.setValue(ConfigProperty.SIGN_TRUST_DOMAIN,
-				this.signTrustDomain);
-		this.configuration.setValue(ConfigProperty.VERIFY_TRUST_DOMAIN,
-				this.verifyTrustDomain);
-		this.configuration.setValue(ConfigProperty.IDENTITY_TRUST_DOMAIN,
-				this.identityTrustDomain);
-		this.configuration.setValue(ConfigProperty.TSA_TRUST_DOMAIN,
-				this.tsaTrustDomain);
+		this.configuration.setValue(ConfigProperty.SIGN_TRUST_DOMAIN, this.signTrustDomain);
+		this.configuration.setValue(ConfigProperty.VERIFY_TRUST_DOMAIN, this.verifyTrustDomain);
+		this.configuration.setValue(ConfigProperty.IDENTITY_TRUST_DOMAIN, this.identityTrustDomain);
+		this.configuration.setValue(ConfigProperty.TSA_TRUST_DOMAIN, this.tsaTrustDomain);
 
-		this.configuration.setValue(ConfigProperty.SIGNATURE_DIGEST_ALGO,
-				this.signatureDigestAlgo);
+		this.configuration.setValue(ConfigProperty.SIGNATURE_DIGEST_ALGO, this.signatureDigestAlgo);
 
-		this.configuration.setValue(ConfigProperty.DOCUMENT_STORAGE_EXPIRATION,
-				this.documentStorageExpiration);
+		this.configuration.setValue(ConfigProperty.DOCUMENT_STORAGE_EXPIRATION, this.documentStorageExpiration);
+
 		this.configuration.setValue(ConfigProperty.DSS_WS_URL, this.dssWSUrl);
+		this.configuration.setValue(ConfigProperty.DSS_WS_START, this.dssWSStart);
+		this.configuration.setValue(ConfigProperty.DSS_WS_USERNAME, this.dssWSUsername);
+		this.configuration.setValue(ConfigProperty.DSS_WS_PASSWORD, this.dssWSPassword);
 
-		this.configuration.setValue(ConfigProperty.TIMESTAMP_MAX_OFFSET,
-				this.timestampMaxOffset);
-		this.configuration.setValue(ConfigProperty.MAX_GRACE_PERIOD,
-				this.maxGracePeriod);
+		this.configuration.setValue(ConfigProperty.TIMESTAMP_MAX_OFFSET, this.timestampMaxOffset);
+		this.configuration.setValue(ConfigProperty.MAX_GRACE_PERIOD, this.maxGracePeriod);
 
 		// start document cleanup task timer
 		try {
-			this.documentService
-					.startTimer(this.documentCleanupTaskCronSchedule);
+			this.documentService.startTimer(this.documentCleanupTaskCronSchedule);
 		} catch (InvalidCronExpressionException e) {
-			this.facesMessages.addToControl("documentCleanupTaskCronSchedule",
-					StatusMessage.Severity.ERROR, "Invalid cron schedule");
+			this.facesMessages.addToControl("documentCleanupTaskCronSchedule", StatusMessage.Severity.ERROR, "Invalid cron schedule");
 			return null;
 		}
-		this.configuration.setValue(
-				ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE,
-				this.documentCleanupTaskCronSchedule);
+		this.configuration.setValue(ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE, this.documentCleanupTaskCronSchedule);
 
-		this.configuration.setValue(ConfigProperty.MAIL_SIGNED_DOCUMENT,
-				this.sendSignedMail);
-		this.configuration
-				.setValue(ConfigProperty.SMTP_SERVER, this.smtpServer);
+		this.configuration.setValue(ConfigProperty.MAIL_SIGNED_DOCUMENT, this.sendSignedMail);
+		this.configuration.setValue(ConfigProperty.SMTP_SERVER, this.smtpServer);
 		this.configuration.setValue(ConfigProperty.MAIL_FROM, this.mailFrom);
-		this.configuration
-				.setValue(ConfigProperty.MAIL_PREFIX, this.mailPrefix);
+		this.configuration.setValue(ConfigProperty.MAIL_PREFIX, this.mailPrefix);
 
-		this.configuration.setValue(ConfigProperty.SECURITY_REMOVE_CARD,
-				this.removeCard);
+		this.configuration.setValue(ConfigProperty.SECURITY_REMOVE_CARD, this.removeCard);
 		this.configuration.setValue(ConfigProperty.SECURITY_HSTS, this.hsts);
 
 		return null;
@@ -478,5 +447,35 @@ public class ConfigBean implements Config {
 	@Override
 	public void setDssWSUrl(String dssWSUrl) {
 		this.dssWSUrl = dssWSUrl;
+	}
+
+	@Override
+	public String getDssWSStart() {
+		return dssWSStart;
+	}
+
+	@Override
+	public void setDssWSStart(String dssWSStart) {
+		this.dssWSStart = dssWSStart;
+	}
+
+	@Override
+	public String getDssWSUsername() {
+		return dssWSUsername;
+	}
+
+	@Override
+	public void setDssWSUsername(String dssWSUsername) {
+		this.dssWSUsername = dssWSUsername;
+	}
+
+	@Override
+	public String getDssWSPassword() {
+		return dssWSPassword;
+	}
+
+	@Override
+	public void setDssWSPassword(String dssWSPassword) {
+		this.dssWSPassword = dssWSPassword;
 	}
 }

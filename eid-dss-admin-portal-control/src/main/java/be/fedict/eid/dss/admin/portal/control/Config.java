@@ -126,6 +126,18 @@ public interface Config {
 
 	void setDssWSUrl(String dssWSUrl);
 
+	String getDssWSStart();
+
+	void setDssWSStart(String dssWSStart);
+
+	String getDssWSUsername();
+
+	void setDssWSUsername(String dssWSUsername);
+
+	String getDssWSPassword();
+
+	void setDssWSPassword(String dssWSPassword);
+
 	/*
 	 * Actions.
 	 */

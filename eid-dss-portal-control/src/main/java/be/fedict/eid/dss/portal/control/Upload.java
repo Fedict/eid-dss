@@ -18,6 +18,8 @@
 
 package be.fedict.eid.dss.portal.control;
 
+import java.io.IOException;
+
 import javax.ejb.Local;
 import javax.ejb.Remove;
 
@@ -34,7 +36,7 @@ public interface Upload {
 	/*
 	 * Richfaces listeners.
 	 */
-	void listener(UploadEvent event) throws Exception;
+	void listener(UploadEvent event) throws IOException;
 
 	/*
 	 * lifecycle

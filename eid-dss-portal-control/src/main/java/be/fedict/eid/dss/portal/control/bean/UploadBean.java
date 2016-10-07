@@ -18,19 +18,12 @@
 
 package be.fedict.eid.dss.portal.control.bean;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.io.IOException;
 
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Destroy;
@@ -43,6 +36,8 @@ import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 
 import be.fedict.eid.dss.portal.control.Upload;
+import be.fedict.eid.dss.portal.control.state.SigningModel;
+import be.fedict.eid.dss.portal.control.state.SigningModelRepository;
 
 @Stateful
 @Name("dssUpload")
@@ -52,115 +47,39 @@ public class UploadBean implements Upload {
 	@Logger
 	private Log log;
 
-	@In(value = "filename", scope = ScopeType.SESSION, required = false)
-	@Out(value = "filename", scope = ScopeType.SESSION, required = false)
-	private String filename;
+	@In(value = SigningModelRepository.ATTRIBUTE_SIGNING_MODEL, scope = ScopeType.SESSION, required = false)
+	@Out(value = SigningModelRepository.ATTRIBUTE_SIGNING_MODEL, scope = ScopeType.SESSION, required = false)
+	private SigningModel signingModel;
 
-	@In(value = "ContentType", scope = ScopeType.SESSION, required = false)
-	@Out(value = "ContentType", scope = ScopeType.SESSION, required = false)
-	private String contentType;
+	@Override
+	public void listener(UploadEvent event) throws IOException {
+		UploadItem item = event.getUploadItem();
+		log.info("File upload of file {0} with content-type {1} and size {2}", item.getFileName(), item.getContentType(), item.getFileSize());
 
-	@In(value = "document", scope = ScopeType.SESSION, required = false)
-	@Out(value = "document", scope = ScopeType.SESSION, required = false)
-	private byte[] document;
+		this.signingModel = new SigningModel(
+				item.getFileName(),
+				item.getContentType(),
+				getData(item)
+		);
+	}
 
 	@Override
 	public String done() {
-		this.log.debug("done");
 		return "done";
-	}
-
-	private static final Map<String, String> supportedFileExtensions;
-
-	static {
-		supportedFileExtensions = new HashMap<String, String>();
-
-		// XML document container.
-		supportedFileExtensions.put("xml", "text/xml");
-
-		// Open Document Format
-		supportedFileExtensions.put("odt",
-				"application/vnd.oasis.opendocument.text");
-		supportedFileExtensions.put("ods",
-				"application/vnd.oasis.opendocument.spreadsheet");
-		supportedFileExtensions.put("odp",
-				"application/vnd.oasis.opendocument.presentation");
-		supportedFileExtensions.put("odg",
-				"application/vnd.oasis.opendocument.graphics");
-		supportedFileExtensions.put("odc",
-				"application/vnd.oasis.opendocument.chart");
-		supportedFileExtensions.put("odf",
-				"application/vnd.oasis.opendocument.formula");
-		supportedFileExtensions.put("odi",
-				"application/vnd.oasis.opendocument.image");
-
-		// Office OpenXML.
-		supportedFileExtensions
-				.put("docx",
-						"application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-		supportedFileExtensions
-				.put("xlsx",
-						"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-		supportedFileExtensions
-				.put("pptx",
-						"application/vnd.openxmlformats-officedocument.presentationml.presentation");
-		supportedFileExtensions
-				.put("ppsx",
-						"application/vnd.openxmlformats-officedocument.presentationml.slideshow");
-
-		// ZIP containers.
-		supportedFileExtensions.put("zip", "application/zip");
-
-		// Associated Signature Container (ETSI TS 102 918 v1.1.1)
-		supportedFileExtensions.put("asics", "application/vnd.etsi.asic-s+zip");
-		supportedFileExtensions.put("scs", "application/vnd.etsi.asic-s+zip");
-
-		supportedFileExtensions.put("asice", "application/vnd.etsi.asic-e+zip");
-		supportedFileExtensions.put("sce", "application/vnd.etsi.asic-e+zip");
-	}
-
-	@Override
-	public void listener(UploadEvent event) throws Exception {
-		this.log.debug("listener");
-		UploadItem item = event.getUploadItem();
-		this.log.debug("filename: #0", item.getFileName());
-		this.filename = item.getFileName();
-		this.log.debug("content type: #0", item.getContentType());
-		String extension = FilenameUtils.getExtension(this.filename)
-				.toLowerCase();
-		this.contentType = supportedFileExtensions.get(extension);
-		if (null == this.contentType) {
-			/*
-			 * Unsupported content-type is converted to a ZIP container.
-			 */
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-			ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
-			ZipEntry zipEntry = new ZipEntry(this.filename);
-			zipOutputStream.putNextEntry(zipEntry);
-			IOUtils.write(item.getData(), zipOutputStream);
-			zipOutputStream.close();
-			this.filename = FilenameUtils.getBaseName(this.filename) + ".zip";
-			this.document = outputStream.toByteArray();
-			this.contentType = "application/zip";
-			return;
-		}
-		this.log.debug("file size: #0", item.getFileSize());
-		this.log.debug("data bytes available: #0", (null != item.getData()));
-		if (null != item.getData()) {
-			this.document = item.getData();
-			return;
-		}
-		File file = item.getFile();
-		if (null != file) {
-			this.log.debug("tmp file: #0", file.getAbsolutePath());
-			this.document = FileUtils.readFileToByteArray(file);
-		}
 	}
 
 	@Remove
 	@Destroy
 	@Override
 	public void destroy() {
-		this.log.debug("destroy");
+	}
+
+	@SuppressWarnings("EjbProhibitedPackageUsageInspection")
+	private byte[] getData(UploadItem uploadItem) throws IOException {
+		if (uploadItem.isTempFile()) {
+			return FileUtils.readFileToByteArray(uploadItem.getFile());
+		} else {
+			return uploadItem.getData();
+		}
 	}
 }

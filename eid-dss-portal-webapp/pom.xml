@@ -14,12 +14,6 @@
 	<packaging>war</packaging>
 	<dependencies>
 		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-protocol-simple-client</artifactId>
-			<version>${project.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging-api</artifactId>
 			<scope>provided</scope>

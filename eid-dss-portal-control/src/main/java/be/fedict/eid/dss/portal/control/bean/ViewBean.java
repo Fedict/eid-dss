@@ -18,29 +18,43 @@
 
 package be.fedict.eid.dss.portal.control.bean;
 
-import be.fedict.eid.dss.client.DigitalSignatureServiceClient;
-import be.fedict.eid.dss.client.StorageInfoDO;
-import be.fedict.eid.dss.model.ConfigProperty;
-import be.fedict.eid.dss.model.Configuration;
-import be.fedict.eid.dss.model.SignatureVerificationService;
-import be.fedict.eid.dss.model.exception.DocumentFormatException;
-import be.fedict.eid.dss.model.exception.InvalidSignatureException;
-import be.fedict.eid.dss.portal.control.View;
-import be.fedict.eid.dss.spi.SignatureInfo;
-import org.jboss.ejb3.annotation.LocalBinding;
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.*;
-import org.jboss.seam.annotations.datamodel.DataModel;
-import org.jboss.seam.international.LocaleSelector;
-import org.jboss.seam.log.Log;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.ejb.EJB;
 import javax.ejb.Remove;
 import javax.ejb.Stateful;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import java.util.List;
-import java.util.UUID;
+
+import org.apache.commons.io.IOUtils;
+import org.jboss.ejb3.annotation.LocalBinding;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Logger;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Out;
+import org.jboss.seam.international.LocaleSelector;
+import org.jboss.seam.log.Log;
+
+import be.e_contract.dssp.client.DigitalSignatureServiceClient;
+import be.e_contract.dssp.client.DigitalSignatureServiceSession;
+import be.e_contract.dssp.client.SignatureInfo;
+import be.e_contract.dssp.client.VerificationResult;
+import be.e_contract.dssp.client.exception.ApplicationDocumentAuthorizedException;
+import be.e_contract.dssp.client.exception.AuthenticationRequiredException;
+import be.e_contract.dssp.client.exception.DocumentSignatureException;
+import be.e_contract.dssp.client.exception.IncorrectSignatureTypeException;
+import be.e_contract.dssp.client.exception.UnsupportedDocumentTypeException;
+import be.e_contract.dssp.client.exception.UnsupportedSignatureTypeException;
+import be.fedict.eid.dss.model.ConfigProperty;
+import be.fedict.eid.dss.model.Configuration;
+import be.fedict.eid.dss.portal.control.View;
+import be.fedict.eid.dss.portal.control.state.SigningModel;
+import be.fedict.eid.dss.portal.control.state.SigningModelRepository;
 
 @Stateful
 @Name("dssPortalView")
@@ -49,94 +63,125 @@ public class ViewBean implements View {
 
 	@Logger
 	private Log log;
-
-	@EJB
-	private SignatureVerificationService signatureVerificationService;
-
 	@EJB
 	private Configuration configuration;
-
-	@In(value = "document", scope = ScopeType.SESSION, required = true)
-	private byte[] document;
-
-	@Out(value = "target", scope = ScopeType.SESSION, required = false)
-	private String target;
-
-	@Out(value = "SignatureRequestId", scope = ScopeType.SESSION, required = false)
-	private String signatureRequestId;
-
-	@Out(value = "language", scope = ScopeType.SESSION, required = false)
-	private String language;
-
-	@Out(value = "RelayState", scope = ScopeType.SESSION, required = false)
-	private String relayState;
-
-	@In(value = "filesize", scope = ScopeType.SESSION, required = false)
-	@Out(value = "filesize", scope = ScopeType.SESSION, required = false)
-	private Integer filesize;
-
-	@In(value = "ContentType", scope = ScopeType.SESSION, required = false)
-	private String contentType;
-
-	@DataModel
-	private List<SignatureInfo> signatureInfos;
-
 	@In
 	private LocaleSelector localeSelector;
+	@In(value = SigningModelRepository.ATTRIBUTE_SIGNING_MODEL, scope = ScopeType.SESSION, required = false)
+	@Out(value = SigningModelRepository.ATTRIBUTE_SIGNING_MODEL, scope = ScopeType.SESSION, required = false)
+	private SigningModel signingModel;
 
 	@Remove
 	@Destroy
 	@Override
 	public void destroy() {
-		this.log.debug("destroy");
 	}
 
 	@Override
-	public void verifySignatures() {
-		this.filesize = this.document.length;
+	public void initialize() {
+		if (signingModel.getState() == SigningModel.State.SIGN_COMPLETE) {
+			fetchSignedDocument();
+		}
+
+		if (signingModel.getState() == SigningModel.State.UPLOADED || signingModel.getState() == SigningModel.State.SIGN_COMPLETE) {
+			verifySignatures();
+		}
+	}
+
+	private void fetchSignedDocument() {
+		byte[] signedDocument = getDSSClient().downloadSignedDocument(signingModel.getDigitalSignatureServiceSession());
+		signingModel.updateDocument(signedDocument);
+	}
+
+	private void verifySignatures() {
+		List<SignatureInfo> signatureInfos = new ArrayList<>();
 		try {
-			this.signatureInfos = this.signatureVerificationService.verify(
-					this.document, this.contentType, null);
-		} catch (DocumentFormatException e) {
-			this.log.error("document format error: #0", e.getMessage());
-			return;
-		} catch (InvalidSignatureException e) {
-			this.log.error("invalid signature: #0", e.getMessage());
-			return;
+			VerificationResult verificationResult = getDSSClient().verify(signingModel.getContentType(), signingModel.getDocument());
+			if (verificationResult != null) {
+				signatureInfos = verificationResult.getSignatureInfos();
+			}
+		} catch (DocumentSignatureException e) {
+			log.error("Cannot verify signatures: {0}", e.getMessage());
+		} catch (UnsupportedDocumentTypeException e) {
+			log.error("Document type not supported: {0}", e.getMessage());
 		}
-		this.log.debug("number of signatures: #0", this.signatureInfos.size());
-		for (SignatureInfo signatureInfo : this.signatureInfos) {
-			this.log.debug("signer: #0", signatureInfo.getSigner()
-					.getSubjectX500Principal());
-			this.log.debug("signing time: #0", signatureInfo.getSigningTime());
+
+		if (signatureInfos.size() != 0) {
+			signingModel.markSigned(signatureInfos);
+		} else {
+			signingModel.markUnsigned();
+		}
+
+		log.info("Number of signatures: {0}", signatureInfos.size());
+		for (SignatureInfo signatureInfo : signatureInfos) {
+			log.info("Signer: {0}", signatureInfo.getName());
+			log.info("Signing time: {0}", signatureInfo.getSigningTime());
 		}
 	}
 
 	@Override
-	public void prepareForSigning() {
+	public String startSign() {
+		try {
+			return trySign();
+		} catch (UnsupportedDocumentTypeException e) {
+			try {
+				storeDocumentInZipFile();
+				return trySign();
+			} catch (UnsupportedDocumentTypeException e2) {
+				signingModel.markSignError("Unsupported document type.");
+			}
+		}
 
-		this.log.debug("prepare for signing");
+		return null;
+	}
 
-		// store document via WS
-		String dssWSUrl = this.configuration.getValue(
-				ConfigProperty.DSS_WS_URL, String.class);
-		DigitalSignatureServiceClient dssClient = new DigitalSignatureServiceClient(
-				dssWSUrl);
-		dssClient.setLogging(true, false);
-		StorageInfoDO storageInfoDO = dssClient.store(document,
-				this.contentType);
+	private String trySign() throws UnsupportedDocumentTypeException {
+		DigitalSignatureServiceSession digitalSignatureServiceSession;
+		try {
+			digitalSignatureServiceSession = getDSSClient().uploadDocument(signingModel.getContentType(), signingModel.getDocument());
+			log.debug("DSS Artifact ID: " + digitalSignatureServiceSession.getResponseId());
 
-		this.signatureRequestId = storageInfoDO.getArtifact();
-		this.log.debug("DSS Artifact ID: " + this.signatureRequestId);
+			signingModel.markSigning(digitalSignatureServiceSession);
+			return "sign";
+		} catch (ApplicationDocumentAuthorizedException | AuthenticationRequiredException | IncorrectSignatureTypeException | UnsupportedSignatureTypeException e) {
+			signingModel.markSignError(e.getClass().getSimpleName() + ": " + e.getMessage());
+			return null;
+		}
+	}
 
-		FacesContext facesContext = FacesContext.getCurrentInstance();
-		ExternalContext externalContext = facesContext.getExternalContext();
-		String requestContextPath = externalContext.getRequestContextPath();
-		this.target = requestContextPath + "/dss-response";
+	private void storeDocumentInZipFile() {
+		try {
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-		this.language = this.localeSelector.getLanguage();
-		this.relayState = UUID.randomUUID().toString();
-		this.log.debug("RelayState: " + relayState);
+			try (ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream)) {
+				ZipEntry zipEntry = new ZipEntry(signingModel.getFileName());
+				zipOutputStream.putNextEntry(zipEntry);
+				IOUtils.write(signingModel.getDocument(), zipOutputStream);
+			}
 
+			signingModel.updateDocument(outputStream.toByteArray(), "application/zip", signingModel.getFileName() + ".zip");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public String getDssStartUrl() {
+		return getConfigurationValue(ConfigProperty.DSS_WS_START);
+	}
+
+	@Override
+	public SigningModel getSigningModel() {
+		return signingModel;
+	}
+
+	private DigitalSignatureServiceClient getDSSClient() {
+		DigitalSignatureServiceClient dssClient = new DigitalSignatureServiceClient(getConfigurationValue(ConfigProperty.DSS_WS_URL));
+		dssClient.setCredentials(getConfigurationValue(ConfigProperty.DSS_WS_USERNAME), getConfigurationValue(ConfigProperty.DSS_WS_PASSWORD));
+		return dssClient;
+	}
+
+	private String getConfigurationValue(ConfigProperty configProperty) {
+		return this.configuration.getValue(configProperty, String.class);
 	}
 }

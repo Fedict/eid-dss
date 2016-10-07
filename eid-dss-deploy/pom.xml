@@ -179,6 +179,16 @@
 							<includeInApplicationXml>true</includeInApplicationXml>
 							<bundleDir>lib</bundleDir>
 						</jarModule>
+						<jarModule>
+							<groupId>be.e_contract.dssp</groupId>
+							<artifactId>dssp-client</artifactId>
+							<includeInApplicationXml>true</includeInApplicationXml>
+						</jarModule>
+						<jarModule>
+							<groupId>be.e_contract.dssp</groupId>
+							<artifactId>dssp-ws</artifactId>
+							<includeInApplicationXml>true</includeInApplicationXml>
+						</jarModule>
 						<webModule>
 							<groupId>be.fedict.eid-dss</groupId>
 							<artifactId>eid-dss-ws-webapp</artifactId>
@@ -554,6 +564,15 @@
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
 			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>be.e_contract.dssp</groupId>
+			<artifactId>dssp-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>be.e_contract.dssp</groupId>
+			<artifactId>dssp-ws</artifactId>
 		</dependency>
 
 	</dependencies>
