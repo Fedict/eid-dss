@@ -3,13 +3,13 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.1.2.FEDICT-SNAPSHOT</version>
+		<version>1.2.0.FEDICT</version>
 	</parent>
 	<name>eID DSS WS Implementation</name>
 	<description>Implementation of OASIS DSS WS for eID Digital Signature Service</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-ws-impl</artifactId>
-	<version>1.1.2.FEDICT-SNAPSHOT</version>
+	<version>1.2.0.FEDICT</version>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
