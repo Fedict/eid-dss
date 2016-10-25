@@ -3,14 +3,14 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.2.1.FEDICT</version>
+		<version>1.2.2.FEDICT-SNAPSHOT</version>
 	</parent>
 	<name>eID DSS Service Provider Test Webapp</name>
 	<description>Test Web Application for an eID DSS based Service Provider
     </description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-sp-webapp</artifactId>
-	<version>1.2.1.FEDICT</version>
+	<version>1.2.2.FEDICT-SNAPSHOT</version>
 	<packaging>war</packaging>
 
 	<build>
