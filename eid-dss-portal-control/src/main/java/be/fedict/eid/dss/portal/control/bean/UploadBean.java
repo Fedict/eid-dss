@@ -18,31 +18,62 @@
 
 package be.fedict.eid.dss.portal.control.bean;
 
-import java.io.IOException;
-
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-
+import be.fedict.eid.dss.portal.control.Upload;
+import be.fedict.eid.dss.portal.control.state.SigningModel;
+import be.fedict.eid.dss.portal.control.state.SigningModelRepository;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Logger;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Out;
+import org.jboss.seam.annotations.*;
 import org.jboss.seam.log.Log;
 import org.richfaces.event.UploadEvent;
 import org.richfaces.model.UploadItem;
 
-import be.fedict.eid.dss.portal.control.Upload;
-import be.fedict.eid.dss.portal.control.state.SigningModel;
-import be.fedict.eid.dss.portal.control.state.SigningModelRepository;
+import javax.ejb.Remove;
+import javax.ejb.Stateful;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Stateful
 @Name("dssUpload")
 @LocalBinding(jndiBinding = "fedict/eid/dss/portal/UploadBean")
 public class UploadBean implements Upload {
+
+	private static final Map<String, String> extensionsToMimeTypeMappings;
+
+	static {
+		extensionsToMimeTypeMappings = new HashMap<>();
+
+		// XML document container.
+		extensionsToMimeTypeMappings.put("xml", "text/xml");
+
+		// Open Document Format
+		extensionsToMimeTypeMappings.put("odt", "application/vnd.oasis.opendocument.text");
+		extensionsToMimeTypeMappings.put("ods", "application/vnd.oasis.opendocument.spreadsheet");
+		extensionsToMimeTypeMappings.put("odp", "application/vnd.oasis.opendocument.presentation");
+		extensionsToMimeTypeMappings.put("odg", "application/vnd.oasis.opendocument.graphics");
+		extensionsToMimeTypeMappings.put("odc", "application/vnd.oasis.opendocument.chart");
+		extensionsToMimeTypeMappings.put("odf", "application/vnd.oasis.opendocument.formula");
+		extensionsToMimeTypeMappings.put("odi", "application/vnd.oasis.opendocument.image");
+
+		// Office OpenXML.
+		extensionsToMimeTypeMappings.put("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+		extensionsToMimeTypeMappings.put("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		extensionsToMimeTypeMappings.put("pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+		extensionsToMimeTypeMappings.put("ppsx", "application/vnd.openxmlformats-officedocument.presentationml.slideshow");
+
+		// ZIP containers.
+		extensionsToMimeTypeMappings.put("zip", "application/zip");
+
+		// Associated Signature Container (ETSI TS 102 918 v1.1.1)
+		extensionsToMimeTypeMappings.put("asics", "application/vnd.etsi.asic-s+zip");
+		extensionsToMimeTypeMappings.put("scs", "application/vnd.etsi.asic-s+zip");
+
+		extensionsToMimeTypeMappings.put("asice", "application/vnd.etsi.asic-e+zip");
+		extensionsToMimeTypeMappings.put("sce", "application/vnd.etsi.asic-e+zip");
+	}
 
 	@Logger
 	private Log log;
@@ -58,9 +89,19 @@ public class UploadBean implements Upload {
 
 		this.signingModel = new SigningModel(
 				item.getFileName(),
-				item.getContentType(),
+				determineContentType(item),
 				getData(item)
 		);
+	}
+
+	private String determineContentType(UploadItem item) {
+		String extension = FilenameUtils.getExtension(item.getFileName()).toLowerCase();
+		String contentType = extensionsToMimeTypeMappings.get(extension);
+		if (contentType != null) {
+			return contentType;
+		}
+
+		return item.getContentType();
 	}
 
 	@Override
