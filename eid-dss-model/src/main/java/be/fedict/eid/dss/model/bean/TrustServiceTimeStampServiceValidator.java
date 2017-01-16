@@ -37,52 +37,42 @@ import be.fedict.trust.client.jaxb.xades132.EncapsulatedPKIDataType;
 import be.fedict.trust.client.jaxb.xades132.OCSPValuesType;
 import be.fedict.trust.client.jaxb.xades132.RevocationValuesType;
 
-public class TrustServiceTimeStampServiceValidator implements
-		TimeStampServiceValidator {
+public class TrustServiceTimeStampServiceValidator implements TimeStampServiceValidator {
 
-	private static final Log LOG = LogFactory
-			.getLog(TrustServiceTimeStampServiceValidator.class);
+	private static final Log LOG = LogFactory.getLog(TrustServiceTimeStampServiceValidator.class);
 
 	private final XKMS2Client xkms2Client;
 
 	private final String trustDomain;
 
-	public TrustServiceTimeStampServiceValidator(XKMS2Client xkms2Client,
-			String trustDomain) {
+	public TrustServiceTimeStampServiceValidator(XKMS2Client xkms2Client, String trustDomain) {
 		this.xkms2Client = xkms2Client;
 		this.trustDomain = trustDomain;
 	}
 
-	public void validate(List<X509Certificate> certificateChain,
-			RevocationData revocationData) throws Exception {
-		LOG.debug("validating TSA certificate: "
-				+ certificateChain.get(0).getSubjectX500Principal());
+	public void validate(List<X509Certificate> certificateChain, RevocationData revocationData) throws Exception {
+		LOG.debug("validating TSA certificate: " + certificateChain.get(0).getSubjectX500Principal());
 		try {
 			this.xkms2Client.validate(this.trustDomain, certificateChain,
 					revocationData != null);
 		} catch (CertificateEncodingException e) {
-			throw new TrustServiceClientException("certificate encoding error",
-					e);
+			throw new TrustServiceClientException("certificate encoding error", e);
 		} catch (TrustDomainNotFoundException e) {
 			throw new TrustServiceClientException("trust domain not found", e);
 		} catch (RevocationDataNotFoundException e) {
-			throw new TrustServiceClientException("revocation data not found",
-					e);
+			throw new TrustServiceClientException("revocation data not found", e);
 		} catch (ValidationFailedException e) {
-			throw new TrustServiceClientException("validation failed", e);
+			throw new TrustServiceClientException("validation failed: " + e.getReasons(), e);
 		} catch (Exception e) {
-			throw new TrustServiceClientException(
-					"unknown trust service error", e);
+			throw new TrustServiceClientException("unknown trust service error", e);
 		}
 		if (null == revocationData) {
 			return;
 		}
-		RevocationValuesType revocationValues = this.xkms2Client
-				.getRevocationValues();
+		RevocationValuesType revocationValues = this.xkms2Client.getRevocationValues();
 		CRLValuesType crlValues = revocationValues.getCRLValues();
 		if (null != crlValues) {
-			List<EncapsulatedPKIDataType> encapsulatedCrls = crlValues
-					.getEncapsulatedCRLValue();
+			List<EncapsulatedPKIDataType> encapsulatedCrls = crlValues.getEncapsulatedCRLValue();
 			for (EncapsulatedPKIDataType encapsulatedCrl : encapsulatedCrls) {
 				byte[] encodedCrl = encapsulatedCrl.getValue();
 				revocationData.addCRL(encodedCrl);
@@ -90,8 +80,7 @@ public class TrustServiceTimeStampServiceValidator implements
 		}
 		OCSPValuesType ocspValues = revocationValues.getOCSPValues();
 		if (null != ocspValues) {
-			List<EncapsulatedPKIDataType> encapsulatedOcsps = ocspValues
-					.getEncapsulatedOCSPValue();
+			List<EncapsulatedPKIDataType> encapsulatedOcsps = ocspValues.getEncapsulatedOCSPValue();
 			for (EncapsulatedPKIDataType encapsulatedOcsp : encapsulatedOcsps) {
 				byte[] encodedOcsp = encapsulatedOcsp.getValue();
 				revocationData.addOCSP(encodedOcsp);
