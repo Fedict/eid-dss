@@ -34,21 +34,16 @@
 	<dependencies>
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-spi</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-entity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>be.fedict.eid-applet</groupId>
-			<artifactId>eid-applet-service-spi</artifactId>
+			<artifactId>eid-applet-service-signer</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>be.fedict.eid-trust-service</groupId>
-			<artifactId>eid-trust-service-client</artifactId>
+			<groupId>be.fedict.eid-applet</groupId>
+			<artifactId>eid-applet-service-spi</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>

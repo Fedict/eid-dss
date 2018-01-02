@@ -60,11 +60,6 @@
 							<bundleDir>lib</bundleDir>
 						</jarModule>
 						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-spi</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
 							<groupId>org.richfaces.framework</groupId>
 							<artifactId>richfaces-api</artifactId>
 							<includeInApplicationXml>true</includeInApplicationXml>
@@ -188,11 +183,6 @@
 			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-admin-portal-webapp</artifactId>
 			<type>war</type>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-spi</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- dependencies on other eID projects -->

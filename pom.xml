@@ -62,7 +62,6 @@
 	</properties>
 
 	<modules>
-		<module>eid-dss-spi</module>
 		<module>eid-dss-entity</module>
 		<module>eid-dss-model</module>
 		<module>eid-dss-portal-control</module>
