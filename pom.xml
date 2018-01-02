@@ -249,20 +249,6 @@
 
 	<profiles>
 		<profile>
-			<id>sdk</id>
-			<activation>
-				<property>
-					<name>env</name>
-					<value>sdk</value>
-				</property>
-			</activation>
-			<modules>
-				<module>eid-dss-dev-guide</module>
-				<module>eid-dss-sdk</module>
-				<module>eid-dss-sdk-dotnet</module>
-			</modules>
-		</profile>
-		<profile>
 			<id>mysql</id>
 			<activation>
 				<property>
