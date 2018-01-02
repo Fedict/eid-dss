@@ -194,11 +194,6 @@
 							<artifactId>eid-dss-ws-webapp</artifactId>
 							<contextRoot>/eid-dss-ws</contextRoot>
 						</webModule>
-						<webModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-sp-webapp</artifactId>
-							<contextRoot>/eid-dss-sp</contextRoot>
-						</webModule>
 					</modules>
 					<version>5</version>
 					<earSourceDirectory>${project.build.outputDirectory}</earSourceDirectory>
@@ -274,12 +269,6 @@
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-ws-webapp</artifactId>
-			<type>war</type>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-sp-webapp</artifactId>
 			<type>war</type>
 			<version>${project.version}</version>
 		</dependency>
