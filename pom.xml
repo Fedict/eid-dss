@@ -68,8 +68,6 @@
 		<module>eid-dss-ws</module>
 		<module>eid-dss-ws-impl</module>
 		<module>eid-dss-ws-webapp</module>
-		<module>eid-dss-webapp</module>
-		<module>eid-dss-webapp-control</module>
 		<module>eid-dss-portal-control</module>
 		<module>eid-dss-portal-webapp</module>
 		<module>eid-dss-admin-portal-control</module>
