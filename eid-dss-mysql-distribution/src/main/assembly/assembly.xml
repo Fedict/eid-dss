@@ -40,9 +40,5 @@
 			<source>target/files/eid-dss-ddl-mysql.sql</source>
 			<outputDirectory>sql</outputDirectory>
 		</file>
-		<!--<file>-->
-			<!--<source>target/files/eid-dss-admin-manual.pdf</source>-->
-			<!--<outputDirectory>manual</outputDirectory>-->
-		<!--</file>-->
 	</files>
 </assembly>

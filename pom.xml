@@ -85,8 +85,6 @@
 		<module>eid-dss-deploy</module>
 		<module>eid-dss-client</module>
 		<module>eid-dss-sp-webapp</module>
-		<module>eid-dss-tests</module>
-		<module>eid-dss-tests-cxf</module>
 	</modules>
 
 	<build>
@@ -258,7 +256,6 @@
 			</activation>
 			<modules>
 				<module>eid-dss-sql-ddl</module>
-				<!--<module>eid-dss-admin-manual</module>-->
 				<module>eid-dss-mysql-distribution</module>
 			</modules>
 			<properties>
@@ -276,7 +273,6 @@
 			</activation>
 			<modules>
 				<module>eid-dss-sql-ddl</module>
-				<!--<module>eid-dss-admin-manual</module>-->
 				<module>eid-dss-postgresql-distribution</module>
 			</modules>
 			<properties>
@@ -294,7 +290,6 @@
 			</activation>
 			<modules>
 				<module>eid-dss-sql-ddl</module>
-				<!--<module>eid-dss-admin-manual</module>-->
 				<module>eid-dss-oracle-distribution</module>
 			</modules>
 			<properties>
@@ -312,15 +307,10 @@
 				</property>
 			</activation>
 			<modules>
-				<!--<module>eid-dss-dev-guide</module>-->
-				<!--<module>eid-dss-sdk</module>-->
-				<!--<module>eid-dss-sdk-dotnet</module>-->
 				<module>eid-dss-sql-ddl</module>
-				<!--<module>eid-dss-admin-manual</module>-->
 				<module>eid-dss-mysql-distribution</module>
 				<module>eid-dss-postgresql-distribution</module>
 				<module>eid-dss-oracle-distribution</module>
-				<module>eid-dss-tests</module>
 			</modules>
 		</profile>
 	</profiles>
