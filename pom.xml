@@ -64,8 +64,6 @@
 	<modules>
 		<module>eid-dss-spi</module>
 		<module>eid-dss-spi-utils</module>
-		<module>eid-dss-protocol-simple</module>
-		<module>eid-dss-protocol-simple-client</module>
 		<module>eid-dss-document-xml</module>
 		<module>eid-dss-document-odf</module>
 		<module>eid-dss-document-ooxml</module>
