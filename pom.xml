@@ -63,12 +63,6 @@
 
 	<modules>
 		<module>eid-dss-spi</module>
-		<module>eid-dss-spi-utils</module>
-		<module>eid-dss-document-xml</module>
-		<module>eid-dss-document-odf</module>
-		<module>eid-dss-document-ooxml</module>
-		<module>eid-dss-document-zip</module>
-		<module>eid-dss-document-asic</module>
 		<module>eid-dss-entity</module>
 		<module>eid-dss-model</module>
 		<module>eid-dss-ws</module>
