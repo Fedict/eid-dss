@@ -20,9 +20,8 @@ package be.fedict.eid.dss.entity;
 
 public class Constants {
 
-	public static final String DATABASE_TABLE_PREFIX = "dss_";
+	static final String DATABASE_TABLE_PREFIX = "dss_";
 
 	private Constants() {
-		super();
 	}
 }

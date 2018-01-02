@@ -43,14 +43,13 @@ public class AccountingEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String LIST_ALL = "dss.accounting.all";
-	public static final String RESET_ALL = "dss.accounting.reset.all";
+	static final String LIST_ALL = "dss.accounting.all";
+	static final String RESET_ALL = "dss.accounting.reset.all";
 
 	private String domain;
 	private Long requests;
 
 	public AccountingEntity() {
-		super();
 	}
 
 	public AccountingEntity(String domain) {
