@@ -120,11 +120,6 @@
 						</jarModule>
 						<jarModule>
 							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-client</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
 							<artifactId>eid-dss-ws</artifactId>
 							<includeInApplicationXml>true</includeInApplicationXml>
 						</jarModule>
@@ -295,11 +290,6 @@
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-document-asic</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-client</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
