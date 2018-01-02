@@ -88,11 +88,6 @@
 							<includeInApplicationXml>true</includeInApplicationXml>
 							<bundleDir>lib</bundleDir>
 						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-ws</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
 						<ejbModule>
 							<groupId>be.fedict.eid-dss</groupId>
 							<artifactId>eid-dss-entity</artifactId>
@@ -135,11 +130,6 @@
 							<artifactId>dssp-ws</artifactId>
 							<includeInApplicationXml>true</includeInApplicationXml>
 						</jarModule>
-						<webModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-ws-webapp</artifactId>
-							<contextRoot>/eid-dss-ws</contextRoot>
-						</webModule>
 					</modules>
 					<version>5</version>
 					<earSourceDirectory>${project.build.outputDirectory}</earSourceDirectory>
@@ -202,18 +192,7 @@
 		</dependency>
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-ws-webapp</artifactId>
-			<type>war</type>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-spi</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-ws</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- dependencies on other eID projects -->
