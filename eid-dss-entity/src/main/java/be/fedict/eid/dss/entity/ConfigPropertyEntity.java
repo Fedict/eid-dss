@@ -37,15 +37,14 @@ public class ConfigPropertyEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String LIST_INDEXES = "dss.config.list.idx";
-	public static final String LIST_ALL = "dss.config.list.all";
+	static final String LIST_INDEXES = "dss.config.list.idx";
+	static final String LIST_ALL = "dss.config.list.all";
 
 	private String name;
 
 	private String value;
 
 	public ConfigPropertyEntity() {
-		super();
 	}
 
 	public ConfigPropertyEntity(String name, String value) {

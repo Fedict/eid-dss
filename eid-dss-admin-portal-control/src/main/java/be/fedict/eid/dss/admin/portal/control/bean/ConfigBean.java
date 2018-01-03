@@ -18,28 +18,24 @@
 
 package be.fedict.eid.dss.admin.portal.control.bean;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-
+import be.fedict.eid.applet.service.signer.DigestAlgo;
+import be.fedict.eid.dss.admin.portal.control.AdminConstants;
+import be.fedict.eid.dss.admin.portal.control.Config;
+import be.fedict.eid.dss.model.ConfigProperty;
+import be.fedict.eid.dss.model.Configuration;
+import be.fedict.eid.dss.model.TSPDigestAlgo;
 import org.jboss.ejb3.annotation.LocalBinding;
 import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.faces.FacesMessages;
-import org.jboss.seam.international.StatusMessage;
 import org.jboss.seam.log.Log;
 
-import be.fedict.eid.applet.service.signer.DigestAlgo;
-import be.fedict.eid.dss.admin.portal.control.AdminConstants;
-import be.fedict.eid.dss.admin.portal.control.Config;
-import be.fedict.eid.dss.model.ConfigProperty;
-import be.fedict.eid.dss.model.Configuration;
-import be.fedict.eid.dss.model.DocumentService;
-import be.fedict.eid.dss.model.TSPDigestAlgo;
-import be.fedict.eid.dss.model.exception.InvalidCronExpressionException;
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.ejb.Remove;
+import javax.ejb.Stateful;
 
 @Stateful
 @Name("dssConfig")
@@ -54,9 +50,6 @@ public class ConfigBean implements Config {
 
 	@EJB
 	private Configuration configuration;
-
-	@EJB
-	private DocumentService documentService;
 
 	private String xkmsUrl;
 
@@ -187,15 +180,6 @@ public class ConfigBean implements Config {
 
 		this.configuration.setValue(ConfigProperty.TIMESTAMP_MAX_OFFSET, this.timestampMaxOffset);
 		this.configuration.setValue(ConfigProperty.MAX_GRACE_PERIOD, this.maxGracePeriod);
-
-		// start document cleanup task timer
-		try {
-			this.documentService.startTimer(this.documentCleanupTaskCronSchedule);
-		} catch (InvalidCronExpressionException e) {
-			this.facesMessages.addToControl("documentCleanupTaskCronSchedule", StatusMessage.Severity.ERROR, "Invalid cron schedule");
-			return null;
-		}
-		this.configuration.setValue(ConfigProperty.DOCUMENT_CLEANUP_TASK_SCHEDULE, this.documentCleanupTaskCronSchedule);
 
 		this.configuration.setValue(ConfigProperty.MAIL_SIGNED_DOCUMENT, this.sendSignedMail);
 		this.configuration.setValue(ConfigProperty.SMTP_SERVER, this.smtpServer);

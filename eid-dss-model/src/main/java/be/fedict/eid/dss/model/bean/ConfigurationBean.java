@@ -43,20 +43,14 @@ public class ConfigurationBean implements Configuration {
 
 	@PostConstruct
 	public void init() {
-
 		initProperties();
 	}
 
 	private void initProperties() {
-
 		for (ConfigProperty configProperty : ConfigProperty.values()) {
-
 			// init defaults if necessary
-			if (null == getValue(configProperty, configProperty.getType())
-					&& null != configProperty.getDefaultValue()) {
-
-				LOG.debug("Initialize " + configProperty.getName() + " with "
-						+ "default value=" + configProperty.getDefaultValue());
+			if (null == getValue(configProperty, configProperty.getType()) && null != configProperty.getDefaultValue()) {
+				LOG.debug("Initialize " + configProperty.getName() + " with default value=" + configProperty.getDefaultValue());
 				setValue(configProperty, configProperty.getDefaultValue());
 			}
 		}
@@ -66,23 +60,19 @@ public class ConfigurationBean implements Configuration {
 	 * {@inheritDoc}
 	 */
 	public void setValue(ConfigProperty configProperty, Object value) {
-
 		setValue(configProperty, null, value);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setValue(ConfigProperty configProperty, String index,
-			Object value) {
-
+	public void setValue(ConfigProperty configProperty, String index, Object value) {
 		String propertyValue;
 		if (null != value) {
 			Class<?> expectedType = configProperty.getType();
 			Class<?> type = value.getClass();
 			if (!expectedType.isAssignableFrom(type)) {
-				throw new IllegalArgumentException("value has incorrect type: "
-						+ type.getClass().getName());
+				throw new IllegalArgumentException("value has incorrect type: " + type.getClass().getName());
 			}
 			Object castedValue = expectedType.cast(value);
 			if (expectedType.isEnum()) {

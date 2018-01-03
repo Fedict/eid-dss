@@ -35,7 +35,6 @@ import org.junit.Test;
 import be.fedict.eid.dss.entity.AccountingEntity;
 import be.fedict.eid.dss.entity.AdministratorEntity;
 import be.fedict.eid.dss.entity.ConfigPropertyEntity;
-import be.fedict.eid.dss.entity.DocumentEntity;
 import be.fedict.eid.dss.entity.RPEntity;
 
 public class PersistenceTest {
@@ -58,7 +57,6 @@ public class PersistenceTest {
 
 		configuration.addAnnotatedClass(AdministratorEntity.class);
 		configuration.addAnnotatedClass(ConfigPropertyEntity.class);
-		configuration.addAnnotatedClass(DocumentEntity.class);
 		configuration.addAnnotatedClass(RPEntity.class);
 		configuration.addAnnotatedClass(AccountingEntity.class);
 

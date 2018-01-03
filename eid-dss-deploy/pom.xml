@@ -4,13 +4,13 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.2.2.FEDICT-SNAPSHOT</version>
+		<version>2.0.1.FEDICT-SNAPSHOT</version>
 	</parent>
 	<name>eID DSS EAR</name>
 	<description>Java EE 5 EAR for eID Digital Signature Service</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-deploy</artifactId>
-	<version>1.2.2.FEDICT-SNAPSHOT</version>
+	<version>2.0.1.FEDICT-SNAPSHOT</version>
 	<packaging>ear</packaging>
 	<build>
 		<plugins>
@@ -44,30 +44,10 @@
 							<bundleDir>lib</bundleDir>
 						</jarModule>
 						<jarModule>
-							<groupId>be.fedict.eid-trust-service</groupId>
-							<artifactId>eid-trust-service-client</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-trust-service</groupId>
-							<artifactId>eid-trust-service-xkms2-ws</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
 							<groupId>be.fedict.eid-applet</groupId>
 							<artifactId>eid-applet-service-signer</artifactId>
 							<includeInApplicationXml>true</includeInApplicationXml>
 							<bundleDir>lib</bundleDir>
-						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-spi</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-spi-utils</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
 						</jarModule>
 						<jarModule>
 							<groupId>org.richfaces.framework</groupId>
@@ -93,51 +73,6 @@
 							<includeInApplicationXml>true</includeInApplicationXml>
 							<bundleDir>lib</bundleDir>
 						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-protocol-simple</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-document-xml</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-document-odf</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-document-ooxml</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-document-zip</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-document-asic</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-client</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-protocol-simple-client</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-ws</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
 						<ejbModule>
 							<groupId>be.fedict.eid-dss</groupId>
 							<artifactId>eid-dss-entity</artifactId>
@@ -146,15 +81,6 @@
 							<groupId>be.fedict.eid-dss</groupId>
 							<artifactId>eid-dss-model</artifactId>
 						</ejbModule>
-						<ejbModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-webapp-control</artifactId>
-						</ejbModule>
-						<webModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-webapp</artifactId>
-							<contextRoot>/eid-dss</contextRoot>
-						</webModule>
 						<ejbModule>
 							<groupId>be.fedict.eid-dss</groupId>
 							<artifactId>eid-dss-portal-control</artifactId>
@@ -189,16 +115,6 @@
 							<artifactId>dssp-ws</artifactId>
 							<includeInApplicationXml>true</includeInApplicationXml>
 						</jarModule>
-						<webModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-ws-webapp</artifactId>
-							<contextRoot>/eid-dss-ws</contextRoot>
-						</webModule>
-						<webModule>
-							<groupId>be.fedict.eid-dss</groupId>
-							<artifactId>eid-dss-sp-webapp</artifactId>
-							<contextRoot>/eid-dss-sp</contextRoot>
-						</webModule>
 					</modules>
 					<version>5</version>
 					<earSourceDirectory>${project.build.outputDirectory}</earSourceDirectory>
@@ -237,18 +153,6 @@
 		</dependency>
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-webapp-control</artifactId>
-			<type>ejb</type>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-webapp</artifactId>
-			<type>war</type>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-portal-control</artifactId>
 			<type>ejb</type>
 			<version>${project.version}</version>
@@ -271,73 +175,6 @@
 			<type>war</type>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-ws-webapp</artifactId>
-			<type>war</type>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-sp-webapp</artifactId>
-			<type>war</type>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-spi</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-spi-utils</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-protocol-simple</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-document-xml</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-document-odf</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-document-ooxml</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-document-zip</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-document-asic</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-client</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-protocol-simple-client</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-ws</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 		<!-- dependencies on other eID projects -->
 		<dependency>
 			<groupId>be.fedict.eid-applet</groupId>
@@ -354,14 +191,6 @@
 		<dependency>
 			<groupId>be.fedict.eid-applet</groupId>
 			<artifactId>eid-applet-service-signer</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-trust-service</groupId>
-			<artifactId>eid-trust-service-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-trust-service</groupId>
-			<artifactId>eid-trust-service-xkms2-ws</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>be.fedict</groupId>

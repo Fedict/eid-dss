@@ -39,9 +39,9 @@ public class AdministratorEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String COUNT_ALL = "dss.admin.count.all";
+	static final String COUNT_ALL = "dss.admin.count.all";
 
-	public static final String ALL = "dss.admin.all";
+	static final String ALL = "dss.admin.all";
 
 	private String id;
 
@@ -56,7 +56,6 @@ public class AdministratorEntity implements Serializable {
 	}
 
 	public AdministratorEntity() {
-		super();
 	}
 
 	@Id

@@ -3,13 +3,13 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.2.2.FEDICT-SNAPSHOT</version>
+		<version>2.0.1.FEDICT-SNAPSHOT</version>
 	</parent>
 	<name>eID DSS Model</name>
 	<description>EJB3 Model for eID Digital Signature Service</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-model</artifactId>
-	<version>1.2.2.FEDICT-SNAPSHOT</version>
+	<version>2.0.1.FEDICT-SNAPSHOT</version>
 	<packaging>ejb</packaging>
 	<build>
 		<plugins>
@@ -34,21 +34,16 @@
 	<dependencies>
 		<dependency>
 			<groupId>be.fedict.eid-dss</groupId>
-			<artifactId>eid-dss-spi</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-dss</groupId>
 			<artifactId>eid-dss-entity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>be.fedict.eid-applet</groupId>
-			<artifactId>eid-applet-service-spi</artifactId>
+			<artifactId>eid-applet-service-signer</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>be.fedict.eid-trust-service</groupId>
-			<artifactId>eid-trust-service-client</artifactId>
+			<groupId>be.fedict.eid-applet</groupId>
+			<artifactId>eid-applet-service-spi</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
