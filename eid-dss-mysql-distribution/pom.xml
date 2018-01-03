@@ -3,13 +3,14 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>1.1.2.FEDICT-SNAPSHOT</version>
+		<version>1.2.2.FEDICT-SNAPSHOT</version>
+		<relativePath>..</relativePath>
 	</parent>
 	<name>eID DSS MySQL Distribution</name>
 	<description>MySQL Distribution for eID Digital Signature Service</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-mysql-distribution</artifactId>
-	<version>1.1.2.FEDICT-SNAPSHOT</version>
+	<version>1.2.2.FEDICT-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<build>
 		<plugins>

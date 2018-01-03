@@ -4,6 +4,7 @@
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
 		<version>1.2.2.FEDICT-SNAPSHOT</version>
+		<relativePath>..</relativePath>
 	</parent>
 	<name>eID DSS Oracle Distribution</name>
 	<description>Oracle Distribution for eID Digital Signature Service</description>
