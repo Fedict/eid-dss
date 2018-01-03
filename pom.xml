@@ -161,18 +161,6 @@
 					<artifactId>maven-release-plugin</artifactId>
 					<version>2.5.3</version>
 				</plugin>
-				<plugin>
-					<groupId>org.jboss.maven.plugins</groupId>
-					<artifactId>maven-jdocbook-plugin</artifactId>
-					<version>2.3.8</version>
-					<dependencies>
-						<dependency>
-							<groupId>org.eclipse.core</groupId>
-							<artifactId>resources</artifactId>
-							<version>3.3.0-v20070604</version>
-						</dependency>
-					</dependencies>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -307,16 +295,6 @@
 				<version>${eid-applet.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>be.fedict.eid-trust-service</groupId>
-				<artifactId>eid-trust-service-client</artifactId>
-				<version>${eid-trust-service.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>be.fedict.eid-trust-service</groupId>
-				<artifactId>eid-trust-service-xkms2-ws</artifactId>
-				<version>${eid-trust-service.version}</version>
 			</dependency>
 
 			<dependency>

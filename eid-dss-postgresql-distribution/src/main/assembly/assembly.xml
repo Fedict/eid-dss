@@ -15,6 +15,10 @@
 			<excludes>
 				<exclude>jboss/bin/run.sh</exclude>
 				<exclude>jboss/bin/shutdown.sh</exclude>
+
+				<!-- No longer include eid-trust-service -->
+				<exclude>jboss/server/all/deploy/eid-trust*</exclude>
+				<exclude>jboss/server/default/deploy/eid-trust*</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>

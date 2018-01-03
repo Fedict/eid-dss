@@ -44,16 +44,6 @@
 							<bundleDir>lib</bundleDir>
 						</jarModule>
 						<jarModule>
-							<groupId>be.fedict.eid-trust-service</groupId>
-							<artifactId>eid-trust-service-client</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
-							<groupId>be.fedict.eid-trust-service</groupId>
-							<artifactId>eid-trust-service-xkms2-ws</artifactId>
-							<includeInApplicationXml>true</includeInApplicationXml>
-						</jarModule>
-						<jarModule>
 							<groupId>be.fedict.eid-applet</groupId>
 							<artifactId>eid-applet-service-signer</artifactId>
 							<includeInApplicationXml>true</includeInApplicationXml>
@@ -201,14 +191,6 @@
 		<dependency>
 			<groupId>be.fedict.eid-applet</groupId>
 			<artifactId>eid-applet-service-signer</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-trust-service</groupId>
-			<artifactId>eid-trust-service-client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>be.fedict.eid-trust-service</groupId>
-			<artifactId>eid-trust-service-xkms2-ws</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>be.fedict</groupId>
