@@ -4,13 +4,13 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>2.0.1.FEDICT-SNAPSHOT</version>
+		<version>2.0.1.FEDICT</version>
 	</parent>
 	<name>eID DSS Portal Controllers</name>
 	<description>Seam Controllers for eID Digital Signature Service Portal</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-portal-control</artifactId>
-	<version>2.0.1.FEDICT-SNAPSHOT</version>
+	<version>2.0.1.FEDICT</version>
 	<packaging>ejb</packaging>
 	<build>
 		<plugins>
