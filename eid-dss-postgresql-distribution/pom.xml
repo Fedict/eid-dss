@@ -3,14 +3,14 @@
 	<parent>
 		<groupId>be.fedict</groupId>
 		<artifactId>eid-dss</artifactId>
-		<version>2.0.1.FEDICT</version>
+		<version>2.0.2.FEDICT-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<name>eID DSS PostgreSQL Distribution</name>
 	<description>PostgreSQL Distribution for eID Digital Signature Service</description>
 	<groupId>be.fedict.eid-dss</groupId>
 	<artifactId>eid-dss-postgresql-distribution</artifactId>
-	<version>2.0.1.FEDICT</version>
+	<version>2.0.2.FEDICT-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<build>
 		<plugins>
