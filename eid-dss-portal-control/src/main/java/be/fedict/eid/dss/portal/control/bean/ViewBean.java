@@ -18,28 +18,6 @@
 
 package be.fedict.eid.dss.portal.control.bean;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import javax.ejb.EJB;
-import javax.ejb.Remove;
-import javax.ejb.Stateful;
-
-import org.apache.commons.io.IOUtils;
-import org.jboss.ejb3.annotation.LocalBinding;
-import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Destroy;
-import org.jboss.seam.annotations.In;
-import org.jboss.seam.annotations.Logger;
-import org.jboss.seam.annotations.Name;
-import org.jboss.seam.annotations.Out;
-import org.jboss.seam.international.LocaleSelector;
-import org.jboss.seam.log.Log;
-
 import be.e_contract.dssp.client.DigitalSignatureServiceClient;
 import be.e_contract.dssp.client.DigitalSignatureServiceSession;
 import be.e_contract.dssp.client.SignatureInfo;
@@ -55,6 +33,26 @@ import be.fedict.eid.dss.model.Configuration;
 import be.fedict.eid.dss.portal.control.View;
 import be.fedict.eid.dss.portal.control.state.SigningModel;
 import be.fedict.eid.dss.portal.control.state.SigningModelRepository;
+import org.apache.commons.io.IOUtils;
+import org.jboss.ejb3.annotation.LocalBinding;
+import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.Destroy;
+import org.jboss.seam.annotations.In;
+import org.jboss.seam.annotations.Logger;
+import org.jboss.seam.annotations.Name;
+import org.jboss.seam.annotations.Out;
+import org.jboss.seam.international.LocaleSelector;
+import org.jboss.seam.log.Log;
+
+import javax.ejb.EJB;
+import javax.ejb.Remove;
+import javax.ejb.Stateful;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Stateful
 @Name("dssPortalView")
@@ -167,7 +165,9 @@ public class ViewBean implements View {
 
 	@Override
 	public String getDssStartUrl() {
-		return getConfigurationValue(ConfigProperty.DSS_WS_START);
+		String dssStartUrl = getConfigurationValue(ConfigProperty.DSS_WS_START);
+		log.info("DSS Start URL is " + dssStartUrl);
+		return dssStartUrl;
 	}
 
 	@Override
@@ -176,8 +176,12 @@ public class ViewBean implements View {
 	}
 
 	private DigitalSignatureServiceClient getDSSClient() {
-		DigitalSignatureServiceClient dssClient = new DigitalSignatureServiceClient(getConfigurationValue(ConfigProperty.DSS_WS_URL));
-		dssClient.setCredentials(getConfigurationValue(ConfigProperty.DSS_WS_USERNAME), getConfigurationValue(ConfigProperty.DSS_WS_PASSWORD));
+		String dssUrl = getConfigurationValue(ConfigProperty.DSS_WS_URL);
+		ConfigProperty userName = ConfigProperty.DSS_WS_USERNAME;
+		log.info("Creating DSS Client to " + dssUrl + " for user " + userName);
+
+		DigitalSignatureServiceClient dssClient = new DigitalSignatureServiceClient(dssUrl);
+		dssClient.setCredentials(getConfigurationValue(userName), getConfigurationValue(ConfigProperty.DSS_WS_PASSWORD));
 		return dssClient;
 	}
 
