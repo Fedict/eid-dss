@@ -28,7 +28,7 @@ import be.fedict.eid.applet.service.signer.DigestAlgo;
  */
 public enum ConfigProperty {
 
-	TSP_URL("tsp-url", String.class, "http://tsa.belgium.be/connect"),
+	TSP_URL("tsp-url", String.class),
 	TSP_POLICY_OID("tsp-policy-oid", String.class),
 	TSP_DIGEST_ALGO("tsp-digest-algo", TSPDigestAlgo.class),
 
